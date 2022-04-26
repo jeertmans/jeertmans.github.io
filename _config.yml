@@ -59,10 +59,10 @@ author:
   bio    : "PhD student in Differentiable Ray Tracing for Telecommunications."
   links:
     - label: "University Directory"
-      icon: "fab fa-fw fa-building-columns"
+      icon: "fas fa-fw fa-graduation-cap"
       url: "https://uclouvain.be/fr/repertoires/jerome.eertmans"
     - label: "Google Scholar"
-      icon: "fab fa-fw fa-graduation-cap"
+      icon: "fab fa-fw fa-google"
       url: "https://scholar.google.com/citations?user=bVbwyxAAAAAJ"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
