@@ -103,3 +103,6 @@ category_archive:
 tag_archive:
   type: liquid
   path: /tags/
+
+# https://github.com/DIYbiosphere/sphere/issues/140
+github: [metadata]
