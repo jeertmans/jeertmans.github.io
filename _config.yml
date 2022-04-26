@@ -58,24 +58,24 @@ author:
   avatar : "/assets/images/profile.png"
   bio    : "PhD student in Differentiable Ray Tracing for Telecommunications."
   links:
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://"
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/"
+    - label: "University Directory"
+      icon: "fab fa-fw fa-building-columns"
+      url: "https://uclouvain.be/fr/repertoires/jerome.eertmans"
+    - label: "Google Scholar"
+      icon: "fab fa-fw fa-graduation-cap"
+      url: "https://scholar.google.com/citations?user=bVbwyxAAAAAJ"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/jeertmans"
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      url: "https://instagram.com/"
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/j%C3%A9rome-eertmans-130ab1130/"
 
 footer:
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/"
+      url: "https://github.com/jeertmans"
 
 defaults:
   # _posts
