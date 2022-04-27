@@ -3,6 +3,12 @@ permalink: /about/
 title: "About"
 ---
 
-Tempor velit sint sunt ipsum tempor enim ad qui ullamco. Est dolore anim ad velit duis dolore minim sunt aliquip amet commodo labore. Ut eu pariatur aute ea aute excepteur laborum. Esse ea esse excepteur minim mollit qui cillum excepteur ex dolore magna. Labore deserunt fugiat incididunt incididunt sint ea. Consequat dolore aute laboris quis proident quis non et est consectetur ex eiusmod sit culpa.
+Hello, I am Jérome and welcome to my personal blog!
 
-Cupidatat ea do et in excepteur in. Ad nostrud ut est esse eu duis ea sunt eiusmod. Aliquip tempor veniam sint elit fugiat. Velit incididunt laboris amet incididunt labore dolore irure velit excepteur commodo deserunt laborum. Consectetur eu fugiat veniam veniam Lorem labore magna eiusmod. Ea occaecat reprehenderit pariatur consectetur minim labore ut aliquip.
+I am a PhD student working at UCLouvain as a Teaching Assistant, under the supervision of [Pr. Claude Oestges](https://uclouvain.be/en/directories/Claude.Oestges) and [Pr. Laurent Jacques](https://uclouvain.be/en/directories/laurent.jacques). I work within COmmunication SYstems (COSY) group and my research topic is *Differentiable Ray Tracing for Telecommunications*.
+
+Beside my academical research, I really like to develop open source softwares. While most of my projects stay under the radar, some receive more attention, such as [ADE Scheduler](https://github.com/ADE-Scheduler/ADE-Scheduler), a scheduling tool used by thousands of people at my university.
+
+On this blog, you will find posts on topcis related to my research, but also on side projects or things that I think are work talking about.
+
+If you have any question, do not hesistate to reach me!
