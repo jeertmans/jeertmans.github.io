@@ -82,7 +82,7 @@ footer:
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      url: "https://github.com/jeertmans"
+      url: "https://github.com/jeertmans/jeertmans.github.io"
 
 defaults:
   # _posts
