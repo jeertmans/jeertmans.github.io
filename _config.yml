@@ -57,6 +57,7 @@ author:
   name   : "Jérome Eertmans"
   avatar : "/assets/images/profile.png"
   bio    : "PhD student in Differentiable Ray Tracing for Telecommunications."
+  location: "UCLouvain, Belgium"
   links:
     - label: "University Directory"
       icon: "fas fa-fw fa-graduation-cap"
