@@ -1,0 +1,23 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+
+@charset "utf-8";
+
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+@import "minimal-mistakes"; // main partials
+
+.social-icons {
+    .fa-graduation-cap {
+        color: #5cb2e5;
+    }
+
+    .fa-map-marker-alt {
+        color: #002e60;
+    }
+
+    .fa-google {
+        color: #4888f4;
+    }
+}
