@@ -106,3 +106,10 @@ tag_archive:
 
 # https://github.com/DIYbiosphere/sphere/issues/140
 github: [metadata]
+
+comments:
+  provider: "utterances"
+  utterances:
+    theme: "github-light" # "github-dark"
+    issue_term: "pathname"
+    label: "comment" # Optional - must be existing label.
