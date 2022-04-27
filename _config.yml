@@ -59,6 +59,9 @@ author:
   bio    : "PhD student in Differentiable Ray Tracing for Telecommunications."
   location: "UCLouvain, Belgium"
   links:
+    - label: "Contact"
+      icon: "fas fa-fw fa-envelope"
+      url: "mailto:jerome.eertmans@uclouvain.be"
     - label: "University Directory"
       icon: "fas fa-fw fa-graduation-cap"
       url: "https://uclouvain.be/fr/repertoires/jerome.eertmans"
