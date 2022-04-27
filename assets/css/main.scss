@@ -4,7 +4,6 @@
 
 @charset "utf-8";
 
-
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
 
@@ -20,4 +19,9 @@
     .fa-google {
         color: #4888f4;
     }
+}
+
+.page__footer {
+    background-color: #5cb2e5;
+    color: #000000;
 }
