@@ -98,6 +98,7 @@ defaults:
       related: true
       show_date: true
       date_format: "%Y-%m-%d"
+      mathjax: true
   # _pages
   - scope:
       path: "_pages"
@@ -136,5 +137,3 @@ comments:
     issue_term: "pathname"
     label: "comment" # Optional - must be existing label.
 
-head_scripts:
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
