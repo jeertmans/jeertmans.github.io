@@ -19,7 +19,7 @@ jobs:
           python -m pip install notebook
       - name: Convert notebooks to posts
         run: |
-          [ -d _notebooks ] && [ "$(find _notebooks -type f -iname '*.ipynb')" ] && python -m jupyter nbconvert _notebooks/*.ipynb --to markdown --output-dir _posts/
+          [ -d _notebooks ] && [ "$(find _notebooks -type f -iname '*.ipynb')" ] && python -m jupyter nbconvert _notebooks/*.ipynb --to markdown --output-dir _posts/ || echo "No notebook found"
       - uses: actions/cache@v2
         with:
           path: vendor/bundle
