@@ -26,7 +26,7 @@ jobs:
       - name: Convert notebooks to posts
         run: |
           [ -d _notebooks ] && [ "$(find _notebooks -type f -iname '*.ipynb')" ] && python -m jupyter nbconvert _notebooks/*.ipynb --to markdown --output-dir assets/images || echo "No notebook found"
-          find assets/images -type f -iname '*.md' | xargs -n 1 sed -i -E "/(!\[png\])(\((.*)\))/\1\(assets/images/\3\)/"
+          find assets/images -type f -iname '*.md' | xargs -n 1 sed -i -E "s/(!\[png\])\((.*)\)/\1(assets\/images\/\2)/"
           mv assets/images/*.md _posts/
       - name: Push latest changes to gh-pages
         uses: stefanzweifel/git-auto-commit-action@v4
