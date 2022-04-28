@@ -18,6 +18,7 @@ jobs:
         run: |
           python -m pip install notebook
       - name: Convert notebooks to posts
+        if: contains(steps.changed-files.outputs.modified_files, '.ipynb') 
         run: |
           python -m jupyter nbconvert _notebooks/*.ipynb --to markdown --output-dir _posts/
       - uses: actions/cache@v2
