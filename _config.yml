@@ -126,6 +126,9 @@ tag_archive:
 # https://github.com/DIYbiosphere/sphere/issues/140
 github: [metadata]
 
+# https://github.com/jekyll/jekyll/issues/4705
+repository: jeertmans/jeertmans.github.io
+
 comments:
   provider: "utterances"
   utterances:
