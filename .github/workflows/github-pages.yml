@@ -1,4 +1,4 @@
-name: Build and deploy Jekyll site to GitHub Pages
+name: Update gh-pages branch
 
 on:
   push:
@@ -13,14 +13,11 @@ jobs:
         with:
           ref: 'gh-pages'
           fetch-depth: 0
-      - name: Merge main into gh-pages
+      - name: Reset gh-pages to origin/main
         run: |
-          #git checkout -b gh-pages
-          #git branch --set-upstream-to gh-pages origin/gh-pages
-          #git pull --all
           git reset --hard origin/main
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.9
       - name: Install Python dependencies
@@ -34,4 +31,3 @@ jobs:
         with:
           commit_message: 'Update gh-pages w/ respect to main'
           push_options: '--force'
-          #branch: 'gh-pages'
