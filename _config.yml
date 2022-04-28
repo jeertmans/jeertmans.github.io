@@ -99,6 +99,7 @@ defaults:
       show_date: true
       date_format: "%Y-%m-%d"
       mathjax: true
+      classes: wide
   # _pages
   - scope:
       path: "_pages"
