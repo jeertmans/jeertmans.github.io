@@ -107,10 +107,7 @@ defaults:
     values:
       layout: single
       author_profile: true
-
-  - scope:
-      path: ""
-    values:
+      tagline: ""
       header:
         overlay_image: /assets/images/header.jpg
         overlay_filter: linear-gradient(rgba(70, 77, 132, 0.5), rgba(118, 188, 232, 0.5))
