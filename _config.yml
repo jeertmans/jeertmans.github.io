@@ -108,6 +108,7 @@ defaults:
     values:
       layout: single
       author_profile: true
+      classes: wide
       tagline: ""
       header:
         overlay_image: /assets/images/header.jpg
