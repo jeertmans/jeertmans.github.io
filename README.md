@@ -1,27 +1,13 @@
-# Minimal Mistakes remote theme starter
+# Welcome to the repo of my personal blog!
 
-Click [**Use this template**](https://github.com/mmistakes/mm-github-pages-starter/generate) button above for the quickest method of getting started with the [Minimal Mistakes Jekyll theme](https://github.com/mmistakes/minimal-mistakes).
+The code used to generate my website is fully contained in the public repository, more specifically on the [gh-pages branch](https://github.com/jeertmans/jeertmans.github.io/tree/gh-pages) (auto-generated from main).
 
-Contains basic configuration to get you a site with:
+# You want to have a similar blog?
 
-- Sample posts.
-- Sample top navigation.
-- Sample author sidebar with social links.
-- Sample footer links.
-- Paginated home page.
-- Archive pages for posts grouped by year, category, and tag.
-- Sample about page.
-- Sample 404 page.
-- Site wide search.
+This repository started by using the [minimal mistakes starter template](https://github.com/mmistakes/mm-github-pages-starter), which I recommend to use if you are looking for a basic blog.
 
-Replace sample content with your own and [configure as necessary](https://mmistakes.github.io/minimal-mistakes/docs/configuration/).
+Thereon, I also implemented many [features](https://eertmans.be/tags/#miscellaneous) to better suit my needs. If you would like to have a blog very similar to mine, do not hesitate to [fork](https://github.com/jeertmans/jeertmans.github.io/fork) this repo.
 
----
+# Questions?
 
-## Troubleshooting
-
-If you have a question about using Jekyll, start a discussion on the [Jekyll Forum](https://talk.jekyllrb.com/) or [StackOverflow](https://stackoverflow.com/questions/tagged/jekyll). Other resources:
-
-- [Ruby 101](https://jekyllrb.com/docs/ruby-101/)
-- [Setting up a Jekyll site with GitHub Pages](https://jekyllrb.com/docs/github-pages/)
-- [Configuring GitHub Metadata](https://github.com/jekyll/github-metadata/blob/master/docs/configuration.md#configuration) to work properly when developing locally and avoid `No GitHub API authentication could be found. Some fields may be missing or have incorrect data.` warnings.
+If you have any question or suggestion, please feel free to reach me via the [GitHub issues](https://github.com/jeertmans/jeertmans.github.io/issues) or via [email](mailto:jerome@eertmans.be).
