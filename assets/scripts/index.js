@@ -28,7 +28,7 @@ copyableCodeBlocks.forEach((codeBlock) => {
     copyButton.type = 'button';
     copyButton.ariaLabel = 'Copy code to clipboard';
     copyButton.innerText = 'Copy';
-    
+
     codeBlock.append(copyButton);
 
     copyButton.addEventListener('click', function () {
