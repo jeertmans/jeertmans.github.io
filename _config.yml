@@ -136,3 +136,6 @@ comments:
     theme: "github-light" # "github-dark"
     issue_term: "pathname"
     label: "comment" # Optional - must be existing label.
+
+after_footer_scripts:
+  - /assets/scripts/index.js
