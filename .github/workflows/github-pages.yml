@@ -41,10 +41,7 @@ jobs:
         run: |
           python -m pip install notebook
       - name: Convert notebooks to posts
-        run: |
-          [ -d _notebooks ] && [ "$(find _notebooks -type f -iname '*.ipynb')" ] && python -m jupyter nbconvert _notebooks/*.ipynb --to markdown --output-dir assets/images || echo "No notebook found"
-          find assets/images -type f -iname '*.md' | xargs -n 1 sed -i -E "s/(!\[svg\])\((.*)\)/\1(\/assets\/images\/\2)/"
-          mv assets/images/*.md _posts/
+        run: ./notebooks_to_posts.sh
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
