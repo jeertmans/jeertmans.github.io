@@ -11,6 +11,11 @@ includeFileCodeBlocks.forEach(async (codeBlock) => {
 
 });
 
+
+// Create a button that disappearing when mouse goes over
+const button = () => {
+
+
 const spoilerCodeBlocks = document.querySelectorAll('[spoiler="true"]');
 spoilerCodeBlocks.forEach(async (codeBlock) => {
    const old_html = codeBlock.innerHTML;
