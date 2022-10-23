@@ -1,4 +1,4 @@
-jupyter
 matplotlib
+notebook
 numpy
 scipy
