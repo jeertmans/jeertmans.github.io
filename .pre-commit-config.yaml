@@ -25,7 +25,7 @@ repos:
     hooks:
        - id: csslint
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: 'v8.25.0'  # Use the sha / tag you want to point at
+    rev: 'v8.26.0'  # Use the sha / tag you want to point at
     hooks:
       - id: eslint
         additional_dependencies:
