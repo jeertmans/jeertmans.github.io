@@ -10,9 +10,8 @@ tags:
   - manim
 tagline: "Technical documentation presentation"
 header:
-    overlay_image: /assets/images/misc/Lyon_COST_INTERACT.jpg
-    caption: "Lyon, France - From COST's website"
-
+  overlay_image: /assets/images/misc/Lyon_COST_INTERACT.jpg
+  caption: "Lyon, France - From COST's website"
 ---
 
 Video of me presenting some of my results on the Ray Tracing methods applied to Telecommunications.
@@ -37,7 +36,7 @@ This was my very first presentation as a researcher, and I am open to all your c
 
 # Source code
 
-As stated above, the video was generated with Manim, a fantastic Python libray for maths related explanation videos. The [manim-presentation Python library](https://github.com/galatolofederico/manim-presentation) was used to switch between slides, as if it was a unique *PowerPoint-like* presentation.
+As stated above, the video was generated with Manim, a fantastic Python libray for maths related explanation videos. The [manim-presentation Python library](https://github.com/galatolofederico/manim-presentation) was used to switch between slides, as if it was a unique _PowerPoint-like_ presentation.
 
 ## Minimal setup
 
@@ -1086,4 +1085,5 @@ class Slides(Slide):
         self.pause()
         self.wait()
 ```
+
 {: spoiler="true"}

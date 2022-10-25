@@ -55,9 +55,9 @@ plugins:
   - jekyll-include-cache
 
 author:
-  name   : "Jérome Eertmans"
-  avatar : "/assets/images/profile.png"
-  bio    : "PhD student in Differentiable Ray Tracing for Telecommunications."
+  name: "Jérome Eertmans"
+  avatar: "/assets/images/profile.png"
+  bio: "PhD student in Differentiable Ray Tracing for Telecommunications."
   location: "UCLouvain, Belgium"
   links:
     - label: "Contact"
@@ -114,8 +114,6 @@ defaults:
         overlay_image: /assets/images/header.jpg
         overlay_filter: linear-gradient(rgba(70, 77, 132, 0.5), rgba(118, 188, 232, 0.5))
         caption: "Photo credit: [**Unsplash**](https://unsplash.com/photos/0C9VmZUqcT8)"
-
-
 
 category_archive:
   type: liquid
