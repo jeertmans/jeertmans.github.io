@@ -8,8 +8,8 @@
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
 
-.button {
-    outline: none;
+*:focus {
+  outline: 0 !important;
 }
 
 .social-icons {
@@ -44,12 +44,14 @@ html[data-theme="light"] {
   --link-color: rgb(82, 82, 82);
   --main-background-color: hsl(0, 0%, 90%);
   --primary-color: hsl(0, 0%, 20%);
+  --code-background-color: #fafafa;
 }
 
 html[data-theme="dark"] {
   --link-color: rgb(100, 210, 255);
   --main-background-color: hsl(0, 0%, 20%);
   --main-text-color: hsl(0, 0%, 85%);
+  --code-background-color: #222222;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -58,12 +60,14 @@ html[data-theme="dark"] {
     --link-color: rgb(100, 210, 255);
     --main-background-color: hsl(0, 0%, 20%);
     --primary-color: hsl(0, 0%, 85%);
+    --code-background-color: #222222;
   }
 
   html[data-theme="light"] {
     --link-color: rgb(82, 82, 82);
     --main-background-color: hsl(0, 0%, 90%);
     --primary-color: hsl(0, 0%, 20%);
+    --code-background-color: #fafafa;
   }
 }
 
@@ -72,7 +76,8 @@ body {
   color: var(--main-text-color);
 }
 
-a {
+a,
+a:visited {
   color: var(--link-color);
 }
 
@@ -80,10 +85,19 @@ a {
   background-color: var(--main-background-color);
 }
 
+.greedy-nav a,
+.search__toggle {
+  color: var(--main-text-color);
+}
+
+.page__content :not(pre) > code {
+  background: var(--code-background-color);
+}
+
 /* Copy block */
 
 .copy {
-  position: relative;
+  position: absolute;
   display: inline-block;
   padding: 12px-12px;
   height: 35px;
@@ -141,7 +155,6 @@ pre.highlight {
       font-size: 18px;
     }
   }
-  search__toggle
   // copy code to clipboard
   .copy {
     color: #fff;
