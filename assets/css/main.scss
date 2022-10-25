@@ -8,6 +8,47 @@
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
 
+
+html,
+html[data-theme="light"] {
+  --link-color: rgb(82, 82, 82);
+  --main-background-color: hsl(0, 0%, 90%);
+  --main-text-color: hsl(0, 0%, 20%);
+  --muted-text-color: hsl(0, 0%, 55%);
+  --code-background-color: #fafafa;
+  --footer-background-color: rgba(92, 153, 229, 0.18);
+}
+
+html[data-theme="dark"] {
+  --link-color: rgb(100, 210, 255);
+  --main-background-color: hsl(0, 0%, 20%);
+  --main-text-color: hsl(0, 0%, 85%);
+  --muted-text-color: hsl(0%, 0%, 55%);
+  --code-background-color: #222222;
+  --footer-background-color: rgba(182, 182, 182, 0.22);
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  html[data-theme="dark"] {
+    --link-color: rgb(100, 210, 255);
+    --main-background-color: hsl(0, 0%, 20%);
+    --main-text-color: hsl(0, 0%, 55%);
+    --muted-text-color: hsl(0%, 0%, 95%);
+    --code-background-color: #222222;
+    --footer-background-color: rgba(182, 182, 182, 0.22);
+  }
+
+  html[data-theme="light"] {
+    --link-color: rgb(82, 82, 82);
+    --main-background-color: hsl(0, 0%, 90%);
+    --main-text-color: hsl(0, 0%, 20%);
+    --muted-text-color: hsl(0, 0%, 55%);
+    --code-background-color: #fafafa;
+    --footer-background-color: rgba(92, 153, 229, 0.18);
+  }
+}
+
 *:focus {
   outline: 0 !important;
 }
@@ -35,40 +76,8 @@
 }
 
 .page__footer {
-  background-color: rgba(92, 153, 229, 0.18) !important;
-  color: #000000 !important;
-}
-
-html,
-html[data-theme="light"] {
-  --link-color: rgb(82, 82, 82);
-  --main-background-color: hsl(0, 0%, 90%);
-  --primary-color: hsl(0, 0%, 20%);
-  --code-background-color: #fafafa;
-}
-
-html[data-theme="dark"] {
-  --link-color: rgb(100, 210, 255);
-  --main-background-color: hsl(0, 0%, 20%);
-  --main-text-color: hsl(0, 0%, 85%);
-  --code-background-color: #222222;
-}
-
-@media (prefers-color-scheme: dark) {
-  html,
-  html[data-theme="dark"] {
-    --link-color: rgb(100, 210, 255);
-    --main-background-color: hsl(0, 0%, 20%);
-    --primary-color: hsl(0, 0%, 85%);
-    --code-background-color: #222222;
-  }
-
-  html[data-theme="light"] {
-    --link-color: rgb(82, 82, 82);
-    --main-background-color: hsl(0, 0%, 90%);
-    --primary-color: hsl(0, 0%, 20%);
-    --code-background-color: #fafafa;
-  }
+  background-color: var(--footer-background-color) !important;
+  color: var(--main-text-color) !important;
 }
 
 body {
@@ -88,6 +97,16 @@ a:visited {
 .greedy-nav a,
 .search__toggle {
   color: var(--main-text-color);
+}
+
+.greedy-nav a,
+.greedy-nav i {
+    
+  &:hover {
+      color: unset !important;
+      -webkit-filter: brightness(2);
+      filter: brightness(2);
+  }
 }
 
 .page__content :not(pre) > code {
