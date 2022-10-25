@@ -59,6 +59,7 @@ To reproduce the exact same animation as in the video, please follow the next st
 
 **Warning:** on Windows, I encountered a problem where the quality of slides was terrible with the `--fullscreen` flag. This can be fixed by resizing frames manually (you have to edit the `manim-presentation` package to do so). Hopefully, I will propose a GitHub Pull Request on the actual package repository.
 
+<!-- prettier-ignore-start -->
 ```python
 import math
 import time
@@ -1085,5 +1086,5 @@ class Slides(Slide):
         self.pause()
         self.wait()
 ```
-
 {: spoiler="true"}
+<!-- prettier-ignore-end -->

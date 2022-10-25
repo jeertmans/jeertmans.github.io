@@ -1,3 +1,4 @@
+<!-- prettier-ignore-start -->
 {% capture overlay_img_path %}{{ page.header.overlay_image | relative_url }}{% endcapture %}
 
 {% if page.header.overlay_filter contains "gradient" %}
@@ -53,3 +54,4 @@
     <span class="page__hero-caption">{{ page.header.caption | markdownify | remove: "<p>" | remove: "</p>" }}</span>
   {% endif %}
 </div>
+<!-- prettier-ignore-end -->
