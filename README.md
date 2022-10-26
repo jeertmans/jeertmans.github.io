@@ -1,6 +1,8 @@
+![github-pages workflow](https://github.com/jeertmans/jeertmans.github.io/actions/workflows/github-pages.yml/badge.svg)
+
 # Welcome to the repo of my personal blog!
 
-The code used to generate my website is fully contained in the public repository, more specifically on the [gh-pages branch](https://github.com/jeertmans/jeertmans.github.io/tree/gh-pages) (auto-generated from main).
+The code used to generate my website is fully contained in the public repository, more specifically using the [github-pages.yml](https://github.com/jeertmans/jeertmans.github.io/blob/main/.github/workflows/github-pages.yml) action.
 
 # You want to have a similar blog?
 
