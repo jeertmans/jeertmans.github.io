@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "daily"
     labels:
-      - "python
+      - "python"
       - "dependencies"
       - "automerge"
 
