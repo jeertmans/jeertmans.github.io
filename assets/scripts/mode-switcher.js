@@ -1,4 +1,4 @@
-/* 
+/*
 Most if not all the code in this file, and the other *theme*-related css files,
 was taken from: https://web.dev/building-a-theme-switch-component/
 */
@@ -38,7 +38,7 @@ const reflectPreference = () => {
     let src = utterances[0].getAttribute("src");
     let to = `$1${theme.value}$2`;
     src = src.replace(from, to);
-    utterances[0].setAttribute("src", src)
+    utterances[0].setAttribute("src", src);
   }
 };
 
