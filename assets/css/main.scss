@@ -5,7 +5,6 @@
 @charset "utf-8";
 
 @import "theme-toggle.css";
-@import "github-icons.css";
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
 
@@ -49,6 +48,26 @@ html[data-theme="dark"] {
     --footer-background-color: rgba(92, 153, 229, 0.18);
   }
 }
+
+@keyframes "octocat-wave" {
+	0%,100% {
+		transform: rotate(0);
+	}
+	20%,60% {
+		transform: rotate(-25deg);
+	}
+	40%,80% {
+		transform: rotate(10deg);
+	}
+}
+.octocat {
+	&:hover {
+		>.octo-arm {
+			animation: octocat-wave 560ms ease-in-out;
+		}
+	}
+}
+
 
 *:focus {
   outline: 0 !important;
