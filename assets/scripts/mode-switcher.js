@@ -1,4 +1,6 @@
 const storageKey = "theme-preference";
+const utterances = document.getElementsByClassName("utterances-frame");
+const from = /(.*theme=github-)[a-z]+(.*)/;
 
 const onClick = () => {
   // flip current value
@@ -26,6 +28,12 @@ const reflectPreference = () => {
   document
     .querySelector("#theme-toggle")
     ?.setAttribute("aria-label", theme.value);
+
+  if (utterances.length != 0) {
+    let src = utterances[0].getAttributes("src");
+    let to = `/$1${theme.value}$2/`;
+    let src = src.replace(from, to);
+    utterances[0].setAttribute("src", src)
 };
 
 const theme = {
