@@ -36,7 +36,7 @@ const reflectPreference = () => {
 
   if (utterances.length != 0) {
     let src = utterances[0].getAttribute("src");
-    let to = `/$1${theme.value}$2/`;
+    let to = `$1${theme.value}$2`;
     src = src.replace(from, to);
     utterances[0].setAttribute("src", src)
   }
