@@ -1,3 +1,5 @@
+@import "https://unpkg.com/open-props/easings.min.css";
+
 .octo-arm: hover {
   animation: octocat-wave 560ms ease-in-out;
 }
