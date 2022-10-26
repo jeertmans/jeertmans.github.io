@@ -9,6 +9,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    labels:
+      - "python
+      - "dependencies"
+      - "automerge"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
@@ -16,8 +20,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    labels:
+      - "github-actions"
+      - "dependencies"
+      - "automerge"
 
   - package-ecosystem: "bundler"
     directory: "/"
     schedule:
       interval: "daily"
+    labels:
+      - "gems"
+      - "dependencies"
+      - "automerge"
