@@ -1,3 +1,8 @@
+/* 
+Most if not all the code in this file, and the other *theme*-related css files,
+was taken from: https://web.dev/building-a-theme-switch-component/
+*/
+
 const storageKey = "theme-preference";
 const utterances = document.getElementsByClassName("utterances-frame");
 const from = /(.*theme=github-)[a-z]+(.*)/;
@@ -34,6 +39,7 @@ const reflectPreference = () => {
     let to = `/$1${theme.value}$2/`;
     src = src.replace(from, to);
     utterances[0].setAttribute("src", src)
+  }
 };
 
 const theme = {
