@@ -138,4 +138,3 @@ comments:
 after_footer_scripts:
   - /assets/scripts/index.js
   - /assets/scripts/mode-switcher.js
-  - /assets/scripts/github-icon.js
