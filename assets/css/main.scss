@@ -20,6 +20,7 @@ html[data-theme="light"] {
   --code-background-color: #fafafa;
   --footer-background-color: rgba(92, 153, 229, 0.18);
   --social-icon-map: #002e60;
+  --svg-filter: invert(0);
 }
 
 html[data-theme="dark"] {
@@ -30,6 +31,7 @@ html[data-theme="dark"] {
   --code-background-color: #222222;
   --footer-background-color: rgba(182, 182, 182, 0.22);
   --social-icon-map: #9cb9d8;
+  --svg-filter: invert(1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +44,7 @@ html[data-theme="dark"] {
     --code-background-color: #222222;
     --footer-background-color: rgba(182, 182, 182, 0.22);
     --social-icon-map: #9cb9d8;
+    --svg-filter: invert(1);
   }
 
   html[data-theme="light"] {
@@ -52,6 +55,7 @@ html[data-theme="dark"] {
     --code-background-color: #fafafa;
     --footer-background-color: rgba(92, 153, 229, 0.18);
     --social-icon-map: #002e60;
+    --svg-filter: invert(0);
   }
 }
 
@@ -107,6 +111,11 @@ html[data-theme="dark"] {
 
 .page__hero--overlay a {
     color: #fff !important;
+}
+
+img[alt=svg] {
+  /* to black */
+  filter: var(--svg-filter);
 }
 
 .page__footer {
