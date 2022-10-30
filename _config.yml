@@ -33,6 +33,11 @@ timezone: Europe/Brussels
 include:
   - _pages
 
+# Sass setting
+sass:
+  sass_dir: _sass
+  style:    compressed
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
@@ -138,3 +143,4 @@ comments:
 after_footer_scripts:
   - /assets/scripts/index.js
   - /assets/scripts/mode-switcher.js
+  - /assets/scripts/resume-to-pdf.js

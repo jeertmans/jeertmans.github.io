@@ -1,0 +1,228 @@
+experiences:
+  display: true
+  title: Experiences
+  items:
+    - role: Teaching Assistant
+      time: 2021.09 - Now
+      company: UCLouvain
+      tag:
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        Currently working as a teaching assistant, aside my PhD. See [teaching duties](#teaching-duties) for more details.
+
+    - role: Punctual time volunteer
+      time: 2022.02 - 2022.05
+      company: LSM Conseil
+      tag: Consultancy
+      location: Belgium
+      details: |
+        I developed, with the help of my colleague Louis Devillez, a camera-based testbench for medical applications.<br>
+        We used Raspberry Pi’s for the web interface and control, Dynamixel’s AX12 motors for camera positioning, and many 3D printed / laser cut pieces.
+
+    - role: Scouts chief
+      time: 2015.09 - 2021.09
+      company: LesScout
+      tag: Non profit
+      location: Archennes, Belgium
+      details: |
+        From Sep 2015 until Sep 2019: "Louveteaux" chief (8 to 12 years old), and responsible chief from September 2018 to July 2019.<br>
+        From Sep 2019 until Sep 2021 : "Eclaireurs" chief (12 to 16 years old) as responsible chief.
+
+    - role: Private Teacher
+      time: 2017.10 - 2021.08
+      company: Superprof
+      tag: Freelance
+      location: Belgium
+      details: |
+        I gave private courses, averaging 1 to 2 hours per week, to students aged from 12 to 19 years old. The fields I taught were: mathematics, physics, chemistry and biology.
+
+    - role: Punctual time volunteer
+      time: 2021.04 - 2021.06
+      company: LSM Conseil
+      tag: Consultancy
+      location: Belgium
+      details: |
+        HDL Developer for FPGA based application - I was in charge of implementing an algorithm for a client of LSM Conseil.
+
+    - role: Student Internship
+      time: 2021.02 - 2021.06
+      company: NXP Semiconductors
+      location: Leuven, Belgium
+      details: |
+        I helped the Personal and Health R&D team to enhance BLE product by developing software solutions to mitigate Wi-Fi interference and provide collision-free connection scheduling.
+
+    - role: Student's Buddy
+      time: 2021.02 - 2021.06
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        As part of the Unlock Student Success (USS) program, my role was to guide and help first year students in civil engineering studies to succeed their first year.
+
+    - role: Junior Teachin Assistant
+      time: 2018.09 - 2021.06
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In classrooms of 20-30 peoples, I gave a wide variety of exercise sessions. You may find the complete list of courses in the [teaching duties](#teaching-duties) section.
+
+    - role: Student Consultant
+      time: 2020.08 - 2020.12
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        Radar ray tracing software implementation: MATLAB to Python translation and optimisation.
+
+    - role: Student Consultant
+      time: 2020.08 - 2020.08
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        Radar covering for various land cover. My role was to use public data in order to study the impact of land cover in the radio waves and to build tools around this.
+
+    - role: Gymnastic Instructor
+      time: 2018.09 - 2020.05
+      company: La Sauterelle
+      location: Louvain-la-Neuve, Belgium
+ 
+    - role: Punctual time volunteer
+      time: 2019.10 - 2020.04
+      company: LSM Conseil
+      tag: Consultancy
+      location: Belgium
+      details: |
+        Developped a website add-on for a client of LSM-Conseil. I worked with two colleagues on this project. We motsly programmed in JavaScript and HTML, using the Ionic framework.
+
+    - role: Student Consultant
+      time: 2018.08 - 2018.09
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        I was asked to develop tools, in Python, that would minimize the conflicts in between the student's exams. Also, I build a GUI to help the secretary visualize the schedule of all the exams. This was done building an custom Excel spreadsheet including colors and several sheets, via a simple user interface.<br>
+      I also made a tool that would find the best schedule possible for all the students: the more the exams are spaced in time, the more the exams' session is appreciable.
+ 
+    - role: Sport Instructor
+      time: 2016.08 - 2018.08
+      company: CESAM Nature
+      location: Belgium
+      details: |
+        During summer vacation or for birthday parties, several times, I took the responsability of a small group of kids, aged from 6 to 13 years old, and taught them (new) sports such a moutain biking, roller, etc.
+ 
+
+teaching-duties:
+  display: true
+  title: Teaching duties
+  items:
+    - course: LEPL1101
+      role: Teaching Assistant
+      time: 2021.09 - Now
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+
+
+projects:
+  display: true
+  title: Projects
+  intro: |
+    This is all the projects I'm involved in.
+  items:
+    - name: Foo
+      link: https://www.google.com
+      details: |
+        Project Foo's detail, you can write markdown format text.
+    - name: Bar
+      link:
+      details: |
+        Project Bar's detail, you can write markdown format text.
+skills:
+  display: true
+  title: Skills
+  details: |
+    Here is my skills:
+    + First
+    + Second
+    ...
+  levels:
+    - name: Skill A
+      level: 90
+    - name: Skill B
+      level: 80
+    - name: Skill C
+      level: 70
+
+education:
+  display: true
+  title: Education
+  items:
+    - university: UCLouvain
+      time: 2021.09 - Now
+      major: Telecommunications Engineer
+      degree: Doctor of Philosophy - PhD
+      details: |
+        Researches: Differential Ray Tracing for Telecommunications.
+    - university: UCLouvain
+      time: 2019.09 - 2021.06
+      major: Electro-mechanical engineering
+      degree: Master’s degree
+      details: |
+        Majored in mechatronics. 
+        I undertook a variety of course topics: wireless communications, open source software, numerical simulations, digital design of ICs, mining pattern in data, etc., for a total of 112 % workload. <i>Graduated Magna Cum Laude</i>.
+    - university: UCLouvain
+      time: 2016.09 - 2019.09
+      major:  Applied Sciences - Civil engineering
+      degree: Bachelor’s degree
+      details: |
+        I took a major in electricity and a minor in mechanics.
+        In 2017, I received a scholarship to sharpen my English at the Horner School of English, Dublin.
+
+certificates:
+  display: true
+  title: Certificates
+  items:
+    - name: Course Foo
+      authority: Coursera
+      time: 2020
+      link:
+      details: |
+        It's my Course Foo certificate by coursera.
+    - name: Course Bar
+      authority: Coursera
+      time: 2020
+      link: https://www.google.com
+      details: |
+
+publications:
+  display: true
+  title: Publications
+  intro: |
+    This is all the books I wrote.
+  items:
+    - title: Foo in Action
+      authors: Foo Bar
+      conference: Foobar, 2019
+      link: https://www.google.com
+    - title: The Art of Bar
+      authors: Foo Bar
+      conference: Foobar, 2019
+      link:
+
+languages:
+  display: true
+  title: Languages
+  items:
+    - idiom: French
+      level: Native
+    - idiom: English
+      level: B2+ / C1
+    - idiom: Dutsch
+      level: B1
+
+interests:
+  display: true
+  title: Interests
+  items:
+    - item: Reading
+      link:
+    - item: Cooking
+      link:
+

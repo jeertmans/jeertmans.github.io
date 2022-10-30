@@ -12,7 +12,7 @@
 .tooltip .tooltiptext {
   visibility: hidden;
   width: 120px;
-  background-color: rgba(85, 85, 85, 0.5);
+  background-color: rgba(85, 85, 85, 0.8);
   color: #fff;
   text-align: center;
   font-size: 16px;
@@ -41,7 +41,7 @@
   margin-top: -7px;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 7px solid rgba(85, 85, 85, 0.5);
+  border-bottom: 7px solid rgba(85, 85, 85, 0.8);
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */

@@ -9,6 +9,7 @@
 @import "tooltip.css";
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
+@import "online-resume/default";
 
 
 html,
