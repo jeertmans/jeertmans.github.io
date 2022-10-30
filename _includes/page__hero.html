@@ -29,13 +29,15 @@
         {% else %}
           {{ page.title | default: site.title | markdownify | remove: "<p>" | remove: "</p>" }}
         {% endif %}
-    
-        <a data-toggle="tooltip" data-original-title="Go to source file" href=https://www.github.com/{{ site.repository }}/blob/main/{{ page.source | default: page.path }}>
-          <i class="fab fa-fw fa-github animate__animated github-link" aria-hidden=true"></i>
+
+        <a class="tooltip fade" data-title="Go to source file" href=https://www.github.com/{{ site.repository }}/blob/main/{{ page.source | default: page.path }}>
+          <i class="fab fa-fw fa-github animate__animated github-link tooltip" aria-hidden=true">
+              <span class="tooltiptext animate__aimated">Go to source file on GitHub</span>
+          </i>
         </a>
       </h1>
 
-    
+
       {% if page.tagline %}
         <p class="page__lead">{{ page.tagline | markdownify | remove: "<p>" | remove: "</p>" }}</p>
       {% elsif page.header.show_overlay_excerpt != false and page.excerpt %}

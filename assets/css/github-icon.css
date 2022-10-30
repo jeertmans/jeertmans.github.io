@@ -1,4 +1,4 @@
 .github-link:hover {
-  animation: tada;
-  animation-duration: 1.5s;
+  transform: scale(1.2);
+  transition-duration: 1s;
 }
