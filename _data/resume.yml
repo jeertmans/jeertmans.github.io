@@ -280,17 +280,14 @@ projects:
     Below, you can find some of the Open Source projects I have been working on for the past years.
   items:
     - name: ADE Scheduler
-      link: https://github.com/ADE-Scheduler/ADE-Scheduler
+      link: https://ade-scheduler.info.ucl.ac.be/
       github: https://github.com/ADE-Scheduler/ADE-Scheduler
       details: |
         With 2 friends of mine, we created a tool that uses the ade API to create a user-friendly and more convenient experience to every student (and professor) in need of plannings activities.
 
         * 9000+ accounts have been created
         * 1000+ average daily users
-    - name: Bar
-      link:
-      details: |
-        Project Bar's detail, you can write markdown format text.
+
 skills:
   display: false
   title: Skills
