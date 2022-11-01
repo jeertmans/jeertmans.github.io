@@ -83,7 +83,7 @@ experiences:
       time: 2018.09 - 2020.05
       company: La Sauterelle
       location: Louvain-la-Neuve, Belgium
- 
+
     - role: Punctual time volunteer
       time: 2019.10 - 2020.04
       company: LSM Conseil
@@ -99,14 +99,13 @@ experiences:
       details: |
         I was asked to develop tools, in Python, that would minimize the conflicts in between the student's exams. Also, I build a GUI to help the secretary visualize the schedule of all the exams. This was done building an custom Excel spreadsheet including colors and several sheets, via a simple user interface.<br>
       I also made a tool that would find the best schedule possible for all the students: the more the exams are spaced in time, the more the exams' session is appreciable.
- 
+
     - role: Sport Instructor
       time: 2016.08 - 2018.08
       company: CESAM Nature
       location: Belgium
       details: |
         During summer vacation or for birthday parties, several times, I took the responsability of a small group of kids, aged from 6 to 13 years old, and taught them (new) sports such a moutain biking, roller, etc.
- 
 
 teaching-duties:
   display: true
@@ -274,7 +273,6 @@ teaching-duties:
       details: |
         ...
 
-
 projects:
   display: true
   title: Open Source Projects
@@ -324,11 +322,11 @@ education:
       major: Electro-mechanical engineering
       degree: Master’s degree
       details: |
-        Majored in mechatronics. 
+        Majored in mechatronics.
         I undertook a variety of course topics: wireless communications, open source software, numerical simulations, digital design of ICs, mining pattern in data, etc., for a total of 112 % workload. <i>Graduated Magna Cum Laude</i>.
     - university: UCLouvain
       time: 2016.09 - 2019.09
-      major:  Applied Sciences - Civil engineering
+      major: Applied Sciences - Civil engineering
       degree: Bachelor’s degree
       details: |
         I took a major in electricity and a minor in mechanics.
@@ -386,4 +384,3 @@ interests:
     - item: Gymnastics
       link:
     - item: Open Source Programming
-
