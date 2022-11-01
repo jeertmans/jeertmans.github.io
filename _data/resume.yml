@@ -21,7 +21,7 @@ experiences:
 
     - role: Scouts chief
       time: 2015.09 - 2021.09
-      company: LesScout
+      company: LesScouts ASBL
       tag: Non profit
       location: Archennes, Belgium
       details: |
@@ -112,30 +112,189 @@ teaching-duties:
   display: true
   title: Teaching duties
   items:
-    - course: LEPL1101
+    - course: "LELEC1101: Project I in electricity"
       role: Teaching Assistant
-      time: 2021.09 - Now
+      time: 2023.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
+        In charge of the pratictical sessions.
+    - course: "LELEC2102/03: Project in Electrical Engineering"
+      role: Teaching Assistant
+      time: 2022.S2 - 2023.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the wireless communications part.
+    - course: "LELEC2796: Wireless Communications"
+      role: Teaching Assistant
+      time: 2022.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating the new project for 2023-2024.
+    - course: "LEPL1109: Statistics & Data Science"
+      role: Teaching Assistant
+      time: 2022.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating a hackathon for the students.
+    - course: "LELEC1101: Project I in electricity"
+      role: Teaching Assistant
+      time: 2022.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating the project.
+    - course: "LELEC1930: Introduction to telecommunications"
+      role: Teaching Assistant
+      time: 2022.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of creating and giving the pratictical sessions.
+    - course: "LEPL1203: Physics III"
+      role: Teaching Assistant
+      time: 2021.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions, including laboratory sessions.
+    - course: "LEPL1109: Statistics & Data Science"
+      role: Teaching Assistant
+      time: 2021.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating a hackathon for the students.
+    - course: "LINGI2315: Design of Embedded and real-time systems"
+      role: Junior Teaching Assistant
+      time: 2021.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the student examination and organization of support sessions.
+    - course: "LEPL1110: Introduction to finite elements"
+      role: Junior Teaching Assistant
+      time: 2021.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2021.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1103: Complex analysis and PDE's"
+      role: Junior Teaching Assistant
+      time: 2020.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LINMA1170: Numerical analysis"
+      role: Junior Teaching Assistant
+      time: 2020.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1109: Statistics & Data Science"
+      role: Junior Teaching Assistant
+      time: 2020.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LELEC1101: Project I in electricity"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1502: Project II"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1105: Analysis II"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1108: Discrete mathematics and probabilities"
+      role: Junior Teaching Assistant
+      time: 2019.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL113: Complex analysis and PDE's"
+      role: Junior Teaching Assistant
+      time: 2019.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LMECA1120: Introduction to finite elements"
+      role: Junior Teaching Assistant
+      time: 2019.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2019.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LFSAB1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2018.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
 
 
 projects:
   display: true
-  title: Projects
+  title: Open Source Projects
   intro: |
-    This is all the projects I'm involved in.
+    Below, you can find some of the Open Source projects I have been working on for the past years.
   items:
-    - name: Foo
-      link: https://www.google.com
+    - name: ADE Scheduler
+      link: https://github.com/ADE-Scheduler/ADE-Scheduler
+      github: https://github.com/ADE-Scheduler/ADE-Scheduler
       details: |
-        Project Foo's detail, you can write markdown format text.
+        With 2 friends of mine, we created a tool that uses the ade API to create a user-friendly and more convenient experience to every student (and professor) in need of plannings activities.
+
+        * 9000+ accounts have been created
+        * 1000+ average daily users
     - name: Bar
       link:
       details: |
         Project Bar's detail, you can write markdown format text.
 skills:
-  display: true
+  display: false
   title: Skills
   details: |
     Here is my skills:
@@ -179,20 +338,21 @@ certificates:
   display: true
   title: Certificates
   items:
-    - name: Course Foo
-      authority: Coursera
-      time: 2020
-      link:
-      details: |
-        It's my Course Foo certificate by coursera.
-    - name: Course Bar
-      authority: Coursera
-      time: 2020
-      link: https://www.google.com
-      details: |
+    - name: Red-Cross Training
+      authority: American & Belgian Red-Cross
+      time: 2015 & 2019
+    - name: Full Instructor Training
+      authority: LesScouts ASBL
+      time: 2016 - 2019
+    - name: LEAdership program
+      authority: Camp Hazen YMCA
+      time: 2015
+    - name: SolidWorks CSWA
+      authority: SolidWorks Authorized Training Centre
+      time: 2019
 
 publications:
-  display: true
+  display: false
   title: Publications
   intro: |
     This is all the books I wrote.
@@ -221,8 +381,9 @@ interests:
   display: true
   title: Interests
   items:
-    - item: Reading
+    - item: Ultimate Frisbee
       link:
-    - item: Cooking
+    - item: Gymnastics
       link:
+    - item: Open Source Programming
 

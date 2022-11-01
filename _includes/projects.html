@@ -18,10 +18,12 @@
         <div class="item">
             {% if project.name %}
             <p class="project">
-                {% if project.link %}
-                <a href="{{ project.link }}" target="_blank">{{ project.name }}</a>
-                {% else %}
                 {{ project.name }}
+                {% if project.github %}
+                | <a href="{{ project.github }}" target="_blank"><i class="fab fa-fw fa-github"></i></a>
+                {% endif %}
+                {% if project.link %}
+                | <a href="{{ project.github }}" target="_blank"><i class="fas fa-fw fa-globe"></i></a>
                 {% endif %}
             </p>
 
