@@ -62,7 +62,7 @@ jobs:
         run: ./notebooks_to_posts.sh
       - name: Run exec with Jekyll
         run: bundle exec jekyll serve &
-      - run: google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/
+      - run: mkdir -p assets/pdfs && google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
