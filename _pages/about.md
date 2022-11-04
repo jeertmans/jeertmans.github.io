@@ -3,8 +3,6 @@ permalink: /about/
 title: "About"
 ---
 
-{% include about.html %}
-
 Hello, I am Jérome and welcome to my personal blog!
 
 I am a PhD student working at UCLouvain as a Teaching Assistant, under the supervision of [Pr. Claude Oestges](https://uclouvain.be/en/directories/Claude.Oestges) and [Pr. Laurent Jacques](https://uclouvain.be/en/directories/laurent.jacques). I work within COmmunication SYstems (COSY) group and my research topic is _Differentiable Ray Tracing for Telecommunications_.
