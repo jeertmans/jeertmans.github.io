@@ -12,4 +12,3 @@ Beside my academical research, I really like to develop open source softwares. W
 On this blog, you will find posts on topcis related to my research, but also on side projects or things that I think are work talking about.
 
 If you have any question, do not hesitate to reach me!
-
