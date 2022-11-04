@@ -3,4 +3,6 @@ permalink: /resume/
 title: "Resume"
 ---
 
-<object data="/assets/pdfs/resume.pdf" type="application/pdf" height="100%" width="100%"></object>
+<a class="no-print" href="/assets/pdfs/resume.pdf" target="_blank">PDF version<i class="fas fa-fw fa-file-pdf"></i></a>
+
+{% include resume.html %}

@@ -13,5 +13,3 @@ On this blog, you will find posts on topcis related to my research, but also on 
 
 If you have any question, do not hesitate to reach me!
 
-
-{% include resume.html %}
