@@ -143,5 +143,3 @@ comments:
 after_footer_scripts:
   - /assets/scripts/index.js
   - /assets/scripts/mode-switcher.js
-  - /assets/scripts/resume-to-pdf.js
-  - /assets/scripts/html2canvas.min.js
