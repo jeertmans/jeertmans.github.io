@@ -143,6 +143,12 @@ a:visited {
   color: var(--main-text-color);
 }
 
+.greedy-nav .navicon,
+.greedy-nav .navicon:before,
+.greedy-nav .navicon:after {
+  background: var(--main-text-color);
+}
+
 .greedy-nav a,
 .greedy-nav i {
 
