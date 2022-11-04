@@ -60,11 +60,9 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Convert notebooks to posts
         run: ./notebooks_to_posts.sh
-      - name: Install Jekyll and Bundler
-        run: echo "gem install jekyll bundler"
       - name: Run exec with Jekyll
-        run: bundle exec jekyll serve
-      - run: google-chrome --version
+        run: bundle exec jekyll serve &
+      - run: google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --no-margins http://127.0.0.1:4000/about/ 
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
