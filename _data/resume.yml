@@ -188,98 +188,98 @@ teaching-duties:
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions. I also created detailed solutions for programming homeworks, podcast to help students, and organized support sessions for the project.
     - course: "LEPL1104: Introduction to numerical methods"
       role: Junior Teaching Assistant
       time: 2021.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions. I also created video podcasts to help students.
     - course: "LEPL1103: Complex analysis and PDE's"
       role: Junior Teaching Assistant
       time: 2020.S2
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LINMA1170: Numerical analysis"
       role: Junior Teaching Assistant
       time: 2020.S2
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LEPL1109: Statistics & Data Science"
       role: Junior Teaching Assistant
       time: 2020.S2
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LELEC1101: Project I in electricity"
       role: Junior Teaching Assistant
       time: 2020.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions. I also created a Wiki for students.
     - course: "LEPL1502: Project II"
       role: Junior Teaching Assistant
       time: 2020.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LEPL1105: Analysis II"
       role: Junior Teaching Assistant
       time: 2020.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LEPL1104: Introduction to numerical methods"
       role: Junior Teaching Assistant
       time: 2020.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LEPL1108: Discrete mathematics and probabilities"
       role: Junior Teaching Assistant
       time: 2019.S2
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LEPL113: Complex analysis and PDE's"
       role: Junior Teaching Assistant
       time: 2019.S2
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions.
     - course: "LMECA1120: Introduction to finite elements"
       role: Junior Teaching Assistant
       time: 2019.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        I created detailed solutions for programming homeworks.
     - course: "LEPL1104: Introduction to numerical methods"
       role: Junior Teaching Assistant
       time: 2019.S1
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions. I also created detailed solutions for programming homeworks.
     - course: "LFSAB1104: Introduction to numerical methods"
       role: Junior Teaching Assistant
       time: 2018.S2
       company: UCLouvain
       location: Louvain-la-Neuve, Belgium
       details: |
-        ...
+        In charge of pratictical sessions. I also created detailed solutions for programming homeworks and I gave a 1h lecture to 400+ BAC 2 students on efficient Python programming applied to the numerical methods, using NumPy.
 
 projects:
   display: true
