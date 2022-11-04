@@ -53,10 +53,15 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
+      - name: Set up Ruby
+        - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0' # Not needed with a .ruby-version file
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Convert notebooks to posts
         run: ./notebooks_to_posts.sh
       - name: Install Jekyll and Bundler
-        run: gem install jekyll bundler
+        run: echo "gem install jekyll bundler"
       - name: Run exec with Jekyll
         run: bundle exec jekyll serve
       - run: google-chrome --version
