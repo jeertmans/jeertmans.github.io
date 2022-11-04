@@ -26,7 +26,11 @@
         display: none;
     }
 
-    .page__hero-caption {
-        display: none;
+    .print {
+        display: unset !important;
+    }
+
+    .u-photo {
+        width: 3cm !important;
     }
 }

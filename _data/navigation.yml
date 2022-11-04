@@ -15,6 +15,8 @@ resume:
     children:
       - title: 'PDF Version <i class="fas fa-fw fa-file-pdf"></i>'
         url: /assets/pdfs/resume.pdf
+      - title: "Profile"
+        url: /resume/#profile
       - title: "Education"
         url: /resume/#education
       - title: "Experiences"
