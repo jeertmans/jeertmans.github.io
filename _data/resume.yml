@@ -1,0 +1,383 @@
+experiences:
+  display: true
+  title: Experiences
+  items:
+    - role: Teaching Assistant
+      time: 2021.09 - Now
+      company: UCLouvain
+      tag:
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        Currently working as a teaching assistant, aside my PhD. See [teaching duties](#teaching-duties) for more details.
+
+    - role: Punctual time volunteer
+      time: 2022.02 - 2022.05
+      company: LSM Conseil
+      tag: Consultancy
+      location: Belgium
+      details: |
+        I developed, with the help of my colleague Louis Devillez, a camera-based testbench for medical applications.<br>
+        We used Raspberry Pi’s for the web interface and control, Dynamixel’s AX12 motors for camera positioning, and many 3D printed / laser cut pieces.
+
+    - role: Scouts chief
+      time: 2015.09 - 2021.09
+      company: LesScouts ASBL
+      tag: Non profit
+      location: Archennes, Belgium
+      details: |
+        From Sep 2015 until Sep 2019: "Louveteaux" chief (8 to 12 years old), and responsible chief from September 2018 to July 2019.<br>
+        From Sep 2019 until Sep 2021 : "Eclaireurs" chief (12 to 16 years old) as responsible chief.
+
+    - role: Private Teacher
+      time: 2017.10 - 2021.08
+      company: Superprof
+      tag: Freelance
+      location: Belgium
+      details: |
+        I gave private courses, averaging 1 to 2 hours per week, to students aged from 12 to 19 years old. The fields I taught were: mathematics, physics, chemistry and biology.
+
+    - role: Punctual time volunteer
+      time: 2021.04 - 2021.06
+      company: LSM Conseil
+      tag: Consultancy
+      location: Belgium
+      details: |
+        HDL Developer for FPGA based application - I was in charge of implementing an algorithm for a client of LSM Conseil.
+
+    - role: Student Internship
+      time: 2021.02 - 2021.06
+      company: NXP Semiconductors
+      location: Leuven, Belgium
+      details: |
+        I helped the Personal and Health R&D team to enhance BLE product by developing software solutions to mitigate Wi-Fi interference and provide collision-free connection scheduling.
+
+    - role: Student's Buddy
+      time: 2021.02 - 2021.06
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        As part of the Unlock Student Success (USS) program, my role was to guide and help first year students in civil engineering studies to succeed their first year.
+
+    - role: Junior Teachin Assistant
+      time: 2018.09 - 2021.06
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In classrooms of 20-30 peoples, I gave a wide variety of exercise sessions. You may find the complete list of courses in the [teaching duties](#teaching-duties) section.
+
+    - role: Student Consultant
+      time: 2020.08 - 2020.12
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        Radar ray tracing software implementation: MATLAB to Python translation and optimisation.
+
+    - role: Student Consultant
+      time: 2020.08 - 2020.08
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        Radar covering for various land cover. My role was to use public data in order to study the impact of land cover in the radio waves and to build tools around this.
+
+    - role: Gymnastic Instructor
+      time: 2018.09 - 2020.05
+      company: La Sauterelle
+      location: Louvain-la-Neuve, Belgium
+
+    - role: Punctual time volunteer
+      time: 2019.10 - 2020.04
+      company: LSM Conseil
+      tag: Consultancy
+      location: Belgium
+      details: |
+        Developped a website add-on for a client of LSM-Conseil. I worked with two colleagues on this project. We motsly programmed in JavaScript and HTML, using the Ionic framework.
+
+    - role: Student Consultant
+      time: 2018.08 - 2018.09
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        I was asked to develop tools, in Python, that would minimize the conflicts in between the student's exams. Also, I build a GUI to help the secretary visualize the schedule of all the exams. This was done building an custom Excel spreadsheet including colors and several sheets, via a simple user interface.<br>
+      I also made a tool that would find the best schedule possible for all the students: the more the exams are spaced in time, the more the exams' session is appreciable.
+
+    - role: Sport Instructor
+      time: 2016.08 - 2018.08
+      company: CESAM Nature
+      location: Belgium
+      details: |
+        During summer vacation or for birthday parties, several times, I took the responsability of a small group of kids, aged from 6 to 13 years old, and taught them (new) sports such a moutain biking, roller, etc.
+
+teaching-duties:
+  display: true
+  title: Teaching duties
+  items:
+    - course: "LELEC1101: Project I in electricity"
+      role: Teaching Assistant
+      time: 2023.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions.
+    - course: "LELEC2102/03: Project in Electrical Engineering"
+      role: Teaching Assistant
+      time: 2022.S2 - 2023.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the wireless communications part.
+    - course: "LELEC2796: Wireless Communications"
+      role: Teaching Assistant
+      time: 2022.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating the new project for 2023-2024.
+    - course: "LEPL1109: Statistics & Data Science"
+      role: Teaching Assistant
+      time: 2022.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating a hackathon for the students.
+    - course: "LELEC1101: Project I in electricity"
+      role: Teaching Assistant
+      time: 2022.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating the project.
+    - course: "LELEC1930: Introduction to telecommunications"
+      role: Teaching Assistant
+      time: 2022.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of creating and giving the pratictical sessions.
+    - course: "LEPL1203: Physics III"
+      role: Teaching Assistant
+      time: 2021.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions, including laboratory sessions.
+    - course: "LEPL1109: Statistics & Data Science"
+      role: Teaching Assistant
+      time: 2021.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the pratictical sessions and creating a hackathon for the students.
+    - course: "LINGI2315: Design of Embedded and real-time systems"
+      role: Junior Teaching Assistant
+      time: 2021.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        In charge of the student examination and organization of support sessions.
+    - course: "LEPL1110: Introduction to finite elements"
+      role: Junior Teaching Assistant
+      time: 2021.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2021.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1103: Complex analysis and PDE's"
+      role: Junior Teaching Assistant
+      time: 2020.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LINMA1170: Numerical analysis"
+      role: Junior Teaching Assistant
+      time: 2020.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1109: Statistics & Data Science"
+      role: Junior Teaching Assistant
+      time: 2020.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LELEC1101: Project I in electricity"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1502: Project II"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1105: Analysis II"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2020.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1108: Discrete mathematics and probabilities"
+      role: Junior Teaching Assistant
+      time: 2019.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL113: Complex analysis and PDE's"
+      role: Junior Teaching Assistant
+      time: 2019.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LMECA1120: Introduction to finite elements"
+      role: Junior Teaching Assistant
+      time: 2019.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LEPL1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2019.S1
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+    - course: "LFSAB1104: Introduction to numerical methods"
+      role: Junior Teaching Assistant
+      time: 2018.S2
+      company: UCLouvain
+      location: Louvain-la-Neuve, Belgium
+      details: |
+        ...
+
+projects:
+  display: true
+  title: Open Source Projects
+  intro: |
+    Below, you can find some of the Open Source projects I have been working on for the past years.
+  items:
+    - name: ADE Scheduler
+      link: https://ade-scheduler.info.ucl.ac.be/
+      github: https://github.com/ADE-Scheduler/ADE-Scheduler
+      details: |
+        With 2 friends of mine, we created a tool that uses the ade API to create a user-friendly and more convenient experience to every student (and professor) in need of plannings activities.
+
+        * 9000+ accounts have been created
+        * 1000+ average daily users
+
+skills:
+  display: false
+  title: Skills
+  details: |
+    Here is my skills:
+    + First
+    + Second
+    ...
+  levels:
+    - name: Skill A
+      level: 90
+    - name: Skill B
+      level: 80
+    - name: Skill C
+      level: 70
+
+education:
+  display: true
+  title: Education
+  items:
+    - university: UCLouvain
+      time: 2021.09 - Now
+      major: Telecommunications Engineer
+      degree: Doctor of Philosophy - PhD
+      details: |
+        Researches: Differential Ray Tracing for Telecommunications.
+    - university: UCLouvain
+      time: 2019.09 - 2021.06
+      major: Electro-mechanical engineering
+      degree: Master’s degree
+      details: |
+        Majored in mechatronics.
+        I undertook a variety of course topics: wireless communications, open source software, numerical simulations, digital design of ICs, mining pattern in data, etc., for a total of 112 % workload. <i>Graduated Magna Cum Laude</i>.
+    - university: UCLouvain
+      time: 2016.09 - 2019.09
+      major: Applied Sciences - Civil engineering
+      degree: Bachelor’s degree
+      details: |
+        I took a major in electricity and a minor in mechanics.
+        In 2017, I received a scholarship to sharpen my English at the Horner School of English, Dublin.
+
+certificates:
+  display: true
+  title: Certificates
+  items:
+    - name: Red-Cross Training
+      authority: American & Belgian Red-Cross
+      time: 2015 & 2019
+    - name: Full Instructor Training
+      authority: LesScouts ASBL
+      time: 2016 - 2019
+    - name: LEAdership program
+      authority: Camp Hazen YMCA
+      time: 2015
+    - name: SolidWorks CSWA
+      authority: SolidWorks Authorized Training Centre
+      time: 2019
+
+publications:
+  display: false
+  title: Publications
+  intro: |
+    This is all the books I wrote.
+  items:
+    - title: Foo in Action
+      authors: Foo Bar
+      conference: Foobar, 2019
+      link: https://www.google.com
+    - title: The Art of Bar
+      authors: Foo Bar
+      conference: Foobar, 2019
+      link:
+
+languages:
+  display: true
+  title: Languages
+  items:
+    - idiom: French
+      level: Native
+    - idiom: English
+      level: B2+ / C1
+    - idiom: Dutsch
+      level: B1
+
+interests:
+  display: true
+  title: Interests
+  items:
+    - item: Ultimate Frisbee
+      link:
+    - item: Gymnastics
+      link:
+    - item: Open Source Programming

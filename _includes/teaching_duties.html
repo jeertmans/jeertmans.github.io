@@ -1,0 +1,45 @@
+{% assign teaching-duties = site.data.resume.teaching-duties %}
+{% if teaching-duties and teaching-duties.display %}
+<section class="teaching-duties" id="teaching-duties">
+    <div class="section-title">
+        {{ teaching-duties.title }}
+    </div>
+
+    <p>Below are listed all the teaching activites I have been involved in at University.</p>
+
+    <p><i>Junior Teaching Assistant</i> is a student job that allows University students to give pratictal sessions for classes they have already passed.</p>
+
+    <p><i>Teaching Assistant</i> is an actual job position at University.</p>
+
+    <div class="section-content">
+        {% for teaching-duty in teaching-duties.items %}
+        <div class="item">
+
+            <div class="upper-row">
+                <div class="company">
+                    {{ teaching-duty.course }}
+                    {% if teaching-duty.tag %}
+                    <small>[{{ teaching-duty.tag }}]</small>
+                    {% endif %}
+                </div>
+                <div class="time">{{ teaching-duty.time }}</div>
+            </div>
+
+            <div class="upper-row">
+                <div class="role">{{ teaching-duty.role }}</div>
+                <div class="location"><i class="fas fa-location-dot"></i> {{ teaching-duty.location }}</div>
+            </div>
+
+            {% if teaching-duty.details %}
+            <div class="details">
+                <div class="markdown">
+                    {{ teaching-duty.details | markdownify }}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

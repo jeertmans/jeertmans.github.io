@@ -53,8 +53,16 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.0" # Not needed with a .ruby-version file
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Convert notebooks to posts
         run: ./notebooks_to_posts.sh
+      - name: Run exec with Jekyll
+        run: bundle exec jekyll serve &
+      - run: google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:

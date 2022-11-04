@@ -17,3 +17,25 @@ assets/images/2022-04-28-utd-transition-function_files/2022-04-28-utd-transition
 assets/images/2022-08-29-mcq-opinion_files/2022-08-29-mcq-opinion_4_0.svg
 
 _posts/2022-08-29-mcq-opinion.md
+
+*.aux
+
+*.bbl
+
+*.fdb_latexmk
+
+*.xmpi
+
+latex/resume/main.run.xml
+
+latex/resume/main.pdf
+
+*.out
+
+*.log
+
+*.bcf
+
+*.blg
+
+*.fls

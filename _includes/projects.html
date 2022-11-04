@@ -1,0 +1,42 @@
+{% assign projects = site.data.resume.projects %}
+{% if projects and projects.display %}
+<section class="projects">
+    <div class="section-title">
+        {{ projects.title }}
+    </div>
+
+    <div class="section-content">
+        {% if projects.intro %}
+        <div class="intro">
+            <div class="markdown">
+                <p>{{ projects.intro | markdownify }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% for project in projects.items %}
+        <div class="item">
+            {% if project.name %}
+            <p class="project">
+                {{ project.name }}
+                {% if project.github %}
+                | <a href="{{ project.github }}" target="_blank"><i class="fab fa-fw fa-github"></i></a>
+                {% endif %}
+                {% if project.link %}
+                | <a href="{{ project.github }}" target="_blank"><i class="fas fa-fw fa-globe"></i></a>
+                {% endif %}
+            </p>
+
+            {% if project.details %}
+            <div class="details">
+                <div class="markdown">
+                    {{ project.details | markdownify }}
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

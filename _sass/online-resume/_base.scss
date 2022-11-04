@@ -1,0 +1,155 @@
+.resume {
+    position: relative;
+    background: none;
+    max-width: $content-width;
+    margin: 0 auto;
+
+    section {
+        margin-bottom: $spacing-unit / 4;
+
+        .section-title {
+            text-transform: uppercase;
+            font-size: $large-font-size;
+            font-weight: $base-font-weight * 1.25;
+            color: $theme-color;
+            position: relative;
+            margin-top: 0;
+            margin-bottom: $spacing-unit / 4;
+            border-bottom: 1px dashed rgba($theme-color, 25%);
+        }
+
+        .section-content {
+            .markdown {
+                ul,
+                ol {
+                    margin-bottom: $spacing-unit / 4;
+                    padding-inline-start: $spacing-unit;
+                }
+            }
+        }
+
+        .upper-row {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2px;
+
+            .company,
+            .certificate,
+            .university {
+                font-weight: $base-font-weight * 1.75;
+            }
+
+            .role,
+            .authority,
+            .major {
+                font-style: italic;
+            }
+
+            .time,
+            .location,
+            .degree {
+                position: absolute;
+                right: 0;
+                top: 0;
+                color: $text-third-color;
+            }
+        }
+    }
+
+    .basic {
+        .avatar img {
+            float: right;
+            max-width: 100px;
+            margin-bottom: $spacing-unit;
+            border: 0px solid $wrapper-color;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            .name {
+                font-size: $huge-font-size;
+                font-weight: $base-font-weight * 2,25;
+                margin-top: 0;
+                margin-bottom: $spacing-unit / 4;
+            }
+
+            .title {
+                color: $text-second-color;
+                font-size: $middle-font-size;
+                font-weight: $base-font-weight;
+                margin-top: 0;
+                margin-bottom: $spacing-unit / 4;
+            }
+
+            .contact ul {
+                margin-bottom: $spacing-unit / 4;
+
+                li {
+                    display: inline;
+                    white-space: nowrap;
+
+                    &:not(:last-child)::after {
+                        content: '|';
+                        margin: 0 0.25em;
+                    }
+                }
+            }
+        }
+    }
+
+    .projects {
+        .project {
+            font-weight: $base-font-weight * 1.75;
+            color: $text-color;
+            margin-bottom: 1px;
+        }
+    }
+
+    .skills {
+        .bar {
+            max-width: 80%;
+            --labels-size: 20%;
+        }
+    }
+
+    .publications {
+        .title {
+            font-weight: $base-font-weight * 1.75;
+            color: $text-color;
+            margin-bottom: 1px;
+        }
+
+        .authors {
+            font-style: italic;
+        }
+    }
+
+    .languages,
+    .interests {
+        ul {
+            margin-bottom: $spacing-unit / 4;
+
+            li {
+                display: inline;
+                white-space: nowrap;
+
+                &:not(:last-child)::after {
+                    content: '/';
+                    margin: 0 0.25em;
+                }
+            }
+        }
+    }
+}
+
+.footer {
+    padding-top: $spacing-unit / 2;
+
+    .copyright {
+        color: $text-second-color;
+
+        .fa-heart {
+            color: $heart-color;
+        }
+    }
+}
