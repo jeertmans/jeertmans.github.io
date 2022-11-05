@@ -16,6 +16,7 @@
     {% if page.style %}
     <link type="text/css" href="{{ page.style | relative_url }}" rel="stylesheet">
     {% endif %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   </head>
 
   <body class="layout--{{ page.layout | default: layout.layout }}{% if page.classes or layout.classes %}{{ page.classes | default: layout.classes | join: ' ' | prepend: ' ' }}{% endif %}">

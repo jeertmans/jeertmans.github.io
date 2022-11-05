@@ -4,7 +4,7 @@ profile:
   current_position: PhD Student in Electrical Engineering
   email: {{ site.email}}
   github: {{ site.github_username }}
-  
+
 
 experiences:
   display: true

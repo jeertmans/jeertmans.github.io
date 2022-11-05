@@ -63,7 +63,7 @@ jobs:
       - name: Run exec with Jekyll and wait until running
         run: (bundle exec jekyll serve &) | grep -q "Server running"
       - name: Create PDF from resume page
-        run: mkdir -p assets/pdfs && google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/ && chmod o+r assets/pdfs/resume.pdf 
+        run: mkdir -p assets/pdfs && google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/ && chmod o+r assets/pdfs/resume.pdf
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
