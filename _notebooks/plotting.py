@@ -1,6 +1,6 @@
 import os
+from uuid import uuid4
 
-import ipynbname
 import matplotlib
 import matplotlib.pyplot as pyplot
 import plotly.express as express
@@ -8,10 +8,8 @@ import plotly.io as pio
 from matplotlib_inline.backend_inline import set_matplotlib_formats
 from plotly.graph_objs import Figure, Layout
 
-nb_fname = ipynbname.name()
-
 iframe_renderer = pio.renderers["iframe_connected"]
-iframe_renderer.html_directory = os.path.join("../assets/images", nb_fname)
+iframe_renderer.html_directory = os.path.join("../assets/images", str(uuid4()))
 pio.renderers.default = "iframe_connected"
 
 CONFIG = {"displaylogo": False, "toImageButtonOptions": {"format": "svg"}}
