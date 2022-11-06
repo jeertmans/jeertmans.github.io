@@ -1,3 +1,4 @@
+ipynbname==2021.3.2
 matplotlib==3.6.1
 notebook==6.5.2
 numpy==1.23.4
