@@ -24,6 +24,17 @@ for theme, template in [("light", "plotly_white"), ("dark", "plotly_dark")]:
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font_color="#d37e34",
+        scene=dict(
+            xaxis=dict(
+                backgroundcolor="rgba(0,0,0,0)",
+            ),
+            yaxis=dict(
+                backgroundcolor="rgba(0,0,0,0)",
+            ),
+            zaxis=dict(
+                backgroundcolor="rgba(0,0,0,1)",
+            ),
+        ),
     )
 
     templated_fig = pio.to_templated(fig)
