@@ -32,7 +32,7 @@ for theme, template in [("light", "plotly_white"), ("dark", "plotly_dark")]:
                 backgroundcolor="rgba(0,0,0,0)",
             ),
             zaxis=dict(
-                backgroundcolor="rgba(0,0,0,1)",
+                backgroundcolor="rgba(0,0,0,0)",
             ),
         ),
     )
