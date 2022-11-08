@@ -77,7 +77,7 @@
     margin-bottom: 0;
     &:before {
       @supports (pointer-events: none) {
-        content: '';
+        content: "";
         position: fixed;
         top: 0;
         left: 0;
