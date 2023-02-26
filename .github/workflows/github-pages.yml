@@ -42,9 +42,6 @@ jobs:
     defaults:
       run:
         working-directory: ./_slides
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -84,8 +81,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Setup Pages
-      uses: actions/configure-pages@v2
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
