@@ -67,13 +67,18 @@ jobs:
         key: ${{ runner.os }}-media
     - name: Build animation and convert it into HTML slides
       run: |
-        find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim "$(basename {})" --media_dir="../media/$(dirname {})" && manim-slides convert Main "../../assets/html/$(dirname {}).html"'
+        find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim "$(basename {})" --media_dir="../media/$(dirname {})" && manim-slides convert Main "../../assets/slides/$(dirname {}).html"'
     - name: Save media to cache
       id: cache-media-save
       uses: actions/cache/save@v3
       with:
         path: _slides/media
         key: ${{ steps.cache-media-restore.outputs.cache-primary-key }}
+    - name: Upload slides
+        uses: actions/upload-artifact@v3
+        with:
+          name: slides
+          path: assets/slides
 
   # Build notebooks
   build-notebooks:
@@ -91,6 +96,11 @@ jobs:
         pip install -r requirements.txt
     - name: Convert notebooks to posts
       run: ./notebooks_to_posts.sh
+    - name: Upload notebooks
+      uses: actions/upload-artifact@v3
+      with:
+        name: notebooks
+        path: _posts
 
   # Build resume
   build-resume:
@@ -109,6 +119,11 @@ jobs:
       run: (bundle exec jekyll serve &) | grep -q "Server running"
     - name: Create PDF from resume page
       run: mkdir -p assets/pdfs && google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/ && chmod o+r assets/pdfs/resume.pdf
+    - name: Upload resume
+      uses: actions/upload-artifact@v3
+      with:
+        name: resume
+        path: assets/pdfs/resume.pdf
 
   # Build job
   build-website:
@@ -124,6 +139,21 @@ jobs:
       with:
         ruby-version: '3.0'   # Not needed with a .ruby-version file
         bundler-cache: true   # runs 'bundle install' and caches installed gems automatically
+    - name: Download slides
+      uses: actions/download-artifact@v3
+      with:
+        name: slides
+        path: assets/slides
+    - name: Download notebooks
+      uses: actions/download-artifact@v3
+      with:
+        name: notebooks
+        path: _posts
+    - name: Download resume
+      uses: actions/download-artifact@v3
+      with:
+        name: resume
+        path: assets/pdfs/resume.pdf
     - name: Build with Jekyll
       uses: actions/jekyll-build-pages@v1
       with:
