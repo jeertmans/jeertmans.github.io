@@ -101,6 +101,11 @@ jobs:
       with:
         name: notebooks
         path: _posts
+    - name: Upload notebooks assets
+      uses: actions/upload-artifact@v3
+      with:
+        name: notebooks-assets
+        path: assets/notebooks
 
   # Build resume
   build-resume:
@@ -149,6 +154,11 @@ jobs:
       with:
         name: notebooks
         path: _posts
+    - name: Download notebooks assets
+      uses: actions/download-artifact@v3
+      with:
+        name: notebooks-assets
+        path: assets/notebooks
     - name: Download resume
       uses: actions/download-artifact@v3
       with:
