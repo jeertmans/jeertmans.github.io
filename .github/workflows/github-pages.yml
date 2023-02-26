@@ -67,7 +67,7 @@ jobs:
         key: ${{ runner.os }}-media
     - name: Build animation and convert it into HTML slides
       run: |
-        find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim "$(basename {})" --media_dir="../media/$(dirname {})" && manim-slides convert Main "../../assets/slides/$(dirname {}).html"'
+        find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim "$(basename {})" --media_dir="../media/$(dirname {})" && manim-slides convert Main "../../assets/slides/$(dirname {}).html" -ccontrols=true'
     - name: Save media to cache
       id: cache-media-save
       uses: actions/cache/save@v3
@@ -159,6 +159,7 @@ jobs:
       with:
         source: ./
         destination: ./_site
+        future: true
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
 
