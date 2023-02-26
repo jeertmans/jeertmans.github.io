@@ -80,7 +80,7 @@ jobs:
         key: ${{ steps.cache-media-restore.outputs.cache-primary-key }}
 
   # Build notebooks
-  build-notebook:
+  build-notebooks:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
