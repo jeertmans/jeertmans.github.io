@@ -70,8 +70,7 @@ jobs:
         key: ${{ runner.os }}-media
     - name: Build animation and convert it into HTML slides
       run: |
-        manim main.py Main
-        manim-slides convert ThreeDExample docs/source/_static/three_d_example.html -ccontrols=true
+        find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim $(basename {}) --media_dir=../media/{} && manim-slides convert Main ../../assets/html/$(dirname {}).html'
     - name: Save media to cache
       id: cache-media-save
       uses: actions/cache/save@v3
