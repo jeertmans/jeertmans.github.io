@@ -31,7 +31,7 @@ paginate: 5 # amount of posts to show
 paginate_path: /page:num/
 timezone: Europe/Brussels
 include:
-  - _pages
+- _pages
 
 # Sass setting
 sass:
@@ -52,12 +52,12 @@ sass:
 
 # Plugins (previously gems:)
 plugins:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-gist
-  - jekyll-feed
-  - jemoji
-  - jekyll-include-cache
+- jekyll-paginate
+- jekyll-sitemap
+- jekyll-gist
+- jekyll-feed
+- jemoji
+- jekyll-include-cache
 
 author:
   name: Jérome Eertmans
@@ -65,61 +65,60 @@ author:
   bio: PhD student in Differentiable Ray Tracing for Telecommunications.
   location: UCLouvain, Belgium
   links:
-    - label: Contact
-      icon: fas fa-fw fa-envelope
-      url: mailto:jerome.eertmans@uclouvain.be
-    - label: University Directory
-      icon: fas fa-fw fa-graduation-cap
-      url: https://uclouvain.be/fr/repertoires/jerome.eertmans
-    - label: Google Scholar
-      icon: fab fa-fw fa-google
-      url: https://scholar.google.com/citations?user=bVbwyxAAAAAJ
-    - label: GitHub
-      icon: fab fa-fw fa-github
-      url: https://github.com/jeertmans
-    - label: LinkedIn
-      icon: fab fa-fw fa-linkedin
-      url: https://www.linkedin.com/in/j%C3%A9rome-eertmans-130ab1130/
-    - label: ORCID
-      icon: fab fa-fw fa-orcid
-      url: https://orcid.org/0000-0002-5579-5360
+  - label: Contact
+    icon: fas fa-fw fa-envelope
+    url: mailto:jerome.eertmans@uclouvain.be
+  - label: University Directory
+    icon: fas fa-fw fa-graduation-cap
+    url: https://uclouvain.be/fr/repertoires/jerome.eertmans
+  - label: Google Scholar
+    icon: fab fa-fw fa-google
+    url: https://scholar.google.com/citations?user=bVbwyxAAAAAJ
+  - label: GitHub
+    icon: fab fa-fw fa-github
+    url: https://github.com/jeertmans
+  - label: LinkedIn
+    icon: fab fa-fw fa-linkedin
+    url: https://www.linkedin.com/in/j%C3%A9rome-eertmans-130ab1130/
+  - label: ORCID
+    icon: fab fa-fw fa-orcid
+    url: https://orcid.org/0000-0002-5579-5360
 
 footer:
   links:
-    - label: GitHub
-      icon: fab fa-fw fa-github
-      url: https://github.com/jeertmans/jeertmans.github.io
+  - label: GitHub
+    icon: fab fa-fw fa-github
+    url: https://github.com/jeertmans/jeertmans.github.io
 
 defaults:
   # _posts
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: single
-      author_profile: true
-      read_time: true
-      comments: true
-      share: true
-      related: true
-      show_date: true
-      date_format: "%Y-%m-%d"
-      mathjax: true
-      classes:
-        wide
+- scope:
+    path: ''
+    type: posts
+  values:
+    layout: single
+    author_profile: true
+    read_time: true
+    comments: true
+    share: true
+    related: true
+    show_date: true
+    date_format: '%Y-%m-%d'
+    mathjax: true
+    classes: wide
         # _pages
-  - scope:
-      path: _pages
-      type: pages
-    values:
-      layout: single
-      author_profile: true
-      classes: wide
-      tagline: ""
-      header:
-        overlay_image: /assets/images/header.jpg
-        overlay_filter: linear-gradient(rgba(70, 77, 132, 0.5), rgba(118, 188, 232, 0.5))
-        caption: "Photo credit: [**Unsplash**](https://unsplash.com/photos/0C9VmZUqcT8)"
+- scope:
+    path: _pages
+    type: pages
+  values:
+    layout: single
+    author_profile: true
+    classes: wide
+    tagline: ''
+    header:
+      overlay_image: /assets/images/header.jpg
+      overlay_filter: linear-gradient(rgba(70, 77, 132, 0.5), rgba(118, 188, 232, 0.5))
+      caption: 'Photo credit: [**Unsplash**](https://unsplash.com/photos/0C9VmZUqcT8)'
 
 category_archive:
   type: liquid
@@ -142,5 +141,5 @@ comments:
     label: comment # Optional - must be existing label.
 
 after_footer_scripts:
-  - /assets/scripts/index.js
-  - /assets/scripts/mode-switcher.js
+- /assets/scripts/index.js
+- /assets/scripts/mode-switcher.js

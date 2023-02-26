@@ -1,31 +1,31 @@
 main:
-  - title: Posts
-    url: /posts/
-  - title: Categories
-    url: /categories/
-  - title: Tags
-    url: /tags/
-  - title: About
-    url: /about/
-  - title: Resume
-    url: /resume/
+- title: Posts
+  url: /posts/
+- title: Categories
+  url: /categories/
+- title: Tags
+  url: /tags/
+- title: About
+  url: /about/
+- title: Resume
+  url: /resume/
 
 resume:
-  - title: Resume
-    children:
-      - title: PDF Version <i class="fas fa-fw fa-file-pdf"></i>
-        url: /assets/pdfs/resume.pdf
-      - title: Profile
-        url: /resume/#profile
-      - title: Education
-        url: /resume/#education
-      - title: Experiences
-        url: /resume/#experiences
-      - title: Open Source Projects
-        url: /resume/#projects
-      - title: Interests
-        url: /resume/#interests
-      - title: Languages
-        url: /resume/#languages
-      - title: Teaching Duties
-        url: /resume/#teaching-duties
+- title: Resume
+  children:
+  - title: PDF Version <i class="fas fa-fw fa-file-pdf"></i>
+    url: /assets/pdfs/resume.pdf
+  - title: Profile
+    url: /resume/#profile
+  - title: Education
+    url: /resume/#education
+  - title: Experiences
+    url: /resume/#experiences
+  - title: Open Source Projects
+    url: /resume/#projects
+  - title: Interests
+    url: /resume/#interests
+  - title: Languages
+    url: /resume/#languages
+  - title: Teaching Duties
+    url: /resume/#teaching-duties
