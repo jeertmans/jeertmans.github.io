@@ -4,23 +4,23 @@ name: GitHub Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: [main]
     paths-ignore:
-      - ".pre-commit-config.yaml"
-      - ".gitignore"
-      - ".eslintrc"
-      - "README.md"
-      - "LICENSE.md"
+    - .pre-commit-config.yaml
+    - .gitignore
+    - .eslintrc
+    - README.md
+    - LICENSE.md
 
   # Also runs on PR
   pull_request:
-    branches: ["main"]
+    branches: [main]
     paths-ignore:
-      - ".pre-commit-config.yaml"
-      - ".gitignore"
-      - ".eslintrc"
-      - "README.md"
-      - "LICENSE.md"
+    - .pre-commit-config.yaml
+    - .gitignore
+    - .eslintrc
+    - README.md
+    - LICENSE.md
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -33,7 +33,7 @@ permissions:
 
 # Allow one concurrent deployment
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -41,36 +41,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-          cache: "pip" # caching pip dependencies
-      - name: Install Python dependencies
-        run: |
-          pip install -r requirements.txt
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.0" # Not needed with a .ruby-version file
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - name: Convert notebooks to posts
-        run: ./notebooks_to_posts.sh
-      - name: Run exec with Jekyll and wait until running
-        run: (bundle exec jekyll serve &) | grep -q "Server running"
-      - name: Create PDF from resume page
-        run: mkdir -p assets/pdfs && google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/ && chmod o+r assets/pdfs/resume.pdf
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup Pages
+      uses: actions/configure-pages@v2
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: pip     # caching pip dependencies
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'   # Not needed with a .ruby-version file
+        bundler-cache: true   # runs 'bundle install' and caches installed gems automatically
+    - name: Convert notebooks to posts
+      run: ./notebooks_to_posts.sh
+    - name: Run exec with Jekyll and wait until running
+      run: (bundle exec jekyll serve &) | grep -q "Server running"
+    - name: Create PDF from resume page
+      run: mkdir -p assets/pdfs && google-chrome --headless --disable-gpu --print-to-pdf=assets/pdfs/resume.pdf --print-to-pdf-no-header http://127.0.0.1:4000/resume/ && chmod o+r assets/pdfs/resume.pdf
+    - name: Build with Jekyll
+      uses: actions/jekyll-build-pages@v1
+      with:
+        source: ./
+        destination: ./_site
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
 
   # Deployment job
   deploy:
@@ -81,6 +81,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
