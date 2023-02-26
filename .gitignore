@@ -43,3 +43,8 @@ latex/resume/main.pdf
 assets/pdfs/resume.pdf
 
 _posts/2022-11-04-plotly-test.md
+
+_slides/media/
+_slides/slides/
+
+_slides/*/slides/
