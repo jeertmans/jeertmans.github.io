@@ -63,7 +63,7 @@ jobs:
       id: cache-media-restore
       uses: actions/cache/restore@v3
       with:
-        path: media
+        path: _slides/media
         key: ${{ runner.os }}-media
     - name: Build animation and convert it into HTML slides
       run: |
@@ -72,7 +72,7 @@ jobs:
       id: cache-media-save
       uses: actions/cache/save@v3
       with:
-        path: media
+        path: _slides/media
         key: ${{ steps.cache-media-restore.outputs.cache-primary-key }}
 
   # Build notebooks
