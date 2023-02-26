@@ -75,10 +75,10 @@ jobs:
         path: _slides/media
         key: ${{ steps.cache-media-restore.outputs.cache-primary-key }}
     - name: Upload slides
-        uses: actions/upload-artifact@v3
-        with:
-          name: slides
-          path: assets/slides
+      uses: actions/upload-artifact@v3
+      with:
+        name: slides
+        path: assets/slides
 
   # Build notebooks
   build-notebooks:
