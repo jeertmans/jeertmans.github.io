@@ -4,6 +4,7 @@ from uuid import uuid4
 import matplotlib
 import matplotlib.pyplot as pyplot
 import plotly.express as express
+import plotly.graph_objects as graph_objects
 import plotly.io as pio
 from matplotlib_inline.backend_inline import set_matplotlib_formats
 from plotly.graph_objs import Figure, Layout
@@ -23,6 +24,17 @@ for theme, template in [("light", "plotly_white"), ("dark", "plotly_dark")]:
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font_color="#d37e34",
+        scene=dict(
+            xaxis=dict(
+                backgroundcolor="rgba(0,0,0,0)",
+            ),
+            yaxis=dict(
+                backgroundcolor="rgba(0,0,0,0)",
+            ),
+            zaxis=dict(
+                backgroundcolor="rgba(0,0,0,0)",
+            ),
+        ),
     )
 
     templated_fig = pio.to_templated(fig)
@@ -35,4 +47,4 @@ matplotlib.rcParams["figure.edgecolor"] = (1, 1, 1, 0)
 matplotlib.rcParams["axes.facecolor"] = (1, 1, 1, 0)
 set_matplotlib_formats("svg")
 
-__all__ = ["express", "pyplot", "CONFIG"]
+__all__ = ["express", "graph_objects", "pyplot", "CONFIG"]
