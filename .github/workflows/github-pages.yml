@@ -110,6 +110,8 @@ jobs:
       run: |
         gh extension install actions/gh-actions-cache
         gh actions-cache delete ${{ steps.cache-media-restore.outputs.cache-primary-key }} --confirm || true
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Save media to cache
       id: cache-media-save
       uses: actions/cache/save@v3
