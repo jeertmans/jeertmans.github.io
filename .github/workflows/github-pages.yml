@@ -83,6 +83,9 @@ jobs:
           xkeyval
           fontawesome5
           siunitx
+          amssymb
+          amsfonts
+          mathtools
     - name: Install Python
       uses: actions/setup-python@v4
       with:
