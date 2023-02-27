@@ -81,6 +81,8 @@ jobs:
           xcolor
           xetex
           xkeyval
+          fontawesome5
+          siunitx
     - name: Install Python
       uses: actions/setup-python@v4
       with:
