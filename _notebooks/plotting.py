@@ -17,7 +17,6 @@ CONFIG = {"displaylogo": False, "toImageButtonOptions": {"format": "svg"}}
 
 
 for theme, template in [("light", "plotly_white"), ("dark", "plotly_dark")]:
-
     fig = Figure()
     fig.update_layout(
         template=template,
