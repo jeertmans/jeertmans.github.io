@@ -131,7 +131,7 @@ Slides generation
 
 class Main(Slide):
     def __init__(self, *args, **kwargs):
-        super(Slides, self).__init__(*args, **kwargs)
+        super(Main, self).__init__(*args, **kwargs)
         self.slide_no = None
         self.slide_text = None
 
