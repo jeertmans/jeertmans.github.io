@@ -39,6 +39,7 @@ concurrency:
 jobs:
   # Building slides
   build-slides:
+    permissions: write-all
     defaults:
       run:
         working-directory: ./_slides
