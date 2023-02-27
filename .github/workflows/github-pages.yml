@@ -106,6 +106,8 @@ jobs:
     - name: Build animation and convert it into HTML slides
       run: |
         find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim "$(basename {})" --media_dir="../media/$(dirname {})" && manim-slides convert Main "../../assets/slides/$(dirname {}).html" -ccontrols=true'
+    - name: Clear cache
+      run: gh actions-cache delete ${{ steps.cache-media-restore.outputs.cache-primary-key }} --confirm || true
     - name: Save media to cache
       id: cache-media-save
       uses: actions/cache/save@v3
