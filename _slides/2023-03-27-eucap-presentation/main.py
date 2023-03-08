@@ -1,5 +1,4 @@
 import math
-import time
 
 import numpy as np
 import sympy as sy
@@ -62,7 +61,52 @@ def generate_f():
 
     _df = sy.lambdify((s1, s2), row(f.diff(s1), f.diff(s2)))
 
-    df = lambda x: _df(*x).reshape(-1)
+    def df(x):
+        return _df(*x).reshape(-1)
+
+    return sy.lambdify((s1, s2), f), df
+
+
+def generate_f_ris(phi=0):
+    # Unknowns
+    s1, s2 = sy.symbols("s_1 s_2", real=True)  # s1, s2 are real values
+
+    # Geometry
+
+    ## Nodes
+    BS = row(2, -1)
+    UE = row(2, 4)
+
+    ## Interaction points
+    X1 = row(s1, s1)
+    X2 = row(5, s2)
+
+    ## Surface normals
+    n1 = row(1, -1).normalized()
+    n2 = row(-1, 0).normalized()
+
+    # Aliases
+    V0 = X1 - BS
+    V1 = X2 - X1
+    V2 = UE - X2
+
+    cross = n2[0] * V2[1] - n2[1] * V2[0]
+
+    g1 = V0.norm() / V1.norm()
+
+    # Write different equations
+    eqs = [
+        g1 * V1 - (V0 - 2 * V0.dot(n1) * n1),
+        row(cross - sy.sin(phi) * V2.norm()),
+    ]
+
+    F = sy.Matrix.vstack(*eqs)
+    f = F.norm() ** 2
+
+    _df = sy.lambdify((s1, s2), row(f.diff(s1), f.diff(s2)))
+
+    def df(x):
+        return _df(*x).reshape(-1)
 
     return sy.lambdify((s1, s2), f), df
 
@@ -98,7 +142,7 @@ def gradient_descent(x0, df, tol=1e-12, max_it=100, return_steps=False):
 
 
 """
-Here, I switches the background from black to white,
+Here, because I switched the background from black to white,
 so I have to make default color for most things to be black (instead of white).
 """
 
@@ -181,6 +225,8 @@ class Main(Slide):
 \usepackage{amsmath,amssymb,amsfonts,mathtools}
 \newcommand{\bs}{\boldsymbol}
 \newcommand{\scp}[3][]{#1\langle #2, #3 #1\rangle}
+\newcommand{\bb}{\mathbb}
+\newcommand{\cl}{\mathcal}
 """
         )
 
@@ -200,150 +246,21 @@ class Main(Slide):
         self.play(Write(title), self.write_slide_number(position=slide_no_pos))
         self.next_slide()
 
-        # Slide: Scene w/ speaker and audience
+        # Slide: room
+
         self.play(FadeOut(title), self.update_slide_number())
         self.next_slide()
 
-        BS = speaker = Tex(r"\faWifi", tex_template=tex_template, color=BS_COLOR).shift(
-            4 * LEFT
-        )
-        UE = listener = Tex(
-            r"\faPhone", tex_template=tex_template, color=UE_COLOR
-        ).shift(3 * RIGHT)
-
-        public = VGroup()
-
-        for i in range(-2, 3):
-            for j in range(-2, 3):
-                if i != 0 or j != 0:
-                    public.add(listener.copy().shift(i * UP + j * LEFT))
-
-        self.play(Write(speaker), Write(listener), Write(public))
-        self.next_slide()
-
-        # Slide: show emetting sound waves & received power
-
-        circle = Circle(radius=1, color=BLUE).shift(speaker.get_center())
-        self.start_loop()
-        self.play(Broadcast(circle, focal_point=speaker.get_center(), run_time=6))
-        self.end_loop()
-
-        arrow_end = Dot(public[13].get_center())
-        arrow_end.set_opacity(0)
-        arrow = always_redraw(
-            lambda: Arrow(start=speaker.get_center(), end=arrow_end, color=GOLD)
-        )
-
-        brace = always_redraw(lambda: Brace(arrow, UP))
-
-        def fspl(x):
-            f = 1e9
-            c = 3e8
-            return -20 * math.log10(4 * PI * x * f / c)
-
-        def delay_ns(x):
-            c = 3e8
-            p = 1e9
-            return p * x / c
-
-        _, power, _ = power_label = VGroup(
-            MathTex("P = "),
-            DecimalNumber(
-                fspl(arrow.get_length()),
-                num_decimal_places=2,
-                include_sign=True,
-            ),
-            Tex(r"\si{\dbw}", tex_template=tex_template),
-        )
-
-        _, delay, ns = delay_label = VGroup(
-            MathTex(r"\tau = "),
-            DecimalNumber(
-                delay_ns(arrow.get_length()),
-                num_decimal_places=2,
-                include_sign=False,
-            ),
-            Tex(r"\si{\nano\second}", tex_template=tex_template),
-        )
-
-        power_label.set_color(BLUE)
-        power_label.arrange(RIGHT)
-        power_label.next_to(brace, UP)
-        always(power_label.next_to, brace, UP)
-        f_always(power.set_value, lambda: fspl(arrow.get_length()))
-
-        delay_label.set_color(BLUE)
-        delay_label.arrange(RIGHT)
-        delay_label.next_to(brace, UP)
-        always(delay_label.next_to, brace, UP)
-        f_always(delay.set_value, lambda: delay_ns(arrow.get_length()))
-
-        for t in [*power_label, *delay_label]:
-            t.align_to(power, DOWN)
-
-        power_label[2].align_to(power, UP)
-
-        self.play(Create(arrow))
-        self.play(
-            # FadeIn(brace, shift=DOWN),
-            FadeIn(power_label, shift=DOWN)
+        BS = Tex(r"\faWifi", tex_template=tex_template, color=BS_COLOR).shift(4 * LEFT)
+        UE = Tex(r"\faPhone", tex_template=tex_template, color=UE_COLOR).shift(
+            3 * RIGHT
         )
 
         self.next_slide()
-
-        arrow_end.save_state()
-
-        for pub in [public[4], public[0], public[-5], public[-1]]:
-            self.play(
-                arrow_end.animate.move_to(pub.get_center()),
-                run_time=2,
-            )
-
-        self.play(Restore(arrow_end), run_time=4)
-
-        self.next_slide()
-
-        # Slide: transform power in delay
-        power_label.save_state()
 
         self.play(
-            Transform(power_label[0], delay_label[0]),
-            FadeTransform(power_label[1], delay_label[1]),
-            Transform(power_label[2], delay_label[2]),
+            FadeIn(BS), FadeIn(UE), Create(NL), Create(SL), Create(WL), Create(EL)
         )
-        self.remove(*power_label)
-        self.add(delay_label)
-        self.next_slide()
-
-        arrow_end.save_state()
-
-        for pub in [public[4], public[0], public[-5], public[-1]]:
-            self.play(
-                arrow_end.animate.move_to(pub.get_center()),
-                # Broadcast(circle, focal_point=speaker.get_center()),
-                run_time=2.5,
-            )
-
-        self.play(Restore(arrow_end), run_time=4)
-
-        self.next_slide()
-
-        # Slide: only focus on one listener
-        to_fade_out = VGroup(
-            public,
-            delay_label,
-            # brace,
-            arrow,
-        )
-        self.play(
-            self.update_slide_number(), FadeOut(to_fade_out, shift=DOWN, run_time=4)
-        )
-
-        self.next_slide()
-        self.remove(speaker, listener)
-        self.add(BS, UE)
-
-        self.play(Create(NL), Create(SL), Create(WL), Create(EL))
         self.pause()
 
         A = BS.copy().shift(0.5 * RIGHT)
@@ -830,7 +747,6 @@ class Main(Slide):
 
         self.next_slide()
 
-        # Slide: gradient descent on simple example using MPT method
         self.play(
             FadeOut(dashed),
             FadeOut(refr_config),
@@ -840,6 +756,37 @@ class Main(Slide):
             self.update_slide_number(),
         )
         self.next_slide()
+
+        minimize_eq = Tex(
+            r"\[\underset{\bs{\cl X} \in \bb R^{n_t}}{\text{minimize}}\ \cl C(\bs X) := \|\cl I(\bs X)\|^2 + \|\cl F(\bs X)\|^2\]",
+            tex_template=tex_template,
+        )
+        constraint_eq = MathTex(
+            r"\cl C(\bs{\cl X})", r"\neq 0", tex_template=tex_template
+        ).shift(2 * DOWN)
+        constraint_eq_relaxed = MathTex(
+            r"\cl C(\bs{\cl X})", r"\le \epsilon", tex_template=tex_template
+        ).shift(2 * DOWN)
+
+        self.play(FadeIn(minimize_eq))
+
+        self.next_slide()
+
+        self.play(FadeIn(constraint_eq))
+
+        self.next_slide()
+
+        self.play(Transform(constraint_eq, constraint_eq_relaxed))
+
+        self.next_slide()
+
+        # Slide: gradient descent on simple example using MPT method
+
+        self.play(
+            FadeOut(minimize_eq),
+            FadeOut(constraint_eq),
+            self.update_slide_number(),
+        )
 
         X1.move_to(W1.get_center())
         X2.move_to(W2.get_center())
@@ -898,7 +845,54 @@ class Main(Slide):
             self.play(
                 X1.animate.shift([ds1, ds1, 0]),
                 X2.animate.shift([0, ds2, 0]),
-                run_time=1.6,
+                run_time=1.3,
+            )
+
+        self.next_slide()
+
+        # Slide: what if METASURFACE?
+
+        what_if_ms_text = Tex("What if we had a metasurface?").to_corner(UR)
+        ms_text = Tex(r"$\phi=0$", color=GREEN).next_to(W2).shift(DOWN)
+        self.play(FadeIn(what_if_ms_text))
+        self.pause()
+
+        self.play(EL.animate.set_color(GREEN))  # EL is W2
+        self.play(FadeIn(ms_text))
+        self.pause()
+
+        f, df = generate_f_ris()
+
+        def remap(X1, X2):
+            s1 = X1.get_center()[0]
+            s2 = X2.get_center()[1]
+            return s1 + X_OFFSET, s2 + Y_OFFSET
+
+        _, f_number = f_label = VGroup(
+            MathTex("f = "),
+            DecimalNumber(
+                f(*remap(X1, X2)),  # f(s1, s2)
+                num_decimal_places=2,
+                include_sign=False,
+            ),
+        )
+
+        f_label.set_color(BLUE)
+        f_label.arrange(RIGHT)
+        f_label.next_to(W2, RIGHT)
+        always(f_label.next_to, W2, RIGHT)
+        f_always(f_number.set_value, lambda: f(*remap(X1, X2)))
+
+        self.play(FadeIn(f_label, shift=UP))
+        self.next_slide()
+
+        x0 = remap(X1, X2)
+
+        for ds1, ds2 in gradient_descent(x0, df, return_steps=True):
+            self.play(
+                X1.animate.shift([ds1, ds1, 0]),
+                X2.animate.shift([0, ds2, 0]),
+                run_time=0.6,
             )
 
         self.next_slide()
