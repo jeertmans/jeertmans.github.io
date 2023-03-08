@@ -249,14 +249,11 @@ class Main(Slide):
         # Slide: room
 
         self.play(FadeOut(title), self.update_slide_number())
-        self.next_slide()
 
         BS = Tex(r"\faWifi", tex_template=tex_template, color=BS_COLOR).shift(4 * LEFT)
         UE = Tex(r"\faPhone", tex_template=tex_template, color=UE_COLOR).shift(
             3 * RIGHT
         )
-
-        self.next_slide()
 
         self.play(
             FadeIn(BS), FadeIn(UE), Create(NL), Create(SL), Create(WL), Create(EL)
