@@ -569,7 +569,7 @@ class Main(Slide):
 
         cost, i_number, plus, c_number = cost_label = (
             VGroup(
-                MathTex("f ="),
+                MathTex(r"\mathcal{C} =", tex_template=tex_template),
                 DecimalNumber(I_(BS_, X1_, UE_)),
                 MathTex("+"),
                 DecimalNumber(C_(X1_)),
@@ -819,7 +819,7 @@ class Main(Slide):
             return s1 + X_OFFSET, s2 + Y_OFFSET
 
         _, f_number = f_label = VGroup(
-            MathTex("f = "),
+            MathTex(r"\mathcal{C} = ", tex_template=tex_template),
             DecimalNumber(
                 f(*remap(X1, X2)),  # f(s1, s2)
                 num_decimal_places=2,
@@ -866,7 +866,7 @@ class Main(Slide):
             return s1 + X_OFFSET, s2 + Y_OFFSET
 
         _, f_number = f_label = VGroup(
-            MathTex("f = "),
+            MathTex(r"\mathcal{C} = ", tex_template=tex_template),
             DecimalNumber(
                 f(*remap(X1, X2)),  # f(s1, s2)
                 num_decimal_places=2,
