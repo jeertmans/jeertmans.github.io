@@ -31,7 +31,7 @@ group :jekyll_plugins do
   gem 'jekyll-scholar'
   gem 'jekyll-mentions'
   gem 'jekyll-gist'
-  gem 'jekyll_github_sample', git: 'git@github.com:bwillis/jekyll-github-sample.git', ref: '365f163e91ef8f5d2ac4e636d66fd5012f28a03b'
+  gem 'jekyll_github_sample', git: 'https://github.com/bwillis/jekyll-github-sample.git', ref: '365f163e91ef8f5d2ac4e636d66fd5012f28a03b'
   gem 'jekyll-target-blank'
   gem 'jekyll-minifier'
 end
