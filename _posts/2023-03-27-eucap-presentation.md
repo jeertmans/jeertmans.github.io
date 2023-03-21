@@ -10,9 +10,9 @@ tags:
   - manim
   - manim-slides
 tagline: "Conference presentation"
-header:
-  overlay_image: /assets/images/misc/Florence_EuCAP_2023.jpg
-  caption: "Florence, Italy - From Pixabay"
+image:
+  path: /assets/images/misc/Florence_EuCAP_2023.jpg
+  alt: "Florence, Italy - From Pixabay"
 ---
 
 > This post is under construction...

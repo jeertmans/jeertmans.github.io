@@ -1,8 +1,0 @@
-@import "online-resume/default";
-
-@media print {
-  .page__hero--overlay,
-  .page__hero--overlay * {
-    display: none !important;
-  }
-}
