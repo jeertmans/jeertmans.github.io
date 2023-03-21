@@ -20218,14 +20218,12 @@
               (Q = T), (T = r);
             }
             t.Push(
-              t.itemFactory
-                .create("position")
-                .setProperties({
-                  name: t.currentCS,
-                  move: "horizontal",
-                  left: t.create("node", "mspace", [], { width: Q }),
-                  right: t.create("node", "mspace", [], { width: T }),
-                }),
+              t.itemFactory.create("position").setProperties({
+                name: t.currentCS,
+                move: "horizontal",
+                left: t.create("node", "mspace", [], { width: Q }),
+                right: t.create("node", "mspace", [], { width: T }),
+              }),
             );
           }),
           (d.Hskip = function (t, e) {

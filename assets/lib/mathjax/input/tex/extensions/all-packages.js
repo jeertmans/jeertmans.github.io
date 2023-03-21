@@ -1937,16 +1937,14 @@
             var l = !0;
             "{" === s && (t.i++, (l = !1)),
               t.Push(
-                t.itemFactory
-                  .create("braket")
-                  .setProperties({
-                    barmax: i,
-                    barcount: 0,
-                    open: r,
-                    close: n,
-                    stretchy: a,
-                    single: l,
-                  }),
+                t.itemFactory.create("braket").setProperties({
+                  barmax: i,
+                  barcount: 0,
+                  open: r,
+                  close: n,
+                  stretchy: a,
+                  single: l,
+                }),
               );
           }),
           (i.Bar = function (t, e) {
@@ -2199,14 +2197,12 @@
             Prooftree: function (t, e) {
               return (
                 t.Push(e),
-                t.itemFactory
-                  .create("proofTree")
-                  .setProperties({
-                    name: e.getName(),
-                    line: "solid",
-                    currentLine: "solid",
-                    rootAtTop: !1,
-                  })
+                t.itemFactory.create("proofTree").setProperties({
+                  name: e.getName(),
+                  line: "solid",
+                  currentLine: "solid",
+                  rootAtTop: !1,
+                })
               );
             },
             Axiom: function (t, e) {
@@ -6697,14 +6693,12 @@
                 return (
                   t.i++,
                   void t.Push(
-                    t.itemFactory
-                      .create("auto open")
-                      .setProperties({
-                        open: n,
-                        close: "|",
-                        smash: r,
-                        right: "\\vphantom{\\int}",
-                      }),
+                    t.itemFactory.create("auto open").setProperties({
+                      open: n,
+                      close: "|",
+                      smash: r,
+                      right: "\\vphantom{\\int}",
+                    }),
                   )
                 );
               throw new i.default(

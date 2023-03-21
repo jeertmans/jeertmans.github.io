@@ -208,14 +208,12 @@
             Prooftree: function (e, t) {
               return (
                 e.Push(t),
-                e.itemFactory
-                  .create("proofTree")
-                  .setProperties({
-                    name: t.getName(),
-                    line: "solid",
-                    currentLine: "solid",
-                    rootAtTop: !1,
-                  })
+                e.itemFactory.create("proofTree").setProperties({
+                  name: t.getName(),
+                  line: "solid",
+                  currentLine: "solid",
+                  rootAtTop: !1,
+                })
               );
             },
             Axiom: function (e, t) {

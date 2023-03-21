@@ -509,14 +509,12 @@
                 return (
                   t.i++,
                   void t.Push(
-                    t.itemFactory
-                      .create("auto open")
-                      .setProperties({
-                        open: r,
-                        close: "|",
-                        smash: a,
-                        right: "\\vphantom{\\int}",
-                      }),
+                    t.itemFactory.create("auto open").setProperties({
+                      open: r,
+                      close: "|",
+                      smash: a,
+                      right: "\\vphantom{\\int}",
+                    }),
                   )
                 );
               throw new o.default(

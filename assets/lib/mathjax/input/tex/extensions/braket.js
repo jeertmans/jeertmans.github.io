@@ -159,16 +159,14 @@
             var l = !0;
             "{" === c && (e.i++, (l = !1)),
               e.Push(
-                e.itemFactory
-                  .create("braket")
-                  .setProperties({
-                    barmax: i,
-                    barcount: 0,
-                    open: a,
-                    close: r,
-                    stretchy: o,
-                    single: l,
-                  }),
+                e.itemFactory.create("braket").setProperties({
+                  barmax: i,
+                  barcount: 0,
+                  open: a,
+                  close: r,
+                  stretchy: o,
+                  single: l,
+                }),
               );
           }),
           (i.Bar = function (e, t) {
