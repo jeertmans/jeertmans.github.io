@@ -10,4 +10,3 @@ With 2 friends of mine, we created a tool that uses the ade API to create a user
 
 * 9000+ accounts have been created
 * 1000+ average daily users
-

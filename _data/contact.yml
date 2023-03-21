@@ -1,18 +1,18 @@
 #  The contact options.
 
 - type: github
-  icon: "fab fa-github"
+  icon: fab fa-github
 
 - type: orcid
-  icon: "fab fa-orcid"
+  icon: fab fa-orcid
   url: https://orcid.org/0000-0002-5579-5360
 
 - type: email
-  icon: "fas fa-envelope"
+  icon: fas fa-envelope
   noblank: true # open link in current tab
 
 - type: rss
-  icon: "fas fa-rss"
+  icon: fas fa-rss
   noblank: true
 # Uncomment and complete the url below to enable more contact options
 #
