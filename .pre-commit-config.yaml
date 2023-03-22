@@ -1,4 +1,4 @@
-exclude: '^assets/lib/'
+exclude: ^assets/lib/
 repos:
 - repo: https://github.com/kynan/nbstripout
   rev: 0.6.1
