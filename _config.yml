@@ -203,6 +203,7 @@ jekyll-archives:
     category: /categories/:name/
 
 plugins:
+- jekyll-remote-theme   # https://github.com/benbalter/jekyll-remote-theme
 - jekyll-scholar   # https://github.com/inukshuk/jekyll-scholar
 - jekyll-mentions   # https://github.com/jekyll/jekyll-mentions
 - jekyll-gist   # https://github.com/jekyll/jekyll-gist
