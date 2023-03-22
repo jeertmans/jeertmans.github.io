@@ -192,7 +192,10 @@ exclude:
 - rollup.config.js
 - node_modules
 - package*.json
-- vendor
+- vendor/bundle/
+- vendor/cache/
+- vendor/gems/
+- vendor/ruby/
 
 jekyll-archives:
   enabled: [categories, tags]
