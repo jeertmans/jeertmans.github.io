@@ -184,7 +184,7 @@ jobs:
     - name: Build with Jekyll
       uses: actions/jekyll-build-pages@v1
       env:
-        JEKYLL_ENV: 'production'
+        JEKYLL_ENV: production
       with:
         source: ./
         destination: ./_site
