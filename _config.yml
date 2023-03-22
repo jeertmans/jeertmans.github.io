@@ -209,7 +209,6 @@ plugins:
 - jekyll-gist   # https://github.com/jekyll/jekyll-gist
 - jekyll_github_sample   # https://github.com/bwillis/jekyll-github-sample
 - jekyll-target-blank   # https://github.com/keithmifsud/jekyll-target-blank
-- jekyll-minifier   # https://github.com/digitalsparky/jekyll-minifier
 
 scholar:
   style: modern-language-association
