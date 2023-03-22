@@ -185,8 +185,8 @@ jobs:
         path: assets/notebooks
     - name: Build with Jekyll
       uses: actions/jekyll-build-pages@v1
-      env:
-        JEKYLL_ENV: production
+      #env:
+      #  JEKYLL_ENV: production
       with:
         source: ./
         destination: ./_site
