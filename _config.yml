@@ -215,7 +215,7 @@ plugins:
 - jekyll-target-blank   # https://github.com/keithmifsud/jekyll-target-blank
 
 scholar:
-  style: modern-language-association
+  style: apa
 
 jekyll-mentions:
   base_url: https://github.com
