@@ -15,6 +15,7 @@ image:
 ---
 
 > This post is under construction...
+{: .prompt-warning }
 
 
 <div style="position:relative;padding-bottom:56.25%;">

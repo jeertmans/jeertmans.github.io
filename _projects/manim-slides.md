@@ -3,7 +3,11 @@ title: Manim Slides
 order: 1
 github: jeertmans/manim-slides
 website: https://eertmans.be/manim-slides
-date: 2023-03-21
+date: 2022-09-08
 ---
 
-TODO!
+Tool for live presentations using manim.
+
+<!--more-->
+
+Manim Slides is an extension to Manim that allows to create nice presentations from already existing Manim animations, with minimal changes required.
