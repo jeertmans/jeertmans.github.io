@@ -10,7 +10,7 @@ from matplotlib_inline.backend_inline import set_matplotlib_formats
 from plotly.graph_objs import Figure, Layout
 
 iframe_renderer = pio.renderers["iframe_connected"]
-iframe_renderer.html_directory = os.path.join("../assets/notebooks", str(uuid4()))
+iframe_renderer.html_directory = os.path.join("../assets/notebooks", "html_" + str(uuid4())) 
 pio.renderers.default = "iframe_connected"
 
 CONFIG = {"displaylogo": False, "toImageButtonOptions": {"format": "svg"}}

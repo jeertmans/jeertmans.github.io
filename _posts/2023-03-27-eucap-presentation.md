@@ -1,5 +1,5 @@
 ---
-title: "Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing - EuCAP 2023"
+title: "EuCAP2023 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing"
 categories:
   - Research
 tags:
@@ -9,7 +9,6 @@ tags:
   - programming
   - manim
   - manim-slides
-tagline: "Conference presentation"
 image:
   path: /assets/images/misc/Florence_EuCAP_2023.jpg
   alt: "Florence, Italy - From Pixabay"
