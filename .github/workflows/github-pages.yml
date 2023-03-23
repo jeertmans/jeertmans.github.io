@@ -184,9 +184,9 @@ jobs:
         name: notebooks-assets
         path: assets/notebooks
     - name: Build with Jekyll
-        run: bundle exec jekyll b -d "_site" --future
-        env:
-          JEKYLL_ENV: "production"
+      run: bundle exec jekyll b -d "_site" --future
+      env:
+        JEKYLL_ENV: "production"
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
 
