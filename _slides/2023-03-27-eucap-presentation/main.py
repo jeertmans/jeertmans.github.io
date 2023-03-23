@@ -1,5 +1,3 @@
-import math
-
 import numpy as np
 import sympy as sy
 from manim import *
@@ -7,7 +5,7 @@ from manim_slides import Slide
 from shapely.geometry import LineString
 
 """
-Some useful function required for the 'simple example'
+Some useful function required for the 'simple example'.
 """
 
 
@@ -18,30 +16,31 @@ def row(*args):
     return sy.Matrix(args)
 
 
-def generate_f():
+def generate_c(as_gamma=False):
+    """
+    Return C(x) and it's derivative.
+    """
     # Unknowns
     s1, s2 = sy.symbols("s_1 s_2", real=True)  # s1, s2 are real values
 
     # Geometry
 
-    ## Nodes
+    # - Nodes
     BS = row(2, -1)
     UE = row(2, 4)
 
-    ## Interaction points
+    # - Interaction points
     X1 = row(s1, s1)
     X2 = row(5, s2)
 
-    ## Surface normals
+    # - Surface normals
     n1 = row(1, -1).normalized()
     n2 = row(-1, 0).normalized()
 
-    # Aliases
+    # - Aliases
     V0 = X1 - BS
     V1 = X2 - X1
     V2 = UE - X2
-
-    as_gamma = False  # set this to True to use gamma in expression
 
     if as_gamma:
         g1 = sy.Function(r"\gamma_1", real=True)(s1, s2)
@@ -67,21 +66,24 @@ def generate_f():
     return sy.lambdify((s1, s2), f), df
 
 
-def generate_f_ris(phi=0):
+def generate_c_ris(phi=0):
+    """
+    Return C(x) and it's derivative for a RIS.
+    """
     # Unknowns
     s1, s2 = sy.symbols("s_1 s_2", real=True)  # s1, s2 are real values
 
     # Geometry
 
-    ## Nodes
+    # - Nodes
     BS = row(2, -1)
-    UE = row(2, 4)
+    UE = row(2, 4 - 0.5)
 
-    ## Interaction points
+    # - Interaction points
     X1 = row(s1, s1)
     X2 = row(5, s2)
 
-    ## Surface normals
+    # - Surface normals
     n1 = row(1, -1).normalized()
     n2 = row(-1, 0).normalized()
 
@@ -112,7 +114,9 @@ def generate_f_ris(phi=0):
 
 
 def gradient_descent(x0, df, tol=1e-12, max_it=100, return_steps=False):
-    # Typical gradient descent algorithm
+    """
+    Perform a gradient descent using optimal alpha for linear systems.
+    """
     xa = x0
     dfxa = df(xa)
     xb = xa - 0.25 * dfxa  # First step, alpha = .5
@@ -149,7 +153,7 @@ so I have to make default color for most things to be black (instead of white).
 
 def black(func):
     """
-    Sets default color to white
+    Sets default color to black
     """
 
     def wrapper(*args, color=BLACK, **kwargs):
@@ -178,10 +182,6 @@ class Main(Slide):
         super(Main, self).__init__(*args, **kwargs)
         self.slide_no = None
         self.slide_text = None
-
-    def next_slide(self):
-        self.wait()
-        self.pause()
 
     def write_slide_number(self, inital=1, text=Tex, animation=Write, position=ORIGIN):
         self.slide_no = inital
@@ -214,7 +214,7 @@ class Main(Slide):
 
         slide_no_pos = SE.shift(0.15 * RIGHT + 0.2 * DOWN).get_center()
 
-        # Preamble
+        # TeX Preamble
         tex_template = TexTemplate()
         tex_template.add_to_preamble(
             r"""
@@ -230,9 +230,6 @@ class Main(Slide):
 """
         )
 
-        # Slide 0
-        self.next_slide()
-
         # Slide: Title
         title = VGroup(
             Tex(
@@ -243,7 +240,7 @@ class Main(Slide):
             Tex("Jérome Eertmans"),
         ).arrange(DOWN, buff=1)
 
-        self.play(Write(title), self.write_slide_number(position=slide_no_pos))
+        self.play(FadeIn(title), self.write_slide_number(position=slide_no_pos))
         self.next_slide()
 
         # Slide: room
@@ -258,7 +255,7 @@ class Main(Slide):
         self.play(
             FadeIn(BS), FadeIn(UE), Create(NL), Create(SL), Create(WL), Create(EL)
         )
-        self.pause()
+        self.next_slide()
 
         A = BS.copy().shift(0.5 * RIGHT)
         B = UE.copy().shift(0.5 * LEFT)
@@ -291,11 +288,12 @@ class Main(Slide):
                     buff=0.0,
                 ),
             )
-            path.z_index = 0
+            path.z_index = -1
             paths.add(path)
             for p in path:
                 self.play(Write(p))
 
+            self.wait(0.1)
             self.next_slide()
 
         channel = MathTex(r"P, \tau, \phi...")
@@ -317,7 +315,7 @@ class Main(Slide):
 
         group = VGroup(how_to, ray_tracing).arrange(DOWN)
 
-        self.play(Write(how_to))
+        self.play(FadeIn(how_to))
         self.next_slide()
 
         self.play(FadeIn(ray_tracing, shift=UP))
@@ -336,7 +334,7 @@ class Main(Slide):
             t.align_to(outline[1], LEFT)
 
         self.play(FadeOut(group), self.update_slide_number())
-        self.play(Write(outline[0]))
+        self.play(FadeIn(outline[0]))
         self.next_slide()
 
         for t in outline[1:]:
@@ -544,6 +542,7 @@ class Main(Slide):
         self.next_slide()
 
         self.add(angles_)
+        self.wait(0.1)
         self.next_slide()
 
         def I_(BS, X1, UE):
@@ -811,7 +810,7 @@ class Main(Slide):
 
         # Slide: animate actual gradient descent
 
-        f, df = generate_f()
+        f, df = generate_c()
 
         def remap(X1, X2):
             s1 = X1.get_center()[0]
@@ -852,18 +851,14 @@ class Main(Slide):
         what_if_ms_text = Tex("What if we had a metasurface?").to_corner(UR)
         ms_text = Tex(r"$\phi=0$", color=GREEN).next_to(W2).shift(DOWN)
         self.play(FadeIn(what_if_ms_text))
-        self.pause()
+        self.next_slide()
 
+        self.play(UE.animate.shift(np.array([0, -0.5, 0])))
         self.play(EL.animate.set_color(GREEN))  # EL is W2
         self.play(FadeIn(ms_text))
-        self.pause()
+        self.next_slide()
 
-        f, df = generate_f_ris()
-
-        def remap(X1, X2):
-            s1 = X1.get_center()[0]
-            s2 = X2.get_center()[1]
-            return s1 + X_OFFSET, s2 + Y_OFFSET
+        f, df = generate_c_ris()
 
         _, f_number = f_label = VGroup(
             MathTex(r"\mathcal{C} = ", tex_template=tex_template),
@@ -990,10 +985,10 @@ class Main(Slide):
 
         thanks = Tex("Thanks for listening!").scale(2)
 
-        self.play(Write(thanks))
+        self.play(FadeIn(thanks))
 
         self.wait()
-        self.pause()
+        self.next_slide()
 
         # Slide: citation
 
@@ -1007,7 +1002,7 @@ class Main(Slide):
             Tex("[Computer software]. https://www.manim.community/"),
         ).arrange(DOWN)
 
-        self.play(Write(citation))
+        self.play(FadeIn(citation))
         self.wait()
-        self.pause()
+        self.next_slide()
         self.wait()
