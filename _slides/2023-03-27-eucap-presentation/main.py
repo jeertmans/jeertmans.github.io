@@ -578,10 +578,18 @@ class Main(Slide):
             .set_color(BLUE)
         )
 
+        def label_constructor(*args, **kwargs):
+            return MathTex(*args, tex_template=tex_template, **kwargs)
+
+        i_brace, c_brace = braces = VGroup(
+            BraceLabel(i_number, r"\cl I", label_constructor=label_constructor),
+            BraceLabel(c_number, r"\cl F", label_constructor=label_constructor),
+        ).set_color(BLUE)
+
         i_number.add_updater(lambda m: m.set_value(I_(BS_, X1_, UE_)))
         c_number.add_updater(lambda m: m.set_value(C_(X1_)))
 
-        self.play(FadeIn(cost), FadeIn(i_number))
+        self.play(FadeIn(cost), FadeIn(i_number), FadeIn(i_brace))
         self.next_slide()
 
         self.play(X1_.animate.move_to(W1_.get_start()))
@@ -592,7 +600,7 @@ class Main(Slide):
         self.play(X1_.animate.shift(UP))
         self.next_slide()
 
-        self.play(FadeIn(plus, c_number))
+        self.play(FadeIn(plus, c_number, c_brace))
         self.next_slide()
 
         self.play(X1_.animate.move_to(W1_.get_center()))
@@ -612,12 +620,17 @@ class Main(Slide):
         interaction.next_to(NV_, UP)
 
         interaction_eq = MathTex(
-            r"\hat{\bs r} = \hat{\bs \imath} - 2 \scp{\hat{\bs \imath}}{\hat{\bs n}}\hat{\bs n}",
+            r"\cl I \sim \hat{\bs r} = \hat{\bs \imath} - 2 \scp{\hat{\bs \imath}}{\hat{\bs n}}\hat{\bs n}",
             tex_template=tex_template,
         )
         interaction_eq.to_corner(UR)
 
-        self.play(FadeOut(cost_label), FadeIn(interaction), FadeIn(interaction_eq))
+        self.play(
+            FadeOut(cost_label),
+            FadeOut(braces),
+            FadeIn(interaction),
+            FadeIn(interaction_eq),
+        )
         self.next_slide()
 
         # Slide: diffraction
@@ -682,7 +695,7 @@ class Main(Slide):
             Transform(
                 interaction_eq,
                 MathTex(
-                    r"\frac{\scp{\bs i}{\hat{\bs e}}}{\| \bs i \|} =  \frac{\scp{\bs d}{\hat{\bs e}}}{\|\bs d\|}",
+                    r"\cl I \sim \frac{\scp{\bs i}{\hat{\bs e}}}{\| \bs i \|} =  \frac{\scp{\bs d}{\hat{\bs e}}}{\|\bs d\|}",
                     tex_template=tex_template,
                 ).to_corner(UR),
             ),
@@ -732,7 +745,7 @@ class Main(Slide):
             Transform(
                 interaction_eq,
                 MathTex(
-                    r"v_1 \sin(\theta_2) = v_2 \sin(\theta_1)",
+                    r"\cl I \sim v_1 \sin(\theta_2) = v_2 \sin(\theta_1)",
                     tex_template=tex_template,
                 ).to_corner(UR),
             ),
@@ -758,7 +771,7 @@ class Main(Slide):
             tex_template=tex_template,
         )
         constraint_eq = MathTex(
-            r"\cl C(\bs{\cl X})", r"\neq 0", tex_template=tex_template
+            r"\cl C(\bs{\cl X})", r"= 0", tex_template=tex_template
         ).shift(2 * DOWN)
         constraint_eq_relaxed = MathTex(
             r"\cl C(\bs{\cl X})", r"\le \epsilon", tex_template=tex_template
