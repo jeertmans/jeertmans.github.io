@@ -1,0 +1,58 @@
+---
+layout: page
+---
+
+{% assign projects = site.projects %}
+
+{% assign default_num = paginator.projects | size %}
+{% assign default_end = default_num | minus: 1 %}
+
+<img src="https://github-readme-stats.vercel.app/api?username={{ site.github.username }}&theme=transparent&show_icons=true">
+
+<div id="post-list">
+  {% for project in projects %}
+    <div class="card post-preview">
+      <a href="{{ project.url | relative_url }}">
+        <div class="card-body">
+          <h1 class="card-title">
+            {{ project.title }}
+          </h1>
+
+          <div class="card-text post-content">
+            <p>
+              {% include no-linenos.html content=project.content %}
+              {{ content | markdownify | strip_html | truncate: 200 | escape }}
+            </p>
+          </div>
+
+          <div class="post-meta text-muted d-flex">
+            <div class="mr-auto">
+              <!-- stars -->
+              <a href="https://github.com/{{ project.github }}">
+                <img style="vertical-align: bottom;margin-bottom: 10px;" alt="GitHub Repo stars" src="https://img.shields.io/github/stars/{{ project.github }}?style=social">
+              </a>
+              <!-- forks -->
+              <a href="https://github.com/{{ project.github }}">
+              <img style="vertical-align: bottom;margin-bottom: 10px;" alt="GitHub forks" src="https://img.shields.io/github/forks/{{ project.github }}?style=social">
+              </a>
+            </div>
+
+            {% if project.website %}
+            <a href="{{ project.website }}">
+              <i class="fas fa-globe fa-fw"></i>
+              <span>Website</span>
+            </a>
+            {% endif %}
+          </div>
+          <!-- .project-meta -->
+        </div>
+      </a>
+    </div>
+    <!-- .project-preview -->
+  {% endfor %}
+</div>
+<!-- #project-list -->
+
+{% if paginator.total_pages > 0 %}
+  {% include post-paginator.html %}
+{% endif %}

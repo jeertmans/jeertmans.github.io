@@ -1,5 +1,5 @@
 ---
-title: "Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing - COST INTERACT"
+title: "COST INTERACT - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing"
 categories:
   - Research
 tags:
@@ -8,13 +8,14 @@ tags:
   - video
   - programming
   - manim
-tagline: "Technical documentation presentation"
-header:
-  overlay_image: /assets/images/misc/Lyon_COST_INTERACT.jpg
-  caption: "Lyon, France - From COST's website"
+image:
+  path: /assets/images/misc/Lyon_COST_INTERACT.jpg
+  alt: "Lyon, France - From COST's website"
 ---
 
 Video of me presenting some of my results on the Ray Tracing methods applied to Telecommunications.
+
+<!--more-->
 
 # Context
 

@@ -1,0 +1,11 @@
+{% assign path = include.path %}
+{% assign source = include.source %}
+{% assign repository = include.repository %}
+<span>
+  <em>
+    <a href=https://www.github.com/{{ repository }}/blob/main/{{ source | default: path }}
+        title="Suggest an edit" data-toggle="tooltip" data-placement="bottom">
+      <i class="fas fa-pen" aria-hidden=true"></i>
+    </a>
+  </em>
+</span>
