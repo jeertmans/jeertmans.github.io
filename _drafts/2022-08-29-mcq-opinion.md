@@ -94,4 +94,3 @@ ax1.legend(title="Number of choices per question");
 
 
 ![svg](/assets/notebooks/2022-08-29-mcq-opinion_files/2022-08-29-mcq-opinion_4_0.svg)
-
