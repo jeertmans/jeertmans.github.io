@@ -28,7 +28,6 @@ if RUBY_PLATFORM =~ /linux-musl/
 end
 
 group :jekyll_plugins do
-  gem "jekyll-remote-theme"
   gem 'jekyll-scholar'
   gem 'jekyll-mentions'
   gem 'jekyll-gist'
