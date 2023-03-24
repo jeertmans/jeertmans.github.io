@@ -564,6 +564,7 @@ class Main(Slide):
         self.play(X1_.animate.move_to(W1_.get_start()))
         self.play(X1_.animate.move_to(W1_.get_end()))
         self.play(X1_.animate.move_to(W1_.get_center()))
+        self.wait(0.1)
         self.next_slide()
 
         cost, i_number, plus, c_number = cost_label = (
@@ -595,15 +596,18 @@ class Main(Slide):
         self.play(X1_.animate.move_to(W1_.get_start()))
         self.play(X1_.animate.move_to(W1_.get_end()))
         self.play(X1_.animate.move_to(W1_.get_center()))
+        self.wait(0.1)
         self.next_slide()
 
         self.play(X1_.animate.shift(UP))
+        self.wait(0.1)
         self.next_slide()
 
         self.play(FadeIn(plus, c_number, c_brace))
         self.next_slide()
 
         self.play(X1_.animate.move_to(W1_.get_center()))
+        self.wait(0.1)
 
         # Slide: any reflection
         self.next_slide()
@@ -633,7 +637,7 @@ class Main(Slide):
         )
         self.next_slide()
 
-        # Slide: diffraction
+        # Diffraction (setup)
 
         DIFF_W1_A = Polygon(
             W1_.get_start(),
@@ -673,9 +677,37 @@ class Main(Slide):
         )
         D_aout_.next_to(D_AOUT_, 2 * RIGHT)
 
+        # Slide: reflection on sphere
+
         W1_.save_state()
         self.play(Transform(W1_, arc_))
         self.next_slide()
+
+        # Slide: reflection on metasurface
+
+        UE_.save_state()
+
+        phi = MathTex(r"\phi", color=UE_COLOR).move_to(aout_.get_center())
+
+        self.play(
+            Restore(W1_),
+            UE_.animate.shift(RIGHT),
+            FadeTransform(aout_, phi),
+            Transform(
+                interaction, Tex("Reflection on metasurfaces").move_to(interaction)
+            ),
+            Transform(
+                interaction_eq,
+                MathTex(
+                    r"\cl I \sim \bs r = f(\bs n, \phi)",
+                    tex_template=tex_template,
+                ).to_corner(UR),
+            ),
+        )
+
+        self.next_slide()
+
+        # Slide: diffraction
 
         refl_config = VGroup(NV_, AIN_, AOUT_, ain_, aout_)
         diff_config = VGroup(D_NV_, D_AIN_, D_AOUT_, D_ain_, D_aout_)
@@ -689,6 +721,8 @@ class Main(Slide):
                 for refl, diff in zip(refl_config, diff_config)
             ],
             Restore(W1_),
+            Restore(UE_),
+            FadeOut(phi),
             FadeIn(DIFF_W1_B),
             FadeIn(DIFF_W1_A),
             Transform(interaction, Tex("Diffraction").move_to(interaction)),
@@ -770,6 +804,7 @@ class Main(Slide):
             r"\[\underset{\bs{\cl X} \in \bb R^{n_t}}{\text{minimize}}\ \cl C(\bs X) := \|\cl I(\bs X)\|^2 + \|\cl F(\bs X)\|^2\]",
             tex_template=tex_template,
         )
+        nt_eq = Tex("where $n_t$ is the total number of unknowns").shift(DOWN)
         constraint_eq = MathTex(
             r"\cl C(\bs{\cl X})", r"= 0", tex_template=tex_template
         ).shift(2 * DOWN)
@@ -778,6 +813,10 @@ class Main(Slide):
         ).shift(2 * DOWN)
 
         self.play(FadeIn(minimize_eq))
+
+        self.next_slide()
+
+        self.play(FadeIn(nt_eq, shift=DOWN))
 
         self.next_slide()
 
@@ -793,6 +832,7 @@ class Main(Slide):
 
         self.play(
             FadeOut(minimize_eq),
+            FadeOut(nt_eq),
             FadeOut(constraint_eq),
             self.update_slide_number(),
         )
@@ -830,7 +870,7 @@ class Main(Slide):
             s2 = X2.get_center()[1]
             return s1 + X_OFFSET, s2 + Y_OFFSET
 
-        _, f_number = f_label = VGroup(
+        cost_label, f_number = f_label = VGroup(
             MathTex(r"\mathcal{C} = ", tex_template=tex_template),
             DecimalNumber(
                 f(*remap(X1, X2)),  # f(s1, s2)
@@ -845,7 +885,17 @@ class Main(Slide):
         always(f_label.next_to, W2, RIGHT)
         f_always(f_number.set_value, lambda: f(*remap(X1, X2)))
 
-        self.play(FadeIn(f_label, shift=UP))
+        cost_eq = MathTex(
+            r"\|\cl I_\text{W1}; \cl I_\text{W2} \|^2 + \|\cl C_\text{W1}; \cl C_\text{W2} \|^2",
+            tex_template=tex_template,
+            color=BLUE,
+        ).next_to(cost_label, RIGHT)
+
+        self.play(FadeIn(cost_label), FadeIn(cost_eq))
+
+        self.next_slide()
+
+        self.play(FadeTransform(cost_eq, f_number))
         self.next_slide()
 
         x0 = remap(X1, X2)
