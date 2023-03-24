@@ -889,6 +889,7 @@ class Main(Slide):
             r"\|\cl I_\text{W1}; \cl I_\text{W2} \|^2 + \|\cl C_\text{W1}; \cl C_\text{W2} \|^2",
             tex_template=tex_template,
             color=BLUE,
+            font_size=40,
         ).next_to(cost_label, RIGHT)
 
         self.play(FadeIn(cost_label), FadeIn(cost_eq))
@@ -919,7 +920,6 @@ class Main(Slide):
         self.play(UE.animate.shift(np.array([0, -0.5, 0])))
         self.play(EL.animate.set_color(GREEN))  # EL is W2
         self.play(FadeIn(ms_text))
-        self.next_slide()
 
         f, df = generate_c_ris()
 
