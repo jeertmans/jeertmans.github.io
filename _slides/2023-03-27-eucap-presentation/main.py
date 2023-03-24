@@ -459,7 +459,7 @@ class Main(Slide):
         pros = VGroup(
             Tex(r"\textbf{Pros}"),
             Tex(r"- Simple"),
-            Tex(r"- Fast"),
+            Tex(r"- Fast - $\cl O (n)$", tex_template=tex_template),
         ).arrange(DOWN)
 
         for pro in pros[1:]:
@@ -699,7 +699,7 @@ class Main(Slide):
             Transform(
                 interaction_eq,
                 MathTex(
-                    r"\cl I \sim \bs r = f(\bs n, \phi)",
+                    r"\cl I \sim \bs r = f(\hat{\bs n}, \phi)",
                     tex_template=tex_template,
                 ).to_corner(UR),
             ),
@@ -886,7 +886,7 @@ class Main(Slide):
         f_always(f_number.set_value, lambda: f(*remap(X1, X2)))
 
         cost_eq = MathTex(
-            r"\|\cl I_\text{W1}; \cl I_\text{W2} \|^2 + \|\cl C_\text{W1}; \cl C_\text{W2} \|^2",
+            r"\|[\cl I_\text{W1}; \cl I_\text{W2}] \|^2 + \|\cl[ F_\text{W1}; \cl F_\text{W2} ]\|^2",
             tex_template=tex_template,
             color=BLUE,
             font_size=40,
@@ -907,6 +907,8 @@ class Main(Slide):
                 X2.animate.shift([0, ds2, 0]),
                 run_time=1.3,
             )
+
+        self.wait(.1)
 
         self.next_slide()
 
@@ -1001,7 +1003,7 @@ class Main(Slide):
             VGroup(
                 Tex(r"\textbf{Cons}"),
                 Tex(r"- In general, problem is not convex"),
-                Tex(r"- Convergence is not guaranteed"),
+                Tex(r"- Slower - $\cl O (k \cdot n)$", tex_template=tex_template),
             )
             .scale(0.5)
             .arrange(DOWN)
@@ -1052,20 +1054,3 @@ class Main(Slide):
 
         self.wait()
         self.next_slide()
-
-        # Slide: citation
-
-        self.play(FadeOut(thanks))
-
-        citation = VGroup(
-            Tex(r"\textbf{References}"),
-            Tex("The Manim Community Developers. (2022)."),
-            Tex("Manim – Mathematical Animation Framework"),
-            Tex("(Version v0.17.2)"),
-            Tex("[Computer software]. https://www.manim.community/"),
-        ).arrange(DOWN)
-
-        self.play(FadeIn(citation))
-        self.wait()
-        self.next_slide()
-        self.wait()
