@@ -21,7 +21,7 @@ layout: page
           <div class="card-text post-content">
             <p>
               {% include no-linenos.html content=project.content %}
-              {{ content | markdownify | strip_html | truncate: 200 | escape }}
+              {% include excerpt.html content=content excerpt=page.excerpt %}
             </p>
           </div>
 
