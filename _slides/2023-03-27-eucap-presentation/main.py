@@ -908,7 +908,7 @@ class Main(Slide):
                 run_time=1.3,
             )
 
-        self.wait(.1)
+        self.wait(0.1)
 
         self.next_slide()
 

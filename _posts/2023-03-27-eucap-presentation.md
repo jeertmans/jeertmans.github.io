@@ -17,7 +17,6 @@ image:
 > This post is under construction...
 {: .prompt-warning }
 
-
 <div style="position:relative;padding-bottom:56.25%;">
     <!-- 56.25 comes from aspect ratio of 16:9, change this accordingly -->
     <iframe

@@ -1087,5 +1087,6 @@ class Slides(Slide):
         self.pause()
         self.wait()
 ```
+
 {: spoiler="true"}
 <!-- prettier-ignore-end -->
