@@ -828,9 +828,46 @@ class Main(Slide):
 
         self.next_slide()
 
+        if_we_know = Tex(
+            r"If we know a mapping s.t. $(x_k, y_k) \leftrightarrow t_k$"
+        ).shift(UP)
+
+        self.play(
+            FadeIn(if_we_know),
+        )
+
+        self.next_slide()
+
+        self.play(
+            Transform(
+                minimize_eq,
+                Tex(
+                    r"\[\underset{\bs{\cl T} \in \bb R^{n_r}}{\text{minimize}}\ \cl C(\bs X(\bs{\cl T})) := \|\cl I(\bs X (\bs{\cl T})\|^2\]",
+                    tex_template=tex_template,
+                ).move_to(minimize_eq),
+            ),
+            Transform(
+                nt_eq,
+                Tex("where $n_r$ is the total number of (2d) reflections").move_to(
+                    nt_eq
+                ),
+            ),
+            Transform(
+                constraint_eq,
+                MathTex(
+                    r"\cl C(\bs{\cl X(\cl T)})",
+                    r"\le \epsilon",
+                    tex_template=tex_template,
+                ).move_to(constraint_eq),
+            ),
+        )
+
+        self.next_slide()
+
         # Slide: gradient descent on simple example using MPT method
 
         self.play(
+            FadeOut(if_we_know),
             FadeOut(minimize_eq),
             FadeOut(nt_eq),
             FadeOut(constraint_eq),
@@ -886,13 +923,23 @@ class Main(Slide):
         f_always(f_number.set_value, lambda: f(*remap(X1, X2)))
 
         cost_eq = MathTex(
-            r"\|[\cl I_\text{W1}; \cl I_\text{W2}] \|^2 + \|\cl[ F_\text{W1}; \cl F_\text{W2} ]\|^2",
+            r"\|[\cl I_1(t_1, t_2); \cl I_2(t_1,t_2)] \|^2",
             tex_template=tex_template,
             color=BLUE,
             font_size=40,
         ).next_to(cost_label, RIGHT)
 
+        cost_eq_full = MathTex(
+            r"&\left(- t_1 + t_2 + \frac{\left(t_2 - 4\right) \sqrt{\left(t_1 - 5\right)^{2} + \left(t_1 - t_2\right)^{2}}}{\sqrt{\left(t_2 - 4\right)^{2} + 9}}\right)^{2} \\+& \left(t_1 + \frac{3 \sqrt{\left(t_1 - 5\right)^{2} + \left(t_1 - t_2\right)^{2}}}{\sqrt{\left(t_2 - 4\right)^{2} + 9}} - 5\right)^{2} \\+& \Bigg|{t_1 + \frac{\left(t_1 - 5\right) \sqrt{\left(t_1 - 2\right)^{2} + \left(t_1 + 1\right)^{2}}}{\sqrt{\left(t_1 - 5\right)^{2} + \left(t_1 - t_2\right)^{2}}} - \frac{\sqrt{2} \left(\sqrt{2} \left(t_1 - 2\right) - \sqrt{2} \left(t_1 + 1\right)\right)}{2} - 2}\Bigg|^{2} \\+& \left|{t_1 + \frac{\left(t_1 - t_2\right) \sqrt{\left(t_1 - 2\right)^{2} + \left(t_1 + 1\right)^{2}}}{\sqrt{\left(t_1 - 5\right)^{2} + \left(t_1 - t_2\right)^{2}}} + \frac{\sqrt{2} \left(\sqrt{2} \left(t_1 - 2\right) - \sqrt{2} \left(t_1 + 1\right)\right)}{2} + 1}\right|^{2}",
+            color=BLUE,
+            font_size=16,
+        ).next_to(cost_label, RIGHT)
+
         self.play(FadeIn(cost_label), FadeIn(cost_eq))
+
+        self.next_slide()
+
+        self.play(Transform(cost_eq, cost_eq_full))
 
         self.next_slide()
 
@@ -991,6 +1038,7 @@ class Main(Slide):
                 Tex(r"- Any \# of reflect., diff., and refract."),
                 Tex(r"- Allows for multiple solutions"),
                 Tex(r"- Can be tuned for specific use cases"),
+                Tex(r"- Optimizer can be chosen"),
             )
             .scale(0.5)
             .arrange(DOWN)

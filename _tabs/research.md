@@ -2,5 +2,5 @@
 icon: fas fa-graduation-cap
 ---
 
-> This post is under construction...
+> This page is under construction...
 {: .prompt-warning }
