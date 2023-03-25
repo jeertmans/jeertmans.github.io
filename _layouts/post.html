@@ -12,19 +12,46 @@ tail_includes:
 <h1 data-toc-skip>{{ page.title }}</h1>
 
 <div class="post-meta text-muted">
-    <!-- published date -->
-    <span>
-      {{ site.data.locales[site.lang].post.posted }}
-      {% include datetime.html date=page.date tooltip=true %}
-    </span>
 
-    <!-- lastmod date -->
-    {% if page.last_modified_at %}
-    <span>
-      {{ site.data.locales[site.lang].post.updated }}
-      {% include datetime.html date=page.last_modified_at tooltip=true %}
-    </span>
-    {% endif %}
+    <div class="d-flex justify-content-between">
+      <!-- published date -->
+      <span>
+        {{ site.data.locales[site.lang].post.posted }}
+        {% include datetime.html date=page.date tooltip=true %}
+      </span>
+
+      <!-- lastmod date -->
+      {% if page.last_modified_at %}
+      <span>
+        {{ site.data.locales[site.lang].post.updated }}
+        {% include datetime.html date=page.last_modified_at tooltip=true %}
+      </span>
+      {% endif %}
+
+ 
+      <div>
+        {% if page.github %}
+        <span>
+          <em>
+            <a href="https://github.com/{{ page.github }}" title="GitHub repository" data-toggle="tooltip" data-placement="top">
+              <i class="fab fa-github fa-fw"></i>
+            </a>
+          </em>
+        </span>
+        {% endif %}   
+
+        {% if page.website %}
+        <span>
+          <em>
+            <a href="{{ page.website }}">
+              <i class="fas fa-globe fa-fw"></i>
+              <span>Website</span>
+            </a>
+          </em>
+        </span>
+        {% endif %}
+      </div>
+    </div>
 
   {% if page.image %}
     {% capture src %}src="{{ page.image.path | default: page.image }}"{% endcapture %}
