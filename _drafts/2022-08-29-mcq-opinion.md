@@ -22,7 +22,6 @@ In their most fundamental form, a multiple choice question consist of one questi
 
 Notheless, variants exist, such as multiple correct answers, and how much a correct answer is valued can also vary.
 
-
 ```python
 # Package imports
 
@@ -32,7 +31,6 @@ import numpy as np
 import scipy.special as sc
 from plotting import pyplot as plt
 ```
-
 
 ```python
 def cumulative_py(n, k, p=0.25):
@@ -49,13 +47,11 @@ def cumulative(n, k, p=0.25):
     return sc.betainc(n - k, 1 + k, 1 - p)
 ```
 
-
 ```python
 def success(n, p):
     k = np.ceil(n / 2) - 1  # score <= k, we fail the test
     return 1 - cumulative(n, k, p)
 ```
-
 
 ```python
 n_questions = np.arange(10, 41, 2)
@@ -90,7 +86,5 @@ ax2.set_ylabel(
 ax1.grid(True, which="both")
 ax1.legend(title="Number of choices per question");
 ```
-
-
 
 ![svg](/assets/notebooks/2022-08-29-mcq-opinion_files/2022-08-29-mcq-opinion_4_0.svg)
