@@ -1037,7 +1037,6 @@ class Main(Slide):
                 Tex(r"- Any geometry (but requires more info.)"),
                 Tex(r"- Any \# of reflect., diff., and refract."),
                 Tex(r"- Allows for multiple solutions"),
-                Tex(r"- Can be tuned for specific use cases"),
                 Tex(r"- Optimizer can be chosen"),
             )
             .scale(0.5)
@@ -1079,7 +1078,6 @@ class Main(Slide):
 
         future = VGroup(
             Tex(r"\textbf{Future work:}"),
-            Tex(r"- Explore refraction \& diffuse scattering"),
             Tex(r"- Compare with Ray Launching"),
             Tex(r"- Discuss different solvers / minimizers"),
         ).arrange(DOWN)
