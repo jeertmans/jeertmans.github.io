@@ -801,7 +801,7 @@ class Main(Slide):
         self.next_slide()
 
         minimize_eq = Tex(
-            r"\[\underset{\bs{\cl X} \in \bb R^{n_t}}{\text{minimize}}\ \cl C(\bs X) := \|\cl I(\bs X)\|^2 + \|\cl F(\bs X)\|^2\]",
+            r"\[\underset{\bs{\cl X} \in \bb R^{n_t}}{\text{minimize}}\ \cl C(\bs{\cl X}) := \|\cl I(\bs{\cl X})\|^2 + \|\cl F(\bs{\cl X})\|^2\]",
             tex_template=tex_template,
         )
         nt_eq = Tex("where $n_t$ is the total number of unknowns").shift(DOWN)
@@ -842,7 +842,7 @@ class Main(Slide):
             Transform(
                 minimize_eq,
                 Tex(
-                    r"\[\underset{\bs{\cl T} \in \bb R^{n_r}}{\text{minimize}}\ \cl C(\bs X(\bs{\cl T})) := \|\cl I(\bs X (\bs{\cl T})\|^2\]",
+                    r"\[\underset{\bs{\cl T} \in \bb R^{n_r}}{\text{minimize}}\ \cl C(\bs{\cl X}(\bs{\cl T})) := \|\cl I(\bs{\cl X }(\bs{\cl T})\|^2\]",
                     tex_template=tex_template,
                 ).move_to(minimize_eq),
             ),
