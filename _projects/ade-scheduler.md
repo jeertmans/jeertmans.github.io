@@ -39,4 +39,4 @@ In January 2023, after many updates, ADE Scheduler had over 10 000 accounts[^1][
 
 [^1]: The is roughly one third of the UCLouvain's population (students).
 [^2]: Using ADE Scheduler does not require creating an account, but creating offers additional features such as synchronization between devices.
-[^3]: In January 2022, the number of users was reset because we started to use the UCLouvain OAuth method. 
+[^3]: In January 2022, the number of users was reset because we started to use the UCLouvain OAuth method.
