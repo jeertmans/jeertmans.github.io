@@ -311,7 +311,7 @@ class Main(Slide):
         self.play(FadeOut(LOS))
 
         how_to = Tex("How to find all paths?")
-        ray_tracing = Tex("Ray Tracing!")
+        ray_tracing = Tex("Multiple methods exist!")
 
         group = VGroup(how_to, ray_tracing).arrange(DOWN)
 
