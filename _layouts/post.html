@@ -26,10 +26,35 @@ tail_includes:
         {{ site.data.locales[site.lang].post.updated }}
         {% include datetime.html date=page.last_modified_at tooltip=true %}
       </span>
+  </div>
+  <div class="d-flex justify-content-between">
       {% endif %}
 
+        
+      <div>
+    </div>
 
       <div>
+        {% if page.arxiv %}
+        <span>
+          <em>
+            <a href="{{ page.arxiv }}" title="arXiv" data-toggle="tooltip" data-placement="top">
+              <i class="fas fa-file-circle-check fa-fw"></i>
+            </a>
+          </em>
+        </span>
+        {% endif %}
+
+        {% if page.doi %}
+        <span>
+          <em>
+            <a href="{{ page.doi }}" title="DOI" data-toggle="tooltip" data-placement="top">
+              <i class="fas fa-link fa-fw"></i>
+            </a>
+          </em>
+        </span>
+        {% endif %}
+
         {% if page.github %}
         <span>
           <em>
