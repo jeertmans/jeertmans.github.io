@@ -842,7 +842,7 @@ class Main(Slide):
             Transform(
                 minimize_eq,
                 Tex(
-                    r"\[\underset{\bs{\cl T} \in \bb R^{n_r}}{\text{minimize}}\ \cl C(\bs{\cl X}(\bs{\cl T})) := \|\cl I(\bs{\cl X }(\bs{\cl T})\|^2\]",
+                    r"\[\underset{\bs{\cl T} \in \bb R^{n_r}}{\text{minimize}}\ \cl C(\bs{\cl X}(\bs{\cl T})) := \|\cl I(\bs{\cl X }(\bs{\cl T}))\|^2\]",
                     tex_template=tex_template,
                 ).move_to(minimize_eq),
             ),
