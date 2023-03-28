@@ -181,7 +181,7 @@ inputs:
     required: true
     default: ''
 outputs:
-  result:
+  results:
     description: The results from calling `myapp`
 runs:
   using: docker
