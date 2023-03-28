@@ -235,7 +235,7 @@ image to execute `entrypoint.sh`{: .filepath}.
 In the [Publishing](#publishing) section, I will show you how you can publish
 your image to some container registry, to make it available online.
 
-Finally, the `entrypoint.sh` file will basically call `myapp`,
+Finally, the `entrypoint.sh`{: .filepath} file will basically call `myapp`,
 and `echo` the results to store them appropriately.
 
 ```bash
@@ -246,7 +246,7 @@ echo "results=$results" >> $GITHUB_OUTPUT
 ```
 {: file="entrypoint.sh" }
 
-> Make sure that `entrypoint.sh` is executable. On Linux,
+> Make sure that `entrypoint.sh`{: .filepath} is executable. On Linux,
 you can do so with `chmod +x entrypoint.sh`.
 {: .prompt-warning }
 
