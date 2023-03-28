@@ -43,7 +43,7 @@ application can build. This is pretty useful to avoid merging erroneous code
 to the main branch.
 
 Workflows are defined using `YAML` files, that must be put in the
-`.github/workflows` directory of your repository.
+`.github/workflows`{: .filepath} directory of your repository.
 
 ```yaml
 name: Check compilation
@@ -145,9 +145,9 @@ workflow run, the Docker way is our on solution[^2].
 
 As documented by GitHub, creating a Docker action requires three files:
 
-1. an `action.yml`, that defines the inputs and outputs of our action;
-2. a `Dockerfile`, that will be used to build the image to run our application;
-3. an `entrypoint.sh`, for actually executing code;
+1. an `action.yml`{: .filepath}, that defines the inputs and outputs of our action;
+2. a `Dockerfile`{: .filepath}, that will be used to build the image to run our application;
+3. an `entrypoint.sh`{: .filepath}, for actually executing code;
 
 and you would obtain the following structure:
 
@@ -163,9 +163,9 @@ and you would obtain the following structure:
 ```
 {: file="Project tree" .nolineno }
 
-The `action.yml` file contains important information for users, namely the
+The `action.yml`{: .filepath} file contains important information for users, namely the
 inputs and outputs, as well more fancy (but required) fields such as the
-branding. This, and the `README.md`, will be displayed on the Marketplace.
+branding. This, and the `README.md`{: .filepath}, will be displayed on the Marketplace.
 
 {% raw %}
 ```yml
@@ -229,7 +229,7 @@ docker build --target runtime -t container .
 
 > The `--target runtime` tells Docker to stop at the `runtime` stage.
 I.e., it will not run the `action` part. This is because I don't want to docker
-image to execute `entrypoint.sh`.
+image to execute `entrypoint.sh`{: .filepath}.
 {: .prompt-info }
 
 In the [Publishing](#publishing) section, I will show you how you can publish
