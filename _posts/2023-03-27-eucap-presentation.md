@@ -29,9 +29,6 @@ Slides
 
 {% include slides.html url="/assets/slides/2023-03-27-eucap-presentation.html" %}
 
-The slides were generated using the [Manim](https://www.manim.community/) {% cite The_Manim_Community_Developers_Manim_Mathematical_2022 %} animation engine and [Manim Slides](https://eertmans.be/projects/manim-slides/), one of my open source projects, to combine the animations into slides and later convert them in a *PowerPoint* `.pptx` file.
-
-
 References
 ----------
 
