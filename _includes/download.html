@@ -1,6 +1,6 @@
 {% assign path = include.path %}
 {% assign placement = include.placement | default: "bottom" %}
 <a href="{{ path }}"
-   title="Download" data-toggle="tooltip" data-placement="{{ placement }}">
+   title="Download" target="_blank" data-toggle="tooltip" data-placement="{{ placement }}">
   <i class="fas fa-download fa-fw" aria-hidden=true"></i>
 </a>
