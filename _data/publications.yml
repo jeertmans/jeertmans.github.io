@@ -1,0 +1,21 @@
+- title: "EuCAP 2023 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing"
+  date: 2023-03-27
+  tags:
+    - Conference
+    - Paper
+    - Talk
+  download: /assets/publications/eucap2023-paper.pdf
+  doi: 1234
+  bibtex: /assets/publications/eucap2023-paper.bib
+- title: "COST Meeting 2022 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing"
+  date: 2022-06-15
+  tags:
+    - Technical meeting
+    - Talk
+    - Paper
+- title: "SITB 2022 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing"
+  date: 2022-06-15
+  tags:
+    - Conference
+    - Abstract
+    - Post

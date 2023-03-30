@@ -1,0 +1,57 @@
+{% assign publications = site.data.publications %}
+
+{% assign default_num = paginator.projects | size %}
+{% assign default_end = default_num | minus: 1 %}
+
+<div id="post-list">
+  {% for publication in publications %}
+    <div class="card post-preview">
+      <div class="card-body">
+        <h1 class="card-title">
+          {{ publication.title }}
+        </h1>
+
+        {% if publication.abstract %}
+        <div class="card-text post-content">
+          <p>
+            {% include no-linenos.html content=publication.abstract %}
+            {% include excerpt.html content=content %}
+          </p>
+        </div>
+        {% endif %}
+
+        <div class="post-meta text-muted d-flex">
+          {% if publication.download %}
+          <span>
+          {% include download.html path=publication.download %}
+          </span>
+          {% endif %}
+          {% if publication.bibtex %}
+          <span>
+          {% include bibtex.html citation=publication.bibtex %}
+          </span>
+          {% endif %}
+
+          <!-- tags -->
+          {% if publication.tags.size > 0 %}
+            {% assign tags = publication.tags | sort %}
+            <span>
+              {% for tag in tags %}
+                {{ tag }}
+                {%- unless forloop.last -%},{%- endunless -%}
+              {% endfor %}
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- .project-meta -->
+      </div>
+    </div>
+    <!-- .project-preview -->
+  {% endfor %}
+</div>
+<!-- #project-list -->
+
+{% if paginator.total_pages > 0 %}
+  {% include post-paginator.html %}
+{% endif %}
