@@ -1,4 +1,4 @@
-{% assign publications = site.data.publications %}
+{% assign publications = site.data.publications | sort: "date" | reverse %}
 
 {% assign default_num = paginator.projects | size %}
 {% assign default_end = default_num | minus: 1 %}
@@ -44,13 +44,13 @@
           {% endif %}
         </div>
 
-        <!-- .project-meta -->
+        <!-- .publication-meta -->
       </div>
     </div>
-    <!-- .project-preview -->
+    <!-- .publication-preview -->
   {% endfor %}
 </div>
-<!-- #project-list -->
+<!-- #publication-list -->
 
 {% if paginator.total_pages > 0 %}
   {% include post-paginator.html %}
