@@ -1,6 +1,5 @@
 ---
 title: Manim Tutorial
-order: 5
 github: jeertmans/manim-tutorial
 website: https://eertmans.be/manim-tutorial
 date: 2022-10-18

@@ -1,6 +1,5 @@
 ---
 title: ADE Scheduler
-order: 3
 github: ADE-Scheduler/ADE-Scheduler
 website: https://ade-scheduler.info.ucl.ac.be/
 date: 2023-03-25
