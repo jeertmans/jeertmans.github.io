@@ -132,6 +132,14 @@ collections:
     - archives.md
   projects:
     output: true
+    order:
+      - manim-slides.md
+      - languagetool-rust.md
+      - ade-scheduler.md
+      - selsearch.md
+      - filesfinder.md
+      - deltri.md
+      - manim-tutorial.md
     sort_by: order
 
 defaults:

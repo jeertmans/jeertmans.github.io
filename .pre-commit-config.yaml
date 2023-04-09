@@ -10,7 +10,7 @@ repos:
   - id: isort
     args: [--profile, black, --filter-files]
 - repo: https://github.com/psf/black
-  rev: 23.1.0
+  rev: 23.3.0
   hooks:
   - id: black
   - id: black-jupyter
@@ -33,7 +33,7 @@ repos:
   - id: prettier
     types_or: [css, javascript, json]
 - repo: https://github.com/nbQA-dev/nbQA
-  rev: 1.6.4
+  rev: 1.7.0
   hooks:
   - id: nbqa-black
   - id: nbqa-pyupgrade
