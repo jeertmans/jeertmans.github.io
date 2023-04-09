@@ -138,7 +138,7 @@ as combination of other actions;
 * or using a Docker image, if you want to run arbitrary complex code,
 and need something else than just pure Javascript.
 
-For Rust code, that we don't want to spend time recompiling on every 
+For Rust code, that we don't want to spend time recompiling on every
 workflow run, the Docker way is our on solution[^2].
 
 [^2]: Some may argue that you could push pre-built binaries to GitHub releases, and then download them in the workflow file. While this also works, this, in my opinion, is more difficult to setup.
