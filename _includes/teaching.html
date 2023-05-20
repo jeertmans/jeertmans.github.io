@@ -1,0 +1,48 @@
+{% assign teachings = site.data.teaching | sort: "date" | reverse %}
+
+{% assign default_num = paginator.projects | size %}
+{% assign default_end = default_num | minus: 1 %}
+
+<div id="post-list">
+  {% for teaching in teachings %}
+    <div class="card post-preview">
+      <div class="card-body">
+        <h1 class="card-title">
+          {{ teaching.course }}
+        </h1>
+
+        {% if teaching.details %}
+        <div class="card-text post-content">
+          <p>
+            {% include no-linenos.html content=teaching.details %}
+            {% include excerpt.html content=content %}
+          </p>
+        </div>
+        {% endif %}
+
+        <div class="post-meta text-muted d-flex">
+          <span>
+          {{ teaching.role }}
+          </span>
+          <span>
+          {{ teaching.time }}
+          </span>
+          <span>
+              {{ teaching.company }}
+          </span>
+          <span>
+              {{ teaching.location }}
+          </span> 
+        </div>
+
+        <!-- .teaching-meta -->
+      </div>
+    </div>
+    <!-- .teaching-preview -->
+  {% endfor %}
+</div>
+<!-- #teaching-list -->
+
+{% if paginator.total_pages > 0 %}
+  {% include post-paginator.html %}
+{% endif %}
