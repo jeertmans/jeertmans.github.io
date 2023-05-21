@@ -1,7 +1,11 @@
-{% assign teachings = site.data.teaching | sort: "date" | reverse %}
+{% assign teachings = site.data.teaching %}
 
 {% assign default_num = paginator.projects | size %}
 {% assign default_end = default_num | minus: 1 %}
+
+<div class="post-content">
+  {{ content }}
+</div>
 
 <div id="post-list">
   {% for teaching in teachings %}
@@ -14,25 +18,26 @@
         {% if teaching.details %}
         <div class="card-text post-content">
           <p>
-            {% include no-linenos.html content=teaching.details %}
-            {% include excerpt.html content=content %}
+            {{ teaching.details | markdownify }}
           </p>
         </div>
         {% endif %}
 
         <div class="post-meta text-muted d-flex">
-          <span>
-          {{ teaching.role }}
-          </span>
-          <span>
-          {{ teaching.time }}
-          </span>
-          <span>
+          <div class="mr-auto">
+            <span>
+              {{ teaching.time }}
+            </span>
+            <span>
               {{ teaching.company }}
-          </span>
-          <span>
+            </span>
+            <span>
               {{ teaching.location }}
-          </span> 
+            </span>
+          </div>
+          <span>
+            {{ teaching.role }}
+          </span>
         </div>
 
         <!-- .teaching-meta -->
