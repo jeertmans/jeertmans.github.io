@@ -26,6 +26,11 @@
           {% include download.html path=publication.download %}
           </span>
           {% endif %}
+          {% if publication.doi %}
+          <span>
+          {% include doi.html doi=publication.doi %}
+          </span>
+          {% endif %}
           {% if publication.bibtex %}
           <span>
           {% include bibtex.html citation=publication.bibtex %}
