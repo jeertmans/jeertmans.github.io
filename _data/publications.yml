@@ -5,7 +5,7 @@
   - Paper
   - Talk
   download: /assets/publications/eucap2023-paper.pdf
-  doi: 1234
+  doi: 10.23919/EuCAP57121.2023.10132934
   bibtex: /assets/publications/eucap2023-paper.bib
 - title: 'COST Meeting 2022 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing'
   date: 2022-06-15
