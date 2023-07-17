@@ -10,8 +10,8 @@ tags:
   - manim
   - manim-slides
 image:
-  path: /assets/images/misc/Florence_EuCAP_2023.jpg
-  alt: "Florence, Italy - From Pixabay"
+  path: /assets/images/misc/Siegen.jpg
+  alt: "Siegen, Germany - Bob Ionescu"
 ---
 
 Presentation slides and code for my talk in Siegen.
@@ -34,5 +34,5 @@ Source code
 -----------
 
 {% highlight python %}
-{% github_sample jeertmans/jeertmans.github.io/blob/6c070c91ebbf644e1d51d0e8e0a8ea86d9b7962b/_slides/2023-03-27-eucap-presentation/main.py %}
+{% github_sample jeertmans/jeertmans.github.io/blob/beb8817df96a13d0ca19b6c6690921927533047b/_slides/2023-07-17-siegen-presentation/main.py %}
 {% endhighlight %}
