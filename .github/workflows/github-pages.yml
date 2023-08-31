@@ -37,94 +37,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Building slides
-  build-slides:
-    permissions: write-all
-    defaults:
-      run:
-        working-directory: ./_slides
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Setup TeX Live
-      uses: teatimeguest/setup-texlive-action@v2
-      with:
-        packages: >-
-          collection-basic
-          amsmath
-          babel-english
-          cbfonts-fd
-          cm-super
-          ctex
-          doublestroke
-          dvisvgm
-          everysel
-          fontspec
-          frcursive
-          fundus-calligra
-          gnu-freefont
-          jknapltx
-          latex-bin
-          mathastext
-          microtype
-          ms
-          physics
-          preview
-          ragged2e
-          relsize
-          rsfs
-          setspace
-          standalone
-          tipa
-          wasy
-          wasysym
-          xcolor
-          xetex
-          xkeyval
-          fontawesome5
-          siunitx
-          mathtools
-    - name: Install Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        cache: pip
-    - name: Setup Pages
-      uses: actions/configure-pages@v3
-    - name: Install Linux Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install libcairo2-dev libpango1.0-dev ffmpeg freeglut3-dev
-    - name: Install Python dependencies
-      run: pip install -r requirements.txt
-    - name: Restore cached media
-      id: cache-media-restore
-      uses: actions/cache/restore@v3
-      with:
-        path: _slides/media
-        key: ${{ runner.os }}-media
-    - name: Build animation and convert it into HTML slides
-      run: |
-        find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim "$(basename {})" --media_dir="../media/$(dirname {})" && manim-slides convert Main "../../assets/slides/$(dirname {}).html" -ccontrols=true'
-    - name: Clear cache
-      run: |
-        gh extension install actions/gh-actions-cache
-        gh actions-cache delete ${{ steps.cache-media-restore.outputs.cache-primary-key }} --confirm || true
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Save media to cache
-      id: cache-media-save
-      uses: actions/cache/save@v3
-      with:
-        path: _slides/media
-        key: ${{ steps.cache-media-restore.outputs.cache-primary-key }}
-    - name: Upload slides
-      uses: actions/upload-artifact@v3
-      with:
-        name: slides
-        path: assets/slides
-
   # Build notebooks
   build-notebooks:
     runs-on: ubuntu-latest
@@ -168,11 +80,6 @@ jobs:
       with:
         ruby-version: 3.2.1     # Not needed with a .ruby-version file
         bundler-cache: true   # runs 'bundle install' and caches installed gems automatically
-    - name: Download slides
-      uses: actions/download-artifact@v3
-      with:
-        name: slides
-        path: assets/slides
     - name: Download notebooks
       uses: actions/download-artifact@v3
       with:
