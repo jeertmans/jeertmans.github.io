@@ -35,12 +35,16 @@
               {{ teaching.location }}
             </span>
             {% if teaching.github %}
-            <a href="https://github.com/{{ teaching.github }}">
-              <i class="fab fa-fithub"></i>
+            <span class="icon-border"></span>
+            <a href="https://github.com/{{ teaching.github }}"
+               aria-label="github">
+              <i class="fab fa-github"></i>
             </a>
             {% endif %}
             {% if teaching.website %}
-            <a href="{{ teaching.website }}">
+            <span class="icon-border"></span>
+            <a href="{{ teaching.website }}"
+               aria-label="website">
               <i class="fas fa-globe fa-fw"></i>
             </a>
             {% endif %}
