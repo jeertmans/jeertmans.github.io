@@ -35,6 +35,20 @@
               {{ teaching.location }}
             </span>
           </div>
+          {% if teaching.website %}
+          <span>
+            <a href="{{ teaching.github }}">
+              <i class="fab fa-fithub"></i>
+            </a>
+          </span>
+          {% endif %}
+          {% if teaching.website %}
+          <span>
+            <a href="{{ teaching.website }}">
+              <i class="fas fa-globe fa-fw"></i>
+            </a>
+          </span>
+          {% endif %}
           <span>
             {{ teaching.role }}
           </span>

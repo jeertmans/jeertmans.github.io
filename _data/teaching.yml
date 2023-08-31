@@ -1,5 +1,35 @@
 - course: 'LELEC1101: Project I in electricity'
   role: Teaching Assistant
+  time: 2024.S1
+  company: UCLouvain
+  location: Louvain-la-Neuve, Belgium
+  details: |
+    In charge of the pratictical sessions.
+- course: 'LELEC2102/03: Project in Electrical Engineering'
+  role: Teaching Assistant
+  time: 2023.S2 - 2024.S1
+  company: UCLouvain
+  location: Louvain-la-Neuve, Belgium
+  details: |
+    In charge of the wireless communications part.
+- course: 'LELEC2796: Wireless Communications'
+  role: Teaching Assistant
+  time: 2023.S2
+  company: UCLouvain
+  location: Louvain-la-Neuve, Belgium
+  github: jeertmans/LELEC2796
+  website: https://eertmans.be/LELEC2796
+  details: |
+    In charge of the pratictical sessions and giving the new project.
+- course: 'LEPL1109: Statistics & Data Science'
+  role: Teaching Assistant
+  time: 2023.S2
+  company: UCLouvain
+  location: Louvain-la-Neuve, Belgium
+  details: |
+    In charge of the pratictical sessions and creating a hackathon for the students.
+- course: 'LELEC1101: Project I in electricity'
+  role: Teaching Assistant
   time: 2023.S1
   company: UCLouvain
   location: Louvain-la-Neuve, Belgium
@@ -17,6 +47,8 @@
   time: 2022.S2
   company: UCLouvain
   location: Louvain-la-Neuve, Belgium
+  github: jeertmans/LELEC2796
+  website: https://eertmans.be/LELEC2796
   details: |
     In charge of the pratictical sessions and creating the new project for 2023-2024.
 - course: 'LEPL1109: Statistics & Data Science'
@@ -38,8 +70,19 @@
   time: 2022.S1
   company: UCLouvain
   location: Louvain-la-Neuve, Belgium
+  github: jeertmans/LELEC1930
+  website: https://eertmans.be/LELEC1930
   details: |
     In charge of creating and giving the pratictical sessions.
+- course: 'LEPL1202: Physics II'
+  role: Teaching Assistant
+  time: 2022.S1
+  company: UCLouvain
+  location: Louvain-la-Neuve, Belgium
+  github: jeertmans/LEPL1202_APP1-B
+  website: https://eertmans.be/LEPL1202_APP1-B
+  details: |
+    In charge of the pratictical rewriting two _learn by project_ sessions.
 - course: 'LEPL1203: Physics III'
   role: Teaching Assistant
   time: 2021.S2
