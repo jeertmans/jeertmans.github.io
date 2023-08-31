@@ -38,5 +38,5 @@ img[alt=svg] {
 
 .post-content a {
   color: var(--text-muted-color);
-  border-bottom: none;
+  border-bottom: none !important;
 }
