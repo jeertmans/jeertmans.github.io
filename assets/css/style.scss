@@ -40,3 +40,7 @@ img[alt=svg] {
   color: var(--text-muted-color);
   border-bottom: none !important;
 }
+
+.filter-text-muted {
+    filter: invert(48%) sepia(6%) saturate(675%) hue-rotate(166deg) brightness(92%) contrast(88%);
+}
