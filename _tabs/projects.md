@@ -14,4 +14,8 @@ formatters, documenting my code, and so on.
 You can find a few of my projects below, but feel free to go through my
 [GitHub profile](https://github.com/jeertmans) for more content!
 
-[![Jerome's GitHub stats](https://github-readme-stats.vercel.app/api?username=jeertmans&theme=transparent&show_icons=true)](https://github.com/jeertmans)
+<a href="https://github.com/jeertmans" style="border-bottom: none;">
+  <img src="https://github-readme-stats.vercel.app/api?username=jeertmans&theme=transparent&show_icons=true" 
+       alt="Jerome's GitHub stats"
+       style="border-bottom: none;">
+</a>
