@@ -31,8 +31,7 @@ refactor: true
   {% assign default_beg = 0 %}
 {% endif %}
 
-{% assign default_num = paginator.posts | size | minus: pinned_num %}
-{% assign default_num = 0 %}
+{% assign default_num = site.projects | size | minus: pinned_num %}
 {% assign default_end = default_beg | plus: default_num | minus: 1 %}
 
 {% if default_num > 0 %}
@@ -79,21 +78,21 @@ refactor: true
 
           <div class="post-meta flex-grow-1 d-flex align-items-end">
             <div class="me-auto">
-              <!-- stars -->
-              <a href="https://github.com/{{ project.github }}/stargazers">
-                <img style="vertical-align: bottom;margin-bottom: 10px;" alt="GitHub Repo stars" src="https://img.shields.io/github/stars/{{ project.github }}?style=flat-square">
-              </a>
-              <!-- forks -->
-              <a href="https://github.com/{{ project.github }}/fork">
-              <img style="vertical-align: bottom;margin-bottom: 10px;" alt="GitHub forks" src="https://img.shields.io/github/forks/{{ project.github }}?style=flat-square">
-              </a>
+              <!-- github -->
+              {% if project.github %}
+                <i aria-label="Hosted on GitHub" class="fab fa-github"></i>
+              {% endif %}
+              <!-- website -->
+              {% if project.website %}
+                <i aria-label="Has a website" class="fas fa-globe fa-fw"></i>
+              {% endif %}
             </div>
 
-            {% if project.website %}
-              <a href="{{ project.website }}">
-                <i class="fas fa-globe fa-fw"></i>
-                <span>Website</span>
-              </a>
+            {% if project.pin %}
+              <div class="pin ms-1">
+                <i class="fas fa-thumbtack fa-fw"></i>
+                <span>{{ site.data.locales[lang].post.pin_prompt }}</span>
+              </div>
             {% endif %}
           </div>
           <!-- .post-meta -->
