@@ -673,7 +673,7 @@ class Main(Slide):
         # Slide: summary of image RT
 
         old_objects = [
-            mob for mob in self.mobjects if mob not in [self.slide_text, sec2]
+            mob for mob in self.mobjects if mob not in [self.slide_text, *outline]
         ]
 
         self.play(self.update_slide_number(), *[FadeOut(mob) for mob in old_objects])
@@ -719,7 +719,7 @@ class Main(Slide):
         self.next_slide()
 
         sec2.to_corner(UL)
-        self.play(self.update_slide_number(), FadeOut(summary), Transform(sec2, sec3))
+        self.play(self.update_slide_number(), FadeOut(summary), Transform(sec1, sec3))
 
         BS_ = BS.copy().move_to(ORIGIN)
         UE_ = UE.copy().move_to(ORIGIN)
@@ -1117,7 +1117,7 @@ class Main(Slide):
                 )
             ),
         )
-        self.play(*[FadeIn(mob) for mob in old_objects])
+        self.play(*[FadeIn(mob) for mob in old_objects if mob != sec1])
 
         self.next_slide()
 
@@ -1299,18 +1299,68 @@ class Main(Slide):
 
         self.play(FadeIn(summary[1][1]))
 
-        future = VGroup(
-            Tex(r"\textbf{Future work:}"),
-            Tex(r"- Compare with Ray Launching"),
-            Tex(r"- Discuss different solvers / minimizers"),
-        ).arrange(DOWN)
-
-        for t in future[2:]:
-            t.align_to(future[1], LEFT)
+        # Slide: comparison with FPT
 
         self.next_slide()
+
+        comparison_with_fermat = Tex(
+            r"""
+            MPT $\ne$ \textit{Fermat}'s path:
+            \[\underset{\bs{\cl X} \in \bb R^{n_t}}{\text{minimize}}\ \cl L(\bs{\cl X}) := \sum_i \|\bs{\cl X_i} - \bs{\cl X_{i-1}}\|\]
+            """,
+            tex_template=tex_template,
+        )
+
+        fermat_paper = ImageMobject("paper-fermat-path.png")
+
+        fermat_paper.next_to(comparison_with_fermat, 2 * DOWN)
+
         self.play(FadeOut(summary), self.update_slide_number())
-        self.play(FadeIn(future))
+        self.play(FadeIn(comparison_with_fermat))
+        self.next_slide()
+        self.play(FadeIn(fermat_paper))
+        self.next_slide()
+
+        # Slide: about differentiabiliy
+
+        self.play(
+            self.update_slide_number(),
+            Transform(sec1, sec4),
+            FadeOut(comparison_with_fermat),
+            FadeOut(fermat_paper),
+        )
+        self.next_slide()
+
+        rt_eq = MathTex(r"I = \sum\limits_{p}^\text{paths} f(p, \theta)")
+        self.play(FadeIn(rt_eq))
+        self.next_slide()
+
+        los_image = ImageMobject("los.png")
+        self.play(FadeOut(rt_eq))
+        self.play(FadeIn(los_image))
+        self.next_slide()
+
+        # Slide: current work
+
+        self.play(
+            self.update_slide_number(),
+            Transform(sec1, sec5),
+            los_image.animate.shift(3 * LEFT),
+        )
+        self.next_slide()
+
+        los_approx_image = ImageMobject("los_approx.png").shift(3 * RIGHT)
+        self.play(FadeIn(los_approx_image))
+
+        self.next_slide()
+        los_approx_soft_image = ImageMobject("los_approx_soft.png").shift(3 * RIGHT)
+        self.play(Transform(los_approx_image, los_approx_soft_image))
+
+        self.next_slide()
+        power_image = ImageMobject("power.png")
+        self.play(FadeOut(los_image), FadeOut(los_approx_image))
+        self.play(FadeIn(power_image))
+
         self.next_slide()
 
         # Slide: fade out everything and thanks
