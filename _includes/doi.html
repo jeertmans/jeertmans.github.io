@@ -1,6 +1,6 @@
 {% assign doi = include.doi %}
 {% assign placement = include.placement | default: "bottom" %}
 <a href="https://doi.org/{{ doi }}"
-   title="DOI" target="_blank" data-toggle="tooltip" data-placement="{{ placement }}">
+   title="DOI" data-toggle="tooltip" data-placement="{{ placement }}">
   {{ doi }}
 </a>

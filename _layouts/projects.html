@@ -1,6 +1,6 @@
 ---
 layout: page
-refactor: true
+refactor: false
 ---
 
 {% include lang.html %}
@@ -8,37 +8,7 @@ refactor: true
 {% assign pinned = site.projects | where: 'pin', 'true' %}
 {% assign default = site.projects | where_exp: 'item', 'item.pin != true and item.hidden != true' %}
 
-{% assign projects = '' | split: '' %}
-
-<!-- Get pinned projects -->
-
-{% assign offset = paginator.page | minus: 1 | times: paginator.per_page %}
-{% assign pinned_num = pinned.size | minus: offset %}
-
-{% if pinned_num > 0 %}
-  {% for i in (offset..pinned.size) limit: pinned_num %}
-    {% assign projects = projects | push: pinned[i] %}
-  {% endfor %}
-{% else %}
-  {% assign pinned_num = 0 %}
-{% endif %}
-
-<!-- Get default projects -->
-
-{% assign default_beg = offset | minus: pinned.size %}
-
-{% if default_beg < 0 %}
-  {% assign default_beg = 0 %}
-{% endif %}
-
-{% assign default_num = site.projects | size | minus: pinned_num %}
-{% assign default_end = default_beg | plus: default_num | minus: 1 %}
-
-{% if default_num > 0 %}
-  {% for i in (default_beg..default_end) %}
-    {% assign projects = projects | push: default[i] %}
-  {% endfor %}
-{% endif %}
+{% assign projects = pinned | concat: default %}
 
 <div class="post-content">
   {{ content }}
@@ -80,11 +50,7 @@ refactor: true
             <div class="me-auto">
               <!-- github -->
               {% if project.github %}
-                <i aria-label="Hosted on GitHub" class="fab fa-github"></i>
-              {% endif %}
-              <!-- website -->
-              {% if project.website %}
-                <i aria-label="Has a website" class="fas fa-globe fa-fw"></i>
+              <img src="https://img.shields.io/github/stars/{{ project.github }}">
               {% endif %}
             </div>
 

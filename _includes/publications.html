@@ -1,62 +1,64 @@
 {% assign publications = site.data.publications | sort: "date" | reverse %}
 
-{% assign default_num = paginator.projects | size %}
-{% assign default_end = default_num | minus: 1 %}
-
 <div id="post-list">
   {% for publication in publications %}
-    <div class="card post-preview">
-      <div class="card-body">
-        <h1 class="card-title">
-          {{ publication.title }}
-        </h1>
+    <p class="card-wrapper">
+      <div class="card post-preview flex-md-row-reverse">
+        {% if publication.image %}
+          {% if publication.image.lqip %}
+            {% capture lqip %}lqip="{{ publication.image.lqip }}"{% endcapture %}
+          {% endif %}
 
-        {% if publication.abstract %}
-        <div class="card-text post-content">
-          <p>
-            {% include no-linenos.html content=publication.abstract %}
-            {% include excerpt.html content=content %}
-          </p>
-        </div>
+          {% assign src = publication.image.path | default: publication.image %}
+          {% unless src contains '//' %}
+            {% assign src = publication.img_path | append: '/' | append: src | replace: '//', '/' %}
+          {% endunless %}
+
+          {% assign alt = publication.image.alt | xml_escape | default: 'Preview Image' %}
+
+          <img src="{{ src }}" w="17" h="10" alt="{{ alt }}" {{ lqip }}>
         {% endif %}
 
-        <div class="post-meta text-muted d-flex">
-          {% if publication.download %}
-          <span>
-          {% include download.html path=publication.download %}
-          </span>
-          {% endif %}
-          {% if publication.doi %}
-          <span>
-          {% include doi.html doi=publication.doi %}
-          </span>
-          {% endif %}
-          {% if publication.bibtex %}
-          <span>
-          {% include bibtex.html citation=publication.bibtex %}
-          </span>
-          {% endif %}
+        <div class="card-body d-flex flex-column no-min-height">
+          <h1 class="card-title my-2 mt-md-0">
+            {{ publication.title }}
+          </h1>
 
-          <!-- tags -->
-          {% if publication.tags.size > 0 %}
-            {% assign tags = publication.tags | sort %}
-            <span>
-              {% for tag in tags %}
-                {{ tag }}
-                {%- unless forloop.last -%},{%- endunless -%}
-              {% endfor %}
-            </span>
-          {% endif %}
+          <div class="post-meta d-flex align-items-end">
+            <div class="me-auto">
+              {% if publication.download %}
+              <span>
+              {% include download.html path=publication.download %}
+              </span>
+              {% endif %}
+              {% if publication.doi %}
+              <span>
+              {% include doi.html doi=publication.doi %}
+              </span>
+              {% endif %}
+              {% if publication.bibtex %}
+              <span>
+              {% include bibtex.html citation=publication.bibtex %}
+              </span>
+              {% endif %}
+
+              <!-- categories -->
+              {% if publication.tags.size > 0 %}
+                <i class="far fa-folder-open fa-fw me-1"></i>
+                <span class="categories">
+                  {% for tag in publication.tags %}
+                    {{ tag }}
+                    {%- unless forloop.last -%},{%- endunless -%}
+                  {% endfor %}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+          <!-- .post-meta -->
         </div>
-
-        <!-- .publication-meta -->
+        <!-- .card-body -->
       </div>
-    </div>
-    <!-- .publication-preview -->
+    </p>
   {% endfor %}
 </div>
-<!-- #publication-list -->
-
-{% if paginator.total_pages > 0 %}
-  {% include post-paginator.html %}
-{% endif %}
+<!-- #post-list -->

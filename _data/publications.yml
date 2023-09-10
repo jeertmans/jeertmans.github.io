@@ -1,3 +1,11 @@
+- title: 'Manim Slides: A Python package for presenting Manim content anywhere'
+  date: 2023-08-08
+  tags:
+  - Paper
+  - Software
+  download: /assets/publications/manim-slides-paper.pdf
+  doi:  10.21105/jose.00206
+  bibtex: /assets/publications/manim-slides-paper.bib
 - title: 'EuCAP 2023 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing'
   date: 2023-03-27
   tags:

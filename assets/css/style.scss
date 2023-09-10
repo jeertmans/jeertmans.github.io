@@ -36,11 +36,23 @@ img[alt=svg] {
   filter: var(--svg-filter) !important;
 }
 
-.card-body a {
-  color: var(--text-muted-color);
-  border-bottom: none !important;
+.post-content a:not(.img-link) {
+  border-bottom: none;
+  &:hover {
+    border-bottom: none;
+  }
 }
 
 .filter-text-muted {
-    filter: invert(48%) sepia(6%) saturate(675%) hue-rotate(166deg) brightness(92%) contrast(88%);
+  filter: invert(48%) sepia(6%) saturate(675%) hue-rotate(166deg) brightness(92%) contrast(88%);
+}
+
+.no-min-height {
+  min-height: 0em !important;
+}
+
+.no-text-clip {
+  display: -webkit-box;
+  overflow: auto !important;
+  -webkit-line-clamp: none !important;
 }

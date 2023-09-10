@@ -9,90 +9,75 @@
 
 <div id="post-list">
   {% for teaching in teachings %}
-    <div class="card post-preview">
-      <div class="card-body">
-        <h1 class="card-title">
-          {{ teaching.course }}
-        </h1>
+    <p class="card-wrapper">
+      <div class="card post-preview flex-md-row-reverse">
+        {% if teaching.image %}
+          {% if teaching.image.lqip %}
+            {% capture lqip %}lqip="{{ teaching.image.lqip }}"{% endcapture %}
+          {% endif %}
 
-        {% if teaching.details %}
-        <div class="card-text post-content">
-          <p>
-            {{ teaching.details | markdownify }}
-          </p>
-        </div>
+          {% assign src = teaching.image.path | default: teaching.image %}
+          {% unless src contains '//' %}
+            {% assign src = teaching.img_path | append: '/' | append: src | replace: '//', '/' %}
+          {% endunless %}
+
+          {% assign alt = teaching.image.alt | xml_escape | default: 'Preview Image' %}
+
+          <img src="{{ src }}" w="17" h="10" alt="{{ alt }}" {{ lqip }}>
         {% endif %}
 
-        <div class="post-meta text-muted d-flex">
-          {% if publication.download %}
-          <span>
-          {% include download.html path=publication.download %}
-          </span>
-          {% endif %}
-          {% if publication.doi %}
-          <span>
-          {% include doi.html doi=publication.doi %}
-          </span>
-          {% endif %}
-          {% if publication.bibtex %}
-          <span>
-          {% include bibtex.html citation=publication.bibtex %}
-          </span>
-          {% endif %}
+        <div class="card-body d-flex flex-column no-min-height">
+          <h1 class="card-title my-2 mt-md-0">
+            {{ teaching.course }}
+          </h1>
 
-          <!-- tags -->
-          {% if publication.tags.size > 0 %}
-            {% assign tags = publication.tags | sort %}
-            <span>
-              {% for tag in tags %}
-                {{ tag }}
-                {%- unless forloop.last -%},{%- endunless -%}
-              {% endfor %}
-            </span>
-          {% endif %}
-        </div>
-
-        <div class="post-meta text-muted d-flex">
-          <div class="mr-auto">
-            <span>
-              {{ teaching.time }}
-            </span>
-            <span>
-              {{ teaching.company }}
-            </span>
-            <span>
-              {{ teaching.location }}
-            </span>
-            {% if teaching.github %}
-            <span class="icon-border">
-              <a href="https://github.com/{{ teaching.github }}"
-                 aria-label="github">
-                <i class="fab fa-github"></i>
-              </a>
-            </span>
-            {% endif %}
-            {% if teaching.website %}
-            <span class="icon-border">
-              <a href="{{ teaching.website }}"
-                 aria-label="website">
-                <i class="fas fa-globe fa-fw"></i>
-              </a>
-            </span>
-            {% endif %}
+          {% if teaching.details %}
+          <div class="card-text post-content mt-0 mb-2">
+            <p class="no-text-clip">
+              {% include no-linenos.html content=teaching.details %}
+              {{ content | markdownify | strip_html | escape }}
+            </p>
           </div>
-          <span>
-            {{ teaching.role }}
-          </span>
-        </div>
+          {% endif %}
 
-        <!-- .teaching-meta -->
+          <div class="post-meta d-flex align-items-end">
+            <div class="me-auto">
+              <span>
+                {{ teaching.time }}
+              </span>
+              <span>
+                {{ teaching.company }}
+              </span>
+              <span>
+                {{ teaching.location }}
+              </span>
+              {% if teaching.github %}
+              <span class="icon-border">
+                <a href="https://github.com/{{ teaching.github }}"
+                   aria-label="github">
+                  <i class="fab fa-github"></i>
+                </a>
+              </span>
+              {% endif %}
+              {% if teaching.website %}
+              <span class="icon-border">
+                <a href="{{ teaching.website }}"
+                   aria-label="website">
+                  <i class="fas fa-globe fa-fw"></i>
+                </a>
+              </span>
+              {% endif %}
+            </div>
+
+            <div class="pin ms-1">
+              <span>{{ teaching.role }}</span>
+            </div>
+          </div>
+          <!-- .post-meta -->
+        </div>
+        <!-- .card-body -->
       </div>
-    </div>
-    <!-- .teaching-preview -->
+    </p>
   {% endfor %}
 </div>
-<!-- #teaching-list -->
-
-{% if paginator.total_pages > 0 %}
-  {% include post-paginator.html %}
-{% endif %}
+<!-- #post-list -->

@@ -23,7 +23,7 @@ On June 15, 2022, I had the chance to present a method that I had imagined durin
 
 # Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Xc5h65brhoM" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+{% include embed/youtube.html id='Xc5h65brhoM' %}
 
 # Technical details
 
@@ -1087,6 +1087,4 @@ class Slides(Slide):
         self.pause()
         self.wait()
 ```
-
-{: spoiler="true"}
 <!-- prettier-ignore-end -->

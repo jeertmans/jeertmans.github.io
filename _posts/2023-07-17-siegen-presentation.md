@@ -33,6 +33,5 @@ References
 Source code
 -----------
 
-{% highlight python %}
-{% github_sample jeertmans/jeertmans.github.io/blob/beb8817df96a13d0ca19b6c6690921927533047b/_slides/2023-07-17-siegen-presentation/main.py %}
-{% endhighlight %}
+Available on GitHub:
+[`_slides/2023-07-17-siegen-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2023-07-17-siegen-presentation/main.py).

@@ -38,6 +38,5 @@ Source code
 -----------
 
 
-{% highlight python %}
-{% github_sample jeertmans/jeertmans.github.io/blob/6c070c91ebbf644e1d51d0e8e0a8ea86d9b7962b/_slides/2023-03-27-eucap-presentation/main.py %}
-{% endhighlight %}
+Available on GitHub:
+[`_slides/2023-03-27-eucap-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2023-03-27-eucap-presentation/main.py).

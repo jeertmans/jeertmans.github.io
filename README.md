@@ -14,3 +14,12 @@ Thereon, I also implemented many features to better suit my needs. If you would 
 # Questions?
 
 If you have any question or suggestion, please feel free to reach me via the [GitHub issues](https://github.com/jeertmans/jeertmans.github.io/issues) or via [email](mailto:jeertmans@icloud.be).
+
+# To Do List
+
+- [ ] Fix links in post cards (research and teaching tabs)
+- [ ] Update README and remove template?
+- [ ] Fix `text-clip` applied to long text in teaching,
+  because text does not appear anywhere else
+- [ ] Auto format `.bib` files?
+- [ ] Update Post layout to include more things (like project's url, etc.)
