@@ -4,7 +4,7 @@
   - Paper
   - Software
   download: /assets/publications/manim-slides-paper.pdf
-  doi:  10.21105/jose.00206
+  doi: 10.21105/jose.00206
   bibtex: /assets/publications/manim-slides-paper.bib
 - title: 'EuCAP 2023 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing'
   date: 2023-03-27
