@@ -57,3 +57,9 @@ assets/notebooks/2022-04-28-utd-transition-function_files/2022-04-28-utd-transit
 assets/notebooks/html_*/
 
 .mypy_cache/
+
+node_modules/
+
+package.json
+
+package-lock.json
