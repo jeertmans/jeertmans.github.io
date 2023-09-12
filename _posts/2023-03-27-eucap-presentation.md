@@ -13,6 +13,7 @@ arxiv: https://arxiv.org/abs/2301.06399
 image:
   path: /assets/images/misc/Florence_EuCAP_2023.jpg
   alt: "Florence, Italy - From Pixabay"
+permalink: /posts/eucap2023-presentation
 ---
 
 EuCAP 2023 presentation slides and code.
