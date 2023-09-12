@@ -1,6 +1,5 @@
 ---
-layout: page
-refactor: false
+layout: default
 ---
 
 {% include lang.html %}
@@ -14,11 +13,10 @@ refactor: false
   {{ content }}
 </div>
 
-<div id="post-list">
+{% capture content %}
   {% for project in projects %}
-    <a href="{{ project.url | relative_url }}" class="card-wrapper">
-
-      <div class="card post-preview flex-md-row-reverse">
+    <article class="card-wrapper">
+      <a href="{{ project.url | relative_url }}" class="card post-preview flex-md-row-reverse">
         {% if project.image %}
           {% if project.image.lqip %}
             {% capture lqip %}lqip="{{ project.image.lqip }}"{% endcapture %}
@@ -35,11 +33,9 @@ refactor: false
         {% endif %}
 
         <div class="card-body d-flex flex-column">
-          <h1 class="card-title my-2 mt-md-0">
-            {{ project.title }}
-          </h1>
+          <h1 class="card-title my-2 mt-md-0">{{ project.title }}</h1>
 
-          <div class="card-text post-content mt-0 mb-2">
+          <div class="card-text content mt-0 mb-2">
             <p>
               {% include no-linenos.html content=project.content %}
               {{ content | markdownify | strip_html | truncate: 200 | escape }}
@@ -50,7 +46,6 @@ refactor: false
             <div class="me-auto">
               <!-- github -->
               {% if project.github %}
-              <img src="https://img.shields.io/github/stars/{{ project.github }}">
               {% endif %}
             </div>
 
@@ -64,12 +59,12 @@ refactor: false
           <!-- .post-meta -->
         </div>
         <!-- .card-body -->
-      </div>
-    </a>
+      </a>
+    </article>
   {% endfor %}
+{% endcapture %}
+
+<div id="post-list" class="flex-grow-1 pe-xl-2">
+  {% include refactor-content.html content=content lang=lang %}
 </div>
 <!-- #post-list -->
-
-{% if paginator.total_pages > 1 %}
-  {% include post-paginator.html %}
-{% endif %}
