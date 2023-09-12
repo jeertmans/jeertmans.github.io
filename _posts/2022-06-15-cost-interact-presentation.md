@@ -11,6 +11,7 @@ tags:
 image:
   path: /assets/images/misc/Lyon_COST_INTERACT.jpg
   alt: "Lyon, France - From COST's website"
+permalink: /posts/cost-interact-june-2022-presentation/
 ---
 
 Video of me presenting some of my results on the Ray Tracing methods applied to Telecommunications.
