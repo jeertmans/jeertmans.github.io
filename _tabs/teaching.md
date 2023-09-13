@@ -12,3 +12,6 @@ extra educational contents for students.
 
 As of writing, I am a TA, employed by UCLouvain,
 and I am in charge of 4 courses a year, on average.
+When applicable, I publish the contents I create on GitHub,
+to make it reproducable, documented, and automatically tested
+leveraging the power of GitHub actions.
