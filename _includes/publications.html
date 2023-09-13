@@ -1,8 +1,8 @@
 {% assign publications = site.data.publications | sort: "date" | reverse %}
 
-<div id="post-list">
+{% capture publication-list %}
   {% for publication in publications %}
-    <p class="card-wrapper">
+    <article class="card-wrapper">
       <div class="card post-preview flex-md-row-reverse">
         {% if publication.image %}
           {% if publication.image.lqip %}
@@ -26,22 +26,26 @@
 
           <div class="post-meta d-flex align-items-end">
             <div class="me-auto">
+              <!-- Download paper -->
               {% if publication.download %}
-              <span>
-              {% include download.html path=publication.download %}
-              </span>
+                  <a href="https://google.com">
+                  <i class="far fa-folder-open fa-fw me-1"></i>
+                  <span> Download paper </span>
+                  {% include download.html path=publication.download %}
+                  </a>
               {% endif %}
+              <!-- DOI -->
               {% if publication.doi %}
-              <span>
-              {% include doi.html doi=publication.doi %}
-              </span>
+                <span>
+                  {% include doi.html doi=publication.doi %}
+                </span>
               {% endif %}
+              <!-- BibTeX file -->
               {% if publication.bibtex %}
-              <span>
-              {% include bibtex.html citation=publication.bibtex %}
-              </span>
+                <span>
+                  {% include bibtex.html citation=publication.bibtex %}
+                </span>
               {% endif %}
-
               <!-- categories -->
               {% if publication.tags.size > 0 %}
                 <i class="far fa-folder-open fa-fw me-1"></i>
@@ -58,7 +62,11 @@
         </div>
         <!-- .card-body -->
       </div>
-    </p>
+    </article>
   {% endfor %}
+{% endcapture %}
+
+<div id="post-list" class="flex-grow-1 pe-xl-2">
+  {{ publication-list }}
 </div>
 <!-- #post-list -->

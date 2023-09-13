@@ -20,10 +20,14 @@ EuCAP 2023 presentation slides and code.
 
 <!--more-->
 
-On Monday, March 27, 2023, I presented my work at the 17th European Conference on Antennas and Propagation (EuCAP 2023).
-The work was pretty similar to the one presented at the [COST meeting](/posts/cost-interact-presentation/) last year, in Lyon, and contains very minimal changes in the contents.
+On Monday, March 27, 2023, I presented my work at the
+17th European Conference on Antennas and Propagation (EuCAP 2023).
+The work was pretty similar to the one presented at the
+[COST meeting](/posts/cost-interact-presentation/) last year, in Lyon,
+and contains very minimal changes in the contents.
 
-Slides, however, were modified to contain more details about the mathematics behind our methods, as well as an example application to meta-surfaces.
+Slides, however, were modified to contain more details about the mathematics
+behind our methods, as well as an example application to meta-surfaces.
 
 Slides
 ------
@@ -37,7 +41,6 @@ References
 
 Source code
 -----------
-
 
 Available on GitHub:
 [`_slides/2023-03-27-eucap-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2023-03-27-eucap-presentation/main.py).

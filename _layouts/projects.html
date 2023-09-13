@@ -13,7 +13,7 @@ layout: default
   {{ content }}
 </div>
 
-{% capture content %}
+{% capture project-list %}
   {% for project in projects %}
     <article class="card-wrapper">
       <a href="{{ project.url | relative_url }}" class="card post-preview flex-md-row-reverse">
@@ -46,6 +46,7 @@ layout: default
             <div class="me-auto">
               <!-- github -->
               {% if project.github %}
+                <img src="https://img.shields.io/github/stars/{{ project.github }}">
               {% endif %}
             </div>
 
@@ -65,6 +66,6 @@ layout: default
 {% endcapture %}
 
 <div id="post-list" class="flex-grow-1 pe-xl-2">
-  {% include refactor-content.html content=content lang=lang %}
+  {{ project-list }}
 </div>
 <!-- #post-list -->
