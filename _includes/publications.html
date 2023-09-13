@@ -3,7 +3,7 @@
 {% capture publication-list %}
   {% for publication in publications %}
     <article class="card-wrapper">
-      <div class="card post-preview flex-md-row-reverse">
+      <div class="card post-preview-with-anchor flex-md-row-reverse">
         {% if publication.image %}
           {% if publication.image.lqip %}
             {% capture lqip %}lqip="{{ publication.image.lqip }}"{% endcapture %}
@@ -24,31 +24,50 @@
             {{ publication.title }}
           </h1>
 
-          <div class="post-meta d-flex align-items-end">
+          <div class="post-meta flex-grow-1 d-flex align-items-end">
             <div class="me-auto">
               <!-- Download paper -->
               {% if publication.download %}
-                  <a href="https://google.com">
-                  <i class="far fa-folder-open fa-fw me-1"></i>
-                  <span> Download paper </span>
-                  {% include download.html path=publication.download %}
+                <span
+                  class="ms-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="ArXiV"
+                >
+                  <a href="{{ publication.download }}">
+                    <i class="fas fa-file-circle-check fa-fw"></i>
                   </a>
+                </span>
               {% endif %}
               <!-- DOI -->
               {% if publication.doi %}
-                <span>
-                  {% include doi.html doi=publication.doi %}
+                <span
+                  class="ms-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="DOI"
+                >
+                  <a href="https://doi.org/{{ publication.doi }}">
+                    {{ publication.doi }}
+                  </a>
                 </span>
               {% endif %}
               <!-- BibTeX file -->
               {% if publication.bibtex %}
-                <span>
-                  {% include bibtex.html citation=publication.bibtex %}
+                <span
+                  class="ms-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="Get citation"
+                >
+                  <a href="{{ publication.bibtex }}">
+                    <img alt="BibTeX logo" class="filter-text-muted me-1" style="width: auto; height: 1em;" src="/assets/images/BibTeX_logo.svg">
+                  </a>
                 </span>
               {% endif %}
               <!-- categories -->
               {% if publication.tags.size > 0 %}
-                <i class="far fa-folder-open fa-fw me-1"></i>
+                <i class="far fa-folder-open fa-fw ms-1"></i>
                 <span class="categories">
                   {% for tag in publication.tags %}
                     {{ tag }}

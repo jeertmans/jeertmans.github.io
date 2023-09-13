@@ -1,16 +1,13 @@
 {% assign teachings = site.data.teaching %}
 
-{% assign default_num = paginator.projects | size %}
-{% assign default_end = default_num | minus: 1 %}
-
 <div class="post-content">
   {{ content }}
 </div>
 
-<div id="post-list">
+{% capture teaching-list %}
   {% for teaching in teachings %}
-    <p class="card-wrapper">
-      <div class="card post-preview flex-md-row-reverse">
+    <article class="card-wrapper">
+      <div class="card post-preview-with-anchor flex-md-row-reverse">
         {% if teaching.image %}
           {% if teaching.image.lqip %}
             {% capture lqip %}lqip="{{ teaching.image.lqip }}"{% endcapture %}
@@ -32,43 +29,68 @@
           </h1>
 
           {% if teaching.details %}
-          <div class="card-text post-content mt-0 mb-2">
-            <p class="no-text-clip">
-              {% include no-linenos.html content=teaching.details %}
-              {{ content | markdownify | strip_html | escape }}
-            </p>
-          </div>
+            <div class="card-text content mt-0 mb-2">
+              <p class="no-text-clip">
+                {% include no-linenos.html content=teaching.details %}
+                {{ content | markdownify | strip_html | escape }}
+              </p>
+            </div>
           {% endif %}
 
-          <div class="post-meta d-flex align-items-end">
+          <div class="post-meta flex-grow-1 d-flex align-items-end">
             <div class="me-auto">
-              <span>
+              <span
+                class="ms-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="Semester(s)"
+              >
                 {{ teaching.time }}
               </span>
-              <span>
+              <span
+                class="ms-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="University"
+              >
                 {{ teaching.company }}
               </span>
-              <span>
+              <span
+                class="ms-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="Location"
+              >
                 {{ teaching.location }}
               </span>
+              <!-- Github -->
               {% if teaching.github %}
-              <span class="icon-border">
-                <a href="https://github.com/{{ teaching.github }}"
-                   aria-label="github">
-                  <i class="fab fa-github"></i>
-                </a>
-              </span>
+                <span
+                  class="ms-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="GitHub repository"
+                >
+                  <a href="https://github.com/{{ teaching.github }}">
+                    <i class="fab fa-github fa-fw"></i>
+                  </a>
+                </span>
               {% endif %}
+              <!-- Website -->
               {% if teaching.website %}
-              <span class="icon-border">
-                <a href="{{ teaching.website }}"
-                   aria-label="website">
-                  <i class="fas fa-globe fa-fw"></i>
-                </a>
-              </span>
+                <span
+                  class="ms-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="Webiste"
+                >
+                  <a href="{{ teaching.website }}">
+                    <i class="fas fa-globe fa-fw"></i>
+                  </a>
+                </span>
               {% endif %}
             </div>
-
+            <!-- Role -->
             <div class="pin ms-1">
               <span>{{ teaching.role }}</span>
             </div>
@@ -77,7 +99,11 @@
         </div>
         <!-- .card-body -->
       </div>
-    </p>
+    </article>
   {% endfor %}
+{% endcapture %}
+
+<div id="post-list" class="flex-grow-1 pe-xl-2">
+  {{ teaching-list }}
 </div>
 <!-- #post-list -->
