@@ -1,5 +1,9 @@
 exclude: ^assets/lib/
 repos:
+  # - repo: https://github.com/FlamingTempura/bibtex-tidy
+  #   rev: v1.11.0
+  #   hooks:
+  #   - id: bibtex-tidy
 - repo: https://github.com/kynan/nbstripout
   rev: 0.6.1
   hooks:

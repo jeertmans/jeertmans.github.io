@@ -9,188 +9,189 @@ tail_includes:
   - comments
 ---
 
-<h1 data-toc-skip>{{ page.title }}</h1>
+{% include lang.html %}
 
-<div class="post-meta text-muted">
+<header>
+  <h1 data-toc-skip>{{ page.title }}</h1>
 
-    <div class="d-flex justify-content-between">
-      <!-- published date -->
+  <div class="post-meta text-muted">
+    <!-- published date -->
+    <span>
+      {{ site.data.locales[lang].post.posted }}
+      {% include datetime.html date=page.date tooltip=true lang=lang %}
+    </span>
+
+    <!-- lastmod date -->
+    {% if page.last_modified_at and page.last_modified_at != page.date %}
       <span>
-        {{ site.data.locales[site.lang].post.posted }}
-        {% include datetime.html date=page.date tooltip=true %}
+        {{ site.data.locales[lang].post.updated }}
+        {% include datetime.html date=page.last_modified_at tooltip=true lang=lang %}
       </span>
+    {% endif %}
 
-      <!-- lastmod date -->
-      {% if page.last_modified_at %}
-      <span>
-        {{ site.data.locales[site.lang].post.updated }}
-        {% include datetime.html date=page.last_modified_at tooltip=true %}
+    <!-- GitHub -->
+    {% if page.github %}
+      <span
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="GitHub repository"
+      >
+        <em>
+          <a href="https://github.com/{{ page.github }}">
+            <i class="fab fa-github fa-fw"></i>
+          </a>
+        </em>
       </span>
-  </div>
-  <div class="d-flex justify-content-between">
-      {% endif %}
+    {% endif %}
 
+    <!-- ArXiV -->
+    {% if page.arxiv %}
+      <span
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="ArXiV"
+      >
+        <em>
+          <a href="{{ page.arxiv }}">
+            <i class="fas fa-file-circle-check fa-fw"></i>
+          </a>
+        </em>
+      </span>
+    {% endif %}
 
-      <div>
-    </div>
+    <!-- DOI -->
+    {% if page.doi %}
+      <span
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="DOI"
+      >
+        <em>
+          <a href="{{ page.doi }}">
+            <i class="fas fa-link fa-fw"></i>
+          </a>
+        </em>
+      </span>
+    {% endif %}
 
-      <div>
-        {% if page.arxiv %}
-        <span>
-          <em>
-            <a href="{{ page.arxiv }}" title="arXiv" data-toggle="tooltip" data-placement="top">
-              <i class="fas fa-file-circle-check fa-fw"></i>
-            </a>
-          </em>
-        </span>
-        {% endif %}
+    <!-- Edit on Website -->
+    {% if page.website %}
+      <span
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+        title="Website"
+      >
+        <em>
+          <a href="{{ page.website }}">
+            <i class="fas fa-globe fa-fw"></i>
+          </a>
+        </em>
+      </span>
+    {% endif %}
 
-        {% if page.doi %}
-        <span>
-          <em>
-            <a href="{{ page.doi }}" title="DOI" data-toggle="tooltip" data-placement="top">
-              <i class="fas fa-link fa-fw"></i>
-            </a>
-          </em>
-        </span>
-        {% endif %}
+    {% include edit-on-github.html path=page.path source=page.source repository=site.repository %}
 
-        {% if page.github %}
-        <span>
-          <em>
-            <a href="https://github.com/{{ page.github }}" title="GitHub repository" data-toggle="tooltip" data-placement="top">
-              <i class="fab fa-github fa-fw"></i>
-            </a>
-          </em>
-        </span>
-        {% endif %}
+    {% if page.image %}
+      {% capture src %}src="{{ page.image.path | default: page.image }}"{% endcapture %}
+      {% capture class %}class="preview-img{% if page.image.no_bg %}{{ ' no-bg' }}{% endif %}"{% endcapture %}
+      {% capture alt %}alt="{{ page.image.alt | xml_escape | default: "Preview Image" }}"{% endcapture %}
 
-        {% if page.website %}
-        <span>
-          <em>
-            <a href="{{ page.website }}">
-              <i class="fas fa-globe fa-fw"></i>
-              <span>Website</span>
-            </a>
-          </em>
-        </span>
-        {% endif %}
-      </div>
-    </div>
-
-  {% if page.image %}
-    {% capture src %}src="{{ page.image.path | default: page.image }}"{% endcapture %}
-    {% capture class %}class="preview-img{% if page.image.no_bg %}{{ ' no-bg' }}{% endif %}"{% endcapture %}
-    {% capture alt %}alt="{{ page.image.alt | default: "Preview Image" }}"{% endcapture %}
-
-    {% capture lqip %}
+      {% capture lqip %}
       {% if page.image.lqip %}
         lqip="{{ page.image.lqip }}"
       {% endif %}
     {% endcapture %}
 
-    <div class="mt-3 mb-3">
-      <img {{ src }} {{ class }} {{ alt }} w="1200" h="630" {{ lqip | strip }}>
-      {%- if page.image.alt -%}
-        <figcaption class="text-center pt-2 pb-2">{{ page.image.alt }}</figcaption>
-      {%- endif -%}
-    </div>
-  {% endif %}
+      <div class="mt-3 mb-3">
+        <img {{ src }} {{ class }} {{ alt }} w="1200" h="630" {{ lqip | strip }}>
+        {%- if page.image.alt -%}
+          <figcaption class="text-center pt-2 pb-2">{{ page.image.alt }}</figcaption>
+        {%- endif -%}
+      </div>
+    {% endif %}
 
-  <div class="d-flex justify-content-between">
-    <!-- author(s) -->
-    <span>
-      {% if page.author %}
-        {% assign authors = page.author %}
-      {% elsif page.authors %}
-        {% assign authors = page.authors %}
-      {% endif %}
-
-      {{ site.data.locales[site.lang].post.written_by }}
-
-      <em>
-      {% if authors %}
-        {% for author in authors %}
-          <a href="{{ site.data.authors[author].url }}">{{ site.data.authors[author].name }}</a>
-          {% unless forloop.last %}</em>, <em>{% endunless %}
-        {% endfor %}
-      {% else %}
-        <a href="{{ site.social.links[0] }}">{{ site.social.name }}</a>
-      {% endif %}
-      </em>
-    </span>
-
-    <div>
-      <!-- page views -->
-      {% if site.google_analytics.pv.proxy_endpoint or site.google_analytics.pv.cache_path %}
+    <div class="d-flex justify-content-between">
+      <!-- author(s) -->
       <span>
-        <em id="pv" class="pageviews">
-          <i class="fas fa-spinner fa-spin fa-fw"></i>
-        </em>
-        {{ site.data.locales[site.lang].post.pageview_measure }}
-      </span>
-      {% endif %}
+        {% if page.author %}
+          {% assign authors = page.author %}
+        {% elsif page.authors %}
+          {% assign authors = page.authors %}
+        {% endif %}
 
-      <!-- edit on github -->
-      {% include edit-on-github.html path=page.path source=page.source repository=site.repository %}
+        {{ site.data.locales[lang].post.written_by }}
+
+        <em>
+          {% if authors %}
+            {% for author in authors %}
+              <a href="{{ site.data.authors[author].url }}">{{ site.data.authors[author].name }}</a>
+              {% unless forloop.last %}{{ '</em>, <em>' }}{% endunless %}
+            {% endfor %}
+          {% else %}
+            <a href="{{ site.social.links[0] }}">{{ site.social.name }}</a>
+          {% endif %}
+        </em>
+      </span>
 
       <!-- read time -->
-      {% include read-time.html content=content prompt=true %}
+      {% include read-time.html content=content prompt=true lang=lang %}
     </div>
+    <!-- .d-flex -->
+  </div>
+  <!-- .post-meta -->
+</header>
 
-  </div> <!-- .d-flex -->
-
-</div> <!-- .post-meta -->
-
-<div class="post-content">
+<div class="content">
   {{ content }}
 </div>
 
 <div class="post-tail-wrapper text-muted">
-
   <!-- categories -->
   {% if page.categories.size > 0 %}
-  <div class="post-meta mb-3">
-    <i class="far fa-folder-open fa-fw mr-1"></i>
-    {% for category in page.categories %}
-      <a href='{{ site.baseurl }}/categories/{{ category | slugify | url_encode }}/'>{{ category }}</a>
-      {%- unless forloop.last -%}, {%- endunless -%}
-    {% endfor %}
-  </div>
+    <div class="post-meta mb-3">
+      <i class="far fa-folder-open fa-fw me-1"></i>
+      {% for category in page.categories %}
+        <a href="{{ site.baseurl }}/categories/{{ category | slugify | url_encode }}/">{{ category }}</a>
+        {%- unless forloop.last -%},{%- endunless -%}
+      {% endfor %}
+    </div>
   {% endif %}
 
   <!-- tags -->
   {% if page.tags.size > 0 %}
-  <div class="post-tags">
-    <i class="fa fa-tags fa-fw mr-1"></i>
+    <div class="post-tags">
+      <i class="fa fa-tags fa-fw me-1"></i>
       {% for tag in page.tags %}
-      <a href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/"
-          class="post-tag no-text-decoration" >
-        {{- tag -}}
-      </a>
+        <a
+          href="{{ site.baseurl }}/tags/{{ tag | slugify | url_encode }}/"
+          class="post-tag no-text-decoration"
+        >
+          {{- tag -}}
+        </a>
       {% endfor %}
-  </div>
+    </div>
   {% endif %}
 
-  <div class="post-tail-bottom
-    d-flex justify-content-between align-items-center mt-3 pt-5 pb-2">
+  <div
+    class="
+      post-tail-bottom
+      d-flex justify-content-between align-items-center mt-5 pb-2
+    "
+  >
     <div class="license-wrapper">
-
-      {% if site.data.locales[site.lang].copyright.license.template %}
-
+      {% if site.data.locales[lang].copyright.license.template %}
         {% capture _replacement %}
-        <a href="{{ site.data.locales[site.lang].copyright.license.link }}">
-          {{ site.data.locales[site.lang].copyright.license.name }}
+        <a href="{{ site.data.locales[lang].copyright.license.link }}">
+          {{ site.data.locales[lang].copyright.license.name }}
         </a>
         {% endcapture %}
 
-        {{ site.data.locales[site.lang].copyright.license.template | replace: ':LICENSE_NAME', _replacement }}
-
+        {{ site.data.locales[lang].copyright.license.template | replace: ':LICENSE_NAME', _replacement }}
       {% endif %}
     </div>
 
-    {% include post-sharing.html %}
-
-  </div><!-- .post-tail-bottom -->
-
-</div><!-- div.post-tail-wrapper -->
+    {% include post-sharing.html lang=lang %}
+  </div>
+  <!-- .post-tail-bottom -->
+</div>
+<!-- div.post-tail-wrapper -->

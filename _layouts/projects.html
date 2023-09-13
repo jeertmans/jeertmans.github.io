@@ -1,60 +1,71 @@
 ---
-layout: page
+layout: default
 ---
 
-{% assign projects = site.projects %}
+{% include lang.html %}
 
-{% assign default_num = paginator.projects | size %}
-{% assign default_end = default_num | minus: 1 %}
+{% assign pinned = site.projects | where: 'pin', 'true' %}
+{% assign default = site.projects | where_exp: 'item', 'item.pin != true and item.hidden != true' %}
+
+{% assign projects = pinned | concat: default %}
 
 <div class="post-content">
   {{ content }}
 </div>
 
-<div id="post-list">
+{% capture project-list %}
   {% for project in projects %}
-    <div class="card post-preview">
-      <a href="{{ project.url | relative_url }}">
-        <div class="card-body">
-          <h1 class="card-title">
-            {{ project.title }}
-          </h1>
+    <article class="card-wrapper">
+      <a href="{{ project.url | relative_url }}" class="card post-preview flex-md-row-reverse">
+        {% if project.image %}
+          {% if project.image.lqip %}
+            {% capture lqip %}lqip="{{ project.image.lqip }}"{% endcapture %}
+          {% endif %}
 
-          <div class="card-text post-content">
+          {% assign src = project.image.path | default: project.image %}
+          {% unless src contains '//' %}
+            {% assign src = project.img_path | append: '/' | append: src | replace: '//', '/' %}
+          {% endunless %}
+
+          {% assign alt = project.image.alt | xml_escape | default: 'Preview Image' %}
+
+          <img src="{{ src }}" w="17" h="10" alt="{{ alt }}" {{ lqip }}>
+        {% endif %}
+
+        <div class="card-body d-flex flex-column">
+          <h1 class="card-title my-2 mt-md-0">{{ project.title }}</h1>
+
+          <div class="card-text content mt-0 mb-2">
             <p>
               {% include no-linenos.html content=project.content %}
-              {% include excerpt.html content=content excerpt=page.excerpt %}
+              {{ content | markdownify | strip_html | truncate: 200 | escape }}
             </p>
           </div>
 
-          <div class="post-meta text-muted d-flex">
-            <div class="mr-auto">
-              <!-- stars -->
-              <a href="https://github.com/{{ project.github }}">
-                <img style="vertical-align: bottom;margin-bottom: 10px;" alt="GitHub Repo stars" src="https://img.shields.io/github/stars/{{ project.github }}?style=social">
-              </a>
-              <!-- forks -->
-              <a href="https://github.com/{{ project.github }}">
-              <img style="vertical-align: bottom;margin-bottom: 10px;" alt="GitHub forks" src="https://img.shields.io/github/forks/{{ project.github }}?style=social">
-              </a>
+          <div class="post-meta flex-grow-1 d-flex align-items-end">
+            <div class="me-auto">
+              <!-- github -->
+              {% if project.github %}
+                <img alt="GitHub repository stars count" src="https://img.shields.io/github/stars/{{ project.github }}">
+              {% endif %}
             </div>
 
-            {% if project.website %}
-            <a href="{{ project.website }}">
-              <i class="fas fa-globe fa-fw"></i>
-              <span>Website</span>
-            </a>
+            {% if project.pin %}
+              <div class="pin ms-1">
+                <i class="fas fa-thumbtack fa-fw"></i>
+                <span>{{ site.data.locales[lang].post.pin_prompt }}</span>
+              </div>
             {% endif %}
           </div>
-          <!-- .project-meta -->
+          <!-- .post-meta -->
         </div>
+        <!-- .card-body -->
       </a>
-    </div>
-    <!-- .project-preview -->
+    </article>
   {% endfor %}
-</div>
-<!-- #project-list -->
+{% endcapture %}
 
-{% if paginator.total_pages > 0 %}
-  {% include post-paginator.html %}
-{% endif %}
+<div id="post-list" class="flex-grow-1 pe-xl-2">
+  {{ project-list }}
+</div>
+<!-- #post-list -->

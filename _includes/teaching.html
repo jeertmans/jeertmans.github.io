@@ -1,98 +1,109 @@
 {% assign teachings = site.data.teaching %}
 
-{% assign default_num = paginator.projects | size %}
-{% assign default_end = default_num | minus: 1 %}
-
 <div class="post-content">
   {{ content }}
 </div>
 
-<div id="post-list">
+{% capture teaching-list %}
   {% for teaching in teachings %}
-    <div class="card post-preview">
-      <div class="card-body">
-        <h1 class="card-title">
-          {{ teaching.course }}
-        </h1>
+    <article class="card-wrapper">
+      <div class="card post-preview-with-anchor flex-md-row-reverse">
+        {% if teaching.image %}
+          {% if teaching.image.lqip %}
+            {% capture lqip %}lqip="{{ teaching.image.lqip }}"{% endcapture %}
+          {% endif %}
 
-        {% if teaching.details %}
-        <div class="card-text post-content">
-          <p>
-            {{ teaching.details | markdownify }}
-          </p>
-        </div>
+          {% assign src = teaching.image.path | default: teaching.image %}
+          {% unless src contains '//' %}
+            {% assign src = teaching.img_path | append: '/' | append: src | replace: '//', '/' %}
+          {% endunless %}
+
+          {% assign alt = teaching.image.alt | xml_escape | default: 'Preview Image' %}
+
+          <img src="{{ src }}" w="17" h="10" alt="{{ alt }}" {{ lqip }}>
         {% endif %}
 
-        <div class="post-meta text-muted d-flex">
-          {% if publication.download %}
-          <span>
-          {% include download.html path=publication.download %}
-          </span>
-          {% endif %}
-          {% if publication.doi %}
-          <span>
-          {% include doi.html doi=publication.doi %}
-          </span>
-          {% endif %}
-          {% if publication.bibtex %}
-          <span>
-          {% include bibtex.html citation=publication.bibtex %}
-          </span>
+        <div class="card-body d-flex flex-column no-min-height">
+          <h1 class="card-title my-2 mt-md-0">
+            {{ teaching.course }}
+          </h1>
+
+          {% if teaching.details %}
+            <div class="card-text content mt-0 mb-2">
+              <p class="no-text-clip">
+                {% include no-linenos.html content=teaching.details %}
+                {{ content | markdownify | strip_html | escape }}
+              </p>
+            </div>
           {% endif %}
 
-          <!-- tags -->
-          {% if publication.tags.size > 0 %}
-            {% assign tags = publication.tags | sort %}
-            <span>
-              {% for tag in tags %}
-                {{ tag }}
-                {%- unless forloop.last -%},{%- endunless -%}
-              {% endfor %}
-            </span>
-          {% endif %}
-        </div>
-
-        <div class="post-meta text-muted d-flex">
-          <div class="mr-auto">
-            <span>
-              {{ teaching.time }}
-            </span>
-            <span>
-              {{ teaching.company }}
-            </span>
-            <span>
-              {{ teaching.location }}
-            </span>
-            {% if teaching.github %}
-            <span class="icon-border">
-              <a href="https://github.com/{{ teaching.github }}"
-                 aria-label="github">
-                <i class="fab fa-github"></i>
-              </a>
-            </span>
-            {% endif %}
-            {% if teaching.website %}
-            <span class="icon-border">
-              <a href="{{ teaching.website }}"
-                 aria-label="website">
-                <i class="fas fa-globe fa-fw"></i>
-              </a>
-            </span>
-            {% endif %}
+          <div class="post-meta flex-grow-1 d-flex align-items-end">
+            <div class="me-auto">
+              <span
+                class="ms-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="Semester(s)"
+              >
+                {{ teaching.time }}
+              </span>
+              <span
+                class="ms-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="University"
+              >
+                {{ teaching.company }}
+              </span>
+              <span
+                class="ms-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="Location"
+              >
+                {{ teaching.location }}
+              </span>
+              <!-- Github -->
+              {% if teaching.github %}
+                <span
+                  class="ms-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="GitHub repository"
+                >
+                  <a href="https://github.com/{{ teaching.github }}">
+                    <i class="fab fa-github fa-fw"></i>
+                  </a>
+                </span>
+              {% endif %}
+              <!-- Website -->
+              {% if teaching.website %}
+                <span
+                  class="ms-1"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="Webiste"
+                >
+                  <a href="{{ teaching.website }}">
+                    <i class="fas fa-globe fa-fw"></i>
+                  </a>
+                </span>
+              {% endif %}
+            </div>
+            <!-- Role -->
+            <div class="pin ms-1">
+              <span>{{ teaching.role }}</span>
+            </div>
           </div>
-          <span>
-            {{ teaching.role }}
-          </span>
+          <!-- .post-meta -->
         </div>
-
-        <!-- .teaching-meta -->
+        <!-- .card-body -->
       </div>
-    </div>
-    <!-- .teaching-preview -->
+    </article>
   {% endfor %}
-</div>
-<!-- #teaching-list -->
+{% endcapture %}
 
-{% if paginator.total_pages > 0 %}
-  {% include post-paginator.html %}
-{% endif %}
+<div id="post-list" class="flex-grow-1 pe-xl-2">
+  {{ teaching-list }}
+</div>
+<!-- #post-list -->

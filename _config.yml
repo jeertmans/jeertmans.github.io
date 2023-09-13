@@ -23,7 +23,7 @@ title: Jérome Eertmans # the main title
 tagline: PhD student in Differentiable Ray Tracing for Telecommunications. # it will display as the sub-title
 
 description: >-
-  A minimal, responsive and feature-rich Jekyll theme for technical writing.
+  Jérome Eertmans' personal blog.
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: https://eertmans.be
@@ -96,7 +96,7 @@ comments:
 # Self-hosted static assets, optional › https://github.com/cotes2020/chirpy-static-assets
 assets:
   self_host:
-    enabled: # boolean, keep empty means false
+    enabled: false # boolean, keep empty means false
     # specify the Jekyll environment, empty means both
     # only works if `assets.self_host.enabled` is 'true'
     env: # [development|production]

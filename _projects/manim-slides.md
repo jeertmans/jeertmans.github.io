@@ -60,9 +60,9 @@ During May ~ June 2022, I discovered [manim-presentation](https://github.com/gal
 a tool that allows to present Manim animations in a *PowerPoint-like* manner.
 Very rapidly, I decided to use this tool to create my presentation for
 the COST Interact 2022 meeting
-(see [blog post](/posts/cost-interact-presentation/)).
+(see [blog post](/posts/cost-interact-june-2022-presentation/)).
 In March 2023, I presented my work at EuCAP2023, for which the slides are available
-[here](/posts/eucap-presentation/).
+[here](/posts/eucap2023-presentation/).
 
 This first experience was great, but I felt like some important features were missing,
  like support for ManimGL.
