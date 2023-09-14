@@ -8,6 +8,7 @@ tags:
   - video
   - programming
   - manim
+publication_id: cost2022
 image:
   path: /assets/images/misc/Lyon_COST_INTERACT.jpg
   alt: "Lyon, France - From COST's website"

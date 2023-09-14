@@ -9,7 +9,7 @@ tags:
   - programming
   - manim
   - manim-slides
-arxiv: https://arxiv.org/abs/2301.06399
+publication_id: eucap2023
 image:
   path: /assets/images/misc/Florence_EuCAP_2023.jpg
   alt: "Florence, Italy - From Pixabay"

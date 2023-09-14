@@ -1,4 +1,5 @@
 - title: 'Manim Slides: A Python package for presenting Manim content anywhere'
+  id: 'manim-slides'
   date: 2023-08-08
   tags:
   - Paper
@@ -7,21 +8,25 @@
   doi: 10.21105/jose.00206
   bibtex: /assets/publications/manim-slides-paper.bib
 - title: 'EuCAP 2023 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing'
+  id: 'eucap2023'
   date: 2023-03-27
   tags:
   - Conference
   - Paper
   - Talk
   download: /assets/publications/eucap2023-paper.pdf
+  arxiv: https://arxiv.org/abs/2301.06399
   doi: 10.23919/EuCAP57121.2023.10132934
   bibtex: /assets/publications/eucap2023-paper.bib
 - title: 'COST Meeting 2022 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing'
+  id: 'cost2022'
   date: 2022-06-15
   tags:
   - Technical meeting
   - Talk
   - Paper
 - title: 'SITB 2022 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing'
+  id: 'sitb2022'
   date: 2022-06-01
   tags:
   - Conference

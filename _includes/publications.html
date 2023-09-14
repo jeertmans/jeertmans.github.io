@@ -2,7 +2,7 @@
 
 {% capture publication-list %}
   {% for publication in publications %}
-    <article class="card-wrapper">
+    <article id="{{ publication.id }}" class="card-wrapper">
       <div class="card post-preview-with-anchor flex-md-row-reverse">
         {% if publication.image %}
           {% if publication.image.lqip %}
@@ -37,6 +37,20 @@
                   <a href="{{ publication.download }}">
                     <i class="fas fa-file-circle-check fa-fw"></i>
                   </a>
+                </span>
+              {% endif %}
+              <!-- ArXiV -->
+              {% if publication.arxiv %}
+                <span
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="ArXiV"
+                >
+                  <em>
+                    <a href="{{ page.publication }}">
+                      <img alt="ArXiV logo" style="width: auto; height: 1em;" src="/assets/images/ArXiV_logo.svg">
+                    </a>
+                  </em>
                 </span>
               {% endif %}
               <!-- DOI -->

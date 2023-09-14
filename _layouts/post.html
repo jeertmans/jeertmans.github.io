@@ -43,17 +43,16 @@ tail_includes:
         </em>
       </span>
     {% endif %}
-
-    <!-- ArXiV -->
-    {% if page.arxiv %}
+    <!-- Reference to publication -->
+    {% if page.publication_id %}
       <span
         data-bs-toggle="tooltip"
         data-bs-placement="bottom"
-        title="ArXiV"
+        title="See publication"
       >
         <em>
-          <a href="{{ page.arxiv }}">
-            <img alt="ArXiV logo" style="width: auto; height: 1em;" src="/assets/images/ArXiV_logo.svg">
+          <a href="/research/#{{ page.publication_id }}">
+            <i class="fas fa-circle-check fa-fw"></i>
           </a>
         </em>
       </span>
