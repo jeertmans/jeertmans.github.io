@@ -60,7 +60,7 @@ To reproduce the exact same animation as in the video, please follow the next st
 3. Create the animations in `h`igh `q`uality with `manim -qh slides.py`
 4. Play the slides `manim-presentation --fullscreen Slides`
 
-**Warning:** on Windows, I encountered a problem where the quality of slides was terrible with the `--fullscreen` flag. This can be fixed by resizing frames manually (you have to edit the `manim-presentation` package to do so). Hopefully, I will propose a GitHub Pull Request on the actual package repository.
+**Warning:** on Windows, I encountered a problem where the quality of slides was terrible with the `--fullscreen` flag. This can be fixed by resizing frames manually (you have to edit the `manim-presentation` package to do so). This was later fixed by my own package, [Manim Slides](/projects/manim-slides).
 
 <!-- prettier-ignore-start -->
 ```python
