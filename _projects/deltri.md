@@ -33,7 +33,6 @@ Finally, I made a
 for those who just want to see the code in action, without compiling it locally.
 
 
-[^1]: A 2D graphic library was provided and creating a nice user interface was
-a bonus.
+[^1]: A 2D graphic library was provided and creating a nice user interface was a bonus.
 
 [^2]: I really recommend you to try the *YOUPIDOU* mode!
