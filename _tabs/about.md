@@ -3,6 +3,8 @@
 icon: fas fa-info-circle
 ---
 
+![Generated with Fooocus](/assets/images/misc/code.png){: .shadow }
+
 Hello, I am Jérome, or @jeertmans, and welcome to my personal blog!
 
 I am a PhD student working at UCLouvain as a Teaching Assistant,

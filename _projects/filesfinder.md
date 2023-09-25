@@ -8,6 +8,9 @@ Find files matching patterns while respecting `.gitignore`.
 
 <!--more-->
 
-[FilesFinder](https://github.com/jeertmans/filesfinder) (FF) is faster alternative to `find` for searching files based on patterns (globs or regexes) while respecting ignore files.
+[FilesFinder](https://github.com/jeertmans/filesfinder) (FF) is faster
+alternative to `find` for searching files based on patterns (globs or regexes)
+while respecting ignore files.
 
-This project was mainly developed as a way to learn Rust threads and how to create a GitHub action.
+This project was mainly developed as a way to learn Rust threads
+and how to create a GitHub action.

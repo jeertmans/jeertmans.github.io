@@ -4,6 +4,9 @@ categories:
   - Blog
 tags:
   - miscellaneous
+image:
+  path: /assets/images/misc/code.png
+  alt: "Generated with Fooocus"
 pin: true
 ---
 
