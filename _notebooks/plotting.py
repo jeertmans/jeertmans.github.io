@@ -8,16 +8,24 @@ import plotly.graph_objects as graph_objects
 import plotly.io as pio
 from matplotlib_inline.backend_inline import set_matplotlib_formats
 from plotly.graph_objs import Figure, Layout
+from plotly.io._base_renderers import IFrameRenderer
 
-iframe_renderer = pio.renderers["iframe_connected"]
-iframe_renderer.html_directory = os.path.join(
-    "../assets/notebooks", "html_" + str(uuid4())
+
+class CustomRenderer(IFrameRenderer):
+    def to_mimebundle(self, *args, **kwargs):
+        mimebundle = super().to_mimebundle(*args, **kwargs)
+        html = mimebundle["text/html"]
+        mimebundle["text/html"] = '<iframe style="color-scheme: none;"' + html[7:]
+
+        return mimebundle
+
+
+pio.renderers["custom"] = CustomRenderer(
+    html_directory=os.path.join("../assets/notebooks", "html_" + str(uuid4())),
+    config={"displaylogo": False, "toImageButtonOptions": {"format": "svg"}},
+    include_plotlyjs="cdn",
 )
-iframe_renderer.config = {"displaylogo": False, "toImageButtonOptions": {"format": "svg"}}
-iframe_renderer.post_script = """
-document.getElementById("{plot_id}").closest("iframe").style = "color-scheme: none;"
-"""
-pio.renderers.default = "iframe_connected"
+pio.renderers.default = "custom"
 
 
 for theme, template in [("light", "plotly_white"), ("dark", "plotly_dark")]:
