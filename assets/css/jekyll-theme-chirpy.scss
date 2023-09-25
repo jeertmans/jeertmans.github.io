@@ -54,9 +54,7 @@ img[alt=svg] {
 }
 
 .no-text-clip {
-  display: -webkit-box;
-  overflow: auto !important;
-  -webkit-line-clamp: none !important;
+  display: contents !important;
 }
 
 /* --- post --- */
