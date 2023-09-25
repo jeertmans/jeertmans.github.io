@@ -6,7 +6,7 @@ tags:
   - miscellaneous
 image:
   path: /assets/images/misc/code.png
-  alt: "Generated with Fooocus"
+  alt: "Staring at lines of code - Generated with Fooocus"
 pin: true
 ---
 

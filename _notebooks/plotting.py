@@ -13,9 +13,11 @@ iframe_renderer = pio.renderers["iframe_connected"]
 iframe_renderer.html_directory = os.path.join(
     "../assets/notebooks", "html_" + str(uuid4())
 )
+iframe_renderer.config = {"displaylogo": False, "toImageButtonOptions": {"format": "svg"}}
+iframe_renderer.post_script = """
+document.getElementById("{plot_id}").closest("iframe").style = "color-scheme: none;"
+"""
 pio.renderers.default = "iframe_connected"
-
-CONFIG = {"displaylogo": False, "toImageButtonOptions": {"format": "svg"}}
 
 
 for theme, template in [("light", "plotly_white"), ("dark", "plotly_dark")]:
