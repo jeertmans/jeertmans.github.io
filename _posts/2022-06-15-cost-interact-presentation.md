@@ -173,7 +173,7 @@ so I have to make default color for most things to be black (instead of white).
 
 def black(func):
     """
-    Sets default color to white
+    Sets default color to black
     """
 
     def wrapper(*args, color=BLACK, **kwargs):
