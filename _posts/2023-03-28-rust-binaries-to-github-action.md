@@ -29,8 +29,7 @@ that can be a companion to this blog post.
 
 [^1]: FilesFinder is faster for searching files (not directories) based on patterns, but does not mean to implement all the complete set of features from `find`.
 
-About GitHub actions
---------------------
+## About GitHub actions
 
 If you know nothing about GitHub actions, and you are a developer on
 hosting its code on GitHub, then this section is for you!
@@ -73,8 +72,7 @@ created by some other user on GitHub and made publicly available on the
 
 For more details, read the [GitHub actions quickstart](https://docs.github.com/en/actions/quickstart).
 
-Motivation
-----------
+## Motivation
 
 One may ask a very fair question: "*why bothering creating a GitHub action, when
 you can already run arbitrary code inside a workflow?"*.
@@ -92,8 +90,7 @@ Dockerfile, not
 [a Javascript or a composite action](https://docs.github.com/en/actions/creating-actions).
 {: .prompt-warning }
 
-Project setup
--------------
+## Project setup
 
 Before starting, I'll assume you have the following project structure:
 
@@ -127,8 +124,7 @@ specific to be installed (no [Cargo](https://www.rust-lang.org/learn/get-started
 **However**, having those tools installed locally is always a good idea for
 testing purposes.
 
-Creation an action
-------------------
+## Creation an action
 
 As mentioned above, there exists three ways for creating a GitHub action:
 
@@ -142,6 +138,8 @@ For Rust code, that we don't want to spend time recompiling on every
 workflow run, the Docker way is our on solution[^2].
 
 [^2]: Some may argue that you could push pre-built binaries to GitHub releases, and then download them in the workflow file. While this also works, this, in my opinion, is more difficult to setup.
+
+### Docker action
 
 As documented by GitHub, creating a Docker action requires three files:
 
@@ -250,8 +248,7 @@ echo "results=$results" >> $GITHUB_OUTPUT
 you can do so with `chmod +x entrypoint.sh`.
 {: .prompt-warning }
 
-Testing your action
--------------------
+## Testing your action
 
 Continously testing that your action is working is very important:
 you don't want to release a broken action on the Marketplace, don't you?
@@ -296,8 +293,7 @@ jobs:
 {: file=".github/workflows/test-action.yml" }
 {% endraw %}
 
-Publishing
-----------
+## Publishing
 
 GitHub actions (again) make it very easy to publish both a new version on
 [crates.io](https://crates.io) and a new Docker image on your favorite container registry.
@@ -380,8 +376,7 @@ Then, you must manually create a release with target `tag` to publish in the
 Marketplace. See
 [Publishing actions in GitHub Marketplace](https://docs.github.com/en/actions/creating-actions/publishing-actions-in-github-marketplace).
 
-Conclusion
-----------
+## Conclusion
 
 I hope that this small tutorial was clear enough, and that you capture
 the necessary details to create your own GitHub action using Rust code.

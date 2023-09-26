@@ -28,18 +28,14 @@ I am very much grateful to Pr. Andreas Kolb and his team for the invitation!
 The slides are a modified version from those I presented at EuCAP2023, plus
 some insights about my ongoing work.
 
-Slides
-------
+## Slides
 
 {% include slides.html url="/assets/slides/2023-07-17-siegen-presentation.html" %}
 
-References
-----------
-
+## References
 {% bibliography --cited %}
 
-Source code
------------
+## Source code
 
 Available on GitHub:
 [`_slides/2023-07-17-siegen-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2023-07-17-siegen-presentation/main.py).

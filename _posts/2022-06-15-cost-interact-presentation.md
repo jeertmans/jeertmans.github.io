@@ -19,15 +19,15 @@ Video of me presenting some of my results on the Ray Tracing methods applied to 
 
 <!--more-->
 
-# Context
+## Context
 
 On June 15, 2022, I had the chance to present a method that I had imagined during my student job in the summer of 2020, under the supervision of Professor [Claude Oestges](https://uclouvain.be/fr/repertoires/claude.oestges). After a long break during the academic year 2020-2021, among other things to work on my master thesis, I had the opportunity to work on my method again as part of my PhD thesis and to produce a paper.
 
-# Video
+## Video
 
 {% include embed/youtube.html id='Xc5h65brhoM' %}
 
-# Technical details
+## Technical details
 
 The present video is the recording of my presentation at the [COST INTERACT 2022 meeting](https://interactca20120.org/meetings/cost-interact-technical-meeting/) which took place on June 13, 14 and 15 in Lyon, France.
 
@@ -37,11 +37,11 @@ Concerning the paper, it is not yet publicly available (except for COST members)
 
 This was my very first presentation as a researcher, and I am open to all your comments, criticisms or questions!
 
-# Source code
+## Source code
 
 As stated above, the video was generated with Manim, a fantastic Python libray for maths related explanation videos. The [manim-presentation Python library](https://github.com/galatolofederico/manim-presentation) was used to switch between slides, as if it was a unique _PowerPoint-like_ presentation.
 
-## Minimal setup
+### Minimal setup
 
 First, make sure you have Manim [installed](https://docs.manim.community/en/stable/installation.html) on your machine, along with a TeX distribution with necessary packages (most TeX distrubutions allow for download-on-demand packages, so this should not be a problem).
 
@@ -51,7 +51,7 @@ Second, make sure to install those additional Python packages:
 pip install manim-presentation numpy sympy shapely
 ```
 
-## Reproduce locally
+### Reproduce locally
 
 To reproduce the exact same animation as in the video, please follow the next step:
 

@@ -29,18 +29,15 @@ and contains very minimal changes in the contents.
 Slides, however, were modified to contain more details about the mathematics
 behind our methods, as well as an example application to meta-surfaces.
 
-Slides
-------
+## Slides
 
 {% include slides.html url="/assets/slides/2023-03-27-eucap-presentation.html" %}
 
-References
-----------
+## References
 
 {% bibliography --cited %}
 
-Source code
------------
+## Source code
 
 Available on GitHub:
 [`_slides/2023-03-27-eucap-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2023-03-27-eucap-presentation/main.py).
