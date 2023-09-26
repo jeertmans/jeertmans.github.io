@@ -14,11 +14,19 @@ image:
   alt: "Siegen, Germany - Bob Ionescu"
 ---
 
-Presentation slides and code for my talk in Siegen.
+Presentation slides and code for my talk in Siegen, Germany.
 
 <!--more-->
 
-This section is work in progress...
+On Jul 17th 2023, I have been invited to visit Pr. Andreas Kolb's lab and give a small talk
+about my current research in the field of Ray Tracing applied to Telecommunictions. Indeed,
+Mohamed Saleh, one of his researchers, is working on applying Ray Tracing techniques at
+Terahertz frequencies to detect defects in carbon fibers.
+
+I am very much grateful to Pr. Andreas Kolb and his team for the invitation!
+
+The slides are a modified version from those I presented at EuCAP2023, plus
+some insights about my ongoing work.
 
 Slides
 ------
