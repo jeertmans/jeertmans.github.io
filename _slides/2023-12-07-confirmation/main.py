@@ -63,7 +63,7 @@ class Main(Slide, MovingCameraScene):
         self.tex_template = TexTemplate()
         self.tex_template.add_to_preamble(
             r"""
-        \usepackage{fontawesome5}
+        \usepackage{siunitx}
         """
         )
 
@@ -236,7 +236,12 @@ class Main(Slide, MovingCameraScene):
 
         self.next_slide(notes="What we did, if actually called Ray Tracing (RT)")
         self.wipe(
-            [], Text("We just did Ray Tracing (RT)!", color=BLACK).shift(3 * DOWN)
+            [],
+            Text(
+                "We just did Ray Tracing (RT)!",
+                color=BLACK,
+                font_size=self.CONTENT_FONT_SIZE,
+            ).shift(3 * DOWN),
         )
 
         # Contents
@@ -432,9 +437,74 @@ class Main(Slide, MovingCameraScene):
 
         self.next_slide(notes="We can do that for very complex scenes and many paths.")
         self.play(Restore(self.camera.frame))
+        self.mobjects.remove(self.camera.frame)  # Fixes issue
 
         self.next_slide(notes="Example of tracing paths in 3D Urban scene.")
-        self.wipe(self.mobjects_without_canvas, ImageMobject("urban_tracing.png"))
+        self.play(self.next_slide_number_animation())
+        image = ImageMobject("urban_tracing.png")
+        self.wipe(self.mobjects_without_canvas, image)
+
+        texts = VGroup(
+            Text(
+                "Electrical and Magnetic fields",
+                color=BLACK,
+                font_size=self.CONTENT_FONT_SIZE,
+            ),
+            MathTex(
+                r"\vec{E}~(\si{\volt\per\meter})~\&~\vec{B}~(\si{\tesla})",
+                color=BLACK,
+                font_size=self.CONTENT_FONT_SIZE,
+                tex_template=self.tex_template,
+            ),
+        ).arrange(DOWN)
+
+        self.next_slide(
+            notes="""
+        In Radio-propa., we have two quantities: E and B.
+        Both are vectors (3D) and complex.
+        But, only 2 components are needed!! Hence 2x2 dyadic matrices.
+
+        The most used quantify if E, from which we usually determine
+        the received power (plane wave, lossless medium).
+        """
+        )
+        self.wipe(
+            self.mobjects_without_canvas,
+            texts,
+        )
+
+        e_field = MathTex(
+            r"\vec{E}(x,y,z) = \
+            \sum\limits_{\mathcal{P}\in\mathcal{S}}\
+            \bar{C}(\mathcal{P})\cdot\vec{E}(\mathcal{P}_1),",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).next_to(texts, DOWN)
+
+        self.next_slide(
+            notes="""
+        By superposition, E (and B) can be computed by summing the contribution
+        from each path.
+        """
+        )
+        self.play(FadeIn(e_field))
+
+        where_c = MathTex(
+            r"\text{where}~\bar{C}(\mathcal{P}) = \
+            \prod\limits_{i \in \mathcal{I}} \bar{D}_i \cdot \alpha_i \cdot e^{-j \phi_i}.",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).next_to(e_field, DOWN)
+
+        self.next_slide(
+            notes="""
+        Where C accounts for:
+        - D the dyadic coefficients for polarization;
+        - alpha the path attenuation;
+        - and the path delay.
+        """
+        )
+        self.play(FadeIn(where_c, shift=0.2 * DOWN))
 
         # Scenes
 
@@ -449,7 +519,7 @@ class Main(Slide, MovingCameraScene):
             self.play(Transform(image, ImageMobject(f"scene_{i}.png")))
 
     def construct(self):
-        self.wait_time_between_slides = 0.05
+        self.wait_time_between_slides = 0.10
 
         self.construct_intro()
         self.construct_fundamentals()

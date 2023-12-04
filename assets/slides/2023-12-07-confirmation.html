@@ -1,0 +1,522 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Manim Slides</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
+
+    <!-- <link rel="stylesheet" href="index.css"> -->
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides"><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/a93746d0eaafcf4f4d936ebeac822f0ded17222b8c619a30ff778e475fc4fd1e.mp4"
+              data-background-video-muted>
+              <aside class="notes" data-markdown># Welcome!</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/b0bb2a5deb09464b922d27c3994f7fc8ae981645236671eb95609c1193e1bb10.mp4"
+              >
+              <aside class="notes" data-markdown>
+# Audio propagation analogy
+
+I like to introduce my subject with a small analogy
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/8f35304ef0f018b9cf5e8d4ac6e69ce05bec511c14b943459e85d229b960c99c.mp4"
+              data-background-video-loop>
+              <aside class="notes" data-markdown>
+Let the speaker emit audio waves towards the audience.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/3b5adb79cc6663ca02d9eb4914c08fd81ad28843fb56498ce2eea91da400abf5.mp4"
+              >
+              <aside class="notes" data-markdown>Let us focus on one of the listeners.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/78397456a7cc5a5e0216b36e4e645124ddca8429609e2af8bac3c8d43249217e.mp4"
+              >
+              <aside class="notes" data-markdown>In free space, sound arrives in a direct path.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/29e633aadb23f00e44b270be6e9eeee76b3a734eeedb397869e80941bbafa104.mp4"
+              >
+              <aside class="notes" data-markdown>But what if we have a wall?</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/2aae4ceed3947bd3ff7eb8dd424c67f3a5bd5fbc45f917b6d3af814b1bde2f93.mp4"
+              >
+              <aside class="notes" data-markdown>
+Like in a tunnel, the sound waves will reflect on this wall,
+and reach the listener a second time, with a different delay and volume.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/ffc2d389913e19b7ae5d453b7b0360771b49b087469824c57ca076040059d60d.mp4"
+              >
+              <aside class="notes" data-markdown>Of course, we can have many walls</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/6037bc44ccad7faa32e0f158852071421f77fe76183ec9a5a7513451bb445cbb.mp4"
+              >
+              <aside class="notes" data-markdown>Or obstacles that obstruct some paths.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/fc6074f25e936290e1df75d5becc3bf14ca8b2c9e0c9e152efd5e2cd3f7bd99d.mp4"
+              >
+              <aside class="notes" data-markdown>What if the target changes?</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/6846645f306119171f5fc9b6c7e2f17d2f3439cf3166794548aff320b7ae04b4.mp4"
+              >
+              <aside class="notes" data-markdown>Of course, the same logic can be applied to radio networks</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/e80d7b183b9efba0adabcbb23fe683600c5460e848bf617c7617b04486ce1510.mp4"
+              >
+              <aside class="notes" data-markdown>What we did, if actually called Ray Tracing (RT)</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/ff4ff1ac379f1b597873655d0d67bb5b51df03d1beb156aa2a3bab27b10d9d76.mp4"
+              >
+              <aside class="notes" data-markdown>Table of contents</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/8afbe994155b892785ca9426c0059c70451eb00e420a001153e9c5fa028cd884.mp4"
+              >
+              <aside class="notes" data-markdown>RT and EM Fundamentals</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/f3fdff1ccd1f98a27d1475673c43d4c022cf3bd9b7ea5ee33619ad35b96b1a91.mp4"
+              >
+              <aside class="notes" data-markdown>We are interested in broadcasting waves from a BS</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/4dd168615db7ebaf0d7608ccbd9e4ca230e0079a6102397649eb149f9032768c.mp4"
+              data-background-video-loop>
+              <aside class="notes" data-markdown>In a simplified model, the BS emits waves isotropically.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/554cd3415a40d90c4a17425fedc515611c3991e3b440b683618577266451a5c6.mp4"
+              >
+              <aside class="notes" data-markdown>
+Using Huygen's principle, we can decompose a wave front into a
+series of new wave sources.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/ef3af1353ee066d37e08e3dc33274e47a35acb91529b11d90bb288a1a8132030.mp4"
+              data-background-video-loop>
+              <aside class="notes" data-markdown>
+Each source now broadcasts waves,
+each with a fraction of the original energy
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/327bbaac4961fd24a01bdae4f7acf144a8a42c96eccbdf5f05f0220f72d5e00d.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/c8548adb511500c83eb2c533a3a97a6ea834653da55df98cc805bbdbb6ad8ff3.mp4"
+              >
+              <aside class="notes" data-markdown>RT considers each ray path individually.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/2f760832060187f92ba2359e6bb10edaa9301278b28dfda50291be257536c092.mp4"
+              >
+              <aside class="notes" data-markdown>In a constant speed space, ray paths are linear.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/66df69797f39d47482a958304e1c04ddf2c9892f32259e564005caa8e756f18b.mp4"
+              >
+              <aside class="notes" data-markdown>Maybe, we reach some obstacle.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/0379aa19a0744054fb785b1acb1239ca93b3f3679e6be45fd02f1376fb2af821.mp4"
+              >
+              <aside class="notes" data-markdown>If we decide to apply reflection.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/6dfa7b6cfb303dcdf1ed1e56e8364a46c9cc0387413142438a8a3d0313924e2b.mp4"
+              >
+              <aside class="notes" data-markdown>We can do that for very complex scenes and many paths.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/ecb313100e8505d6f0cf9e6df2746ab6610536a239d8446c28e47a9f17a5cb8a.mp4"
+              >
+              <aside class="notes" data-markdown>Example of tracing paths in 3D Urban scene.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/b0e4c7e18c72f66716700173c7248ede7e0b0357e4dcdf350e40e192c8e4b357.mp4"
+              >
+              <aside class="notes" data-markdown>
+In Radio-propa., we have two quantities: E and B.
+Both are vectors (3D) and complex.
+But, only 2 components are needed!! Hence 2x2 dyadic matrices.
+
+The most used quantify if E, from which we usually determine
+the received power (plane wave, lossless medium).
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/d0fde82123b239426ce876e201656ee179b9aa3c9bc31cff044cef04ef790232.mp4"
+              >
+              <aside class="notes" data-markdown>
+By superposition, E (and B) can be computed by summing the contribution
+from each path.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/fde6209dd8e374364d02332e611a509aae8d334412c3ebed3aecd269ef2af1a9.mp4"
+              >
+              <aside class="notes" data-markdown>
+Where C accounts for:
+- D the dyadic coefficients for polarization;
+- alpha the path attenuation;
+- and the path delay.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/2c09030ac87e7c79f3c2f27a3a1d5b34e6ae11f60c9615327a5ae0859ab17530.mp4"
+              >
+              <aside class="notes" data-markdown>...</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/44e4b31b568236fb08ba5fdf84464721bd6166b583c37419b841a4b03ffd13ad.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 0</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/4fc29f0590f7ce8df2345db7c2af3694faa9f67789a88f1395de52dfd0a0ca34.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 1</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/28d7b74a2685e0e14a50561b37f66c9f53434bff1dab09a9c86956d8d3139819.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 2</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/5bddc4cb2eea1cb8e3e26b5ef385ebd06f1075a4373f9747de5982d4cc6ed0ad.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 3</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2023-12-07-confirmation_assets/169df97b8868bc1ea70bda8a66b890872ad108b7c6339dc7b6dec4c15904ade1.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 4</aside>
+            </section></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+
+    <!-- To include plugins, see: https://revealjs.com/plugins/ -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/markdown/markdown.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script><!-- <script src="index.js"></script> -->
+    <script>
+      Reveal.initialize({
+        plugins: [ RevealMarkdown, RevealNotes ],
+        // The "normal" size of the presentation, aspect ratio will
+        // be preserved when the presentation is scaled to fit different
+        // resolutions. Can be specified using percentage units.
+        width: '100%',
+        height: '100%',
+
+        // Factor of the display size that should remain empty around
+        // the content
+        margin: 0.04,
+
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 2.0,
+
+        // Display presentation control arrows
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: false,
+
+        // Display the page number of the current slide
+        // - true:    Show slide number
+        // - false:   Hide slide number
+        //
+        // Can optionally be set as a string that specifies the number formatting:
+        // - "h.v":   Horizontal . vertical slide number (default)
+        // - "h/v":   Horizontal / vertical slide number
+        // - "c":   Flattened slide number
+        // - "c/t":   Flattened slide number / total slides
+        //
+        // Alternatively, you can provide a function that returns the slide
+        // number for the current slide. The function should take in a slide
+        // object and return an array with one string [slideNumber] or
+        // three strings [n1,delimiter,n2]. See #formatSlideNumber().
+        slideNumber: false,
+
+        // Can be used to limit the contexts in which the slide number appears
+        // - "all":      Always show the slide number
+        // - "print":    Only when printing to PDF
+        // - "speaker":  Only in the speaker view
+        showSlideNumber: 'all',
+
+        // Use 1 based indexing for # links to match slide number (default is zero
+        // based)
+        hashOneBasedIndex: false,
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: false,
+
+        // Push each slide change to the browser history.  Implies `hash: true`
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Optional function that blocks keyboard events when retuning false
+        //
+        // If you set this to 'focused', we will only capture keyboard events
+        // for embedded decks when they are in focus
+        keyboardCondition: null,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // Changes the behavior of our navigation directions.
+        //
+        // "default"
+        // Left/right arrow keys step between horizontal slides, up/down
+        // arrow keys step between vertical slides. Space key steps through
+        // all slides (both horizontal and vertical).
+        //
+        // "linear"
+        // Removes the up/down arrows. Left/right arrows step through all
+        // slides (both horizontal and vertical).
+        //
+        // "grid"
+        // When this is enabled, stepping left/right from a vertical stack
+        // to an adjacent vertical stack will land you at the same vertical
+        // index.
+        //
+        // Consider a deck with six slides ordered in two vertical stacks:
+        // 1.1    2.1
+        // 1.2    2.2
+        // 1.3    2.3
+        //
+        // If you're on slide 1.3 and navigate right, you will normally move
+        // from 1.3 -> 2.1. If "grid" is used, the same navigation takes you
+        // from 1.3 -> 2.3.
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the question-mark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autolaying embedded media (video/audio/iframe)
+        // - null:   Media will only autoplay if data-autoplay is present
+        // - true:   All media will autoplay, regardless of individual setting
+        // - false:  No media will autoplay, regardless of individual setting
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes
+        // - null:   Iframes with data-src AND data-preload will be loaded when within
+        //           the viewDistance, iframes with only data-src will be loaded when visible
+        // - true:   All iframes with data-src will be loaded when within the viewDistance
+        // - false:  All iframes with data-src will be loaded only when visible
+        preloadIframes: null,
+
+        // Can be used to globally disable auto-animation
+        autoAnimate: true,
+
+        // Optionally provide a custom element matcher that will be
+        // used to dictate which elements we can animate between.
+        autoAnimateMatcher: null,
+
+        // Default settings for our auto-animate transitions, can be
+        // overridden per-slide or per-element via data arguments
+        autoAnimateEasing: 'ease',
+        autoAnimateDuration: 1.0,
+        autoAnimateUnmatched: true,
+
+        // CSS properties that can be auto-animated. Position & scale
+        // is matched separately so there's no need to include styles
+        // like top/right/bottom/left, width/height or margin.
+        autoAnimateStyles: ['opacity', 'color', 'background-color', 'padding', 'font-size', 'line-height', 'letter-spacing', 'border-width', 'border-color', 'border-radius', 'outline', 'outline-offset'],
+
+        // Controls automatic progression to the next slide
+        // - 0:      Auto-sliding only happens if the data-autoslide HTML attribute
+        //           is present on the current slide or fragment
+        // - 1+:     All slides will progress automatically at the given interval
+        // - false:  No auto-sliding, even if data-autoslide is present
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding (defaults to navigateNext)
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // Opens links in an iframe preview overlay
+        // Add `data-preview-link` and `data-preview-link="false"` to customise each link
+        // individually
+        previewLinks: false,
+
+        // Exposes the reveal.js API through window.postMessage
+        postMessage: true,
+
+        // Dispatches all reveal.js events to the parent window through postMessage
+        postMessageEvents: false,
+
+        // Focuses body when page changes visibility to ensure keyboard shortcuts work
+        focusBodyOnPageVisibilityChange: true,
+
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'none', // none/fade/slide/convex/concave/zoom
+
+        // The maximum number of pages a single slide can expand onto when printing
+        // to PDF, unlimited by default
+        pdfMaxPagesPerSlide: Number.POSITIVE_INFINITY,
+
+        // Prints each fragment on a separate slide
+        pdfSeparateFragments: true,
+
+        // Offset used to reduce the height of content within exported PDF pages.
+        // This exists to account for environment differences based on how you
+        // print to PDF. CLI printing options, like phantomjs and wkpdf, can end
+        // on precisely the total height of the document whereas in-browser
+        // printing has to end one pixel before.
+        pdfPageHeightOffset: -1,
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000
+      });
+
+      
+    </script>
+  </body>
+</html>
