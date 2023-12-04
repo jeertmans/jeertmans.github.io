@@ -4,6 +4,7 @@ import cv2
 
 from manim import *
 from manim_slides import Slide
+from manim_slides.slide.animation import Wipe
 
 
 class Item:
@@ -34,11 +35,14 @@ class Main(Slide, MovingCameraScene):
 
         # Colors
 
-        self.BS_COLOR = BLUE
+        self.BS_COLOR = BLUE_D
         self.UE_COLOR = MAROON_D
-        self.SIGNAL_COLOR = BLUE_D
+        self.SIGNAL_COLOR = BLUE_B
         self.WALL_COLOR = LIGHT_BROWN
         self.INVALID_COLOR = RED
+        self.VALID_COLOR = "#28C137"
+        self.IMAGE_COLOR = "#636463"
+        self.X_COLOR = DARK_BROWN
 
         # Coordinates
 
@@ -116,13 +120,17 @@ class Main(Slide, MovingCameraScene):
 
         # Intro
 
-        speaker = SVGMobject("speaker.svg").scale(0.5).shift(4 * LEFT)
+        speaker = (
+            SVGMobject("speaker.svg", fill_color=self.BS_COLOR)
+            .scale(0.5)
+            .shift(4 * LEFT)
+        )
         audience = VGroup()
 
         for i in range(-2, 3):
             for j in range(-2, 3):
                 audience.add(
-                    SVGMobject("listener.svg")
+                    SVGMobject("listener.svg", fill_color=self.UE_COLOR)
                     .scale(0.25)
                     .shift(i * UP + j * LEFT + 3 * RIGHT)
                 )
@@ -222,11 +230,19 @@ class Main(Slide, MovingCameraScene):
             notes="Of course, the same logic can be applied to radio networks"
         )
         self.play(
-            Transform(speaker, SVGMobject("antenna.svg").scale(0.45).move_to(speaker)),
+            Transform(
+                speaker,
+                SVGMobject("antenna.svg", fill_color=self.BS_COLOR)
+                .scale(0.45)
+                .move_to(speaker),
+            ),
             LaggedStart(
                 *[
                     Transform(
-                        target, SVGMobject("phone.svg").scale(0.25).move_to(target)
+                        target,
+                        SVGMobject("phone.svg", fill_color=self.UE_COLOR)
+                        .scale(0.25)
+                        .move_to(target),
                     )
                     for target in audience
                 ],
@@ -285,7 +301,7 @@ class Main(Slide, MovingCameraScene):
 
         r = 2
         wave = Circle(color=self.SIGNAL_COLOR, radius=r)
-        BS = SVGMobject("antenna.svg", color=self.BS_COLOR, z_index=1).scale(0.25)
+        BS = SVGMobject("antenna.svg", fill_color=self.BS_COLOR, z_index=1).scale(0.25)
 
         self.next_slide(notes="We are interested in broadcasting waves from a BS")
         self.play(self.next_slide_number_animation())
@@ -407,7 +423,7 @@ class Main(Slide, MovingCameraScene):
         )
 
         UE = (
-            SVGMobject("phone.svg", color=self.UE_COLOR)
+            SVGMobject("phone.svg", fill_color=self.UE_COLOR)
             .scale(0.25)
             .move_to(obstacle)
             .shift(3 * DOWN)
@@ -518,8 +534,230 @@ class Main(Slide, MovingCameraScene):
             self.next_slide(notes=f"Order = {i}")
             self.play(Transform(image, ImageMobject(f"scene_{i}.png")))
 
+    def construct_motivations(self):
+        pass
+
+    def construct_tracing(self):
+        # How to trace paths
+
+        self.next_slide(
+            notes="""
+        Recall the example from before (RL).
+
+        When launching rays, most of them will never reach the UE.
+        """
+        )
+        self.play(
+            self.next_slide_title_animation("How to trace paths"),
+            self.next_slide_number_animation(),
+        )
+        BS = (
+            SVGMobject("antenna", fill_color=self.BS_COLOR, z_index=1)
+            .scale(0.25)
+            .shift(2 * LEFT)
+        )
+        UE = (
+            SVGMobject("phone", fill_color=self.UE_COLOR, z_index=1)
+            .scale(0.25)
+            .shift(2 * RIGHT)
+        )
+        wall = Line(
+            BS.get_center() + 2 * UP, UE.get_center() + 2 * UP, color=self.WALL_COLOR
+        )
+        r = 2
+        angles = np.linspace(0, 2 * np.pi, 8, endpoint=False)
+        arrows = [
+            Arrow(
+                BS.get_center(),
+                BS.get_center() + r * np.array([np.cos(angle), np.sin(angle), 0]),
+                buff=0.35,
+                color=self.SIGNAL_COLOR,
+            )
+            for angle in angles
+        ]
+        arrows_copy = VGroup(*arrows).copy()
+
+        self.play(
+            LaggedStart(
+                Create(BS),
+                Create(UE),
+                Create(wall),
+                *[GrowArrow(arrow) for arrow in arrows],
+            )
+        )
+
+        target = arrows[1]
+
+        self.next_slide(notes="Only one ray reaches UE.")
+        self.play(
+            Succession(
+                Indicate(target),
+                target.animate.put_start_and_end_on(
+                    target.get_start(), wall.get_center()
+                ),
+                GrowArrow(
+                    Arrow(wall.get_center(), UE, color=self.SIGNAL_COLOR, buff=0)
+                ),
+            )
+        )
+
+        self.next_slide(notes="But what if UE was slightly off?")
+        self.play(UE.animate.shift(0.45 * RIGHT))
+
+        self.next_slide(notes="You could create a larger 'inclusion' sphere.")
+        self.play(GrowFromCenter(Circle(color=GREY).move_to(UE)))
+
+        self.next_slide(notes="Or launch more rays.")
+        arrows_copy.set_opacity(0)
+        self.play(
+            arrows_copy.animate.set_opacity(1).rotate(
+                angle=PI / 8,
+                about_point=BS.get_center(),
+            )
+        )
+
+        not_efficient = Text(
+            """Not very efficient for "point-to-point" RT""",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).shift(2 * DOWN)
+
+        self.next_slide(notes="Not very efficient!")
+        self.wipe(
+            [
+                mobject
+                for mobject in self.mobjects_without_canvas
+                if mobject not in {BS, UE, wall}
+            ],
+            not_efficient,
+        )
+
+        self.next_slide(notes="How to exactly find paths?")
+        self.play(
+            FadeIn(
+                Text(
+                    "How to exactly find paths?",
+                    color=BLACK,
+                    font_size=self.CONTENT_FONT_SIZE,
+                ).next_to(not_efficient, DOWN),
+                shift=0.2 * DOWN,
+            )
+        )
+
+        OFFSET = self.DL + UP + RIGHT
+
+        BS.target = Dot(color=self.BS_COLOR).move_to([2, -1, 0]).shift(OFFSET)
+        UE.target = Dot(color=self.UE_COLOR).move_to([2, +4, 0]).shift(OFFSET)
+        wall.generate_target().put_start_and_end_on([0, 0, 0], [3.3, 3.3, 0]).shift(
+            OFFSET
+        )
+        wall_2 = Line([5, 0.5, 0], [5, 4, 0], color=self.WALL_COLOR).shift(OFFSET)
+        I1, I2, X1, X2 = VGroup(
+            Dot([-1, 2, 0], color=self.IMAGE_COLOR),
+            Dot([11, 2, 0], color=self.IMAGE_COLOR),
+            Dot(
+                [20 / 7, 20 / 7, 0],
+                color=self.X_COLOR,
+                stroke_width=2,
+                fill_color=WHITE,
+            ),
+            Dot([5, 10 / 3, 0], color=self.X_COLOR, stroke_width=2, fill_color=WHITE),
+        ).shift(OFFSET)
+
+        self.next_slide(notes="Let's introduce the Image Method.")
+        self.play(
+            self.next_slide_number_animation(),
+            MoveToTarget(BS),
+            MoveToTarget(UE),
+            MoveToTarget(wall),
+            Wipe(
+                [
+                    mobject
+                    for mobject in self.mobjects_without_canvas
+                    if mobject not in {BS, UE, wall}
+                ],
+                wall_2,
+                shift=LEFT * np.array([self._frame_width, 0, 0]),
+            ),
+        )
+
+        self.next_slide(notes="Checking LOS.")
+        LOS = Arrow(BS, UE, color=self.SIGNAL_COLOR)
+        self.play(
+            Succession(
+                GrowArrow(LOS),
+                LOS.animate.set_color(self.INVALID_COLOR),
+            )
+        )
+
+        # TODO: refactor me
+        self.next_slide(notes="Tracing path")
+        self.play(FadeOut(LOS))
+
+        arrow_1 = Arrow(BS, I1, color=BLACK)
+        arrow_2 = Arrow(I1, I2, color=BLACK)
+        right_angle_1 = RightAngle(arrow_1, wall, color=RED)
+        right_angle_2 = RightAngle(arrow_2, wall_2, color=RED)
+
+        self.play(GrowArrow(arrow_1), Create(right_angle_1))
+        self.play(FadeIn(I1))
+        self.next_slide()
+
+        self.play(FadeOut(arrow_1), FadeOut(right_angle_1))
+        self.play(GrowArrow(arrow_2), Create(right_angle_2))
+        self.play(FadeIn(I2))
+        self.play(FadeOut(arrow_2), FadeOut(right_angle_2))
+
+        line1 = Line(UE, I2, color=BLACK)
+        line2 = Line(X2, I1, color=BLACK)
+
+        self.play(Create(line1))
+
+        self.next_slide()
+
+        self.play(FadeIn(X2))
+
+        self.next_slide()
+
+        self.play(FadeOut(line1))
+
+        self.next_slide()
+
+        self.play(Create(line2))
+        self.play(FadeIn(X1))
+        self.play(FadeOut(line2))
+
+        self.next_slide()
+
+        path = VGroup(
+            Line(BS, X1),
+            Line(X1, X2),
+            Line(X2, UE),
+        ).set_color(self.SIGNAL_COLOR)
+
+        for p in path:
+            self.play(Create(p))
+
+        self.play(path.animate.set_color(self.VALID_COLOR))
+
+        # refactor: end
+
+    def construct_drt(self):
+        pass
+
+    def construct_status_of_work(self):
+        pass
+
+    def construct_conclusion(self):
+        pass
+
     def construct(self):
         self.wait_time_between_slides = 0.10
 
         self.construct_intro()
         self.construct_fundamentals()
+        self.construct_motivations()
+        self.construct_tracing()
+        self.construct_drt()
+        self.construct_status_of_work()
+        self.construct_conclusion()
