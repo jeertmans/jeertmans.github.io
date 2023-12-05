@@ -746,7 +746,22 @@ class Main(Slide, MovingCameraScene):
         pass
 
     def construct_status_of_work(self):
-        pass
+        # Gantt
+
+        gantt = ImageMobject("gantt_before.png").shift(0.2 * DOWN)
+        self.next_slide()
+        self.play(
+            self.next_slide_number_animation(),
+            self.next_slide_title_animation("Status of Work"),
+        )
+
+        self.next_slide()
+        self.wipe(self.mobjects_without_canvas, gantt)
+
+        self.next_slide(notes="Updated Gantt diagram.")
+        self.add(ImageMobject("gantt_after.png").align_to(gantt, UP))
+        self.remove(gantt)
+        self.play(self.next_slide_number_animation())
 
     def construct_conclusion(self):
         pass
@@ -754,10 +769,10 @@ class Main(Slide, MovingCameraScene):
     def construct(self):
         self.wait_time_between_slides = 0.10
 
-        self.construct_intro()
-        self.construct_fundamentals()
+        # self.construct_intro()
+        # self.construct_fundamentals()
         self.construct_motivations()
-        self.construct_tracing()
+        # self.construct_tracing()
         self.construct_drt()
         self.construct_status_of_work()
         self.construct_conclusion()
