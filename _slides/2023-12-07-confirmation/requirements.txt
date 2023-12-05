@@ -1,0 +1,5 @@
+manim==0.17.3
+manim-slides==5.1.0-rc1
+numpy
+shapely
+sympy
