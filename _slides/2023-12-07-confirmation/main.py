@@ -1,7 +1,6 @@
 import random
 
 import cv2
-
 from manim import *
 from manim_slides import Slide
 from manim_slides.slide.animation import Wipe
