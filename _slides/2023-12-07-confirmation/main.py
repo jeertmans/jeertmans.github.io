@@ -1,9 +1,9 @@
+import os
 import random
 
 import cv2
 from manim import *
 from manim_slides import Slide
-from manim_slides.slide.animation import Wipe
 
 
 class Item:
@@ -24,6 +24,40 @@ def paragraph(*strs, alignment=LEFT, direction=DOWN, **kwargs):
             text.align_to(texts[0], direction=alignment)
 
     return texts
+
+
+class VideoAnimation(Animation):
+    def __init__(self, video_mobject, **kwargs):
+        self.video_mobject = video_mobject
+        self.index = 0
+        self.dt = 1.0 / len(video_mobject)
+        super().__init__(video_mobject, **kwargs)
+
+    def interpolate_mobject(self, dt):
+        index = int(dt / self.dt) % len(self.video_mobject)
+
+        if index != self.index:
+            self.index = index
+            self.video_mobject.pixel_array = self.video_mobject[index].pixel_array
+
+        return self
+
+
+class VideoMobject(ImageMobject):
+    def __init__(self, image_files, **kwargs):
+        assert len(image_files) > 0, "Cannot create empty video"
+        self.image_files = image_files
+        self.kwargs = kwargs
+        super().__init__(image_files[0], **kwargs)
+
+    def __len__(self):
+        return len(self.image_files)
+
+    def __getitem__(self, index):
+        return ImageMobject(self.image_files[index], **self.kwargs)
+
+    def play(self, **kwargs):
+        return VideoAnimation(self, **kwargs)
 
 
 class Main(Slide, MovingCameraScene):
@@ -88,10 +122,10 @@ class Main(Slide, MovingCameraScene):
             self.play(
                 self.next_slide_number_animation(),
                 self.next_slide_title_animation(title),
-                Wipe(
+                self.wipe(
                     self.mobjects_without_canvas,
                     contents if contents else [],
-                    shift=LEFT * np.array([self._frame_width, 0, 0]),
+                    return_animation=True,
                 ),
             )
         else:
@@ -544,10 +578,27 @@ class Main(Slide, MovingCameraScene):
             self.play(Transform(image, ImageMobject(f"scene_{i}.png")))
 
     def construct_motivations(self):
+        contents = paragraph(
+            "• Core idea;",
+            "• Architecture and Challenges;",
+            "• Applications;",
+            "• Alternative methods.",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
         self.next_slide(notes="Let us motivate this thesis subject.")
-        self.new_clean_slide("Motivations")
+        self.new_clean_slide("Motivations", contents)
 
     def construct_tracing(self):
+        contents = paragraph(
+            "• Ray Launching vs Ray Tracing;",
+            "• Image Method and similar;",
+            "• Fermat Principle;",
+            "• Min-Path-Tracing;",
+            "• Arbitrary geometries.",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
         self.next_slide(
             notes="""
         Recall the example from before (RL).
@@ -555,7 +606,7 @@ class Main(Slide, MovingCameraScene):
         When launching rays, most of them will never reach the UE.
         """
         )
-        self.new_clean_slide("How to trace paths")
+        self.new_clean_slide("How to trace paths", contents)
 
         # How to trace paths
 
@@ -679,14 +730,14 @@ class Main(Slide, MovingCameraScene):
             MoveToTarget(BS),
             MoveToTarget(UE),
             MoveToTarget(wall),
-            Wipe(
+            self.wipe(
                 [
                     mobject
                     for mobject in self.mobjects_without_canvas
                     if mobject not in {BS, UE, wall}
                 ],
                 wall_2,
-                shift=LEFT * np.array([self._frame_width, 0, 0]),
+                return_animation=True,
             ),
         )
 
@@ -751,6 +802,23 @@ class Main(Slide, MovingCameraScene):
 
         # refactor: end
 
+        # Arbitrary geometries
+
+        folder = "complex_geom"
+        image_files = [
+            f"{folder}/{image_file}" for image_file in sorted(os.listdir(folder))
+        ]
+        video = VideoMobject(image_files, z_index=-1)
+
+        self.next_slide(notes="TODO")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, video, return_animation=True),
+        )
+
+        self.next_slide(loop=True)
+        self.play(video.play(run_time=6.0))
+
     def construct_drt(self):
         self.next_slide(notes="Differentiable Ray Tracing part!")
         self.new_clean_slide("Differentiable Ray Tracing")
@@ -776,8 +844,10 @@ class Main(Slide, MovingCameraScene):
         gantt = ImageMobject("gantt_before.png").shift(0.2 * DOWN)
 
         self.next_slide()
-        self.play(self.next_slide_number_animation())
-        self.wipe(self.mobjects_without_canvas, gantt)
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, gantt, return_animation=True),
+        )
 
         self.next_slide(notes="Updated Gantt diagram.")
         self.play(
@@ -797,8 +867,12 @@ class Main(Slide, MovingCameraScene):
             font_size=self.CONTENT_FONT_SIZE,
         ).align_to(self.slide_title, LEFT)
         self.next_slide(notes="Let us review the work achieved so far.")
-        self.play(self.next_slide_number_animation())
-        self.wipe(self.mobjects_without_canvas, achievements)
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, achievements, return_animation=True
+            ),
+        )
 
         # Future work
 
@@ -814,8 +888,12 @@ class Main(Slide, MovingCameraScene):
             font_size=self.CONTENT_FONT_SIZE,
         ).align_to(self.slide_title, LEFT)
         self.next_slide(notes="Let us review the work achieved so far.")
-        self.play(self.next_slide_number_animation())
-        self.wipe(self.mobjects_without_canvas, achievements)
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, achievements, return_animation=True
+            ),
+        )
 
         # Collaborations and missions
 
@@ -829,8 +907,10 @@ class Main(Slide, MovingCameraScene):
             font_size=self.CONTENT_FONT_SIZE,
         ).align_to(self.slide_title, LEFT)
         self.next_slide(notes="Past and future collaborations.")
-        self.play(self.next_slide_number_animation())
-        self.wipe(self.mobjects_without_canvas, collab)
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, collab, return_animation=True),
+        )
 
     def construct_conclusion(self):
         self.next_slide(notes="Let's conclude this.")
