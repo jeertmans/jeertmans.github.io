@@ -83,6 +83,23 @@ class Main(Slide, MovingCameraScene):
             .align_to(self.slide_title, LEFT),
         )
 
+    def new_clean_slide(self, title, contents=None):
+        if self.mobjects_without_canvas:
+            self.play(
+                self.next_slide_number_animation(),
+                self.next_slide_title_animation(title),
+                Wipe(
+                    self.mobjects_without_canvas,
+                    contents if contents else [],
+                    shift=LEFT * np.array([self._frame_width, 0, 0]),
+                ),
+            )
+        else:
+            self.play(
+                self.next_slide_number_animation(),
+                self.next_slide_title_animation(title),
+            )
+
     def play_video(file):
         cap = cv2.VideoCapture(file)
         flag = True
@@ -278,8 +295,7 @@ class Main(Slide, MovingCameraScene):
         self.wipe(self.mobjects_without_canvas, [*self.canvas_mobjects, contents])
 
     def construct_fundamentals(self):
-        # Contents
-
+        self.next_slide(notes="RT and EM Fundamentals")
         contents = paragraph(
             "• Core idea;",
             "• Architecture and Challenges;",
@@ -288,13 +304,7 @@ class Main(Slide, MovingCameraScene):
             color=BLACK,
             font_size=self.CONTENT_FONT_SIZE,
         ).align_to(self.slide_title, LEFT)
-
-        self.next_slide(notes="RT and EM Fundamentals")
-        self.play(
-            self.next_slide_title_animation("RT and EM Fundamentals"),
-            self.next_slide_number_animation(),
-        )
-        self.wipe(self.mobjects_without_canvas, contents)
+        self.new_clean_slide("RT and EM Fundamentals", contents)
 
         # BS broadcasting waves
 
@@ -534,11 +544,10 @@ class Main(Slide, MovingCameraScene):
             self.play(Transform(image, ImageMobject(f"scene_{i}.png")))
 
     def construct_motivations(self):
-        pass
+        self.next_slide(notes="Let us motivate this thesis subject.")
+        self.new_clean_slide("Motivations")
 
     def construct_tracing(self):
-        # How to trace paths
-
         self.next_slide(
             notes="""
         Recall the example from before (RL).
@@ -546,10 +555,10 @@ class Main(Slide, MovingCameraScene):
         When launching rays, most of them will never reach the UE.
         """
         )
-        self.play(
-            self.next_slide_title_animation("How to trace paths"),
-            self.next_slide_number_animation(),
-        )
+        self.new_clean_slide("How to trace paths")
+
+        # How to trace paths
+
         self.wipe(self.mobjects_without_canvas, [])
         BS = (
             SVGMobject("antenna", fill_color=self.BS_COLOR, z_index=1)
@@ -743,36 +752,103 @@ class Main(Slide, MovingCameraScene):
         # refactor: end
 
     def construct_drt(self):
-        pass
+        self.next_slide(notes="Differentiable Ray Tracing part!")
+        self.new_clean_slide("Differentiable Ray Tracing")
 
     def construct_status_of_work(self):
+        self.next_slide(notes="Now, we will take a look at the status of work.")
+        self.new_clean_slide("Status of work")
+
+        # Initial goals
+
+        goals = paragraph(
+            "Goals:",
+            "⊳ (G1): Enable RT dynamic scalability;",
+            "⊳ (G2): Novel geometrical environment representations.",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
+        self.next_slide(notes="Let us review the initial goals.")
+        self.wipe(self.mobjects_without_canvas, goals)
+
         # Gantt
 
         gantt = ImageMobject("gantt_before.png").shift(0.2 * DOWN)
-        self.next_slide()
-        self.play(
-            self.next_slide_number_animation(),
-            self.next_slide_title_animation("Status of Work"),
-        )
 
         self.next_slide()
+        self.play(self.next_slide_number_animation())
         self.wipe(self.mobjects_without_canvas, gantt)
 
         self.next_slide(notes="Updated Gantt diagram.")
-        self.add(ImageMobject("gantt_after.png").align_to(gantt, UP))
-        self.remove(gantt)
+        self.play(
+            self.next_slide_number_animation(),
+            FadeOut(gantt),
+            FadeIn(ImageMobject("gantt_after.png").align_to(gantt, UP)),
+        )
+
+        # Achievements
+
+        achievements = paragraph(
+            "Achievements:",
+            "⟜  Created general-purpose path tracing method;",
+            "⟜  Introduced smoothing techniques in radio-propa. RT;",
+            "⟜  Created a 2D Fully DRT open-source Python framework.",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
+        self.next_slide(notes="Let us review the work achieved so far.")
         self.play(self.next_slide_number_animation())
+        self.wipe(self.mobjects_without_canvas, achievements)
+
+        # Future work
+
+        achievements = paragraph(
+            "Future work:",
+            "⟜  Extend 2D framework to 3D and realistic scenes;",
+            "⟜  Collaborate with Sionna authors for diffraction;",
+            "⟜  Cross-validate w/ other tools (Sionna or Huawei's);",
+            "⟜  Perform quantitative comp. of RL vs RT;",
+            "⟜  Study compat. of MPT w/ good RIS models;",
+            "⟜  Learning how to trace paths with ML (deep sets).",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
+        self.next_slide(notes="Let us review the work achieved so far.")
+        self.play(self.next_slide_number_animation())
+        self.wipe(self.mobjects_without_canvas, achievements)
+
+        # Collaborations and missions
+
+        collab = paragraph(
+            "Collaborations:",
+            "⟜  UniSiegen, Mohammed Saleh (Pr. Andreas Kolb) - 07/2023;",
+            "⟜  Unibo, Nicola D. C. (Pr. Vittorio D. E.) - 03/2023-12/2024;",
+            "⟜  Huawei, Allan W. M. - 03/2023-?;",
+            "⟜  Nvidia, Sionna, Jakob Hoydis - ?",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
+        self.next_slide(notes="Past and future collaborations.")
+        self.play(self.next_slide_number_animation())
+        self.wipe(self.mobjects_without_canvas, collab)
 
     def construct_conclusion(self):
-        pass
+        self.next_slide(notes="Let's conclude this.")
+        self.new_clean_slide("Conclusion")
+
+        self.next_slide(notes="Questions time!")
+        self.wipe(
+            self.mobjects_without_canvas,
+            Text("Questions time!", color=BLACK, font_size=self.TITLE_FONT_SIZE),
+        )
 
     def construct(self):
         self.wait_time_between_slides = 0.10
 
-        # self.construct_intro()
-        # self.construct_fundamentals()
+        self.construct_intro()
+        self.construct_fundamentals()
         self.construct_motivations()
-        # self.construct_tracing()
+        self.construct_tracing()
         self.construct_drt()
         self.construct_status_of_work()
         self.construct_conclusion()
