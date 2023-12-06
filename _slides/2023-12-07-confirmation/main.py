@@ -6,6 +6,27 @@ from manim import *
 from manim_slides import Slide
 
 
+def black(func):
+    """
+    Sets default color to black
+    """
+
+    def wrapper(*args, color=BLACK, **kwargs):
+        return func(*args, color=color, **kwargs)
+
+    return wrapper
+
+
+Tex = black(Tex)
+Text = black(Text)
+MathTex = black(MathTex)
+Line = black(Line)
+Dot = black(Dot)
+Brace = black(Brace)
+Arrow = black(Arrow)
+Angle = black(Angle)
+
+
 class Item:
     def __init__(self, initial=1):
         self.value = initial
@@ -101,6 +122,8 @@ class Main(Slide, MovingCameraScene):
         self.tex_template.add_to_preamble(
             r"""
         \usepackage{siunitx}
+        \usepackage{amsmath}
+        \newcommand{\ts}{\textstyle}
         """
         )
 
@@ -965,14 +988,14 @@ class Main(Slide, MovingCameraScene):
         right_angle_2 = RightAngle(arrow_2, wall_2, color=RED)
 
         self.play(
-            Succesion(
+            Succession(
                 AnimationGroup(GrowArrow(arrow_1), Create(right_angle_1)), FadeIn(I1)
             )
         )
         self.next_slide(notes="Computing the second image.")
 
         self.play(
-            Succesion(
+            Succession(
                 AnimationGroup(FadeOut(arrow_1), FadeOut(right_angle_1)),
                 AnimationGroup(GrowArrow(arrow_2), Create(right_angle_2)),
                 AnimationGroup(FadeIn(I2)),
@@ -987,7 +1010,7 @@ class Main(Slide, MovingCameraScene):
         self.play(Succession(Create(line1), FadeIn(X2), FadeOut(line1)))
 
         self.next_slide(notes="Computing the first coordinate.")
-        self.play(Succesion(Create(line2), FadeIn(X1), FadeOut(line2)))
+        self.play(Succession(Create(line2), FadeIn(X1), FadeOut(line2)))
 
         self.next_slide()
 
@@ -1003,7 +1026,7 @@ class Main(Slide, MovingCameraScene):
         self.play(Succession(*animations))
 
         whats_next = Text(
-            "What if we want to simulate something else "
+            "What if we want to simulate something else\n"
             "than reflection on planar surfaces?",
             color=BLACK,
             font_size=self.CONTENT_FONT_SIZE,
@@ -1020,18 +1043,27 @@ class Main(Slide, MovingCameraScene):
             self.wipe(self.mobjects_without_canvas, whats_next, return_animation=True),
         )
 
-        comparison_table = Table(
-            [
-                ["", "Ray Launcing", "Ray Tracing"],
+        comparison_table = (
+            MobjectTable(
                 [
-                    "Complexity",
-                    MathTex(r"\mathcal{O}(N_R)"),
-                    MathTex(r"\mathcal{O}(N^o)"),
+                    [
+                        MathTex(r"\mathcal{O}(N_R)"),
+                        MathTex(r"\mathcal{O}(N^o)"),
+                    ],
+                    [Text("Unknown"), Text("None")],
+                    [Text("Good"), Text("Bad")],
+                    [Text("Good"), Text("Excellent")],
                 ],
-                ["Paths missed", "Unknown", "None"],
-                ["Scalability", "Good", "Bad"],
-                ["Accuracy", "Good", "Excellent"],
-            ]
+                row_labels=[
+                    Text("Complexity"),
+                    Text("Paths missed"),
+                    Text("Scalability"),
+                    Text("Accuracy"),
+                ],
+                col_labels=[Text("Ray Launching"), Text("Ray Tracing")],
+            )
+            .set_color(BLACK)
+            .scale(0.6)
         )
         self.next_slide(notes="RL - RT comparison")
         self.play(
@@ -1041,6 +1073,8 @@ class Main(Slide, MovingCameraScene):
             ),
         )
 
+        self.mpt_animation()
+
         # Arbitrary geometries
 
         folder = "complex_geom"
@@ -1049,7 +1083,7 @@ class Main(Slide, MovingCameraScene):
         ]
         video = VideoMobject(image_files, z_index=-1)
 
-        self.next_slide(notes="TODO")
+        self.next_slide(notes="See how MPT is applied in 3D.")
         self.play(
             self.next_slide_number_animation(),
             self.wipe(self.mobjects_without_canvas, video, return_animation=True),
@@ -1058,9 +1092,515 @@ class Main(Slide, MovingCameraScene):
         self.next_slide(loop=True)
         self.play(video.play(run_time=6.0))
 
+        # Comparing methods
+
+        comparison_table = (
+            MobjectTable(
+                [
+                    [
+                        MathTex(r"\mathcal{O}(n)"),
+                        MathTex(r"\mathcal{O}(n \cdot n_\text{iter})"),
+                        MathTex(r"\mathcal{O}(n \cdot n_\text{iter})"),
+                    ],
+                    [Text("Planes"), Text("Lines/Planes"), Text("Any*")],
+                    [Text("LOS+R"), Text("All"), Text("All+Custom")],
+                    [Text("N/A"), Text("Convex on planar"), Text("Non convex")],
+                    [Text("N/A or MPT"), Text("None or MPT"), Text("self")],
+                ],
+                row_labels=[
+                    Text("Complexity"),
+                    Text("Objects"),
+                    Text("Types"),
+                    Text("Convexity"),
+                    Text("Convergence check"),
+                ],
+                col_labels=[Text("Image"), Text("FPT"), Text("FPT")],
+            )
+            .set_color(BLACK)
+            .scale(0.5)
+        )
+        self.next_slide(notes="RL - RT comparison")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, comparison_table, return_animation=True
+            ),
+        )
+
+    def mpt_animation(self):  # Copy paste from my EuCAP2023 pres. code
+        # TeX Preamble
+        tex_template = TexTemplate()
+        tex_template.add_to_preamble(
+            r"""
+            \usepackage{fontawesome5}
+            \usepackage{siunitx}
+            \DeclareSIQualifier\wattref{W}
+            \DeclareSIUnit\dbw{\decibel\wattref}
+            \usepackage{amsmath,amssymb,amsfonts,mathtools}
+            \newcommand{\bs}{\boldsymbol}
+            \newcommand{\scp}[3][]{#1\langle #2, #3 #1\rangle}
+            \newcommand{\bb}{\mathbb}
+            \newcommand{\cl}{\mathcal}
+            """
+        )
+        BS_ = Dot(color=self.BS_COLOR)
+        UE_ = Dot(color=self.BS_COLOR)
+        W1_ = Line([-1.5, 0, 0], [1.5, 0, 0], color=self.WALL_COLOR)
+        VGroup(VGroup(BS_, UE_).arrange(RIGHT, buff=5), W1_).arrange(DOWN, buff=3)
+
+        X1_ = Dot(color=self.X_COLOR).move_to(W1_.get_center())
+
+        # Normal vector
+        NV_ = always_redraw(lambda: Line(X1_, X1_.get_center() + 3 * UP).add_tip())
+        VIN_ = always_redraw(lambda: Line(BS_, X1_))
+        VOUT_ = always_redraw(lambda: Line(X1_, UE_))
+        AIN_ = Angle(NV_, VIN_.copy().scale(-1), radius=1.01)
+        AIN_ = always_redraw(
+            lambda: Angle(NV_, VIN_.copy().scale(-1), radius=1.01, color=self.BS_COLOR)
+        )
+        AOUT_ = always_redraw(
+            lambda: Angle(VOUT_, NV_, radius=1.01, color=self.UE_COLOR)
+        )
+        ain_ = DecimalNumber(AIN_.get_value(degrees=True), unit=r"^{\circ}")
+        ain_.next_to(AIN_, 2 * LEFT)
+        aout_ = DecimalNumber(AOUT_.get_value(degrees=True), unit=r"^{\circ}")
+        aout_.next_to(AOUT_, 2 * RIGHT)
+
+        angle_in_ = VGroup(AIN_, ain_)
+        angle_in_.set_color(self.BS_COLOR)
+        ain_.add_updater(
+            lambda m: m.set_value(
+                Angle(NV_, VIN_.copy().scale(-1)).get_value(degrees=True)
+            )
+        )
+        always(ain_.next_to, AIN_, 2 * LEFT)
+
+        angle_out_ = VGroup(AOUT_, aout_)
+        angle_out_.set_color(self.UE_COLOR)
+        aout_.add_updater(
+            lambda m: m.set_value(Angle(VOUT_, NV_).get_value(degrees=True))
+        )
+        always(aout_.next_to, AOUT_, 2 * RIGHT)
+
+        scene_ = VGroup(BS_, UE_, W1_, X1_, NV_, VIN_, VOUT_)
+        angles_ = VGroup(angle_in_, angle_out_)
+
+        self.next_slide(notes="Treating each interaction individually.")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, scene_, return_animation=True),
+        )
+
+        self.next_slide(notes="Adding angles")
+
+        self.add(angles_)
+        self.wait(0.1)
+        self.next_slide()
+
+        def I_(BS, X1, UE):
+            vin = X1.get_center() - BS.get_center()
+            vout = UE.get_center() - X1.get_center()
+            n = np.array([0, 1, 0])
+            vin /= np.linalg.norm(vin)
+            vout /= np.linalg.norm(vout)
+            error = vout - (vin - 2 * np.dot(vin, n) * n)
+
+            return np.linalg.norm(error) ** 2
+
+        def C_(X1):
+            line_y = W1_.get_center()[1]
+            y = X1.get_center()[1]
+
+            return (y - line_y) ** 2
+
+        self.play(
+            Succession(
+                X1_.animate.move_to(W1_.get_start()),
+                X1_.animate.move_to(W1_.get_end()),
+                X1_.animate.move_to(W1_.get_center()),
+            )
+        )
+        self.wait(0.1)
+        self.next_slide()
+
+        cost, i_number, plus, c_number = cost_label = (
+            VGroup(
+                MathTex(r"\mathcal{C} =", tex_template=tex_template),
+                DecimalNumber(I_(BS_, X1_, UE_)),
+                MathTex("+"),
+                DecimalNumber(C_(X1_)),
+            )
+            .arrange(RIGHT)
+            .next_to(W1_, 2 * DOWN)
+            .set_color(BLUE)
+        )
+
+        def label_constructor(*args, **kwargs):
+            return MathTex(*args, tex_template=tex_template, **kwargs)
+
+        i_brace, c_brace = braces = VGroup(
+            BraceLabel(i_number, r"\cl I", label_constructor=label_constructor),
+            BraceLabel(c_number, r"\cl F", label_constructor=label_constructor),
+        ).set_color(BLUE)
+
+        i_number.add_updater(lambda m: m.set_value(I_(BS_, X1_, UE_)))
+        c_number.add_updater(lambda m: m.set_value(C_(X1_)))
+
+        self.play(FadeIn(cost), FadeIn(i_number), FadeIn(i_brace))
+        self.next_slide()
+
+        self.play(
+            Succession(
+                X1_.animate.move_to(W1_.get_start()),
+                X1_.animate.move_to(W1_.get_end()),
+                X1_.animate.move_to(W1_.get_center()),
+            )
+        )
+        self.next_slide()
+
+        self.play(X1_.animate.shift(UP))
+        self.next_slide()
+
+        self.play(FadeIn(plus, c_number, c_brace))
+        self.next_slide()
+
+        self.play(X1_.animate.move_to(W1_.get_center()))
+
+        # Slide: any reflection
+        self.next_slide()
+
+        arc_ = Arc(
+            radius=1.5,
+            arc_center=X1_.copy().shift(1.5 * DOWN).get_center(),
+            color=self.WALL_COLOR,
+            start_angle=PI,
+            angle=-PI,
+        )
+
+        interaction = Tex("Reflection")
+        interaction.next_to(NV_, UP)
+
+        interaction_eq = MathTex(
+            r"\cl I \sim \hat{\bs r} = \hat{\bs \imath} - 2 \scp{\hat{\bs \imath}}{\hat{\bs n}}\hat{\bs n}",
+            tex_template=tex_template,
+        )
+        interaction_eq.to_corner(UR)
+
+        self.play(
+            FadeOut(cost_label),
+            FadeOut(braces),
+            FadeIn(interaction),
+            FadeIn(interaction_eq),
+        )
+        self.next_slide()
+
+        # Diffraction (setup)
+
+        DIFF_W1_A = Polygon(
+            W1_.get_start(),
+            W1_.get_end(),
+            W1_.get_end() + DOWN + 0.25 * LEFT,
+            W1_.get_start() + DOWN + 0.25 * LEFT,
+            stroke_opacity=0,
+            fill_color=self.WALL_COLOR,
+            fill_opacity=0.7,
+        )
+
+        DIFF_W1_B = Polygon(
+            W1_.get_start(),
+            W1_.get_end(),
+            W1_.get_end() + 0.8 * DOWN + 0.25 * RIGHT,
+            W1_.get_start() + 0.8 * DOWN + 0.25 * RIGHT,
+            stroke_opacity=0,
+            fill_color=self.WALL_COLOR,
+            fill_opacity=0.5,
+        )
+
+        D_NV_ = Line(X1_, X1_.get_center() + RIGHT * 3).add_tip()
+        D_AIN_ = Angle(
+            D_NV_.copy().scale(-1),
+            VIN_.copy().scale(-1),
+            radius=1.01,
+            other_angle=True,
+            color=self.BS_COLOR,
+        )
+        D_AOUT_ = Angle(
+            VOUT_, D_NV_, radius=1.01, other_angle=True, color=self.UE_COLOR
+        )
+        D_ain_ = DecimalNumber(
+            D_AIN_.get_value(degrees=True), unit=r"^{\circ}", color=self.BS_COLOR
+        )
+        D_ain_.next_to(D_AIN_, 2 * LEFT)
+        D_aout_ = DecimalNumber(
+            D_AOUT_.get_value(degrees=True), unit=r"^{\circ}", color=self.UE_COLOR
+        )
+        D_aout_.next_to(D_AOUT_, 2 * RIGHT)
+
+        # Slide: reflection on sphere
+
+        W1_.save_state()
+        self.play(Transform(W1_, arc_))
+        self.next_slide()
+
+        # Slide: reflection on metasurface
+
+        UE_.save_state()
+
+        phi = MathTex(r"\phi", color=self.UE_COLOR).move_to(aout_.get_center())
+
+        self.play(
+            Restore(W1_),
+            UE_.animate.shift(RIGHT),
+            FadeTransform(aout_, phi),
+            Transform(
+                interaction, Tex("Reflection on metasurfaces").move_to(interaction)
+            ),
+            Transform(
+                interaction_eq,
+                MathTex(
+                    r"\cl I \sim \bs r = f(\hat{\bs n}, \phi)",
+                    tex_template=tex_template,
+                ).to_corner(UR),
+            ),
+        )
+
+        self.next_slide()
+
+        # Slide: diffraction
+
+        refl_config = VGroup(NV_, AIN_, AOUT_, ain_, aout_)
+        diff_config = VGroup(D_NV_, D_AIN_, D_AOUT_, D_ain_, D_aout_)
+        refl_config.save_state()
+
+        self.play(
+            *[
+                Transform(refl, diff)
+                if not isinstance(refl, DecimalNumber)
+                else FadeTransform(refl, diff)
+                for refl, diff in zip(refl_config, diff_config)
+            ],
+            Restore(W1_),
+            Restore(UE_),
+            FadeOut(phi),
+            FadeIn(DIFF_W1_B),
+            FadeIn(DIFF_W1_A),
+            Transform(interaction, Tex("Diffraction").move_to(interaction)),
+            Transform(
+                interaction_eq,
+                MathTex(
+                    r"\cl I \sim \frac{\scp{\bs i}{\hat{\bs e}}}{\| \bs i \|} =  \frac{\scp{\bs d}{\hat{\bs e}}}{\|\bs d\|}",
+                    tex_template=tex_template,
+                ).to_corner(UR),
+            ),
+        )
+        self.remove(*refl_config)
+        self.add(*diff_config)
+        self.next_slide()
+
+        # Slide: refraction
+
+        UE_.shift(DOWN * 4),
+
+        R_NV_ = Line(X1_, X1_.get_center() + UP * 3).add_tip()
+        R_AIN_ = Angle(
+            R_NV_,
+            VIN_.copy().scale(-1),
+            radius=1.01,
+            color=self.BS_COLOR,
+        )
+        R_AOUT_ = Angle(
+            R_NV_.copy().scale(-1), Line(X1_, UE_), radius=1.01, color=self.UE_COLOR
+        )
+        R_ain_ = DecimalNumber(
+            R_AIN_.get_value(degrees=True), unit=r"^{\circ}", color=self.BS_COLOR
+        )
+        R_ain_.next_to(R_AIN_, 2 * LEFT)
+        R_aout_ = DecimalNumber(
+            R_AOUT_.get_value(degrees=True), unit=r"^{\circ}", color=self.UE_COLOR
+        )
+        R_aout_.next_to(R_AOUT_, DR + RIGHT)
+
+        refr_config = VGroup(R_NV_, R_AIN_, R_AOUT_, R_ain_, R_aout_)
+
+        dashed = DashedLine(X1_, X1_.get_center() + 2 * DOWN, color=GRAY)
+
+        self.play(
+            Write(dashed),
+            FadeOut(DIFF_W1_A),
+            FadeOut(DIFF_W1_B),
+            *[
+                Transform(refl, diff)
+                if not isinstance(refl, DecimalNumber)
+                else FadeTransform(refl, diff)
+                for refl, diff in zip(diff_config, refr_config)
+            ],
+            Transform(interaction, Tex("Refraction").move_to(interaction)),
+            Transform(
+                interaction_eq,
+                MathTex(
+                    r"\cl I \sim v_1 \sin(\theta_2) = v_2 \sin(\theta_1)",
+                    tex_template=tex_template,
+                ).to_corner(UR),
+            ),
+        )
+
+        self.remove(*diff_config)
+        self.add(*refr_config)
+
+        self.next_slide()
+
+        self.play(
+            FadeOut(dashed),
+            FadeOut(refr_config),
+            FadeOut(scene_),
+            FadeOut(interaction),
+            FadeOut(interaction_eq),
+            self.next_slide_number_animation(),
+        )
+        self.next_slide()
+
+        minimize_eq = Tex(
+            r"\[\underset{\bs{\cl X} \in \bb R^{n_t}}{\text{minimize}}\ \cl C(\bs{\cl X}) := \|\cl I(\bs{\cl X})\|^2 + \|\cl F(\bs{\cl X})\|^2\]",
+            tex_template=tex_template,
+        )
+        nt_eq = Tex("where $n_t$ is the total number of unknowns").shift(DOWN)
+        constraint_eq = MathTex(
+            r"\cl C(\bs{\cl X})", r"= 0", tex_template=tex_template
+        ).shift(2 * DOWN)
+        constraint_eq_relaxed = MathTex(
+            r"\cl C(\bs{\cl X})", r"\le \epsilon", tex_template=tex_template
+        ).shift(2 * DOWN)
+
+        self.play(FadeIn(minimize_eq))
+
+        self.next_slide()
+
+        self.play(FadeIn(nt_eq, shift=DOWN))
+
+        self.next_slide()
+
+        self.play(FadeIn(constraint_eq))
+
+        self.next_slide()
+
+        self.play(Transform(constraint_eq, constraint_eq_relaxed))
+
+        self.next_slide()
+
+        if_we_know = Tex(
+            r"If we know a mapping s.t. $(x_k, y_k) \leftrightarrow t_k$"
+        ).shift(UP)
+
+        self.play(
+            FadeIn(if_we_know),
+        )
+
+        self.next_slide()
+
+        self.play(
+            Transform(
+                minimize_eq,
+                Tex(
+                    r"\[\underset{\bs{\cl T} \in \bb R^{n_r}}{\text{minimize}}\ \cl C(\bs{\cl X}(\bs{\cl T})) := \|\cl I(\bs{\cl X }(\bs{\cl T}))\|^2\]",
+                    tex_template=tex_template,
+                ).move_to(minimize_eq),
+            ),
+            Transform(
+                nt_eq,
+                Tex("where $n_r$ is the total number of (2d) reflections").move_to(
+                    nt_eq
+                ),
+            ),
+            Transform(
+                constraint_eq,
+                MathTex(
+                    r"\cl C(\bs{\cl X(\cl T)})",
+                    r"\le \epsilon",
+                    tex_template=tex_template,
+                ).move_to(constraint_eq),
+            ),
+        )
+
     def construct_drt(self):
+        contents = paragraph(
+            "How to compute derivatives?",
+            "⟜  symbolically;",
+            "⟜  using finite-differences;",
+            "⟜  ... with automatic differentiation!",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
         self.next_slide(notes="Differentiable Ray Tracing part!")
-        self.new_clean_slide("Differentiable Ray Tracing")
+        self.new_clean_slide("Differentiable Ray Tracing", contents)
+
+        illustration = Group(
+            ImageMobject("zero_gradient.png").scale(1.3),
+            MathTex(
+                r"\ts \theta(x) = \begin{cases} 1, &\text{if }x>0,\\ 0, &\text{otherwise,}\end{cases}",
+                color=BLACK,
+                font_size=self.CONTENT_FONT_SIZE,
+                tex_template=self.tex_template,
+            ),
+        ).arrange(DOWN)
+        self.next_slide(notes="Our problem is only piecewise diff. and continuous.")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, illustration, return_animation=True
+            ),
+        )
+
+        constraints = VGroup(
+            MathTex(
+                r"\lim_{\alpha\rightarrow\infty} s(x;\alpha) = \theta(x)",
+                color=BLACK,
+                font_size=self.CONTENT_FONT_SIZE,
+            ),
+            Tex(
+                r"""
+                \begin{enumerate}
+                    \item[{\small [C1]}] \(\lim_{x\rightarrow -\infty} s(x; \alpha) = 0\) and \(\lim_{x\rightarrow +\infty} s(x; \alpha) = 1\);
+                    \item[{\small [C2]}] \(s(\cdot; \alpha)\) is monotonically increasing;
+                    \item[{\small [C3]}] \(s(0; \alpha) = \frac{1}{2}\);
+                    \item[{\small [C4]}] and \(s(x; \alpha)  - s(0; \alpha) = s(0; \alpha) - s(-x; \alpha)\).
+                \end{enumerate}
+                """,
+                color=BLACK,
+                font_size=self.CONTENT_FONT_SIZE,
+            ),
+        ).arrange(DOWN, buff=1.0)
+        self.next_slide(notes="Constraints about our approximation.")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, constraints, return_animation=True),
+        )
+
+        examples = Tex(
+            r"""
+                \begin{equation}
+                    s(x; \alpha) = s(\alpha x).
+                \end{equation}
+                The sigmoid is defined with a real-valued exponential
+                \begin{equation}
+                    \text{sigmoid}(x;\alpha) = \frac{1}{1 + e^{-\alpha x}},
+                \end{equation}
+                and the hard sigmoid is the piecewise linear function defined by
+                \begin{equation}
+                    \text{hard sigmoid}(x;\alpha) = \frac{\text{relu6}(\alpha x+3)}{6},
+                \end{equation}
+                where 
+                \begin{equation}
+                    \text{relu6}(x) = \min(\max(0,x),6).
+                \end{equation}
+                """,
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        )
+        self.next_slide(notes="Examples.")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, examples, return_animation=True),
+        )
 
         # Smoothing
         alpha = ValueTracker(1.0)
@@ -1096,7 +1636,10 @@ class Main(Slide, MovingCameraScene):
         alpha_d = always_redraw(
             lambda: VGroup(
                 Tex(r"$\alpha$~=~"),
-                DecimalNumber(alpha.get_value(), num_decimal_places=1),
+                DecimalNumber(
+                    alpha.get_value() if alpha.get_value() > 1.0 else 1.0,
+                    num_decimal_places=1,
+                ),
             )
             .arrange(RIGHT, buff=0.3)
             .set_color(BLACK)
@@ -1119,6 +1662,7 @@ class Main(Slide, MovingCameraScene):
             )
         )
 
+        self.next_slide("Let's see how we can approximate this transition.")
         self.play(
             self.next_slide_number_animation(),
             self.wipe(
@@ -1147,8 +1691,69 @@ class Main(Slide, MovingCameraScene):
         self.next_slide()
         self.play(Create(hard_sigmoid_graph))
 
-        self.next_slide()
+        self.next_slide(notes="Let's animate alpha.")
         self.play(alpha.animate.set_value(10), run_time=4)
+
+        contents = (
+            Group(
+                MathTex(
+                    r"\vec{E}(x,y) = \
+                \sum\limits_{\mathcal{P}\in\mathcal{S}}\
+                V\left(\mathcal{P}\right)\left(\
+                \bar{C}\left(\mathcal{P}\left)\cdot\vec{E}\left(\mathcal{P}_1\right)\
+                \right)",
+                    color=BLACK,
+                    font_size=self.CONTENT_FONT_SIZE,
+                    tex_template=self.tex_template,
+                ),
+                ImageMobject("approximation.png").scale(1.2),
+            )
+            .arrange(RIGHT)
+            .shift(0.4 * DOWN)
+        )
+        self.next_slide(
+            notes="Thanks to that, and other things, we can create a fully DRT!"
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, contents, return_animation=True),
+        )
+
+        contents = (
+            Group(
+                MathTex(
+                    r" \mathcal{F}(x, y) = \min\left(P_{\text{Rx}_0}(x, y), P_{\text{Rx}_1}(x,y)\right)",
+                    color=BLACK,
+                    font_size=self.CONTENT_FONT_SIZE,
+                    tex_template=self.tex_template,
+                ),
+                ImageMobject("opti_problem.png").scale(1.2),
+            )
+            .arrange(RIGHT)
+            .shift(0.4 * DOWN)
+        )
+        self.next_slide(notes="We can create an optimization problem.")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, contents, return_animation=True),
+        )
+
+        image = ImageMobject("opti_steps.png")
+        self.next_slide(
+            notes="""
+            Let's see how it converge.
+
+            Actually, tests have shown:
+
+            1.5 to 2 increase in success rate,
+            where 92% to 98% of already successful runs still converge
+            with our method.
+            """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, image, return_animation=True),
+        )
 
     def construct_status_of_work(self):
         self.next_slide(notes="Now, we will take a look at the status of work.")
@@ -1249,6 +1854,11 @@ class Main(Slide, MovingCameraScene):
             Text("Questions time!", color=BLACK, font_size=self.TITLE_FONT_SIZE),
         )
 
+    def construct_after(self):
+        image = ImageMobject("ml_structure.png")
+        self.next_slide(notes="ML structure.")
+        self.new_clean_slide("ML-like structure", image)
+
     def construct(self):
         self.wait_time_between_slides = 0.10
 
@@ -1259,3 +1869,4 @@ class Main(Slide, MovingCameraScene):
         self.construct_drt()
         self.construct_status_of_work()
         self.construct_conclusion()
+        self.construct_after()
