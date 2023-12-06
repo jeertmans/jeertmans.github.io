@@ -127,6 +127,16 @@ class Main(Slide, MovingCameraScene):
         """
         )
 
+        self.nvidia_credits = (
+            Text(
+                "Credits: Sionna authors, Nvidia.",
+                color=BLACK,
+                font_size=self.SOURCE_FONT_SIZE,
+            )
+            .to_edge(DOWN)
+            .shift(0.2 * DOWN)
+        )
+
     def next_slide_number_animation(self):
         return self.slide_number.animate(run_time=0.5).set_value(
             self.slide_number.get_value() + 1
@@ -636,15 +646,8 @@ class Main(Slide, MovingCameraScene):
         # Example
 
         image = ImageMobject("sionna_munich.png")
-        footnote = (
-            Text(
-                "Credits: Sionna authors, Nvidia.",
-                color=BLACK,
-                font_size=self.SOURCE_FONT_SIZE,
-            )
-            .to_edge(DOWN)
-            .shift(0.2 * DOWN)
-        )
+
+        footnote = self.nvidia_credits
 
         self.next_slide(notes="RT example in a city (Munich).")
         self.play(
@@ -1213,14 +1216,9 @@ class Main(Slide, MovingCameraScene):
 
             return (y - line_y) ** 2
 
-        self.play(
-            Succession(
-                X1_.animate.move_to(W1_.get_start()),
-                X1_.animate.move_to(W1_.get_end()),
-                X1_.animate.move_to(W1_.get_center()),
-            )
-        )
-        self.wait(0.1)
+        self.play(X1_.animate.move_to(W1_.get_start()))
+        self.play(X1_.animate.move_to(W1_.get_end()))
+        self.play(X1_.animate.move_to(W1_.get_center()))
         self.next_slide()
 
         cost, i_number, plus, c_number = cost_label = (
@@ -1249,13 +1247,9 @@ class Main(Slide, MovingCameraScene):
         self.play(FadeIn(cost), FadeIn(i_number), FadeIn(i_brace))
         self.next_slide()
 
-        self.play(
-            Succession(
-                X1_.animate.move_to(W1_.get_start()),
-                X1_.animate.move_to(W1_.get_end()),
-                X1_.animate.move_to(W1_.get_center()),
-            )
-        )
+        self.play(X1_.animate.move_to(W1_.get_start()))
+        self.play(X1_.animate.move_to(W1_.get_end()))
+        self.play(X1_.animate.move_to(W1_.get_center()))
         self.next_slide()
 
         self.play(X1_.animate.shift(UP))
@@ -1858,6 +1852,26 @@ class Main(Slide, MovingCameraScene):
         image = ImageMobject("ml_structure.png")
         self.next_slide(notes="ML structure.")
         self.new_clean_slide("ML-like structure", image)
+
+        footnote = self.nvidia_credits
+
+        self.add_to_canvas(footnote=footnote)
+
+        image = ImageMobject("sionna_rt_diff.png").scale(1.3)
+        self.next_slide(notes="Diffraction.")
+        self.new_clean_slide("Diffraction regions", [image, footnote])
+
+        image = ImageMobject("sionna_munich_rt_runtime.png").scale(1.3)
+        self.next_slide(notes="RT runtime.")
+        self.new_clean_slide("RT runtime", image)
+
+        image = ImageMobject("sionna_keller.png").scale(1.3)
+        self.next_slide(notes="Keller cone.")
+        self.new_clean_slide("Keller cone", image)
+
+        image = ImageMobject("sionna_edge_diff.png").scale(1.3)
+        self.next_slide(notes="Edge diffraction.")
+        self.new_clean_slide("Edge diffraction", image)
 
     def construct(self):
         self.wait_time_between_slides = 0.10
