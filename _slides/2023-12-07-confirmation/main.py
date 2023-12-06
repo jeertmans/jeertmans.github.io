@@ -1023,28 +1023,10 @@ class Main(Slide, MovingCameraScene):
             Line(X2, UE),
         ).set_color(self.SIGNAL_COLOR)
 
-        animations = [Create(p) for p in path]
-        animations.append(path.animate.set_color(self.VALID_COLOR))
+        for p in path:
+            self.play(Create(p))
 
-        self.play(Succession(*animations))
-
-        whats_next = Text(
-            "What if we want to simulate something else\n"
-            "than reflection on planar surfaces?",
-            color=BLACK,
-            font_size=self.CONTENT_FONT_SIZE,
-        )
-
-        self.next_slide(
-            notes="""
-        What if we want to simulate something else
-        than reflection on planar surfaces?
-        """
-        )
-        self.play(
-            self.next_slide_number_animation(),
-            self.wipe(self.mobjects_without_canvas, whats_next, return_animation=True),
-        )
+        self.play(path.animate.set_color(self.VALID_COLOR))
 
         comparison_table = (
             MobjectTable(
@@ -1074,6 +1056,24 @@ class Main(Slide, MovingCameraScene):
             self.wipe(
                 self.mobjects_without_canvas, comparison_table, return_animation=True
             ),
+        )
+
+        whats_next = Text(
+            "What if we want to simulate something else\n"
+            "than reflection on planar surfaces?",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        )
+
+        self.next_slide(
+            notes="""
+        What if we want to simulate something else
+        than reflection on planar surfaces?
+        """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, whats_next, return_animation=True),
         )
 
         self.mpt_animation()
@@ -1517,6 +1517,17 @@ class Main(Slide, MovingCameraScene):
 
     def construct_drt(self):
         contents = paragraph(
+            "• How to compute derivatives;",
+            "• Zero-gradient and discontinuity issues;",
+            "• Smoothing technique;",
+            "• Optimization example.",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
+        self.next_slide(notes="Differentiable Ray Tracing part!")
+        self.new_clean_slide("Differentiable Ray Tracing", contents)
+
+        contents = paragraph(
             "How to compute derivatives?",
             "⟜  symbolically;",
             "⟜  using finite-differences;",
@@ -1524,8 +1535,11 @@ class Main(Slide, MovingCameraScene):
             color=BLACK,
             font_size=self.CONTENT_FONT_SIZE,
         ).align_to(self.slide_title, LEFT)
-        self.next_slide(notes="Differentiable Ray Tracing part!")
-        self.new_clean_slide("Differentiable Ray Tracing", contents)
+        self.next_slide(notes="How to compute derivatives?")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, contents, return_animation=True),
+        )
 
         illustration = Group(
             ImageMobject("zero_gradient.png").scale(1.3),
