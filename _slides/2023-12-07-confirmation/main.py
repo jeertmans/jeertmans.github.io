@@ -189,7 +189,7 @@ class Main(Slide, MovingCameraScene):
             notes="""
         # Audio propagation analogy
 
-        I like to introduce my subject with a small analogy
+        I like to introduce my subject with a small analogy.
         """
         )
         self.wipe(self.mobjects_without_canvas, [speaker, audience])
@@ -262,7 +262,7 @@ class Main(Slide, MovingCameraScene):
             )
         )
 
-        self.next_slide(notes="""Of course, we can have many walls""")
+        self.next_slide(notes="""Of course, we can have many walls.""")
         self.play(Create(Line(self.DL, self.DR, color=self.WALL_COLOR)))
 
         self.next_slide(notes="""Or obstacles that obstruct some paths.""")
@@ -277,7 +277,7 @@ class Main(Slide, MovingCameraScene):
         random.shuffle(audience)
 
         self.next_slide(
-            notes="Of course, the same logic can be applied to radio networks"
+            notes="Of course, the same logic can be applied to radio networks."
         )
         self.play(
             Transform(
@@ -503,19 +503,23 @@ class Main(Slide, MovingCameraScene):
         image = ImageMobject("urban_tracing.png")
         self.wipe(self.mobjects_without_canvas, image)
 
-        texts = VGroup(
-            Text(
-                "Electrical and Magnetic fields",
-                color=BLACK,
-                font_size=self.CONTENT_FONT_SIZE,
-            ),
-            MathTex(
-                r"\vec{E}~(\si{\volt\per\meter})~\&~\vec{B}~(\si{\tesla})",
-                color=BLACK,
-                font_size=self.CONTENT_FONT_SIZE,
-                tex_template=self.tex_template,
-            ),
-        ).arrange(DOWN)
+        texts = (
+            VGroup(
+                Text(
+                    "Electrical and Magnetic fields",
+                    color=BLACK,
+                    font_size=self.CONTENT_FONT_SIZE,
+                ),
+                MathTex(
+                    r"\vec{E}~(\si{\volt\per\meter})~\&~\vec{B}~(\si{\tesla})",
+                    color=BLACK,
+                    font_size=self.CONTENT_FONT_SIZE,
+                    tex_template=self.tex_template,
+                ),
+            )
+            .arrange(DOWN)
+            .shift(UP)
+        )
 
         self.next_slide(
             notes="""
@@ -527,9 +531,9 @@ class Main(Slide, MovingCameraScene):
         the received power (plane wave, lossless medium).
         """
         )
-        self.wipe(
-            self.mobjects_without_canvas,
-            texts,
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, texts, return_animation=True),
         )
 
         e_field = MathTex(
@@ -565,29 +569,230 @@ class Main(Slide, MovingCameraScene):
         )
         self.play(FadeIn(where_c, shift=0.2 * DOWN))
 
-        # Scenes
+        # Pipeline
+
+        pipeline = (
+            VGroup(
+                Text("Input scene", font_size=self.CONTENT_FONT_SIZE),
+                Arrow(ORIGIN, DOWN),
+                Text("Preprocessing", font_size=self.CONTENT_FONT_SIZE),
+                Arrow(ORIGIN, DOWN),
+                Text("Tracing paths", font_size=self.CONTENT_FONT_SIZE),
+                Arrow(ORIGIN, DOWN),
+                Text("Postprocessing", font_size=self.CONTENT_FONT_SIZE),
+                Arrow(ORIGIN, DOWN),
+                Text("EM fields", font_size=self.CONTENT_FONT_SIZE),
+            )
+            .set_color(BLACK)
+            .arrange(DOWN)
+            .scale(0.9)
+        )
+
+        self.next_slide(notes="The basic RT pipeline is as follows.")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, [pipeline[0]], return_animation=True
+            ),
+        )
+
+        for i, (arrow, text) in enumerate(zip(pipeline[1::2], pipeline[2::2])):
+            self.next_slide(notes="Next pipeline step.")
+            self.play(
+                LaggedStart(
+                    GrowArrow(arrow, run_time=1),
+                    Write(text, run_time=1),
+                    Create(
+                        Rectangle(color=BLUE).surround(text, stretch=True), run_time=1
+                    )
+                    if i < 3
+                    else Wait(),
+                ),
+            )
+
+        # Example
+
+        image = ImageMobject("sionna_munich.png")
+        footnote = (
+            Text(
+                "Credits: Sionna authors, Nvidia.",
+                color=BLACK,
+                font_size=self.SOURCE_FONT_SIZE,
+            )
+            .to_edge(DOWN)
+            .shift(0.2 * DOWN)
+        )
+
+        self.next_slide(notes="RT example in a city (Munich).")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, [image, footnote], return_animation=True
+            ),
+        )
+
+        # TODO: fixme (bug where rt image appears directly)
+
+        self.next_slide(notes="Then we perform RT.")
+        self.play(
+            self.next_slide_number_animation(),
+            FadeOut(image),
+            FadeIn(image := ImageMobject("sionna_munich_rt.png")),
+        )
+
+        self.next_slide(notes="From paths, we can compute the coverage map.")
+        self.play(
+            self.next_slide_number_animation(),
+            FadeOut(image),
+            FadeIn(image := ImageMobject("sionna_munich_rt_cm.png")),
+        )
+
+        self.next_slide(notes="Or reuse paths to compute the CIR.")
+        self.play(
+            self.next_slide_number_animation(),
+            FadeOut(image),
+            FadeIn(image := ImageMobject("sionna_munich_cir.png").scale(1.3)),
+        )
+
+        # Challenges
 
         image = ImageMobject("scene.png")
+        challenge = Text(
+            "Challenge: number of paths.", color=BLACK, font_size=self.CONTENT_FONT_SIZE
+        ).to_corner(DL)
 
-        self.next_slide(notes="...")
-        self.play(self.next_slide_number_animation())
-        self.wipe(self.mobjects_without_canvas, image)
+        self.next_slide(
+            notes="""
+        RT's implementation presents many challenges,
+        mainly the exponential number of paths we can test.
+        """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, [image, challenge], return_animation=True
+            ),
+        )
 
         for i in range(0, 5):
             self.next_slide(notes=f"Order = {i}")
             self.play(Transform(image, ImageMobject(f"scene_{i}.png")))
 
-    def construct_motivations(self):
-        contents = paragraph(
-            "• Core idea;",
-            "• Architecture and Challenges;",
-            "• Applications;",
-            "• Alternative methods.",
+        image = ImageMobject("sionna_rt_no_diff_no_scatt.png")
+        challenge = Text(
+            "Challenge: coverage vs order and types.",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).to_corner(DL)
+        types = Text(
+            "LOS + reflection", color=BLACK, font_size=self.CONTENT_FONT_SIZE
+        ).next_to(image, DOWN)
+
+        self.next_slide(
+            notes="""
+        Another challenge is the total path coverage versus
+        the order and types of interaction considered.
+        """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas,
+                [image, footnote, challenge, types],
+                return_animation=True,
+            ),
+        )
+
+        self.next_slide(notes="If we add diffraction.")
+        self.play(
+            FadeOut(image),
+            FadeIn(image := ImageMobject("sionna_rt_yes_diff_no_scatt.png")),
+            types.animate.become(
+                Text(
+                    "LOS + reflection + diffraction",
+                    color=BLACK,
+                    font_size=self.CONTENT_FONT_SIZE,
+                ).move_to(types),
+            ),
+        )
+
+        self.next_slide(notes="Or if we add scattering.")
+        self.play(
+            FadeOut(image),
+            FadeIn(image := ImageMobject("sionna_rt_no_diff_yes_scatt.png")),
+            types.animate.become(
+                Text(
+                    "LOS + reflection + scattering",
+                    color=BLACK,
+                    font_size=self.CONTENT_FONT_SIZE,
+                ).move_to(types),
+            ),
+        )
+
+        # Applications
+
+        applications = paragraph(
+            "Main RT applications:",
+            "⟜  radio channel modeling;",
+            "⟜  sound and light prop. in video games;",
+            "⟜  inverse rendering in graphics;",
+            "⟜  lenses design and manufacturing.",
             color=BLACK,
             font_size=self.CONTENT_FONT_SIZE,
         ).align_to(self.slide_title, LEFT)
+        self.next_slide(
+            notes="""
+        Listing RT applications,
+        with graphics being the most active community in DRT.
+        """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, [applications], return_animation=True
+            ),
+        )
+
+        # Other methods
+
+        methods = paragraph(
+            "Most used channel modeling methods:",
+            "⟜  RT;",
+            "⟜  empirical models;",
+            "⟜  stochastic models;",
+            "⟜  full-wave models (e.g., finite elements).",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
+        self.next_slide(
+            notes="""
+        Listing other channel modeling methods.
+
+        RT provides a good trade-off between accuracy, speed,
+        and interpretability of the model.
+
+        We currently mainly use RL, a variant of RT,
+        which we will describe later.
+        """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, [methods], return_animation=True),
+        )
+
+    def construct_motivations(self):
+        motivations = paragraph(
+            "Why Differentiable Ray Tracing?",
+            "⟜  RT is inherently static;",
+            "⟜  but scenarios are becoming dynamic;",
+            '⟜  recomputing the "whole map" is bad;',
+            "⟜  Differentiability should be a goal!",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        ).align_to(self.slide_title, LEFT)
+        image = ImageMobject("sionna_munich_rt_cm.png").scale(0.7).to_corner(UR)
         self.next_slide(notes="Let us motivate this thesis subject.")
-        self.new_clean_slide("Motivations", contents)
+        self.new_clean_slide("Motivations", [motivations, image])
 
     def construct_tracing(self):
         contents = paragraph(
@@ -610,6 +815,7 @@ class Main(Slide, MovingCameraScene):
 
         # How to trace paths
 
+        self.next_slide(notes="Let's go back to our first example." "")
         self.wipe(self.mobjects_without_canvas, [])
         BS = (
             SVGMobject("antenna", fill_color=self.BS_COLOR, z_index=1)
@@ -750,8 +956,7 @@ class Main(Slide, MovingCameraScene):
             )
         )
 
-        # TODO: refactor me
-        self.next_slide(notes="Tracing path")
+        self.next_slide(notes="Computing the first image.")
         self.play(FadeOut(LOS))
 
         arrow_1 = Arrow(BS, I1, color=BLACK)
@@ -759,33 +964,30 @@ class Main(Slide, MovingCameraScene):
         right_angle_1 = RightAngle(arrow_1, wall, color=RED)
         right_angle_2 = RightAngle(arrow_2, wall_2, color=RED)
 
-        self.play(GrowArrow(arrow_1), Create(right_angle_1))
-        self.play(FadeIn(I1))
-        self.next_slide()
+        self.play(
+            Succesion(
+                AnimationGroup(GrowArrow(arrow_1), Create(right_angle_1)), FadeIn(I1)
+            )
+        )
+        self.next_slide(notes="Computing the second image.")
 
-        self.play(FadeOut(arrow_1), FadeOut(right_angle_1))
-        self.play(GrowArrow(arrow_2), Create(right_angle_2))
-        self.play(FadeIn(I2))
-        self.play(FadeOut(arrow_2), FadeOut(right_angle_2))
+        self.play(
+            Succesion(
+                AnimationGroup(FadeOut(arrow_1), FadeOut(right_angle_1)),
+                AnimationGroup(GrowArrow(arrow_2), Create(right_angle_2)),
+                AnimationGroup(FadeIn(I2)),
+                AnimationGroup(FadeOut(arrow_2), FadeOut(right_angle_2)),
+            )
+        )
 
         line1 = Line(UE, I2, color=BLACK)
         line2 = Line(X2, I1, color=BLACK)
 
-        self.play(Create(line1))
+        self.next_slide(notes="Computing the second coordinate.")
+        self.play(Succession(Create(line1), FadeIn(X2), FadeOut(line1)))
 
-        self.next_slide()
-
-        self.play(FadeIn(X2))
-
-        self.next_slide()
-
-        self.play(FadeOut(line1))
-
-        self.next_slide()
-
-        self.play(Create(line2))
-        self.play(FadeIn(X1))
-        self.play(FadeOut(line2))
+        self.next_slide(notes="Computing the first coordinate.")
+        self.play(Succesion(Create(line2), FadeIn(X1), FadeOut(line2)))
 
         self.next_slide()
 
@@ -795,12 +997,49 @@ class Main(Slide, MovingCameraScene):
             Line(X2, UE),
         ).set_color(self.SIGNAL_COLOR)
 
-        for p in path:
-            self.play(Create(p))
+        animations = [Create(p) for p in path]
+        animations.append(path.animate.set_color(self.VALID_COLOR))
 
-        self.play(path.animate.set_color(self.VALID_COLOR))
+        self.play(Succession(*animations))
 
-        # refactor: end
+        whats_next = Text(
+            "What if we want to simulate something else "
+            "than reflection on planar surfaces?",
+            color=BLACK,
+            font_size=self.CONTENT_FONT_SIZE,
+        )
+
+        self.next_slide(
+            notes="""
+        What if we want to simulate something else
+        than reflection on planar surfaces?
+        """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, whats_next, return_animation=True),
+        )
+
+        comparison_table = Table(
+            [
+                ["", "Ray Launcing", "Ray Tracing"],
+                [
+                    "Complexity",
+                    MathTex(r"\mathcal{O}(N_R)"),
+                    MathTex(r"\mathcal{O}(N^o)"),
+                ],
+                ["Paths missed", "Unknown", "None"],
+                ["Scalability", "Good", "Bad"],
+                ["Accuracy", "Good", "Excellent"],
+            ]
+        )
+        self.next_slide(notes="RL - RT comparison")
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, comparison_table, return_animation=True
+            ),
+        )
 
         # Arbitrary geometries
 
@@ -855,7 +1094,10 @@ class Main(Slide, MovingCameraScene):
         ).set_color(BLACK)
 
         alpha_d = always_redraw(
-            lambda: VGroup(Tex(r"$\alpha$~=~"), DecimalNumber(alpha.get_value(), num_decimal_places=1))
+            lambda: VGroup(
+                Tex(r"$\alpha$~=~"),
+                DecimalNumber(alpha.get_value(), num_decimal_places=1),
+            )
             .arrange(RIGHT, buff=0.3)
             .set_color(BLACK)
             .next_to(grid, 0.5 * DOWN)
