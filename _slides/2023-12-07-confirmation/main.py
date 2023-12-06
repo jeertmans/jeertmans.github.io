@@ -854,6 +854,13 @@ class Main(Slide, MovingCameraScene):
             tips=False,
         ).set_color(BLACK)
 
+        alpha_d = always_redraw(
+            lambda: VGroup(Tex(r"$\alpha$~=~"), DecimalNumber(alpha.get_value(), num_decimal_places=1))
+            .arrange(RIGHT, buff=0.3)
+            .set_color(BLACK)
+            .next_to(grid, 0.5 * DOWN)
+        )
+
         y_label = grid.get_y_axis_label("y", edge=LEFT, direction=LEFT, buff=0.4)
         x_label = grid.get_x_axis_label(
             "x",
@@ -873,7 +880,9 @@ class Main(Slide, MovingCameraScene):
         self.play(
             self.next_slide_number_animation(),
             self.wipe(
-                self.mobjects_without_canvas, [grid, grid_labels], return_animation=True
+                self.mobjects_without_canvas,
+                [grid, grid_labels, alpha_d],
+                return_animation=True,
             ),
         )
 
@@ -891,16 +900,13 @@ class Main(Slide, MovingCameraScene):
 
         self.next_slide()
         self.play(Create(sigmoid_graph))
+        self.add(sigmoid_graph)
 
         self.next_slide()
         self.play(Create(hard_sigmoid_graph))
 
-        def alpha_updater(mobject, dt):
-            return mobject.increment_value(2.5 * dt)
-
         self.next_slide()
-        alpha.add_updater(alpha_updater)
-        self.wait(4)
+        self.play(alpha.animate.set_value(10), run_time=4)
 
     def construct_status_of_work(self):
         self.next_slide(notes="Now, we will take a look at the status of work.")
@@ -1004,10 +1010,10 @@ class Main(Slide, MovingCameraScene):
     def construct(self):
         self.wait_time_between_slides = 0.10
 
-        # self.construct_intro()
-        # self.construct_fundamentals()
-        # self.construct_motivations()
-        # self.construct_tracing()
+        self.construct_intro()
+        self.construct_fundamentals()
+        self.construct_motivations()
+        self.construct_tracing()
         self.construct_drt()
-        # self.construct_status_of_work()
+        self.construct_status_of_work()
         self.construct_conclusion()
