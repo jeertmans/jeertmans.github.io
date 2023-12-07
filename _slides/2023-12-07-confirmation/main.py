@@ -1104,7 +1104,7 @@ class Main(Slide, MovingCameraScene):
                         MathTex(r"\mathcal{O}(n \cdot n_\text{iter})"),
                         MathTex(r"\mathcal{O}(n \cdot n_\text{iter})"),
                     ],
-                    [Text("Planes"), Text("Lines/Planes"), Text("Any*")],
+                    [Text("Planes"), Text("All"), Text("Any*")],
                     [Text("LOS+R"), Text("All"), Text("All+Custom")],
                     [Text("N/A"), Text("Convex on planar"), Text("Non convex")],
                     [Text("N/A or MPT"), Text("None or MPT"), Text("self")],
@@ -1116,7 +1116,7 @@ class Main(Slide, MovingCameraScene):
                     Text("Convexity"),
                     Text("Convergence check"),
                 ],
-                col_labels=[Text("Image"), Text("FPT"), Text("FPT")],
+                col_labels=[Text("Image"), Text("FPT"), Text("MPT")],
             )
             .set_color(BLACK)
             .scale(0.5)
