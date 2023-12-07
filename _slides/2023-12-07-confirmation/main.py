@@ -1596,7 +1596,7 @@ class Main(Slide, MovingCameraScene):
                 \begin{equation}
                     \text{hard sigmoid}(x;\alpha) = \frac{\text{relu6}(\alpha x+3)}{6},
                 \end{equation}
-                where 
+                where
                 \begin{equation}
                     \text{relu6}(x) = \min(\max(0,x),6).
                 \end{equation}
