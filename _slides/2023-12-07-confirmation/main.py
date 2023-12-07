@@ -824,7 +824,6 @@ class Main(Slide, MovingCameraScene):
         contents = paragraph(
             "• Ray Launching vs Ray Tracing;",
             "• Image Method and similar;",
-            "• Fermat Principle;",
             "• Min-Path-Tracing;",
             "• Arbitrary geometries.",
             color=BLACK,
