@@ -57,12 +57,12 @@ jobs:
     - name: Convert notebooks to posts
       run: ./notebooks_to_posts.sh
     - name: Upload notebooks
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: notebooks
         path: _posts
     - name: Upload notebooks assets
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: notebooks-assets
         path: assets/notebooks
