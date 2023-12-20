@@ -1,40 +1,40 @@
-[keys.QUIT]
-name = 'QUIT'
-ids = [81]
-
-[keys.PLAY_PAUSE]
-name = 'PLAY / PAUSE'
-ids = [
-    32,
-    16777217,
-]
-
-[keys.NEXT]
-name = 'NEXT'
-ids = [
-    16777236,
-    16777237,
-]
-
-[keys.PREVIOUS]
-name = 'PREVIOUS'
-ids = [
-    16777234,
-    16777235,
-]
-
-[keys.REVERSE]
-name = 'REVERSE'
-ids = [86]
-
-[keys.REPLAY]
-name = 'REPLAY'
-ids = [82]
-
 [keys.FULL_SCREEN]
-name = 'TOGGLE FULL SCREEN'
 ids = [70]
+name = 'TOGGLE FULL SCREEN'
 
 [keys.HIDE_MOUSE]
-name = 'HIDE / SHOW MOUSE'
 ids = [72]
+name = 'HIDE / SHOW MOUSE'
+
+[keys.NEXT]
+ids = [
+  16777236,
+  16777237
+]
+name = 'NEXT'
+
+[keys.PLAY_PAUSE]
+ids = [
+  32,
+  16777217
+]
+name = 'PLAY / PAUSE'
+
+[keys.PREVIOUS]
+ids = [
+  16777234,
+  16777235
+]
+name = 'PREVIOUS'
+
+[keys.QUIT]
+ids = [81]
+name = 'QUIT'
+
+[keys.REPLAY]
+ids = [82]
+name = 'REPLAY'
+
+[keys.REVERSE]
+ids = [86]
+name = 'REVERSE'
