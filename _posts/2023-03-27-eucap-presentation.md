@@ -20,7 +20,7 @@ EuCAP 2023 presentation slides and code.
 
 <!--more-->
 
-On Monday, March 27, 2023, I presented my work at the
+On Monday, March 27, 2023, I presented my work {% cite Eert2303:Min %} at the
 17th European Conference on Antennas and Propagation (EuCAP 2023).
 The work was pretty similar to the one presented at the
 [COST meeting](/posts/cost-interact-june-2022-presentation/) last year, in Lyon,

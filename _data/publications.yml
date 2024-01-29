@@ -1,3 +1,14 @@
+- title: 'EuCAP 2024 - Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization'
+  id: eucap2024
+  date: 2024-03-18
+  tags:
+  - Conference
+  - Paper
+  - Software
+  - Talk
+  download: /assets/publications/eucap2024-paper.pdf
+  arxiv: https://arxiv.org/abs/2401.11882
+  bibtex: /assets/publications/eucap2024-paper.bib
 - title: 'Manim Slides: A Python package for presenting Manim content anywhere'
   id: manim-slides
   date: 2023-08-08
