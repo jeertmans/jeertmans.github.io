@@ -7,9 +7,7 @@ from manim_slides import Slide
 
 
 def black(func):
-    """
-    Sets default color to black
-    """
+    """Sets default color to black"""
 
     def wrapper(*args, color=BLACK, **kwargs):
         return func(*args, color=color, **kwargs)
@@ -1392,7 +1390,7 @@ class Main(Slide, MovingCameraScene):
 
         # Slide: refraction
 
-        UE_.shift(DOWN * 4),
+        (UE_.shift(DOWN * 4),)
 
         R_NV_ = Line(X1_, X1_.get_center() + UP * 3).add_tip()
         R_AIN_ = Angle(

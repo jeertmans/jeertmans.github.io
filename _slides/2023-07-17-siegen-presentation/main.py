@@ -12,16 +12,12 @@ Some useful function required for the 'simple example'.
 
 
 def row(*args):
-    """
-    Create a symbol row (or col) vector from input arguments.
-    """
+    """Create a symbol row (or col) vector from input arguments."""
     return sy.Matrix(args)
 
 
 def generate_c(as_gamma=False):
-    """
-    Return C(x) and it's derivative.
-    """
+    """Return C(x) and it's derivative."""
     # Unknowns
     s1, s2 = sy.symbols("s_1 s_2", real=True)  # s1, s2 are real values
 
@@ -69,9 +65,7 @@ def generate_c(as_gamma=False):
 
 
 def generate_c_ris(phi=0):
-    """
-    Return C(x) and it's derivative for a RIS.
-    """
+    """Return C(x) and it's derivative for a RIS."""
     # Unknowns
     s1, s2 = sy.symbols("s_1 s_2", real=True)  # s1, s2 are real values
 
@@ -116,9 +110,7 @@ def generate_c_ris(phi=0):
 
 
 def gradient_descent(x0, df, tol=1e-12, max_it=100, return_steps=False):
-    """
-    Perform a gradient descent using optimal alpha for linear systems.
-    """
+    """Perform a gradient descent using optimal alpha for linear systems."""
     xa = x0
     dfxa = df(xa)
     xb = xa - 0.25 * dfxa  # First step, alpha = .5
@@ -154,9 +146,7 @@ so I have to make default color for most things to be black (instead of white).
 
 
 def black(func):
-    """
-    Sets default color to black
-    """
+    """Sets default color to black"""
 
     def wrapper(*args, color=BLACK, **kwargs):
         return func(*args, color=color, **kwargs)
@@ -181,7 +171,7 @@ Slides generation
 
 class Main(Slide):
     def __init__(self, *args, **kwargs):
-        super(Main, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.slide_no = None
         self.slide_text = None
 
@@ -963,7 +953,7 @@ class Main(Slide):
 
         # Slide: refraction
 
-        UE_.shift(DOWN * 4),
+        (UE_.shift(DOWN * 4),)
 
         R_NV_ = Line(X1_, X1_.get_center() + UP * 3).add_tip()
         R_AIN_ = Angle(

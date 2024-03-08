@@ -1,3 +1,5 @@
+__all__ = ("express", "graph_objects", "pyplot")
+
 import os
 from uuid import uuid4
 
@@ -7,7 +9,7 @@ import plotly.express as express
 import plotly.graph_objects as graph_objects
 import plotly.io as pio
 from matplotlib_inline.backend_inline import set_matplotlib_formats
-from plotly.graph_objs import Figure, Layout
+from plotly.graph_objs import Figure
 from plotly.io._base_renderers import IFrameRenderer
 
 
@@ -57,5 +59,3 @@ matplotlib.rcParams["figure.facecolor"] = (1, 1, 1, 0)
 matplotlib.rcParams["figure.edgecolor"] = (1, 1, 1, 0)
 matplotlib.rcParams["axes.facecolor"] = (1, 1, 1, 0)
 set_matplotlib_formats("svg")
-
-__all__ = ["express", "graph_objects", "pyplot", "CONFIG"]
