@@ -1,10 +1,10 @@
 exclude: ^assets/lib/
 repos:
 - repo: https://github.com/FlamingTempura/bibtex-tidy
-  rev: v1.11.0
+  rev: v1.9.0  # DO NOT CHANGE, see https://github.com/FlamingTempura/bibtex-tidy/issues/419
   hooks:
   - id: bibtex-tidy
-    args: [--no-backup]
+    args: [--no-backup, --sort-fields]
 - repo: https://github.com/kynan/nbstripout
   rev: 0.6.1
   hooks:
