@@ -1,0 +1,3 @@
+manim-slides[manim,pyside6]==5.1.3
+numpy
+opencv-python
