@@ -31,7 +31,7 @@ for radio propagation applications.
 
 ## Slides
 
-*Work in progress*.
+{% include slides.html url="/assets/slides/2024-03-18-eucap-presentation.html" %}
 
 ## References
 
@@ -39,4 +39,5 @@ for radio propagation applications.
 
 ## Source code
 
-*Work in progress*.
+Available on GitHub:
+[`_slides/2024-03-18-eucap-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2024-03-18-eucap-presentation/main.py).

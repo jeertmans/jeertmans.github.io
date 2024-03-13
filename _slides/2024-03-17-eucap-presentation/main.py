@@ -5,31 +5,25 @@ from manim_slides import Slide
 
 # Constants
 
-TITLE_FONT_SIZE = 40
-CONTENT_FONT_SIZE = 0.6 * TITLE_FONT_SIZE
-SOURCE_FONT_SIZE = 0.2 * TITLE_FONT_SIZE
+TITLE_FONT_SIZE = 30
+CONTENT_FONT_SIZE = 24
+SOURCE_FONT_SIZE = 12
 
 # Manim defaults
 
 tex_template = TexTemplate()
 tex_template.add_to_preamble(
     r"""
-\usepackage{fontawesome5}
 \usepackage{siunitx}
-\DeclareSIQualifier\wattref{W}
-\DeclareSIUnit\dbw{\decibel\wattref}
-\usepackage{amsmath,amssymb,amsfonts,mathtools}
-\newcommand{\bs}{\boldsymbol}
-\newcommand{\scp}[3][]{#1\langle #2, #3 #1\rangle}
-\newcommand{\bb}{\mathbb}
-\newcommand{\cl}{\mathcal}
+\usepackage{amsmath}
+\newcommand{\ts}{\textstyle}
 """
 )
 
 Text.set_default(color=BLACK, font_size=CONTENT_FONT_SIZE)
-SingleStringMathTex.set_default(
-    color=BLACK, tex_template=tex_template, font_size=CONTENT_FONT_SIZE
-)
+Tex.set_default(color=BLACK, tex_template=tex_template, font_size=CONTENT_FONT_SIZE)
+MathTex.set_default(color=BLACK, tex_template=tex_template, font_size=CONTENT_FONT_SIZE)
+ImageMobject.set_default(scale_to_resolution=540)
 
 
 def paragraph(*strs, alignment=LEFT, direction=DOWN, **kwargs):
@@ -50,7 +44,7 @@ class VideoAnimation(Animation):
         super().__init__(video_mobject, **kwargs)
 
     def interpolate_mobject(self, dt):
-        index = int(dt / self.dt) % len(self.video_mobject)
+        index = min(int(dt / self.dt), len(self.video_mobject) - 1)
 
         if index != self.index:
             self.index = index
@@ -139,6 +133,7 @@ class Main(Slide):
         # Config
 
         self.camera.background_color = WHITE
+        self.wait_time_between_slides = 0.1
 
         self.slide_number = Integer(1).set_color(BLACK).to_corner(DR)
         self.slide_title = Text(
@@ -148,16 +143,18 @@ class Main(Slide):
 
         # Title
 
-        title = (
+        title = ((_, drt, _), _) = VGroup(
             VGroup(
-                Text("Fully Differentiable Ray Tracing via Discontinuity"),
-                Text(" Smoothing for Radio Network Optimization"),
-            )
-            .arrange(DOWN, buff=0.1)
-            .scale(0.5)
-        )
+                Text("Fully", font_size=TITLE_FONT_SIZE),
+                Text("Differentiable Ray Tracing", font_size=TITLE_FONT_SIZE),
+                Text("via Discontinuity", font_size=TITLE_FONT_SIZE),
+            ).arrange(RIGHT, buff=0.15),
+            Text(
+                " Smoothing for Radio Network Optimization", font_size=TITLE_FONT_SIZE
+            ),
+        ).arrange(DOWN, buff=0.1)
         author_date = (
-            Text("Jérome Eertmans - March 18th 2024").scale(0.3).next_to(title, DOWN)
+            Text("Jérome Eertmans - March 18th 2024").scale(0.8).next_to(title, DOWN)
         )
 
         self.next_slide(notes="# Welcome!")
@@ -166,11 +163,179 @@ class Main(Slide):
 
         self.next_slide(notes="# Differentiable Ray Tracing")
 
-        self.play(TransformMatchingShapes(title, self.slide_title))
+        title[0].remove(drt)
+
+        self.play(
+            drt.animate.become(self.slide_title),
+            FadeOut(VGroup(title, author_date), shift=DOWN),
+        )
+
+        self.remove(drt)
+        self.add(self.slide_title)
 
         # Differentiability and applications
 
+        image = ImageMobject("rt_images/scene_tx_rx.png", z_index=-1)
+
+        self.next_slide(
+            notes="""
+        RT has received an increased interest in the recent year the from
+        the radio propagation community.
+        """
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            FadeIn(image),
+        )
+
+        for i in range(0, 5):
+            self.next_slide(notes=f"Order = {i}")
+            self.play(Transform(image, ImageMobject(f"rt_images/scene_tx_rx_{i}.png")))
+
+        self.next_slide(
+            notes="""
+        We are often interested on computing the received
+        power as a function of the position.
+        """
+        )
+
+        self.play(Transform(image, ImageMobject("rt_images/scene_power.png")))
+
+        self.next_slide(
+            notes="""
+        Placing 'camera' on top X-Y view.
+        This gives us a very nice overview of what for call the
+        'coverage map'.
+        """
+        )
+
+        for i in range(50):
+            self.remove(image)
+            image = ImageMobject(f"rt_images/scene_power_{i:02d}.png", z_index=-1)
+            self.add(image)
+            self.wait(0.1)
+
+        self.next_slide(notes="Moving RX positiong to find the best position")
+
+        for i in range(50):
+            self.remove(image)
+            image = ImageMobject(f"rt_images/scene_rx_{i:02d}.png", z_index=-1)
+            self.add(image)
+            self.wait(0.1)
+
+        self.next_slide(notes="Moving TX positiong to find the best position")
+
+        for i in range(50):
+            self.remove(image)
+            image = ImageMobject(f"rt_images/scene_tx_{i:02d}.png", z_index=-1)
+            self.add(image)
+            self.wait(0.1)
+
+        # Differentiability could help us
+
+        self.next_slide(notes="Knowing the derivative would be useful...")
+
+        need_differentiability = Text(
+            "One solution: differentiability.",
+        ).to_corner(DL)
+        self.play(FadeIn(need_differentiability))
+
+        self.next_slide(
+            notes="""
+        With the emergence of Machine Learning frameworks,
+        autodiff has become the norm.
+
+        You just need to write the code using
+        their 'primitives'.
+        """
+        )
+        autodiff = Text(
+            "Differentiability with auto-diff is easy!",
+        ).to_corner(DL)
+        code_np = Code(
+            code=r"""import numpy as np
+
+
+def g(x):
+    return np.cos(x)
+
+def f(x, y):
+    return x * g(y) + 1.0
+
+
+""",
+            language="python",
+        )
+        code_jnp = Code(
+            code=r"""import jax
+import jax.numpy as jnp
+
+
+def g(x):
+    return jnp.cos(x)
+
+def f(x, y):
+    return x * g(y) + 1.0
+
+df = jax.grad(f)
+""",
+            language="python",
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas, [code_np, autodiff], return_animation=True
+            ),
+        )
+
+        self.next_slide(
+            notes="""
+        E.g., with JAX, you can use a syntax similar to
+        NumPy and get grad for free!
+        """
+        )
+        self.play(Transform(code_np, code_jnp))
+
+        # Sionna was one of the first to combine RT and
+
+        self.next_slide(
+            notes="""
+        Maybe one of the most recent and popular work on
+        DRT applied to radio-propagation is Sionna.
+        """
+        )
+
+        sionna_paper = ImageMobject("sionna_paper.png", z_index=-1).scale(0.5)
+        sionna_credits = (
+            Text(
+                "Credits: Sionna authors, Nvidia.",
+                font_size=SOURCE_FONT_SIZE,
+            )
+            .to_edge(DOWN)
+            .shift(0.2 * DOWN)
+        )
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(
+                self.mobjects_without_canvas,
+                [sionna_paper, sionna_credits],
+                return_animation=True,
+            ),
+        )
+
+        self.next_slide(
+            notes="""
+        Using auto-diff, they have created
+        an easy to use radio-network optimization tool.
+        """
+        )
+
+        sionna_paper_opti = ImageMobject("sionna_paper_opti.png", z_index=-1).scale(0.3)
+        self.wipe(sionna_paper, sionna_paper_opti)
+
         # Challenges
+
+        ImageMobject.set_default()  # Reset
 
         image = ImageMobject("scene.png")
         challenge = Text(
@@ -206,14 +371,6 @@ class Main(Slide):
         the order and types of interaction considered.
         """
         )
-        sionna_credits = (
-            Text(
-                "Credits: Sionna authors, Nvidia.",
-                font_size=SOURCE_FONT_SIZE,
-            )
-            .to_edge(DOWN)
-            .shift(0.2 * DOWN)
-        )
         self.play(
             self.next_slide_number_animation(),
             self.wipe(
@@ -246,25 +403,12 @@ class Main(Slide):
         )
 
         contents = paragraph(
-            "• How to compute derivatives;",
             "• Zero-gradient and discontinuity issues;",
             "• Smoothing technique;",
             "• Optimization example.",
         ).align_to(self.slide_title, LEFT)
-        self.next_slide(notes="Differentiable Ray Tracing part!")
-        self.new_clean_slide("Differentiable Ray Tracing", contents)
-
-        contents = paragraph(
-            "How to compute derivatives?",
-            "⟜  symbolically;",
-            "⟜  using finite-differences;",
-            "⟜  ... with automatic differentiation!",
-        ).align_to(self.slide_title, LEFT)
-        self.next_slide(notes="How to compute derivatives?")
-        self.play(
-            self.next_slide_number_animation(),
-            self.wipe(self.mobjects_without_canvas, contents, return_animation=True),
-        )
+        self.next_slide(notes="Present work and contents")
+        self.new_clean_slide("Present work: discontinuity smoothing", contents)
 
         illustration = Group(
             ImageMobject("zero_gradient.png").scale(1.3),
@@ -471,4 +615,38 @@ class Main(Slide):
         self.play(
             self.next_slide_number_animation(),
             self.wipe(self.mobjects_without_canvas, image, return_animation=True),
+        )
+
+        contents = paragraph(
+            "• Trade-off of smoothing vs many minimizations;",
+            "• Where to apply smoothing;",
+            "• Physical model behind smoothing(e.g., diffraction);",
+            "• 3D scenes at city-scales (DiffeRT).",
+        ).align_to(self.slide_title, LEFT)
+        self.next_slide(notes="Future work")
+        self.new_clean_slide("Future", contents)
+
+        self.next_slide(notes="Finals words")
+        ImageMobject.set_default(scale_to_resolution=540)
+
+        qrcodes = Group(
+            Group(
+                ImageMobject("qrcodes/differt2d.png").scale(0.8),
+                VGroup(
+                    SVGMobject("github.svg").scale(0.3), Text("jeertmans/DiffeRT2d")
+                ).arrange(RIGHT),
+            ).arrange(DOWN),
+            Group(
+                ImageMobject("qrcodes/differt.png").scale(0.8),
+                VGroup(
+                    SVGMobject("github.svg").scale(0.3), Text("jeertmans/DiffeRT")
+                ).arrange(RIGHT),
+            ).arrange(DOWN),
+        ).arrange(RIGHT, buff=1.0)
+
+        self.canvas.pop("slide_title")
+
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, qrcodes, return_animation=True),
         )
