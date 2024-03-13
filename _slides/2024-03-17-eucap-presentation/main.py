@@ -318,10 +318,11 @@ df = jax.grad(f)
             self.next_slide_number_animation(),
             self.wipe(
                 self.mobjects_without_canvas,
-                [sionna_paper, sionna_credits],
+                [sionna_credits],
                 return_animation=True,
             ),
         )
+        self.play(FadeIn(sionna_paper))
 
         self.next_slide(
             notes="""
@@ -330,8 +331,8 @@ df = jax.grad(f)
         """
         )
 
-        sionna_paper_opti = ImageMobject("sionna_paper_opti.png", z_index=-1).scale(0.3)
-        self.wipe(sionna_paper, sionna_paper_opti)
+        sionna_paper_opti = ImageMobject("sionna_paper_opti.png", z_index=-1).scale(0.5)
+        self.play(Transform(sionna_paper, sionna_paper_opti))
 
         # Challenges
 
