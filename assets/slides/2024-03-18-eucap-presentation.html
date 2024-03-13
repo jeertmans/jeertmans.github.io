@@ -1,0 +1,569 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Manim Slides</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
+
+    <!-- <link rel="stylesheet" href="index.css"> -->
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides"><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/78ec09aa72b4c2f92ed481d401f8826a2a48e1905cb7c4d77be6a36a2a5feb0d.mp4"
+              data-background-video-muted>
+              <aside class="notes" data-markdown># Welcome!</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/bfaf54731c4ea8f8adaf1a7e5a526bab61d9995e62e8446a85ddc38dbc294d6c.mp4"
+              >
+              <aside class="notes" data-markdown># Differentiable Ray Tracing</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/d09fed6af4a2dd56070c8bb290547f9c6283eaf7c0c74a536ee190ea93d43c38.mp4"
+              >
+              <aside class="notes" data-markdown>
+RT has received an increased interest in the recent year the from
+the radio propagation community.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/a093cf3a650f3b9f8386d60cd0fccb718c054533c399429d071573c35cedf735.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 0</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/1b80ce8ed3eb6d35ca8d85368fc4aa4370225b1be666c977dbb4b3444058b9f1.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 1</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/8ffb4c7e6e022167bbab784868faa640f9002390b8464409aecdec0f2f1a7ef9.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 2</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/a6efeb597ea2420dcc69ca1c790439a1ecb1e0eb7b385ff4c59ff3495afbc0d9.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 3</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/aac72a114859234a3440350a0431854b6c4671ad0a0d1a6988150ead045f6232.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 4</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/834ade876cfbc0600803e54780dba6c96749be258ff7884738313349709ec2c8.mp4"
+              >
+              <aside class="notes" data-markdown>
+We are often interested on computing the received
+power as a function of the position.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/f60ad0bdefd192000480d3c786b778acf085922d529c8258dd5376f4342ad9d9.mp4"
+              >
+              <aside class="notes" data-markdown>
+Placing 'camera' on top X-Y view.
+This gives us a very nice overview of what for call the
+'coverage map'.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/984b36894f015b67e4458dcca7f5f3adeecfb4fb1cdd4501f2673fef0c3d5563.mp4"
+              >
+              <aside class="notes" data-markdown>Moving RX positiong to find the best position</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/9be19a05e6f94c96f696ec0f357ede5753f3c7b60d3b1d98ebe6610f6d061c79.mp4"
+              >
+              <aside class="notes" data-markdown>Moving TX positiong to find the best position</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/3bf7f3b03dfb413ba4b31054529a8ff135c85aadb2371c72f85d90ed2e1111a1.mp4"
+              >
+              <aside class="notes" data-markdown>Knowing the derivative would be useful...</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/494aa858fa18498d0853523dbe9ad4c133d06a8c939c8c5265550ea051993e44.mp4"
+              >
+              <aside class="notes" data-markdown>
+With the emergence of Machine Learning frameworks,
+autodiff has become the norm.
+
+You just need to write the code using
+their 'primitives'.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/daf5b7ed9db84131f6b3ce22836b9b6ca49de2f6ac0c4a97a70fb43e03120928.mp4"
+              >
+              <aside class="notes" data-markdown>
+E.g., with JAX, you can use a syntax similar to
+NumPy and get grad for free!
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/ef07554df5fa990362e404cf2408ea93c7a74b5a08e8fac748a841777f9dbb91.mp4"
+              >
+              <aside class="notes" data-markdown>
+Maybe one of the most recent and popular work on
+DRT applied to radio-propagation is Sionna.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/aa02fd4e820c2288a735baf3f85ebd28d96028fa917a8e9f8b586113fa1fcd0e.mp4"
+              >
+              <aside class="notes" data-markdown>
+Using auto-diff, they have created
+an easy to use radio-network optimization tool.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/5936c4380dccb71450515b3dfa29a3689ad1dfe37b3fb4d860fa3e92a9619095.mp4"
+              >
+              <aside class="notes" data-markdown>
+RT's implementation presents many challenges,
+mainly the exponential number of paths we can test.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/9dc1ae9fe3b584b5fb1c8341ead549268cf9c63bcc4bb8e45affc1e0bcd10832.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 0</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/7bc1db6608e2cf8d55e5039c6e99d7d25a7b05bd01aec82ac50e42b54658117a.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 1</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/e9e19821b5ffbbad2fa393e94c69c03e036bf326848894597e933fe5409ff48a.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 2</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/f65c304f6d541f57fa5a45cfde829a55eff4dc2ecec9582c64abfca3e9545dc8.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 3</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/bf264f19e6d0ac24e5896e3cf6a436027660da67750c36cbbbbdca4ddf6daa4d.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 4</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/fcc9336e73d100b495e8a21c9b46afccab8759d4cfc2bd3047e7d292c81c3663.mp4"
+              >
+              <aside class="notes" data-markdown>
+Another challenge is the total path coverage versus
+the order and types of interaction considered.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/a596b8bf59e18f6b67b93001672b54fd6da5fc88f39cb3a928d460fee1bc5b97.mp4"
+              >
+              <aside class="notes" data-markdown>If we add diffraction.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/4f4263dff98ac58cd698aff9955738477cde898a1d55e534d23e53b5e6643fc0.mp4"
+              >
+              <aside class="notes" data-markdown>Or if we add scattering.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/bdc99b2de89b1220928251d913aee25d202989f83f3bd6576486120da0b90093.mp4"
+              >
+              <aside class="notes" data-markdown>Present work and contents</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/cbfded24940c50274f18146f98d4fb017b845aa55bbc3b3123f93bf897ba754c.mp4"
+              >
+              <aside class="notes" data-markdown>Our problem is only piecewise diff. and continuous.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/c51c130293dfaa0af11fad738168dba2b79850aa170c826e18a4a0423aa3aac1.mp4"
+              >
+              <aside class="notes" data-markdown>Constraints about our approximation.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/72295ad3cb4a2b5105ce58443184ed7d63b7a7f1df836b514dabbcce1c5aaeef.mp4"
+              >
+              <aside class="notes" data-markdown>Examples.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/fb4f5fb379c7d9a4fb169c1ffbf5d1860287a88798eaf302f8fe4898e3b362e6.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/360e8252962cd6894e19cf6ede92a414c1f2a1a8fe4e744be6dfba432914fd1f.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/a76ad54166ee3530373055c47f6952ed7fdc99354189265c1f20e9e76ec559fe.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/bbec1f85520493e304dcd9f9a8a0d062b206ae1ed80f1f3f3290860d72dbe973.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/47e58786a5ffb8c2d344d7c419037510814d6bed92290abbba0111ffcdf47f0b.mp4"
+              >
+              <aside class="notes" data-markdown>Let's animate alpha.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/e642e3fc4ae6e08274594647202ad16ea1d9c5a8b11fea0e04bfa40442281763.mp4"
+              >
+              <aside class="notes" data-markdown>Thanks to that, and other things, we can create a fully DRT!</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/a20923e8bd6cae12be6859d248fc272311352c9b05171b1f467844c2dd9f79f8.mp4"
+              >
+              <aside class="notes" data-markdown>We can create an optimization problem.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/3da0dc331a23b72802ee4553b0e2596c8cb0e21d12f29e92a03f6d546a4adc55.mp4"
+              >
+              <aside class="notes" data-markdown>
+Let's see how it converge.
+
+Actually, tests have shown:
+
+1.5 to 2 increase in success rate,
+where 92% to 98% of already successful runs still converge
+with our method.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/36e2221a7e3b6a5532edaf726a196fbb98d0b57f4e19b93b93c07ceefc5210d9.mp4"
+              >
+              <aside class="notes" data-markdown>Future work</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="black"
+              data-background-video="2024-03-18-eucap-presentation_assets/f9fc29a49612a677c6978ae47a84e7d33782a2687e1f50f20501c95998f6e1db.mp4"
+              >
+              <aside class="notes" data-markdown>Finals words</aside>
+            </section></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+
+    <!-- To include plugins, see: https://revealjs.com/plugins/ -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/markdown/markdown.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script><!-- <script src="index.js"></script> -->
+    <script>
+      Reveal.initialize({
+        plugins: [ RevealMarkdown, RevealNotes ],
+        // The "normal" size of the presentation, aspect ratio will
+        // be preserved when the presentation is scaled to fit different
+        // resolutions. Can be specified using percentage units.
+        width: '100%',
+        height: '100%',
+
+        // Factor of the display size that should remain empty around
+        // the content
+        margin: 0.04,
+
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 2.0,
+
+        // Display presentation control arrows
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: false,
+
+        // Display the page number of the current slide
+        // - true:    Show slide number
+        // - false:   Hide slide number
+        //
+        // Can optionally be set as a string that specifies the number formatting:
+        // - "h.v":   Horizontal . vertical slide number (default)
+        // - "h/v":   Horizontal / vertical slide number
+        // - "c":   Flattened slide number
+        // - "c/t":   Flattened slide number / total slides
+        //
+        // Alternatively, you can provide a function that returns the slide
+        // number for the current slide. The function should take in a slide
+        // object and return an array with one string [slideNumber] or
+        // three strings [n1,delimiter,n2]. See #formatSlideNumber().
+        slideNumber: false,
+
+        // Can be used to limit the contexts in which the slide number appears
+        // - "all":      Always show the slide number
+        // - "print":    Only when printing to PDF
+        // - "speaker":  Only in the speaker view
+        showSlideNumber: 'all',
+
+        // Use 1 based indexing for # links to match slide number (default is zero
+        // based)
+        hashOneBasedIndex: false,
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: false,
+
+        // Push each slide change to the browser history.  Implies `hash: true`
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Optional function that blocks keyboard events when retuning false
+        //
+        // If you set this to 'focused', we will only capture keyboard events
+        // for embedded decks when they are in focus
+        keyboardCondition: null,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // Changes the behavior of our navigation directions.
+        //
+        // "default"
+        // Left/right arrow keys step between horizontal slides, up/down
+        // arrow keys step between vertical slides. Space key steps through
+        // all slides (both horizontal and vertical).
+        //
+        // "linear"
+        // Removes the up/down arrows. Left/right arrows step through all
+        // slides (both horizontal and vertical).
+        //
+        // "grid"
+        // When this is enabled, stepping left/right from a vertical stack
+        // to an adjacent vertical stack will land you at the same vertical
+        // index.
+        //
+        // Consider a deck with six slides ordered in two vertical stacks:
+        // 1.1    2.1
+        // 1.2    2.2
+        // 1.3    2.3
+        //
+        // If you're on slide 1.3 and navigate right, you will normally move
+        // from 1.3 -> 2.1. If "grid" is used, the same navigation takes you
+        // from 1.3 -> 2.3.
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the question-mark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autolaying embedded media (video/audio/iframe)
+        // - null:   Media will only autoplay if data-autoplay is present
+        // - true:   All media will autoplay, regardless of individual setting
+        // - false:  No media will autoplay, regardless of individual setting
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes
+        // - null:   Iframes with data-src AND data-preload will be loaded when within
+        //           the viewDistance, iframes with only data-src will be loaded when visible
+        // - true:   All iframes with data-src will be loaded when within the viewDistance
+        // - false:  All iframes with data-src will be loaded only when visible
+        preloadIframes: null,
+
+        // Can be used to globally disable auto-animation
+        autoAnimate: true,
+
+        // Optionally provide a custom element matcher that will be
+        // used to dictate which elements we can animate between.
+        autoAnimateMatcher: null,
+
+        // Default settings for our auto-animate transitions, can be
+        // overridden per-slide or per-element via data arguments
+        autoAnimateEasing: 'ease',
+        autoAnimateDuration: 1.0,
+        autoAnimateUnmatched: true,
+
+        // CSS properties that can be auto-animated. Position & scale
+        // is matched separately so there's no need to include styles
+        // like top/right/bottom/left, width/height or margin.
+        autoAnimateStyles: ['opacity', 'color', 'background-color', 'padding', 'font-size', 'line-height', 'letter-spacing', 'border-width', 'border-color', 'border-radius', 'outline', 'outline-offset'],
+
+        // Controls automatic progression to the next slide
+        // - 0:      Auto-sliding only happens if the data-autoslide HTML attribute
+        //           is present on the current slide or fragment
+        // - 1+:     All slides will progress automatically at the given interval
+        // - false:  No auto-sliding, even if data-autoslide is present
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding (defaults to navigateNext)
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // Opens links in an iframe preview overlay
+        // Add `data-preview-link` and `data-preview-link="false"` to customise each link
+        // individually
+        previewLinks: false,
+
+        // Exposes the reveal.js API through window.postMessage
+        postMessage: true,
+
+        // Dispatches all reveal.js events to the parent window through postMessage
+        postMessageEvents: false,
+
+        // Focuses body when page changes visibility to ensure keyboard shortcuts work
+        focusBodyOnPageVisibilityChange: true,
+
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'none', // none/fade/slide/convex/concave/zoom
+
+        // The maximum number of pages a single slide can expand onto when printing
+        // to PDF, unlimited by default
+        pdfMaxPagesPerSlide: Number.POSITIVE_INFINITY,
+
+        // Prints each fragment on a separate slide
+        pdfSeparateFragments: true,
+
+        // Offset used to reduce the height of content within exported PDF pages.
+        // This exists to account for environment differences based on how you
+        // print to PDF. CLI printing options, like phantomjs and wkpdf, can end
+        // on precisely the total height of the document whereas in-browser
+        // printing has to end one pixel before.
+        pdfPageHeightOffset: -1,
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000
+      });
+
+      
+    </script>
+
+    
+  </body>
+</html>
