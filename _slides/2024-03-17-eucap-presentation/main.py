@@ -337,7 +337,10 @@ df = jax.grad(f)
         )
 
         sionna_paper_opti = ImageMobject("sionna_paper_opti.png", z_index=-1).scale(0.5)
-        self.play(Transform(sionna_paper, sionna_paper_opti))
+        self.play(
+            FadeOut(sionna_paper, direction=LEFT),
+            FadeIn(sionna_paper_opti, direction=LEFT),
+        )
 
         # Challenges
 
