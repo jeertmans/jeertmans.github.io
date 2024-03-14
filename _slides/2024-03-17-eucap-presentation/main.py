@@ -156,7 +156,7 @@ class Main(Slide):
 
         # Differentiability and applications
 
-        ImageMobject.set_default(scale_to_resolution=3 * 540)
+        ImageMobject.set_default(scale_to_resolution=2 * 540)
 
         image = ImageMobject("rt_images/scene_tx_rx.png", z_index=-1)
 
@@ -224,72 +224,7 @@ class Main(Slide):
         ).to_corner(DL)
         self.play(FadeIn(need_differentiability))
 
-        self.next_slide(
-            notes="""
-        With the emergence of Machine Learning frameworks,
-        autodiff has become the norm.
-
-        You just need to write the code using
-        their 'primitives'.
-        """
-        )
-        autodiff = Text(
-            "Differentiability with auto-diff is easy!",
-        ).to_corner(DL)
-        code_np = Code(
-            code=r"""#
-import numpy as np
-
-
-def g(x):
-    return np.cos(x)
-
-
-def f(x):
-    return x * g(2 * x) + 1
-
-
-# df = ?
-""",
-            language="python",
-            style="rainbow_dash",
-            tab_width=4,
-        )
-        code_jnp = Code(
-            code=r"""import jax
-import jax.numpy as jnp
-
-
-def g(x):
-    return jnp.cos(x)
-
-
-def f(x):
-    return x * g(2 * x) + 1
-
-
-df = jax.grad(f)
-""",
-            language="python",
-            style="rainbow_dash",
-            tab_width=4,
-        )
-        self.play(
-            self.next_slide_number_animation(),
-            self.wipe(
-                self.mobjects_without_canvas, [code_np, autodiff], return_animation=True
-            ),
-        )
-
-        self.next_slide(
-            notes="""
-        E.g., with JAX, you can use a syntax similar to
-        NumPy and get grad for free!
-        """
-        )
-        self.play(Transform(code_np, code_jnp))
-
-        # Sionna was one of the first to combine RT and
+        # Sionna was one of the first to combine RT and Automatic differentiability
 
         self.next_slide(
             notes="""
@@ -398,6 +333,28 @@ df = jax.grad(f)
             ),
         )
 
+        self.next_slide(
+            notes="""
+        Without those (possible infinitely) high-order
+        paths or complex interaction types, we have "holes"
+        in our domain, which is an issue for gradient-based
+        optimization.
+
+        What if we could have a fake transparancy that would
+        fake a possible link between RX and TX?
+        """
+        )
+
+        self.play(
+            FadeOut(image),
+            FadeIn(image := ImageMobject("sionna_rt_no_diff_no_scatt_holes.png")),
+            types.animate.become(
+                Text(
+                    "LOS + reflection + scattering",
+                ).move_to(types),
+            ),
+        )
+
         contents = paragraph(
             "• Zero-gradient and discontinuity issues;",
             "• Smoothing technique;",
@@ -406,8 +363,10 @@ df = jax.grad(f)
         self.next_slide(notes="Present work and contents")
         self.new_clean_slide("Present work: discontinuity smoothing", contents)
 
+        ImageMobject.set_default(scale_to_resolution=540 * 3)
+
         illustration = Group(
-            ImageMobject("zero_gradient.png").scale(1.3),
+            ImageMobject("zero_gradient.png"),
             MathTex(
                 r"\ts \theta(x) = \begin{cases} 1, &\text{if }x>0,\\ 0, &\text{otherwise,}\end{cases}",
             ),
@@ -560,14 +519,21 @@ df = jax.grad(f)
 
         contents = (
             Group(
-                MathTex(
-                    r"\vec{E}(x,y) = \
+                VGroup(
+                    MathTex(
+                        r"\vec{E}(x,y) = \
                 \sum\limits_{\mathcal{P}\in\mathcal{S}}\
                 V\left(\mathcal{P}\right)\left(\
                 \bar{C}\left(\mathcal{P}\left)\cdot\vec{E}\left(\mathcal{P}_1\right)\
                 \right)",
-                ),
-                ImageMobject("approximation.png").scale(1.2),
+                    ),
+                    MathTex(
+                        r"P(x, y) \approx \sum\limits_{\mathcal{P}\in\mathcal{S}}\
+                    P_\mathcal{P}(x, y)"
+                    ),
+                    Tex("(incoherently added)"),
+                ).arrange(DOWN),
+                ImageMobject("power_map.png"),
             )
             .arrange(RIGHT)
             .shift(0.4 * DOWN)
@@ -585,7 +551,7 @@ df = jax.grad(f)
                 MathTex(
                     r" \mathcal{F}(x, y) = \min\left(P_{\text{Rx}_0}(x, y), P_{\text{Rx}_1}(x,y)\right)",
                 ),
-                ImageMobject("opti_problem.png").scale(1.2),
+                ImageMobject("opti_images/optimization_start.png"),
             )
             .arrange(RIGHT)
             .shift(0.4 * DOWN)
@@ -596,11 +562,22 @@ df = jax.grad(f)
             self.wipe(self.mobjects_without_canvas, contents, return_animation=True),
         )
 
-        image = ImageMobject("opti_steps.png")
+        self.next_slide(notes="Let's see how it converge.")
+
+        image_files = [f"opti_images/optimization_{i:02d}.png" for i in range(101)]
+        video = VideoMobject(image_files, z_index=-1)
+
+        self.play(
+            self.next_slide_number_animation(),
+            self.wipe(self.mobjects_without_canvas, video, return_animation=True),
+        )
+
+        self.next_slide(notes="Showing steps", loop=True)
+
+        self.play(video.play(run_time=6.0))
+
         self.next_slide(
             notes="""
-            Let's see how it converge.
-
             Actually, tests have shown:
 
             1.5 to 2 increase in success rate,
@@ -608,10 +585,13 @@ df = jax.grad(f)
             with our method.
             """
         )
-        self.play(
-            self.next_slide_number_animation(),
-            self.wipe(self.mobjects_without_canvas, image, return_animation=True),
-        )
+
+        results = paragraph(
+            "• Convergence success rate x 1.5 ~ 2;",
+            "• Success rate w/ respect\n   to no approx.: 92% to 98%.",
+        ).align_to(self.slide_title, LEFT)
+
+        self.play(FadeIn(results), video.animate.shift(3 * RIGHT))
 
         contents = paragraph(
             "• Trade-off of smoothing vs many minimizations;",
@@ -646,3 +626,9 @@ df = jax.grad(f)
             self.next_slide_number_animation(),
             self.wipe(self.mobjects_without_canvas, qrcodes, return_animation=True),
         )
+
+        self.next_slide(notes="That's all folks!")
+
+        thanks = Text("Thanks for listening!", TITLE_FONT_SIZE)
+
+        self.wipe(self.mobjects_without_canvas, thanks)
