@@ -549,7 +549,7 @@ class Main(Slide):
         contents = (
             Group(
                 MathTex(
-                    r" \mathcal{F}(x, y) = \min\left(P_{\text{Rx}_0}(x, y), P_{\text{Rx}_1}(x,y)\right)",
+                    r" \mathcal{F}(x, y) = \min\left(P_{\text{RX}_0}(x, y), P_{\text{RX}_1}(x,y)\right)",
                 ),
                 ImageMobject("opti_images/optimization_start.png"),
             )
