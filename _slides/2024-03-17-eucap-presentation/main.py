@@ -253,14 +253,17 @@ class Main(Slide):
             "Differentiability with auto-diff is easy!",
         ).to_corner(DL)
         code_np = Code(
-            code=r"""import numpy as np
+            code=r"""
+import numpy as np
 
 
 def g(x):
     return np.cos(x)
 
-def f(x, y):
-    return x * g(y) + 1.0
+
+def f(x):
+    return x * g(2 * x) + 1
+
 
 
 """,
@@ -274,8 +277,10 @@ import jax.numpy as jnp
 def g(x):
     return jnp.cos(x)
 
-def f(x, y):
-    return x * g(y) + 1.0
+
+def f(x):
+    return x * g(2 * x) + 1
+
 
 df = jax.grad(f)
 """,
