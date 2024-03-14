@@ -239,7 +239,7 @@ class Main(Slide):
             "Differentiability with auto-diff is easy!",
         ).to_corner(DL)
         code_np = Code(
-            code=r"""
+            code=r"""#
 import numpy as np
 
 
