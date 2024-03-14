@@ -148,6 +148,7 @@ class Main(Slide):
         self.play(
             drt.animate.become(self.slide_title),
             FadeOut(VGroup(title, author_date), shift=DOWN),
+            FadeIn(self.slide_number),
         )
 
         self.remove(drt)
@@ -165,10 +166,7 @@ class Main(Slide):
         the radio propagation community.
         """
         )
-        self.play(
-            self.next_slide_number_animation(),
-            self.wipe([], image, return_animation=True),
-        )
+        self.wipe([], image)
 
         for i in range(0, 5):
             self.next_slide(notes=f"Order = {i}")
