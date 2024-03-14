@@ -20,10 +20,9 @@ tex_template.add_to_preamble(
 """
 )
 
-Text.set_default(color=BLACK, font_size=CONTENT_FONT_SIZE)
-Tex.set_default(color=BLACK, tex_template=tex_template, font_size=CONTENT_FONT_SIZE)
 MathTex.set_default(color=BLACK, tex_template=tex_template, font_size=CONTENT_FONT_SIZE)
-ImageMobject.set_default(scale_to_resolution=540)
+Tex.set_default(color=BLACK, tex_template=tex_template, font_size=CONTENT_FONT_SIZE)
+Text.set_default(color=BLACK, font_size=CONTENT_FONT_SIZE)
 
 
 def paragraph(*strs, alignment=LEFT, direction=DOWN, **kwargs):
@@ -34,40 +33,6 @@ def paragraph(*strs, alignment=LEFT, direction=DOWN, **kwargs):
             text.align_to(texts[0], direction=alignment)
 
     return texts
-
-
-class VideoAnimation(Animation):
-    def __init__(self, video_mobject, **kwargs):
-        self.video_mobject = video_mobject
-        self.index = 0
-        self.dt = 1.0 / len(video_mobject)
-        super().__init__(video_mobject, **kwargs)
-
-    def interpolate_mobject(self, dt):
-        index = min(int(dt / self.dt), len(self.video_mobject) - 1)
-
-        if index != self.index:
-            self.index = index
-            self.video_mobject.pixel_array = self.video_mobject[index].pixel_array
-
-        return self
-
-
-class VideoMobject(ImageMobject):
-    def __init__(self, image_files, **kwargs):
-        assert len(image_files) > 0, "Cannot create empty video"
-        self.image_files = image_files
-        self.kwargs = kwargs
-        super().__init__(image_files[0], **kwargs)
-
-    def __len__(self):
-        return len(self.image_files)
-
-    def __getitem__(self, index):
-        return ImageMobject(self.image_files[index], **self.kwargs)
-
-    def play(self, **kwargs):
-        return VideoAnimation(self, **kwargs)
 
 
 class Main(Slide):
@@ -110,24 +75,6 @@ class Main(Slide):
                 self.next_slide_number_animation(),
                 self.next_slide_title_animation(title),
             )
-
-    def play_video(file):
-        cap = cv2.VideoCapture(file)
-        flag = True
-
-        while flag:
-            flag, frame = cap.read()
-            fps = cap.get(cv2.CAP_PROP_FPS)
-            delay = 1 / fps
-
-            if flag:
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frame_img = ImageMobject(frame, *args, **kwargs)
-                self.add(frame_img)
-                self.wait(delay)
-                self.remove(frame_img)
-
-        cap.release()
 
     def construct(self):
         # Config
@@ -174,6 +121,8 @@ class Main(Slide):
         self.add(self.slide_title)
 
         # Differentiability and applications
+        
+        ImageMobject.set_default(scale_to_resolution=3 * 540)
 
         image = ImageMobject("rt_images/scene_tx_rx.png", z_index=-1)
 
@@ -309,6 +258,8 @@ df = jax.grad(f)
         DRT applied to radio-propagation is Sionna.
         """
         )
+
+        ImageMobject.set_default(scale_to_resolution=540)
 
         sionna_paper = ImageMobject("sionna_paper.png", z_index=-1).scale(0.5)
         sionna_credits = (
