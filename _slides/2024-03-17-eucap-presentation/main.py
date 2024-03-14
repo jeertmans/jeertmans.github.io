@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 from manim import *
 from manim_slides import Slide
@@ -33,6 +32,40 @@ def paragraph(*strs, alignment=LEFT, direction=DOWN, **kwargs):
             text.align_to(texts[0], direction=alignment)
 
     return texts
+
+
+class VideoAnimation(Animation):
+    def __init__(self, video_mobject, **kwargs):
+        self.video_mobject = video_mobject
+        self.index = 0
+        self.dt = 1.0 / len(video_mobject)
+        super().__init__(video_mobject, **kwargs)
+
+    def interpolate_mobject(self, dt):
+        index = min(int(dt / self.dt), len(self.video_mobject) - 1)
+
+        if index != self.index:
+            self.index = index
+            self.video_mobject.pixel_array = self.video_mobject[index].pixel_array
+
+        return self
+
+
+class VideoMobject(ImageMobject):
+    def __init__(self, image_files, **kwargs):
+        assert len(image_files) > 0, "Cannot create empty video"
+        self.image_files = image_files
+        self.kwargs = kwargs
+        super().__init__(image_files[0], **kwargs)
+
+    def __len__(self):
+        return len(self.image_files)
+
+    def __getitem__(self, index):
+        return ImageMobject(self.image_files[index], **self.kwargs)
+
+    def play(self, **kwargs):
+        return VideoAnimation(self, **kwargs)
 
 
 class Main(Slide):
@@ -121,7 +154,7 @@ class Main(Slide):
         self.add(self.slide_title)
 
         # Differentiability and applications
-        
+
         ImageMobject.set_default(scale_to_resolution=3 * 540)
 
         image = ImageMobject("rt_images/scene_tx_rx.png", z_index=-1)
@@ -134,7 +167,7 @@ class Main(Slide):
         )
         self.play(
             self.next_slide_number_animation(),
-            FadeIn(image),
+            self.wipe([], image, return_animation=True),
         )
 
         for i in range(0, 5):
@@ -158,27 +191,31 @@ class Main(Slide):
         """
         )
 
-        for i in range(50):
-            self.remove(image)
-            image = ImageMobject(f"rt_images/scene_power_{i:02d}.png", z_index=-1)
-            self.add(image)
-            self.wait(0.1)
+        self.remove(image)
+
+        image_files = [f"rt_images/scene_power_{i:02d}.png" for i in range(100)]
+        video = VideoMobject(image_files, z_index=-1)
+
+        self.add(video)
+        self.play(video.play(run_time=3.0))
 
         self.next_slide(notes="Moving RX positiong to find the best position")
 
-        for i in range(50):
-            self.remove(image)
-            image = ImageMobject(f"rt_images/scene_rx_{i:02d}.png", z_index=-1)
-            self.add(image)
-            self.wait(0.1)
+        self.remove(video)
+        image_files = [f"rt_images/scene_rx_{i:02d}.png" for i in range(100)]
+        video = VideoMobject(image_files, z_index=-1)
+
+        self.add(video)
+        self.play(video.play(run_time=3.0))
 
         self.next_slide(notes="Moving TX positiong to find the best position")
 
-        for i in range(50):
-            self.remove(image)
-            image = ImageMobject(f"rt_images/scene_tx_{i:02d}.png", z_index=-1)
-            self.add(image)
-            self.wait(0.1)
+        self.remove(video)
+        image_files = [f"rt_images/scene_tx_{i:02d}.png" for i in range(100)]
+        video = VideoMobject(image_files, z_index=-1)
+
+        self.add(video)
+        self.play(video.play(run_time=3.0))
 
         # Differentiability could help us
 
@@ -214,9 +251,11 @@ def f(x):
     return x * g(2 * x) + 1
 
 
-
+# df = ?
 """,
             language="python",
+            style="rainbow_dash",
+            tab_width=4,
         )
         code_jnp = Code(
             code=r"""import jax
@@ -234,6 +273,8 @@ def f(x):
 df = jax.grad(f)
 """,
             language="python",
+            style="rainbow_dash",
+            tab_width=4,
         )
         self.play(
             self.next_slide_number_animation(),
@@ -274,7 +315,7 @@ df = jax.grad(f)
             self.next_slide_number_animation(),
             self.wipe(
                 self.mobjects_without_canvas,
-                [sionna_credits],
+                [sionna_credits, sionna_paper],
                 return_animation=True,
             ),
         )
@@ -288,10 +329,7 @@ df = jax.grad(f)
         )
 
         sionna_paper_opti = ImageMobject("sionna_paper_opti.png", z_index=-1).scale(0.5)
-        self.play(
-            FadeOut(sionna_paper, direction=LEFT),
-            FadeIn(sionna_paper_opti, direction=LEFT),
-        )
+        self.wipe(sionna_paper, sionna_paper_opti)
 
         # Challenges
 
