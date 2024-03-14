@@ -19,19 +19,49 @@ image:
 permalink: /posts/eucap2024-presentation/
 ---
 
-Our paper has been accepted to EuCAP 2024! Presentation slides and code will be soon available.
+Our paper has been accepted to EuCAP 2024!
 
 <!--more-->
 
 At EuCAP 2024, I will present our work
 *Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization*
 {% cite Eert2403:Fully %}.
-In this paper, we investigate the challenges of making a Fully Differentiable Ray Tracing software
+In this paper,
+we investigate the challenges of making a
+Fully Differentiable Ray Tracing software
 for radio propagation applications.
 
 ## Slides
 
 {% include slides.html url="/assets/slides/2024-03-18-eucap-presentation.html" %}
+
+If you prefer,
+<span
+  data-bs-toggle="tooltip"
+  data-bs-placement="bottom"
+  title="PowerPoint slides"
+>
+  <em>
+    PowerPoint
+    <a href="/assets/slides/2024-03-18-eucap-presentation.pptx">
+      <i class="far fa-file-powerpoint fa-fw"></i>
+    </a>
+  </em>
+</span>
+and
+<span
+  data-bs-toggle="tooltip"
+  data-bs-placement="bottom"
+  title="PDF (static) slides"
+>
+  <em>
+    PDF
+    <a href="/assets/slides/2024-03-18-eucap-presentation.pdf">
+      <i class="far fa-file-pdf fa-fw"></i>
+    </a>
+  </em>
+</span>
+versions are also available.
 
 ## References
 
