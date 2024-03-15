@@ -38,7 +38,8 @@ layout: default
           <div class="card-text content mt-0 mb-2">
             <p>
               {% include no-linenos.html content=project.content %}
-              {{ content | markdownify | strip_html | truncate: 200 | escape }}
+              {% assign contentParts = content | split: "<!--more-->" %}
+              {{ contentParts[0] | markdownify | strip_html | truncate: 200 | escape }}
             </p>
           </div>
 
