@@ -36,7 +36,7 @@ for radio propagation applications.
 {% include slides.html url="/assets/slides/2024-03-18-eucap-presentation.html" %}
 
 If you prefer,
-<a href="/assets/slides/2024-03-18-eucap-presentation.pptx">Power Point <i class="far fa-file-powerpoint fa-fw"></i></a>
+<a href="/assets/slides/2024-03-18-eucap-presentation.pptx">PowerPoint <i class="far fa-file-powerpoint fa-fw"></i></a>
 and
 <a href="/assets/slides/2024-03-18-eucap-presentation.pdf">PDF <i class="far fa-file-pdf fa-fw"></i></a>
 versions are also available.
