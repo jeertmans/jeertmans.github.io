@@ -596,7 +596,7 @@ class Main(Slide):
         contents = paragraph(
             "• Trade-off of smoothing vs many minimizations;",
             "• Where to apply smoothing;",
-            "• Physical model behind smoothing(e.g., diffraction);",
+            "• Physical model behind smoothing (e.g., diffraction);",
             "• 3D scenes at city-scales (DiffeRT).",
         ).align_to(self.slide_title, LEFT)
         self.next_slide(notes="Future work")
