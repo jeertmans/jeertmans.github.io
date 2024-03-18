@@ -350,7 +350,7 @@ class Main(Slide):
             FadeIn(image := ImageMobject("sionna_rt_no_diff_no_scatt_holes.png")),
             types.animate.become(
                 Text(
-                    "LOS + reflection + scattering",
+                    "LOS + reflection",
                 ).move_to(types),
             ),
         )
