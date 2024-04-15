@@ -496,7 +496,7 @@ class Main(Slide, MovingCameraScene):
 
         image_method, fpt, mpt = paragraph(
             "• Image Method: refl. on planar surfaces;",
-            "• Fermat-based min.: refl. and diff. and planar surfaces;",
+            "• Fermat-based min.: refl. and diff., etc. (convex on planar surfaces);",
             "• Min-Path-Tracing: refl., diff., etc on any object.",
         ).align_to(self.slide_title, LEFT)
 
