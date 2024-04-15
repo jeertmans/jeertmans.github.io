@@ -130,16 +130,14 @@ class Main(Slide, MovingCameraScene):
         self.wait_time_between_slides = 0.1
 
         self.slide_number = Integer(1).set_color(BLACK).to_corner(DR)
-        self.slide_title = Text(
-            "About the author", TITLE_FONT_SIZE
-        ).to_corner(UL)
+        self.slide_title = Text("About the author", TITLE_FONT_SIZE).to_corner(UL)
         self.add_to_canvas(slide_number=self.slide_number, slide_title=self.slide_title)
 
         # Title
 
         title = VGroup(
             Text(
-                r"Differentiable Ray Tracing for Telecommunications",
+                r"Differentiable Ray Tracing for Radio Propagations",
                 font_size=TITLE_FONT_SIZE,
             ),
             Text("Jérome Eertmans - April 16th, Milano").scale(0.8),
@@ -157,7 +155,7 @@ class Main(Slide, MovingCameraScene):
             "Profile:",
             "• PhD student at UCLouvain\n   since 09/2021;",
             "• Electromechaninal Engineer\n   in mechatronics;",
-            "• introduced to Ray Tracing (RT)\n   during a student job."
+            "• introduced to Ray Tracing (RT)\n   during a student job.",
         ).align_to(self.slide_title, LEFT)
 
         interests = paragraph(
@@ -168,12 +166,8 @@ class Main(Slide, MovingCameraScene):
         ).align_to(self.slide_number, RIGHT)
 
         about = profile, interests, claude, laurent = VGroup(
-            profile
-            .to_corner(UL)
-            .shift(DOWN),
-            interests
-            .to_corner(UR)
-            .shift(DOWN),
+            profile.to_corner(UL).shift(DOWN),
+            interests.to_corner(UR).shift(DOWN),
             Text("Claude Oestges").to_corner(DL).shift(2 * UP),
             Text("Laurent Jacques"),
         )
@@ -191,10 +185,14 @@ class Main(Slide, MovingCameraScene):
 
         # Disclaimer
 
-        content = VGroup(
-            MathTex(r"\text{BS} \leftrightarrow \text{TX}"),
-            MathTex(r"\text{UE} \leftrightarrow \text{RX}"),
-            ).arrange(DOWN, buff=.25).scale(3)
+        content = (
+            VGroup(
+                MathTex(r"\text{BS} \leftrightarrow \text{TX}"),
+                MathTex(r"\text{UE} \leftrightarrow \text{RX}"),
+            )
+            .arrange(DOWN, buff=0.25)
+            .scale(3)
+        )
 
         self.next_slide(notes="Disclaimer")
 
@@ -212,9 +210,9 @@ class Main(Slide, MovingCameraScene):
         self.new_clean_slide("Ray Tracing's ABC", BS)
         self.play(
             FadeIn(
-                Text(
-                    "BS", color=BLACK, font_size=CONTENT_FONT_SIZE, z_index=1
-                ).next_to(BS, DOWN),
+                Text("BS", color=BLACK, font_size=CONTENT_FONT_SIZE, z_index=1).next_to(
+                    BS, DOWN
+                ),
                 shift=0.25 * DOWN,
             )
         )
@@ -348,9 +346,9 @@ class Main(Slide, MovingCameraScene):
         )
         self.play(
             FadeIn(
-                Text(
-                    "UE", color=BLACK, font_size=CONTENT_FONT_SIZE, z_index=1
-                ).next_to(UE, DOWN),
+                Text("UE", color=BLACK, font_size=CONTENT_FONT_SIZE, z_index=1).next_to(
+                    UE, DOWN
+                ),
                 shift=0.25 * DOWN,
             )
         )
@@ -476,11 +474,13 @@ class Main(Slide, MovingCameraScene):
 
         image = ImageMobject("rt_images/scene_tx_rx.png", z_index=-1)
 
-        self.next_slide(notes="""
+        self.next_slide(
+            notes="""
         # Tracing paths
 
         We now use TX/RX.
-        """)
+        """
+        )
 
         self.new_clean_slide("Tracing paths", image)
 
@@ -488,17 +488,21 @@ class Main(Slide, MovingCameraScene):
             self.next_slide(notes=f"Order = {i}")
             self.play(Transform(image, ImageMobject(f"rt_images/scene_tx_rx_{i}.png")))
 
-        self.next_slide(notes="""
+        self.next_slide(
+            notes="""
         # In a previous work we presented a method for tracing paths.
-        """)
+        """
+        )
 
         image_method, fpt, mpt = paragraph(
-                "• Image Method: refl. on planar surfaces;",
-                "• Fermat-based min.: refl. and diff. and planar surfaces;",
-                "• Min-Path-Tracing: refl., diff., etc on any object.",
+            "• Image Method: refl. on planar surfaces;",
+            "• Fermat-based min.: refl. and diff. and planar surfaces;",
+            "• Min-Path-Tracing: refl., diff., etc on any object.",
         ).align_to(self.slide_title, LEFT)
 
-        self.new_clean_slide(".. previous work (EuCAP 2023)", image_method, direction=UP)
+        self.new_clean_slide(
+            ".. previous work (EuCAP 2023)", image_method, direction=UP
+        )
 
         self.next_slide(notes="FPT")
         self.play(FadeIn(fpt, direction=LEFT))
@@ -523,7 +527,7 @@ class Main(Slide, MovingCameraScene):
         self.next_slide(loop=True)
         self.play(video.play(run_time=6.0))
 
-        self.next_slide(notes="# DRT")       
+        self.next_slide(notes="# DRT")
 
         self.new_clean_slide("Differentiable Ray Tracing", image, direction=DOWN)
 
