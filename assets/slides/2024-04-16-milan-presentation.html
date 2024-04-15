@@ -1,0 +1,764 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Manim Slides</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
+
+    <!-- <link rel="stylesheet" href="index.css"> -->
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides"><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ac05bf05d8792e77edeaeb38ba0dcf00b25a528578d4052d7b77e22759228b29.mp4"
+              data-background-video-muted>
+              <aside class="notes" data-markdown># Welcome!</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ae21e839f0c8742e82d8ac027fcdd05f4177d562841a4032777d1892c203ff8a.mp4"
+              >
+              <aside class="notes" data-markdown>Let's start by presenting myself quickly!</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/4d1fc9ee7b0482723aebdbbd05156d8eecd30ca6560d0c541db0b57127b1a4fb.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/2abb39b4621b964a53dac40df193681e3e88260db2b75011bff676f729ef41c8.mp4"
+              >
+              <aside class="notes" data-markdown>Disclaimer</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/620483e49554cabea79eba526e0f443eb697208eb64ec366d55cf115e7920f47.mp4"
+              >
+              <aside class="notes" data-markdown>Ray Tracing's ABC</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/fe48eeea646f21ed7b70688716e19ad5a093bb38de3d86bdfd1fc6fc63e24182.mp4"
+              data-background-video-loop>
+              <aside class="notes" data-markdown>In a simplified model, the BS emits waves isotropically.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/e3a404c47f0758698e1e7b768f5790f3b5b1b0aaea1197908ca1c63c1045d448.mp4"
+              >
+              <aside class="notes" data-markdown>
+Using Huygen's principle, we can decompose a wave front into a
+series of new wave sources.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/13e01864aa5b77fd5f21404dd54d6a62967dc3027075d29e1b6511c9df0313f2.mp4"
+              data-background-video-loop>
+              <aside class="notes" data-markdown>
+Each source now broadcasts waves,
+each with a fraction of the original energy
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ea8c48f8c4d6b3ddd811c3ee6aa2ea4c60d7b4dce7def99e94c5008b78c0ddb7.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/32f22f07ea4f416ed631aaf0dc8ad16e6836f7283efaa35ceb730fda02e61082.mp4"
+              >
+              <aside class="notes" data-markdown>RT considers each ray path individually.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/a399df1c81c0dc9ca27fa78ae759c26d2d69af7bd9f133dc6a6b011d44ddd7b7.mp4"
+              >
+              <aside class="notes" data-markdown>In a constant speed space, ray paths are linear.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/7e2b3fb82b1be6869037ff19f7dccd6003ab722efc314fcb596adf28adef5f0d.mp4"
+              >
+              <aside class="notes" data-markdown>Maybe, we reach some obstacle.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/b87951563b6075b75b0d39fadd996c70062731e5ae0fb31a4708b805cbf1001a.mp4"
+              >
+              <aside class="notes" data-markdown>If we decide to apply reflection.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/bda04149dbd0c368cb02bf97456dca8dd53398997ef4342bdbb984d8562f4aff.mp4"
+              >
+              <aside class="notes" data-markdown>We can do that for very complex scenes and many paths.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/890fb0dd365afa8e688f5aa3aee81e2b7b29dd181ba5a94403a9151127a11e66.mp4"
+              >
+              <aside class="notes" data-markdown>Example of tracing paths in 3D Urban scene.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/e1caf8073e3acd5931a344d0488175527c37f385493de02caef1116be3bad014.mp4"
+              >
+              <aside class="notes" data-markdown>
+In Radio-propa., we have two quantities: E and B.
+Both are vectors (3D) and complex.
+But, only 2 components are needed!! Hence 2x2 dyadic matrices.
+
+The most used quantify if E, from which we usually determine
+the received power (plane wave, lossless medium).
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ebbcba8dd6ca02140221da1f888b0a7b307b6bc89514b8baade831e7a6411664.mp4"
+              >
+              <aside class="notes" data-markdown>
+By superposition, E (and B) can be computed by summing the contribution
+from each path.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/5bd6cd93d450a7b3242da9587976adc1e24e2626f0b5aa4a755158516afbefb1.mp4"
+              >
+              <aside class="notes" data-markdown>
+Where C accounts for:
+- D the dyadic coefficients for polarization;
+- alpha the path attenuation;
+- and the path delay.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/2a5aeac0f67b98b2514f9750d7ea11c3d6a1c09c71c38aa21b9af28949276211.mp4"
+              >
+              <aside class="notes" data-markdown>The basic RT pipeline is as follows.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/7c2938dd1e5d5108161e5cd53060726e6df01805edacf3c0704d76d1eaab55fb.mp4"
+              >
+              <aside class="notes" data-markdown>Next pipeline step.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ded82dd54367156f45093fae834e606b9763d705f9ee90777f8c531f3d8f01fd.mp4"
+              >
+              <aside class="notes" data-markdown>Next pipeline step.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/8476f6db4413eb6addc3a4031b59b6442f4de054d6724e23468b3867c29dea3c.mp4"
+              >
+              <aside class="notes" data-markdown>Next pipeline step.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/b662def83e2810413dbb808725e8982dd72cd7469721fe193531883e201bd9fc.mp4"
+              >
+              <aside class="notes" data-markdown>Next pipeline step.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/8295503ff71484c2ed2435dbf503dad526a7c3b9f93dc0b65d55ce57cb53951a.mp4"
+              >
+              <aside class="notes" data-markdown>
+# Tracing paths
+
+We now use TX/RX.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/261a85ecf15ae50c9454169634904623771e0d906e631f7cf22a8959a63ca88b.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 0</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/1152c82c64f21a26c7abfe2830f548545da48f9d8cdcb4af6085c4930ad02281.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 1</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/1f293c94426ceba7dca0ec2dc52dc8f8768055e9cb2b3b14e8419d375ee7db72.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 2</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/b69ec90447ecadf3cf858534f861025bd600d5d2d4e34a3d60799512dead888b.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 3</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/5e6877b8ddd5bc9d55542ea794df22ef4bebc3e04a62fd3926361bef3b6cfaeb.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 4</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/1e41c3cba7cec81fe8b5c1a28104402a047fcd43da6b863bc52babceea27a13b.mp4"
+              >
+              <aside class="notes" data-markdown>
+# In a previous work we presented a method for tracing paths.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/f34f5e654f60bca45ccd1a2bde29f75a92e1a135e59d985cc2b6192fc62462f5.mp4"
+              >
+              <aside class="notes" data-markdown>FPT</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/6cd7c39b4998e0eb4f8902e59afda0405495afcde05e62c1f9ccc13e8191435d.mp4"
+              >
+              <aside class="notes" data-markdown>MPT</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/eb3f58c20459cbfe4cd8f42e9c8f29dace0e7950f36e3bd615f8264c6815b9f3.mp4"
+              >
+              <aside class="notes" data-markdown>See how MPT is applied in 3D.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/342b2da9a84eaf463ea52952a1068166cdc2dc0ea3ac60692e219cd58d7e3ece.mp4"
+              data-background-video-loop>
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/011368a96d63267d2974099150e7127d737f3ba66b7fb65b4d8422877748564e.mp4"
+              >
+              <aside class="notes" data-markdown># DRT</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/d2948ee1f9644fe588fe75432e5e45fad7937d486e6e72dc5b90a83c1517a5c8.mp4"
+              >
+              <aside class="notes" data-markdown>
+We are often interested on computing the received
+power as a function of the position.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/8524d533fe37ee978e2b233cd0ffb4edda2a55c4ca9df2ede4ab077a0cddb20d.mp4"
+              >
+              <aside class="notes" data-markdown>
+Placing 'camera' on top X-Y view.
+This gives us a very nice overview of what for call the
+'coverage map'.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/5a43f12d9d773ff62085b8d21ae78165aa18c0e1c3a54fd20b56675bef31d65f.mp4"
+              >
+              <aside class="notes" data-markdown>Moving RX positiong to find the best position</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/a2149c283f72ba43620545508af42576086d0d9e123ad19d78d8e45097975e0a.mp4"
+              >
+              <aside class="notes" data-markdown>Moving TX positiong to find the best position</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/e3be3a1d375e3247c888aa102f261df6999702c617648c02aef2fce6e52132cd.mp4"
+              >
+              <aside class="notes" data-markdown>Knowing the derivative would be useful...</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/aa636cb81913c7fa040574d0a529d34953256a3ceb68966e9ba2b9fa07bd87ce.mp4"
+              >
+              <aside class="notes" data-markdown>
+Maybe one of the most recent and popular work on
+DRT applied to radio-propagation is Sionna.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/d62205b8a1d6077248a9cfffaa33afabca2e1139c7862829ae2d3acc43369564.mp4"
+              >
+              <aside class="notes" data-markdown>
+Using auto-diff, they have created
+an easy to use radio-network optimization tool.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/4e33c5ca68ee2b20351b2057ff7aebebf529c47b8bcbf399eee86a45b3927968.mp4"
+              >
+              <aside class="notes" data-markdown>
+RT's implementation presents many challenges,
+mainly the exponential number of paths we can test.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/bb9f505bf5ebd2c12ca44bc70265a33fd1646885e46f5bc6561d841a938265a5.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 0</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/3373da98d32ab20fab88069630b6df50b3c9ac014edc4234a9e313f62f73802f.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 1</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/e59f003869d1fd0bd9fed1b8d426b0d4652fd25a248da766ddea620a658db356.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 2</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/993bb47beb2eb5f96621796062da9e315f0e1707c72c645768df9e97d2e49d60.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 3</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/6893acc1a7c47da8658f66da48926c50510412aa924b78a7155197caa19471ff.mp4"
+              >
+              <aside class="notes" data-markdown>Order = 4</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/6bad7fab275829e4bd1e2765262f7356a7496caec298080af9c1b1ca36b9dd6e.mp4"
+              >
+              <aside class="notes" data-markdown>
+Another challenge is the total path coverage versus
+the order and types of interaction considered.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/61b08304783e801cababa78a79a463aa2abed402a746939e1bb0afd571a1b535.mp4"
+              >
+              <aside class="notes" data-markdown>If we add diffraction.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/7da251cd2b039a44d757d651698fbf80df1c6709f41548fe656fd8d410c2b49c.mp4"
+              >
+              <aside class="notes" data-markdown>Or if we add scattering.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/5fe2a2dc30dac708b8c0acbdaac8d608807f6a7e3889574826d773485af0fef4.mp4"
+              >
+              <aside class="notes" data-markdown>
+Without those (possible infinitely) high-order
+paths or complex interaction types, we have "holes"
+in our domain, which is an issue for gradient-based
+optimization.
+
+What if we could have a fake transparancy that would
+fake a possible link between RX and TX?
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/73e11f4785e323954f61628f16d3ceb106fbf3fb1b3b5df5a34d5988623d2b01.mp4"
+              >
+              <aside class="notes" data-markdown>Present work and contents</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/dfdab63f1985076bbdebdb8010fab3dbe9272f7d3b30584c54efe780a8e06c44.mp4"
+              >
+              <aside class="notes" data-markdown>Our problem is only piecewise diff. and continuous.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ccf88b86d963561727e8ae8adb81c8bf73666a36e40b6a0501cc5dfb559c5b6a.mp4"
+              >
+              <aside class="notes" data-markdown>Constraints about our approximation.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/1e165ff329d1884abaa5ae039f59bc893da1b1fc0725e3e8c41afe04d832f466.mp4"
+              >
+              <aside class="notes" data-markdown>Examples.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/059e8f30b532a94367cc54a365abe698d516afd8620bf0e912f170aa5a21ff32.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/99876e34057809440825bb2d2641324251b10c22b4631f47a7d5f12fceb9d599.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/b364df022a10b4955ee598bf04f652590bd2138e7c5d174834705f174b2b93ce.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ffd5d7f8390a61583eead435ed11d6cf643c19a5b7ac4bff6c543b5e91931539.mp4"
+              >
+              
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/432e2fbb1ebc281bb0be0d4c828be02b3ae6be3045173913095d2f5f145a85cd.mp4"
+              >
+              <aside class="notes" data-markdown>Let's animate alpha.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/51ce37f944f7672480d17a44e84e79a1fc3b9577af3457e88803ef8125054029.mp4"
+              >
+              <aside class="notes" data-markdown>Thanks to that, and other things, we can create a fully DRT!</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/4202598fe317f06f6a3a0297d42173341116c4ab9f5fd8d112e00985399070e9.mp4"
+              >
+              <aside class="notes" data-markdown>We can create an optimization problem.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/dde2991d1f8422c04ccd199cb0193ae50b1af1ac58739b90ed2f495f093f9f8e.mp4"
+              >
+              <aside class="notes" data-markdown>Let's see how it converge.</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/f4075c017b877387350180d7d0328343228c050dc94ea77bd544611fbc1ee84c.mp4"
+              data-background-video-loop>
+              <aside class="notes" data-markdown>Showing steps</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/02e25d6295e588441321cac12274896739009eb6c293cfbfbed493beded0d19e.mp4"
+              >
+              <aside class="notes" data-markdown>
+Actually, tests have shown:
+
+1.5 to 2 increase in success rate,
+where 92% to 98% of already successful runs still converge
+with our method.
+</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/ffebf237a3c19b99642b6bde982fe3c199f5da3942dca94e621db82036889d2e.mp4"
+              >
+              <aside class="notes" data-markdown>Future work</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/e6c95b9d76688093ef12df62f74f8053202c47772a5ed5d10ff91ff7c1b6acdc.mp4"
+              >
+              <aside class="notes" data-markdown>Finals words</aside>
+            </section><section
+              data-background-size='contain'
+              data-background-color="white"
+              data-background-video="2024-04-16-milan-presentation_assets/901695d501c6ada8d305ba774b8078e16f80fb8bfaafc826b1445da4b1537428.mp4"
+              >
+              <aside class="notes" data-markdown>That's all folks!</aside>
+            </section></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+
+    <!-- To include plugins, see: https://revealjs.com/plugins/ -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/markdown/markdown.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script><!-- <script src="index.js"></script> -->
+    <script>
+      Reveal.initialize({
+        plugins: [ RevealMarkdown, RevealNotes ],
+        // The "normal" size of the presentation, aspect ratio will
+        // be preserved when the presentation is scaled to fit different
+        // resolutions. Can be specified using percentage units.
+        width: '100%',
+        height: '100%',
+
+        // Factor of the display size that should remain empty around
+        // the content
+        margin: 0.04,
+
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 2.0,
+
+        // Display presentation control arrows
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: false,
+
+        // Display the page number of the current slide
+        // - true:    Show slide number
+        // - false:   Hide slide number
+        //
+        // Can optionally be set as a string that specifies the number formatting:
+        // - "h.v":   Horizontal . vertical slide number (default)
+        // - "h/v":   Horizontal / vertical slide number
+        // - "c":   Flattened slide number
+        // - "c/t":   Flattened slide number / total slides
+        //
+        // Alternatively, you can provide a function that returns the slide
+        // number for the current slide. The function should take in a slide
+        // object and return an array with one string [slideNumber] or
+        // three strings [n1,delimiter,n2]. See #formatSlideNumber().
+        slideNumber: false,
+
+        // Can be used to limit the contexts in which the slide number appears
+        // - "all":      Always show the slide number
+        // - "print":    Only when printing to PDF
+        // - "speaker":  Only in the speaker view
+        showSlideNumber: 'all',
+
+        // Use 1 based indexing for # links to match slide number (default is zero
+        // based)
+        hashOneBasedIndex: false,
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: false,
+
+        // Push each slide change to the browser history.  Implies `hash: true`
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Optional function that blocks keyboard events when retuning false
+        //
+        // If you set this to 'focused', we will only capture keyboard events
+        // for embedded decks when they are in focus
+        keyboardCondition: null,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // Changes the behavior of our navigation directions.
+        //
+        // "default"
+        // Left/right arrow keys step between horizontal slides, up/down
+        // arrow keys step between vertical slides. Space key steps through
+        // all slides (both horizontal and vertical).
+        //
+        // "linear"
+        // Removes the up/down arrows. Left/right arrows step through all
+        // slides (both horizontal and vertical).
+        //
+        // "grid"
+        // When this is enabled, stepping left/right from a vertical stack
+        // to an adjacent vertical stack will land you at the same vertical
+        // index.
+        //
+        // Consider a deck with six slides ordered in two vertical stacks:
+        // 1.1    2.1
+        // 1.2    2.2
+        // 1.3    2.3
+        //
+        // If you're on slide 1.3 and navigate right, you will normally move
+        // from 1.3 -> 2.1. If "grid" is used, the same navigation takes you
+        // from 1.3 -> 2.3.
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the question-mark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autolaying embedded media (video/audio/iframe)
+        // - null:   Media will only autoplay if data-autoplay is present
+        // - true:   All media will autoplay, regardless of individual setting
+        // - false:  No media will autoplay, regardless of individual setting
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes
+        // - null:   Iframes with data-src AND data-preload will be loaded when within
+        //           the viewDistance, iframes with only data-src will be loaded when visible
+        // - true:   All iframes with data-src will be loaded when within the viewDistance
+        // - false:  All iframes with data-src will be loaded only when visible
+        preloadIframes: null,
+
+        // Can be used to globally disable auto-animation
+        autoAnimate: true,
+
+        // Optionally provide a custom element matcher that will be
+        // used to dictate which elements we can animate between.
+        autoAnimateMatcher: null,
+
+        // Default settings for our auto-animate transitions, can be
+        // overridden per-slide or per-element via data arguments
+        autoAnimateEasing: 'ease',
+        autoAnimateDuration: 1.0,
+        autoAnimateUnmatched: true,
+
+        // CSS properties that can be auto-animated. Position & scale
+        // is matched separately so there's no need to include styles
+        // like top/right/bottom/left, width/height or margin.
+        autoAnimateStyles: ['opacity', 'color', 'background-color', 'padding', 'font-size', 'line-height', 'letter-spacing', 'border-width', 'border-color', 'border-radius', 'outline', 'outline-offset'],
+
+        // Controls automatic progression to the next slide
+        // - 0:      Auto-sliding only happens if the data-autoslide HTML attribute
+        //           is present on the current slide or fragment
+        // - 1+:     All slides will progress automatically at the given interval
+        // - false:  No auto-sliding, even if data-autoslide is present
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding (defaults to navigateNext)
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // Opens links in an iframe preview overlay
+        // Add `data-preview-link` and `data-preview-link="false"` to customise each link
+        // individually
+        previewLinks: false,
+
+        // Exposes the reveal.js API through window.postMessage
+        postMessage: true,
+
+        // Dispatches all reveal.js events to the parent window through postMessage
+        postMessageEvents: false,
+
+        // Focuses body when page changes visibility to ensure keyboard shortcuts work
+        focusBodyOnPageVisibilityChange: true,
+
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'none', // none/fade/slide/convex/concave/zoom
+
+        // The maximum number of pages a single slide can expand onto when printing
+        // to PDF, unlimited by default
+        pdfMaxPagesPerSlide: Number.POSITIVE_INFINITY,
+
+        // Prints each fragment on a separate slide
+        pdfSeparateFragments: true,
+
+        // Offset used to reduce the height of content within exported PDF pages.
+        // This exists to account for environment differences based on how you
+        // print to PDF. CLI printing options, like phantomjs and wkpdf, can end
+        // on precisely the total height of the document whereas in-browser
+        // printing has to end one pixel before.
+        pdfPageHeightOffset: -1,
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000
+      });
+
+      
+    </script>
+
+    
+  </body>
+</html>
