@@ -34,7 +34,14 @@ as well as the COST Interact action for funding this STSM!
 
 {% include slides.html url="/assets/slides/2024-04-16-milan-presentation.html" %}
 
+## Recording
+
+My presentation was recorded, so you can watch it on YouTube:
+
+{% include embed/youtube.html id='RYRNlpNvAgM' %}
+
 ## References
+
 {% bibliography --cited %}
 
 ## Source code
