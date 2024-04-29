@@ -9,6 +9,7 @@
   download: /assets/publications/eucap2024-paper.pdf
   arxiv: https://arxiv.org/abs/2401.11882
   bibtex: /assets/publications/eucap2024-paper.bib
+  doi: 10.23919/EuCAP60739.2024.10501570
 - title: 'Manim Slides: A Python package for presenting Manim content anywhere'
   id: manim-slides
   date: 2023-08-08
