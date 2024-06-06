@@ -141,6 +141,8 @@ collections:
     - deltri.md
     - manim-tutorial.md
     sort_by: order
+  redirects:
+    output: true
 
 defaults:
 - scope:
