@@ -225,7 +225,7 @@ plugins:
 - jekyll-redirect-from   # https://github.com/jekyll/jekyll-redirect-from
 
 whitelist:
-  - jekyll-redirect-from
+- jekyll-redirect-from
 
 scholar:
   style: apa
