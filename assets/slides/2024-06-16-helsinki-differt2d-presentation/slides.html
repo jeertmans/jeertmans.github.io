@@ -455,8 +455,6 @@ https://github.com/jeertmans/DiffeRT2d
 
     <script src="./dist/reveal.js"></script>
 
-    <script src="./mermaid/dist/mermaid.min.js"></script>
-
     <script src="./plugin/markdown/markdown.js"></script>
     <script src="./plugin/highlight/highlight.js"></script>
     <script src="./plugin/zoom/zoom.js"></script>
@@ -510,15 +508,6 @@ https://github.com/jeertmans/DiffeRT2d
         const hlp = Reveal.getPlugin('highlight');
         blocks.forEach(hlp.highlightBlock);
       });
-    </script>
-
-    <script>
-      const mermaidOptions = extend({ startOnLoad: false }, {"themeVariables":{"lineColor":"#fff"}});
-      mermaid.startOnLoad = false;
-      mermaid.initialize(mermaidOptions);
-      const cb = function (event) { mermaid.init(mermaidOptions, '.stack.present>.present pre code.mermaid'); };
-      Reveal.addEventListener('ready', cb);
-      Reveal.addEventListener('slidetransitionend', cb);
     </script>
   </body>
 </html>
