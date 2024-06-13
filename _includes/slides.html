@@ -1,4 +1,6 @@
 {% assign url = include.url %}
+{% assign cite_manim = include.cite_manim | default: true %}
+
 
 The following slides are made with [RevealJS](https://github.com/hakimel/reveal.js) and are interactive!
 
@@ -17,4 +19,6 @@ Use basic keys like <kbd>LEFT</kbd> and <kbd>RIGHT</kbd> to navigate through sli
     </iframe>
 </div>
 
+{% if cite_manim %}
 The slides were generated using the [Manim](https://www.manim.community/) {% cite The_Manim_Community_Developers_Manim_Mathematical_2022 %} animation engine and [Manim Slides](/projects/manim-slides/) {% cite EertmansManimSlides2023 %}, one of my open source projects, to combine the animations into slides and later convert them in a *RevealJS* `.html`{: .filepath} file.
+{% endif %}
