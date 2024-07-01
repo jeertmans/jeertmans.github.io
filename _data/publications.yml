@@ -1,3 +1,14 @@
+- title: 'DiffeRT2d: A Differentiable Ray Tracing Python
+Framework for Radio Propagation'
+  id: joss2024
+  date: 2024-06-30
+  tags:
+  - Journal
+  - Paper
+  - Software
+  download: /assets/publications/joss2024-paper.pdf
+  bibtex: /assets/publications/joss2024-paper.bib
+  doi: 10.21105/joss.06915
 - title: EuCAP 2024 - Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization
   id: eucap2024
   date: 2024-03-18
