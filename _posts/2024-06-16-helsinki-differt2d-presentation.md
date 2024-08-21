@@ -25,7 +25,7 @@ In the preparation of our submission to the
 [Journal of Open Source Software](https://joss.theoj.org/),
 I presented the DiffeRT2d Python library at the COST INTERACT meeting, held in
 Helsinki. This toolbox was used to define and train a Machine Learning model
-to help tracing paths faster, that we documented in other document
+to help tracing paths faster, that we documented in another document
 presented during this meeting.
 
 Moreover, this toolbox implements both
