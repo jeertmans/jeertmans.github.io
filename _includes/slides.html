@@ -1,9 +1,5 @@
 {% assign url = include.url %}
-{% if not include.cite_manim %}
-  {% assign cite_manim = false %}
-{% else %}
-  {% assign cite_manim = true %}
-{% endif %}
+{% assign cite_manim = include.cite_manim | default(true, true) %}
 
 The following slides are made with [RevealJS](https://github.com/hakimel/reveal.js) and are interactive!
 
