@@ -34,7 +34,7 @@ and our smoothing technique {% cite Eert2403:Fully %}.
 
 ## Slides
 
-{% include slides.html url="/assets/slides/2024-06-16-helsinki-differt2d-presentation/slides.html" cite_manim=false %}
+{% include slides.html url="/assets/slides/2024-06-16-helsinki-differt2d-presentation/slides.html" skip_manim_citation=true %}
 
 ## References
 

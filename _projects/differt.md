@@ -10,7 +10,7 @@ Differentiable Ray Tracing Toolbox for Radio Propagation Simulations.
 <!--more-->
 
 DiffeRT is a radio propagation and performance oriented Ray Tracing module for Python.
-It uses the [JAX](https://github.com/google/jax) ecosystem to provide automatically
+It uses the [JAX](https://github.com/jax-ml/jax) ecosystem to provide automatically
 differentiable code. For performance purposes, some parts of the library
 are written in Rust and compiled to Python module
 

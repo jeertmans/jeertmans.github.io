@@ -1,14 +1,37 @@
-- title: 'DiffeRT2d: A Differentiable Ray Tracing Python
-Framework for Radio Propagation'
+- title: Preprint - Towards Generative Ray Path Sampling for Faster Point-to-Point Ray Tracing
+  id: icmlcn2025
+  date: 2024-10-31
+  tags:
+  - Conference
+  - Paper
+  - Preprint
+  arxiv: https://arxiv.org/abs/2410.23773
+- title: 'Preprint - Comparing Differentiable and Dynamic Ray Tracing: Introducing the Multipath Lifetime Map'
+  id: eucap2025
+  date: 2024-10-18
+  tags:
+  - Conference
+  - Paper
+  - Preprint
+  arxiv: https://arxiv.org/abs/2410.14535
+- title: 'DiffeRT2d: A Differentiable Ray Tracing Python Framework for Radio Propagation'
   id: joss2024
   date: 2024-06-30
   tags:
   - Journal
+  - Talk
   - Paper
   - Software
   download: /assets/publications/joss2024-paper.pdf
   bibtex: /assets/publications/joss2024-paper.bib
   doi: 10.21105/joss.06915
+- title: COST Meeting 2024 - Learning to Sample Ray Paths for Faster Point-to-Point Ray Tracing
+  id: cost2024
+  date: 2024-06-30
+  tags:
+  - Technical meeting
+  - Talk
+  - Paper
 - title: EuCAP 2024 - Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization
   id: eucap2024
   date: 2024-03-18

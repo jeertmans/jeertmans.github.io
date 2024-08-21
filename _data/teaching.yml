@@ -1,5 +1,20 @@
 - course: 'LELEC1101: Project I in electricity'
   role: Teaching Assistant
+  time: 2025.S1
+  company: UCLouvain
+  location: Louvain-la-Neuve, Belgium
+  details: |
+    In charge of the practical sessions.
+- course: 'LELEC2102/03: Project in Electrical Engineering'
+  role: Teaching Assistant
+  time: 2024.S2 - 2025.S1
+  company: UCLouvain
+  github: LELEC210X/LELEC210X
+  location: Louvain-la-Neuve, Belgium
+  details: |
+    In charge of the wireless communications part.
+- course: 'LELEC1101: Project I in electricity'
+  role: Teaching Assistant
   time: 2024.S1
   company: UCLouvain
   location: Louvain-la-Neuve, Belgium
