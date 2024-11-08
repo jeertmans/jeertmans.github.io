@@ -133,9 +133,11 @@ collections:
   projects:
     output: true
     order:
+    - differt.md
     - manim-slides.md
     - languagetool-rust.md
     - ade-scheduler.md
+    - differt2d.md
     - selsearch.md
     - filesfinder.md
     - deltri.md
