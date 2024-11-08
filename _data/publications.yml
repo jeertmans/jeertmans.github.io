@@ -19,11 +19,19 @@
   date: 2024-06-30
   tags:
   - Journal
+  - Talk
   - Paper
   - Software
   download: /assets/publications/joss2024-paper.pdf
   bibtex: /assets/publications/joss2024-paper.bib
   doi: 10.21105/joss.06915
+- title: COST Meeting 2024 - Learning to Sample Ray Paths for Faster Point-to-Point Ray Tracing
+  id: cost2024
+  date: 2024-06-30
+  tags:
+  - Technical meeting
+  - Talk
+  - Paper
 - title: EuCAP 2024 - Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization
   id: eucap2024
   date: 2024-03-18
