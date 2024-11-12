@@ -15,7 +15,7 @@ under the supervision of
 I work within COmmunication SYstems (COSY) group and my research topic is
 _Differentiable Ray Tracing for Telecommunications_.
 
-Beside my academical research, I really like to develop open source softwares.
+Beside my academical research, I really like to develop open source software.
 While most of my projects stay under the radar, some received more attention,
 such as [ADE Scheduler](https://github.com/ADE-Scheduler/ADE-Scheduler),
 a scheduling tool used by thousands of people at my university.
