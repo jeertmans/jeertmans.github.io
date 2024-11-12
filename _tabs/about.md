@@ -20,7 +20,7 @@ While most of my projects stay under the radar, some received more attention,
 such as [ADE Scheduler](https://github.com/ADE-Scheduler/ADE-Scheduler),
 a scheduling tool used by thousands of people at my university.
 
-On this blog, you will find posts on topcis related to my research,
+On this blog, you will find posts on topics related to my research,
 but also on side projects or things that I think are work talking about.
 
 If you have any question, do not hesitate to reach me!
