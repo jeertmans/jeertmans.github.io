@@ -11,7 +11,6 @@ from differt.geometry import spherical_to_cartesian
 from differt.scene import TriangleScene, download_sionna_scenes, get_sionna_scene
 from manim_slides import Slide
 from PIL import Image
-from scipy.ndimage import gaussian_filter
 
 # Constants
 
@@ -163,18 +162,10 @@ def figure_to_mobject(
     width: int | None = None,
     height: int | None = None,
     scale: int | float | None = 2,
-    blur: float = 0,
 ) -> m.ImageMobject | m.opengl.OpenGLImageMobject:
     img_bytes = fig.to_image(format="png", width=width, height=height, scale=scale)
-    # fig.write_image("fig.png", format="png", width=width, height=height, scale=scale)
-
     img_pil = Image.open(io.BytesIO(img_bytes))
     img_arr = np.asarray(img_pil)
-
-    if blur > 0:
-        img_arr = gaussian_filter(img_arr, blur)
-    # print(img_arr.shape)
-    # print(img_arr)
     return m.ImageMobject(img_arr)
 
 
@@ -225,6 +216,8 @@ class Main(Slide, m.MovingCameraScene):
     def construct(self):
         # Config
 
+        self.start_skip_animations()
+
         self.scene = TriangleScene.load_xml(
             get_sionna_scene("simple_street_canyon")
         ).set_assume_quads(True)
@@ -246,7 +239,9 @@ class Main(Slide, m.MovingCameraScene):
             m.Tex("Jérome Eertmans - January 27th, Dublin").scale(0.8),
         ).arrange(m.DOWN, buff=1)
 
-        self.next_slide(notes="# Welcome!", skip_animations=True)
+        self.next_slide(
+            notes="# Welcome!",
+        )
         self.play(m.FadeIn(title))
 
         # Some variables
@@ -258,9 +253,8 @@ class Main(Slide, m.MovingCameraScene):
         elevation = m.ValueTracker(jnp.pi / 2)
         azimuth = m.ValueTracker(0)
         distance = m.ValueTracker(4)
-        opacity = m.ValueTracker(1)
+        opacity = m.ValueTracker(0.8)
         triangles_opacity = m.ValueTracker(0)
-        blur = m.ValueTracker(0)
         rx = m.ValueTracker(20.0)
         draw_tx = m.ValueTracker(0)
         draw_rx = m.ValueTracker(0)
@@ -318,21 +312,22 @@ class Main(Slide, m.MovingCameraScene):
         im = m.always_redraw(
             lambda: figure_to_mobject(
                 redraw_scene(),
-                blur=blur.get_value(),
             )
         )
 
-        self.next_slide(notes="Some context", skip_animations=True)
+        self.next_slide(
+            notes="Some context",
+        )
         self.add(im)
         self.wipe(title, [self.slide_number, self.slide_title, im])
-        self.next_slide(skip_animations=True)
+        self.next_slide()
         self.play(
             azimuth.animate.set_value(jnp.pi / 2),
             elevation.animate.set_value(jnp.pi / 4),
             distance.animate.set_value(2),
             run_time=1,
         )
-        self.next_slide(skip_animations=True)
+        self.next_slide()
         self.play(
             draw_tx.animate.set_value(1),
             draw_rx.animate.set_value(1),
@@ -340,7 +335,9 @@ class Main(Slide, m.MovingCameraScene):
             opacity.animate.set_value(0.5),
             run_time=1,
         )
-        self.next_slide(loop=True, skip_animations=True)
+        self.next_slide(
+            loop=True,
+        )
         self.play(
             azimuth.animate(rate_func=m.there_and_back).increment_value(jnp.pi / 2),
             rx.animate(rate_func=m.there_and_back).increment_value(
@@ -352,17 +349,18 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="In practice")
 
-        print(f"{draw_tx.get_value()=}")
         draw_paths.set_value(0)
         max_order.set_value(0)
-        self.new_clean_slide("In practice", im)
 
         self.next_slide(notes="LOS")
         self.play(draw_paths.animate.set_value(1), run_time=1)
 
+        self.stop_skip_animations()
         self.next_slide(notes="1st order")
 
-        count = m.Integer(0).to_corner(m.DL)
+        count = m.Integer(0, group_with_commas=False, edge_to_fix=m.UR).set_color(
+            m.BLACK
+        )
 
         self.play(m.FadeIn(count))
 
@@ -370,35 +368,253 @@ class Main(Slide, m.MovingCameraScene):
         for i in range(N_FACES):
             if i < 3:
                 self.next_slide(notes=f"Face {i}")
+            elif i == 3:
+                self.next_slide(notes=f"Other Faces...")
             face_index.set_value(i)
             self.play(
                 alpha.animate(rate_func=m.there_and_back).set_value(1),
                 count.animate.increment_value(1),
-                run_time=0.5,
+                run_time=max(0.5 - (i >= 3) * (i - 3) * 0.10, 0.01),
             )
 
-        return
+        self.play(max_order.animate.set_value(1), run_time=0.1)
 
-        self.next_slide()
-        self.play(blur.animate.set_value(1))
-        self.next_slide()
-        return
-        self.play(opacity.animate.set_value(0.5))
-        self.next_slide()
-        self.play(triangles_opacity.animate.set_value(1.0))
-
-        # return
-        self.next_slide()
-        self.play(azimuth.animate.set_value(jnp.pi / 2), run_time=1)
-        self.next_slide()
+        self.next_slide(notes="2nd order")
         self.play(
-            elevation.animate.set_value(jnp.pi / 4),
-            distance.animate.set_value(2),
+            count.animate.set_value(N_FACES * (N_FACES - 1)),
+            max_order.animate.set_value(2),
+            run_time=1.0,
+        )
+
+        self.next_slide()
+        scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).next_to(im, m.RIGHT, buff=5)
+        box = m.SurroundingRectangle(scene, buff=0.3, color=m.BLACK)
+
+        self.play(self.camera.frame.animate(run_time=1).move_to(scene), m.Create(box))
+        self.play(m.FadeIn(scene), run_time=1)
+        self.remove(im)
+        del im
+
+        group = (
+            m.VGroup(m.Tex("TX"), m.Tex("RX"), m.Tex("Objects"))
+            .arrange(m.RIGHT, buff=m.MED_LARGE_BUFF)
+            .next_to(box, m.DOWN)
+        )
+
+        for x in group:
+            self.next_slide()
+            self.play(m.FadeIn(x, shift=0.3 * m.DOWN), run_time=1.0)
+
+        self.next_slide()
+        pc = m.Tex("Path candidates", font_size=TITLE_FONT_SIZE).next_to(
+            box, m.RIGHT, buff=4.0
+        )
+        box_pc = m.SurroundingRectangle(pc, buff=0.3, color=m.BLACK)
+        self.play(
+            m.GrowArrow(
+                m.Arrow(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK)
+            ),
+            self.camera.frame.animate.move_to(box_pc),
             run_time=1,
         )
-        for i in range(10):
-            self.next_slide()
-            face_index.set_value(i)
-            self.play(
-                alpha.animate.set_value(1), run_time=0.5, rate_func=m.there_and_back
+        self.play(m.Create(box_pc), run_time=1)
+        self.play(m.FadeIn(pc), run_time=1)
+
+        self.next_slide()
+        N_FACES = 34
+
+        all_pc = m.Tex("paths for order $N$", font_size=TITLE_FONT_SIZE).next_to(
+            box_pc, m.RIGHT, buff=4.0
+        )
+        self.play(
+            m.GrowArrow(
+                m.Arrow(box_pc.get_right(), all_pc.get_left(), buff=0.1, color=m.BLACK)
+            ),
+            self.camera.frame.animate.move_to(all_pc),
+            run_time=1,
+        )
+        self.play(m.FadeIn(all_pc), run_time=1)
+
+        mat = [["W_{" + str(i) + "}"] for i in range(N_FACES)]
+        mat = mat[:3] + [[r"\vdots"]] + mat[-3:]
+        mat_all_pc_1 = m.Matrix(mat).move_to(all_pc)
+
+        self.next_slide()
+        self.wipe(all_pc, [mat_all_pc_1], direction=m.UP)
+        all_pc = mat_all_pc_1
+
+        mat = [
+            ["W_{" + str(i) + "}", "W_{" + str(j) + "}"]
+            for i in range(N_FACES)
+            for j in range(N_FACES)
+            if i != j
+        ]
+        mat = mat[:3] + [[r"\vdots", r"\vdots"]] + mat[-3:]
+        mat_all_pc_2 = m.Matrix(mat).move_to(all_pc)
+
+        self.next_slide()
+        self.play(m.Transform(all_pc, mat_all_pc_2))
+
+        mat = [
+            ["W_{" + str(i) + "}", "W_{" + str(j) + "}", "W_{" + str(k) + "}"]
+            for i in range(N_FACES)
+            for j in range(N_FACES)
+            for k in range(N_FACES)
+            if i != j and j != k
+        ]
+        mat = mat[:3] + [[r"\vdots", r"\vdots", r"\vdots"]] + mat[-3:]
+        mat_all_pc_3 = m.Matrix(mat).move_to(all_pc)
+
+        self.next_slide()
+        self.play(m.Transform(all_pc, mat_all_pc_3))
+
+        self.next_slide()
+        pt = m.Tex("Path tracing", font_size=TITLE_FONT_SIZE).next_to(
+            all_pc, m.RIGHT, buff=4.0
+        )
+        box_pt = m.SurroundingRectangle(pt, buff=0.3, color=m.BLACK)
+        self.play(
+            m.GrowArrow(
+                m.Arrow(all_pc.get_right(), box_pt.get_left(), buff=0.1, color=m.BLACK)
+            ),
+            self.camera.frame.animate.move_to(box_pt),
+            run_time=1,
+        )
+        self.play(m.Create(box_pt), run_time=1)
+        self.play(m.FadeIn(pt), run_time=1)
+
+        self.next_slide()
+        pp = m.Tex("Post-processing", font_size=TITLE_FONT_SIZE).next_to(
+            box_pt, m.RIGHT, buff=4.0
+        )
+        box_pp = m.SurroundingRectangle(pp, buff=0.3, color=m.BLACK)
+        self.play(
+            m.GrowArrow(
+                m.Arrow(box_pt.get_right(), box_pp.get_left(), buff=0.1, color=m.BLACK)
+            ),
+            self.camera.frame.animate.move_to(box_pp),
+            run_time=1,
+        )
+        self.play(m.Create(box_pp), run_time=1)
+        self.play(m.FadeIn(pp), run_time=1)
+
+        self.next_slide()
+        em = m.Tex("EM fields", font_size=TITLE_FONT_SIZE).next_to(
+            box_pp, m.RIGHT, buff=4.0
+        )
+        box_em = m.SurroundingRectangle(em, buff=0.3, color=m.BLACK)
+        self.play(
+            m.GrowArrow(
+                m.Arrow(box_pp.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK)
+            ),
+            self.camera.frame.animate.move_to(box_em),
+            run_time=1,
+        )
+        self.play(m.Create(box_em), run_time=1)
+        self.play(m.FadeIn(em), run_time=1)
+
+        self.next_slide()
+        self.play(self.camera.frame.animate.move_to(box_pc), run_time=1)
+
+        self.next_slide()
+
+        gm = m.Tex("Generative model", font_size=TITLE_FONT_SIZE, color=m.RED).move_to(
+            pc
+        )
+        box_gm = box_pc.copy().set_color(m.RED)
+
+        self.wipe([pc, box_pc], [gm, box_gm], direction=m.DOWN)
+
+        self.next_slide()
+        f_max = m.MathTex(
+            r"\mathbb P\big[f_w(\text{TX}, \text{RX}, \text{OBJECTS}) = \text{VALID PATH}\big]"
+        ).next_to(box_gm.get_bottom(), m.DOWN)
+        self.play(m.FadeIn(f_max, shift=0.3 * m.DOWN), run_time=1)
+
+        self.next_slide()
+        self.play(self.camera.frame.animate.move_to(all_pc), run_time=1)
+
+        self.next_slide()
+        mat = [
+            ["W_{" + str(i) + "}", "W_{" + str(j) + "}", "W_{" + str(k) + "}"]
+            for i, j, k in [(2, 5, 7), (3, 0, 4), (10, 6, 17)]
+        ]
+        mat_pc_3 = m.Matrix(mat).move_to(all_pc)
+        self.play(m.Transform(all_pc, mat_pc_3))
+
+        self.next_slide()
+        mat = [
+            ["W_{" + str(i) + "}", "W_{" + str(j) + "}"]
+            for i, j in [(4, 10), (19, 5), (33, 6)]
+        ]
+        mat_pc_2 = m.Matrix(mat).move_to(all_pc)
+        self.play(m.Transform(all_pc, mat_pc_2))
+
+        self.next_slide()
+        mat = [["W_{" + str(i) + "}"] for i in [2, 31, 23]]
+        mat_pc_1 = m.Matrix(mat).move_to(all_pc)
+        self.play(m.Transform(all_pc, mat_pc_1))
+
+        self.next_slide()
+        model_details = m.Tex(
+            r"""Model details:\\
+\begin{enumerate}
+    \item Does not learn a specific scene;
+    \item Arbitrary sized input scene;
+    \item Reinforcement-based learning.
+\end{enumerate}""",
+            font_size=TITLE_FONT_SIZE,
+            tex_environment=None,
+        ).next_to(all_pc, m.DOWN, buff=4.0)
+        self.play(
+            self.camera.frame.animate(run_time=1).move_to(model_details),
+            m.Write(model_details),
+        )
+
+        self.next_slide()
+        im_1, im_2 = images = (
+            m.Group(
+                m.ImageMobject("images/gt.png"),
+                m.ImageMobject("images/pred.png"),
             )
+            .arrange(m.RIGHT)
+            .next_to(model_details, m.RIGHT, buff=5.0)
+        )
+        self.add(im_1, im_2)
+        self.play(
+            self.camera.frame.animate.move_to(images),
+            run_time=1,
+        )
+        self.next_slide()
+        im_3, im_4 = new_images = (
+            m.Group(
+                m.ImageMobject("images/delta.png"),
+                m.ImageMobject("images/delta_r.png"),
+            )
+            .arrange(m.RIGHT)
+            .next_to(images, m.DOWN, buff=1.0)
+        )
+        self.add(im_3, im_4)
+        delta = m.MathTex(
+            r"""\delta P_\text{dB} = |\log_{10}\left(P_\text{GT}+\epsilon\right) - \log_{10}\left(P_\text{pred}+\epsilon\right)|
+    \quad\text{and}\quad
+    \delta P_\text{r,dB} = \frac{|\log_{10}\left(P_\text{GT}+\epsilon\right) - \log_{10}\left(P_\text{pred}+\epsilon\right)|}{|\log_{10}\left(P_\text{GT}+\epsilon\right)|}""",
+            font_size=0.6 * TITLE_FONT_SIZE,
+        ).next_to(0.5 * (im_3.get_bottom() + im_4.get_bottom()), m.DOWN)
+        self.play(
+            self.camera.frame.animate(run_time=1).move_to(new_images),
+            m.FadeIn(delta, shift=0.3 * m.DOWN),
+        )
+
+        self.next_slide()
+        self.play(
+            self.camera.frame.animate.move_to(
+                0.25
+                * (
+                    im_1.get_center()
+                    + im_2.get_center()
+                    + im_3.get_center()
+                    + im_4.get_center()
+                )
+            ).set(width=im_1.width * 3)
+        )
