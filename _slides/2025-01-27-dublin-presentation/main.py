@@ -216,8 +216,6 @@ class Main(Slide, m.MovingCameraScene):
     def construct(self):
         # Config
 
-        self.start_skip_animations()
-
         self.scene = TriangleScene.load_xml(
             get_sionna_scene("simple_street_canyon")
         ).set_assume_quads(True)
@@ -247,6 +245,7 @@ class Main(Slide, m.MovingCameraScene):
         # Some variables
 
         N_FACES = self.scene.mesh.num_objects
+        N_TRI = self.scene.mesh.num_triangles
 
         alpha = m.ValueTracker(0)
         face_index = m.ValueTracker(0)
@@ -355,11 +354,12 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(notes="LOS")
         self.play(draw_paths.animate.set_value(1), run_time=1)
 
-        self.stop_skip_animations()
         self.next_slide(notes="1st order")
 
-        count = m.Integer(0, group_with_commas=False, edge_to_fix=m.UR).set_color(
-            m.BLACK
+        count = (
+            m.Integer(0, group_with_commas=False, edge_to_fix=m.UR)
+            .to_corner(m.UR)
+            .set_color(m.BLACK)
         )
 
         self.play(m.FadeIn(count))
@@ -383,6 +383,17 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             count.animate.set_value(N_FACES * (N_FACES - 1)),
             max_order.animate.set_value(2),
+            run_time=1.0,
+        )
+
+        self.next_slide(notes="In practice...")
+        self.play(
+            triangles_opacity.animate.set_value(1),
+            run_time=1.0,
+        )
+        self.next_slide()
+        self.play(
+            count.animate.set_value(N_TRI * (N_TRI - 1)),
             run_time=1.0,
         )
 
@@ -421,7 +432,6 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.FadeIn(pc), run_time=1)
 
         self.next_slide()
-        N_FACES = 34
 
         all_pc = m.Tex("paths for order $N$", font_size=TITLE_FONT_SIZE).next_to(
             box_pc, m.RIGHT, buff=4.0
