@@ -198,7 +198,7 @@ class Main(Slide, m.MovingCameraScene):
     def new_clean_slide(self, title, contents=None, **kwargs):
         if self.mobjects_without_canvas:
             self.play(
-                self.next_slide_number_animation(),
+                # self.next_slide_number_animation(),
                 self.next_slide_title_animation(title),
                 self.wipe(
                     self.mobjects_without_canvas,
@@ -209,7 +209,7 @@ class Main(Slide, m.MovingCameraScene):
             )
         else:
             self.play(
-                self.next_slide_number_animation(),
+                # self.next_slide_number_animation(),
                 self.next_slide_title_animation(title),
             )
 
@@ -223,9 +223,12 @@ class Main(Slide, m.MovingCameraScene):
         self.camera.background_color = m.WHITE
         self.wait_time_between_slides = 0.1
 
-        self.slide_number = m.Integer(number=1).set_color(m.BLACK).to_corner(m.DR)
+        # self.slide_number = m.Integer(number=1).set_color(m.BLACK).to_corner(m.DR)
         self.slide_title = m.Tex("Context", font_size=TITLE_FONT_SIZE).to_corner(m.UL)
-        self.add_to_canvas(slide_number=self.slide_number, slide_title=self.slide_title)
+        self.add_to_canvas(
+            # slide_number=self.slide_number,
+            slide_title=self.slide_title
+        )
 
         # Title
 
@@ -318,7 +321,7 @@ class Main(Slide, m.MovingCameraScene):
             notes="Some context",
         )
         self.add(im)
-        self.wipe(title, [self.slide_number, self.slide_title, im])
+        self.wipe(title, [self.slide_title, im])
         self.next_slide()
         self.play(
             azimuth.animate.set_value(jnp.pi / 2),
@@ -398,7 +401,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide()
-        scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).next_to(im, m.RIGHT, buff=5)
+        scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).next_to(im, m.RIGHT, buff=8)
         box = m.SurroundingRectangle(scene, buff=0.3, color=m.BLACK)
 
         self.play(self.camera.frame.animate(run_time=1).move_to(scene), m.Create(box))
@@ -582,13 +585,23 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide()
+        im_results = m.ImageMobject("images/results.png").next_to(
+            model_details, m.RIGHT, buff=5.0
+        )
+        self.add(im)
+        self.play(
+            self.camera.frame.animate.move_to(im_results),
+            run_time=1,
+        )
+
+        self.next_slide()
         im_1, im_2 = images = (
             m.Group(
                 m.ImageMobject("images/gt.png"),
                 m.ImageMobject("images/pred.png"),
             )
             .arrange(m.RIGHT)
-            .next_to(model_details, m.RIGHT, buff=5.0)
+            .next_to(im_results, m.RIGHT, buff=5.0)
         )
         self.add(im_1, im_2)
         self.play(
@@ -628,3 +641,19 @@ class Main(Slide, m.MovingCameraScene):
                 )
             ).set(width=im_1.width * 3)
         )
+
+
+class Yes(Slide, m.MovingCameraScene):
+    def construct(self):
+        # Config
+
+        self.scene = TriangleScene.load_xml(
+            get_sionna_scene("simple_street_canyon")
+        ).set_assume_quads(True)
+
+        self.camera.background_color = m.WHITE
+        self.wait_time_between_slides = 0.1
+
+        im = m.ImageMobject("images/results.png")
+        self.add(im)
+        self.wait(2)
