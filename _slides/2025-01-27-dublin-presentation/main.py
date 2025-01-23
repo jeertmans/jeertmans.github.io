@@ -198,7 +198,7 @@ class Main(Slide, m.MovingCameraScene):
     def new_clean_slide(self, title, contents=None, **kwargs):
         if self.mobjects_without_canvas:
             self.play(
-                # self.next_slide_number_animation(),
+                self.next_slide_number_animation(),
                 self.next_slide_title_animation(title),
                 self.wipe(
                     self.mobjects_without_canvas,
@@ -209,7 +209,7 @@ class Main(Slide, m.MovingCameraScene):
             )
         else:
             self.play(
-                # self.next_slide_number_animation(),
+                self.next_slide_number_animation(),
                 self.next_slide_title_animation(title),
             )
 
@@ -223,12 +223,10 @@ class Main(Slide, m.MovingCameraScene):
         self.camera.background_color = m.WHITE
         self.wait_time_between_slides = 0.1
 
-        # TODO: add slide number
-
-        # self.slide_number = m.Integer(number=1).set_color(m.BLACK).to_corner(m.DR)
+        self.slide_number = m.Integer(number=1).set_color(m.BLACK).to_corner(m.DR)
         self.slide_title = m.Tex("Context", font_size=TITLE_FONT_SIZE).to_corner(m.UL)
         self.add_to_canvas(
-            # slide_number=self.slide_number,
+            slide_number=self.slide_number,
             slide_title=self.slide_title
         )
 
@@ -248,8 +246,6 @@ class Main(Slide, m.MovingCameraScene):
             notes="# Welcome!",
         )
         self.play(m.FadeIn(title))
-
-        return
 
         # Some variables
 
@@ -432,7 +428,7 @@ class Main(Slide, m.MovingCameraScene):
         box_pc = m.SurroundingRectangle(pc, buff=0.3, color=m.BLACK)
         self.play(
             m.GrowArrow(
-                m.Arrow(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK)
+                m.DottedLine(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK).add_tip()
             ),
             self.camera.frame.animate.move_to(box_pc),
             run_time=1,
@@ -542,7 +538,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         box_gm = box_pc.copy().set_color(m.RED)
 
-        self.wipe([pc, box_pc], [gm, box_gm], direction=m.DOWN)
+        self.wipe([pc, box_pc, all_pc], [gm, box_gm], direction=m.DOWN)
 
         self.next_slide()
         f_max = m.MathTex(
@@ -567,7 +563,8 @@ class Main(Slide, m.MovingCameraScene):
             for i, j in [(4, 10), (19, 5), (33, 6)]
         ]
         mat_pc_2 = m.Matrix(mat).move_to(all_pc)
-        self.play(m.Transform(all_pc, mat_pc_2))
+        self.play(m.Write(mat_pc_2))
+        all_pc = mat_pc_2
 
         self.next_slide()
         mat = [["W_{" + str(i) + "}"] for i in [2, 31, 23]]
