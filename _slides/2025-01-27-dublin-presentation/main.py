@@ -377,7 +377,7 @@ class Main(Slide, m.MovingCameraScene):
             self.play(
                 alpha.animate(rate_func=m.there_and_back).set_value(1),
                 count.animate.increment_value(1),
-                run_time=max(0.5 - (i >= 3) * (i - 3) * 0.10, 0.01),
+                run_time=max(0.5 - (i >= 3) * (i - 3) * 0.10, 0.04),
             )
 
         self.play(max_order.animate.set_value(1), run_time=0.1)
