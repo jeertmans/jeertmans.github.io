@@ -234,7 +234,7 @@ class Main(Slide, m.MovingCameraScene):
 
         title = m.VGroup(
             m.Tex(
-                r"Radio Propagation Modeling in anUrban Scenario\\using Generative Ray Path Sampling",
+                r"Radio Propagation Modeling in an Urban Scenario\\using Generative Ray Path Sampling",
                 font_size=TITLE_FONT_SIZE,
             ),
             m.Tex("Jérome Eertmans - January 27th, Dublin").scale(0.8),
@@ -300,8 +300,8 @@ class Main(Slide, m.MovingCameraScene):
                 alpha=alpha.get_value(),
                 face_index=int(face_index.get_value()),
             )
-            if draw_paths.get_value() > 0:
-                for order in range(int(max_order.get_value())):
+            if draw_paths.get_value() > 0.5:
+                for order in range(int(max_order.get_value()) + 1):
                     paths = self.scene.compute_paths(order=order)
                     paths.plot(
                         figure=self.fig,
@@ -324,7 +324,7 @@ class Main(Slide, m.MovingCameraScene):
         self.wipe(title, [self.slide_title, im])
         self.next_slide()
         self.play(
-            azimuth.animate.set_value(jnp.pi / 2),
+            azimuth.animate.set_value(-jnp.pi / 2),
             elevation.animate.set_value(jnp.pi / 4),
             distance.animate.set_value(2),
             run_time=1,
@@ -365,7 +365,7 @@ class Main(Slide, m.MovingCameraScene):
             .set_color(m.BLACK)
         )
 
-        self.play(m.FadeIn(count))
+        self.play(m.Write(count))
 
         # Highlighting 1st order
         for i in range(N_FACES):
@@ -588,7 +588,7 @@ class Main(Slide, m.MovingCameraScene):
         im_results = m.ImageMobject("images/results.png").next_to(
             model_details, m.RIGHT, buff=5.0
         )
-        self.add(im)
+        self.add(im_results)
         self.play(
             self.camera.frame.animate.move_to(im_results),
             run_time=1,
@@ -619,7 +619,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.add(im_3, im_4)
         delta = m.MathTex(
-            r"""\delta P_\text{dB} = |\log_{10}\left(P_\text{GT}+\epsilon\right) - \log_{10}\left(P_\text{pred}+\epsilon\right)|
+            r"""\delta P_\text{dB} = 10 |\log_{10}\left(P_\text{GT}+\epsilon\right) - \log_{10}\left(P_\text{pred}+\epsilon\right)|
     \quad\text{and}\quad
     \delta P_\text{r,dB} = \frac{|\log_{10}\left(P_\text{GT}+\epsilon\right) - \log_{10}\left(P_\text{pred}+\epsilon\right)|}{|\log_{10}\left(P_\text{GT}+\epsilon\right)|}""",
             font_size=0.6 * TITLE_FONT_SIZE,
@@ -630,30 +630,18 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide()
-        self.play(
-            self.camera.frame.animate.move_to(
-                0.25
-                * (
-                    im_1.get_center()
-                    + im_2.get_center()
-                    + im_3.get_center()
-                    + im_4.get_center()
-                )
-            ).set(width=im_1.width * 3)
+        center = 0.25 * (
+            im_1.get_center()
+            + im_2.get_center()
+            + im_3.get_center()
+            + im_4.get_center()
+        )
+        self.play(self.camera.frame.animate.move_to(center).set(width=im_1.width * 3))
+
+        self.next_slide(notes="That's all folks!")
+
+        thanks = m.Tex("Thanks for listening!", font_size=2 * TITLE_FONT_SIZE).move_to(
+            center
         )
 
-
-class Yes(Slide, m.MovingCameraScene):
-    def construct(self):
-        # Config
-
-        self.scene = TriangleScene.load_xml(
-            get_sionna_scene("simple_street_canyon")
-        ).set_assume_quads(True)
-
-        self.camera.background_color = m.WHITE
-        self.wait_time_between_slides = 0.1
-
-        im = m.ImageMobject("images/results.png")
-        self.add(im)
-        self.wait(2)
+        self.wipe(self.mobjects_without_canvas, thanks)
