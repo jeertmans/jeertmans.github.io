@@ -223,6 +223,8 @@ class Main(Slide, m.MovingCameraScene):
         self.camera.background_color = m.WHITE
         self.wait_time_between_slides = 0.1
 
+        # TODO: add slide number
+
         # self.slide_number = m.Integer(number=1).set_color(m.BLACK).to_corner(m.DR)
         self.slide_title = m.Tex("Context", font_size=TITLE_FONT_SIZE).to_corner(m.UL)
         self.add_to_canvas(
@@ -238,12 +240,16 @@ class Main(Slide, m.MovingCameraScene):
                 font_size=TITLE_FONT_SIZE,
             ),
             m.Tex("Jérome Eertmans - January 27th, Dublin").scale(0.8),
+            m.Tex("Authors: Jérome Eertmans, Nicola Di Cicco, Claude Oestges, Laurent Jacques, Enrico Maria Vitucci, Vittorio Degli-Esposti").scale(0.5),
         ).arrange(m.DOWN, buff=1)
+            
 
         self.next_slide(
             notes="# Welcome!",
         )
         self.play(m.FadeIn(title))
+
+        return
 
         # Some variables
 
@@ -572,9 +578,9 @@ class Main(Slide, m.MovingCameraScene):
         model_details = m.Tex(
             r"""Model details:\\
 \begin{enumerate}
-    \item Does not learn a specific scene;
-    \item Arbitrary sized input scene;
-    \item Reinforcement-based learning.
+    \item Does not learn a specific scene
+    \item Arbitrary sized input scene
+    \item Reinforcement-based learning
 \end{enumerate}""",
             font_size=TITLE_FONT_SIZE,
             tex_environment=None,
@@ -640,8 +646,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="That's all folks!")
 
-        # TODO: fixme
-        thanks = m.Tex("Thanks for listening!", font_size=2 * TITLE_FONT_SIZE).move_to(
+        thanks = m.Tex("Thanks for listening!", color=m.RED, font_size=2 * TITLE_FONT_SIZE).move_to(
             center
         )
 
