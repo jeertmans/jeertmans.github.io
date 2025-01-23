@@ -640,6 +640,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="That's all folks!")
 
+        # TODO: fixme
         thanks = m.Tex("Thanks for listening!", font_size=2 * TITLE_FONT_SIZE).move_to(
             center
         )
