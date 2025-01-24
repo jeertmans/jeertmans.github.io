@@ -16,7 +16,7 @@ from PIL import Image
 
 TITLE_FONT_SIZE = 48
 CONTENT_FONT_SIZE = 32
-SOURCE_FONT_SIZE = 20
+SOURCE_FONT_SIZE = 24
 
 # Colors
 
@@ -48,16 +48,6 @@ m.Text.set_default(color=m.BLACK, font_size=CONTENT_FONT_SIZE)
 download_sionna_scenes()
 
 dplt.set_defaults("plotly")
-
-
-def paragraph(*strs: str, alignment=m.LEFT, direction=m.DOWN, **kwargs: Any):
-    texts = VGroup(*[Tex(s, **kwargs) for s in strs]).arrange(direction)
-
-    if len(strs) > 1:
-        for text in texts[1:]:
-            text.align_to(texts[0], direction=alignment)
-
-    return texts
 
 
 def cleanup_figure(
@@ -183,9 +173,7 @@ class Main(Slide, m.MovingCameraScene):
         return animation(self.slide_text, new_text)
 
     def next_slide_number_animation(self):
-        return self.slide_number.animate(run_time=0.5).set_value(
-            self.slide_number.get_value() + 1
-        )
+        return self.slide_number.animate(run_time=0.5).increment_value(1)
 
     def next_slide_title_animation(self, title):
         return m.Transform(
@@ -223,12 +211,15 @@ class Main(Slide, m.MovingCameraScene):
         self.camera.background_color = m.WHITE
         self.wait_time_between_slides = 0.1
 
-        self.slide_number = m.Integer(number=1).set_color(m.BLACK).to_corner(m.DR)
-        self.slide_title = m.Tex("Context", font_size=TITLE_FONT_SIZE).to_corner(m.UL)
-        self.add_to_canvas(
-            slide_number=self.slide_number,
-            slide_title=self.slide_title
+        self.slide_number = (
+            m.Integer(number=1, font_size=SOURCE_FONT_SIZE, edge_to_fix=m.UR)
+            .set_color(m.BLACK)
+            .to_corner(m.DR)
         )
+        self.slide_title = m.Tex("Context", font_size=TITLE_FONT_SIZE).to_corner(m.UL)
+        self.add_to_canvas(slide_number=self.slide_number, slide_title=self.slide_title)
+
+        self.frame_group = m.VGroup(self.camera.frame, self.slide_number)
 
         # Title
 
@@ -238,9 +229,10 @@ class Main(Slide, m.MovingCameraScene):
                 font_size=TITLE_FONT_SIZE,
             ),
             m.Tex("Jérome Eertmans - January 27th, Dublin").scale(0.8),
-            m.Tex("Authors: Jérome Eertmans, Nicola Di Cicco, Claude Oestges, Laurent Jacques, Enrico Maria Vitucci, Vittorio Degli-Esposti").scale(0.5),
+            m.Tex(
+                "Authors: Jérome Eertmans, Nicola Di Cicco, Claude Oestges, Laurent Jacques, Enrico Maria Vitucci, Vittorio Degli-Esposti"
+            ).scale(0.5),
         ).arrange(m.DOWN, buff=1)
-            
 
         self.next_slide(
             notes="# Welcome!",
@@ -323,9 +315,10 @@ class Main(Slide, m.MovingCameraScene):
             notes="Some context",
         )
         self.add(im)
-        self.wipe(title, [self.slide_title, im])
+        self.wipe(title, [self.slide_title, im, self.slide_number])
         self.next_slide()
         self.play(
+            self.next_slide_number_animation(),
             azimuth.animate.set_value(-jnp.pi / 2),
             elevation.animate.set_value(jnp.pi / 4),
             distance.animate.set_value(2),
@@ -333,6 +326,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.next_slide()
         self.play(
+            self.next_slide_number_animation(),
             draw_tx.animate.set_value(1),
             draw_rx.animate.set_value(1),
             draw_paths.animate.set_value(1),
@@ -350,6 +344,7 @@ class Main(Slide, m.MovingCameraScene):
             run_time=4,
         )
         self.next_slide(notes="But how do we find paths?")
+        self.play(self.next_slide_number_animation())
 
         self.next_slide(notes="In practice")
 
@@ -357,6 +352,7 @@ class Main(Slide, m.MovingCameraScene):
         max_order.set_value(0)
 
         self.next_slide(notes="LOS")
+        self.play(self.next_slide_number_animation())
         self.play(draw_paths.animate.set_value(1), run_time=1)
 
         self.next_slide(notes="1st order")
@@ -364,9 +360,10 @@ class Main(Slide, m.MovingCameraScene):
         count = (
             m.Integer(0, group_with_commas=False, edge_to_fix=m.UR)
             .to_corner(m.UR)
-            .set_color(m.BLACK)
+            .set_color(m.YELLOW)
         )
 
+        self.play(self.next_slide_number_animation())
         self.play(m.Write(count))
 
         # Highlighting 1st order
@@ -386,12 +383,16 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="2nd order")
         self.play(
+            self.next_slide_number_animation(),
+        )
+        self.play(
             count.animate.set_value(N_FACES * (N_FACES - 1)),
             max_order.animate.set_value(2),
             run_time=1.0,
         )
 
-        self.next_slide(notes="In practice...")
+        self.next_slide(notes="In practice we have triangles")
+        self.play(self.next_slide_number_animation())
         self.play(
             triangles_opacity.animate.set_value(1),
             run_time=1.0,
@@ -406,7 +407,11 @@ class Main(Slide, m.MovingCameraScene):
         scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).next_to(im, m.RIGHT, buff=8)
         box = m.SurroundingRectangle(scene, buff=0.3, color=m.BLACK)
 
-        self.play(self.camera.frame.animate(run_time=1).move_to(scene), m.Create(box))
+        self.play(
+            self.next_slide_number_animation(),
+            self.frame_group.animate(run_time=1).move_to(scene),
+            m.Create(box),
+        )
         self.play(m.FadeIn(scene), run_time=1)
         self.remove(im)
         del im
@@ -427,10 +432,11 @@ class Main(Slide, m.MovingCameraScene):
         )
         box_pc = m.SurroundingRectangle(pc, buff=0.3, color=m.BLACK)
         self.play(
+            self.next_slide_number_animation(),
             m.GrowArrow(
-                m.DottedLine(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK).add_tip()
+                m.Arrow(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK)
             ),
-            self.camera.frame.animate.move_to(box_pc),
+            self.frame_group.animate.move_to(box_pc),
             run_time=1,
         )
         self.play(m.Create(box_pc), run_time=1)
@@ -441,11 +447,16 @@ class Main(Slide, m.MovingCameraScene):
         all_pc = m.Tex("paths for order $N$", font_size=TITLE_FONT_SIZE).next_to(
             box_pc, m.RIGHT, buff=4.0
         )
+        arr = m.DashedLine(
+            box_pc.get_right(), all_pc.get_left(), buff=0.1, color=m.BLACK
+        )
+        arr.add_tip()
         self.play(
-            m.GrowArrow(
-                m.Arrow(box_pc.get_right(), all_pc.get_left(), buff=0.1, color=m.BLACK)
+            self.next_slide_number_animation(),
+            m.Create(
+                arr,
             ),
-            self.camera.frame.animate.move_to(all_pc),
+            self.frame_group.animate.move_to(all_pc),
             run_time=1,
         )
         self.play(m.FadeIn(all_pc), run_time=1)
@@ -489,10 +500,11 @@ class Main(Slide, m.MovingCameraScene):
         )
         box_pt = m.SurroundingRectangle(pt, buff=0.3, color=m.BLACK)
         self.play(
+            self.next_slide_number_animation(),
             m.GrowArrow(
                 m.Arrow(all_pc.get_right(), box_pt.get_left(), buff=0.1, color=m.BLACK)
             ),
-            self.camera.frame.animate.move_to(box_pt),
+            self.frame_group.animate.move_to(box_pt),
             run_time=1,
         )
         self.play(m.Create(box_pt), run_time=1)
@@ -504,10 +516,11 @@ class Main(Slide, m.MovingCameraScene):
         )
         box_pp = m.SurroundingRectangle(pp, buff=0.3, color=m.BLACK)
         self.play(
+            self.next_slide_number_animation(),
             m.GrowArrow(
                 m.Arrow(box_pt.get_right(), box_pp.get_left(), buff=0.1, color=m.BLACK)
             ),
-            self.camera.frame.animate.move_to(box_pp),
+            self.frame_group.animate.move_to(box_pp),
             run_time=1,
         )
         self.play(m.Create(box_pp), run_time=1)
@@ -519,17 +532,22 @@ class Main(Slide, m.MovingCameraScene):
         )
         box_em = m.SurroundingRectangle(em, buff=0.3, color=m.BLACK)
         self.play(
+            self.next_slide_number_animation(),
             m.GrowArrow(
                 m.Arrow(box_pp.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK)
             ),
-            self.camera.frame.animate.move_to(box_em),
+            self.frame_group.animate.move_to(box_em),
             run_time=1,
         )
         self.play(m.Create(box_em), run_time=1)
         self.play(m.FadeIn(em), run_time=1)
 
         self.next_slide()
-        self.play(self.camera.frame.animate.move_to(box_pc), run_time=1)
+        self.play(
+            self.next_slide_number_animation(),
+            self.frame_group.animate.move_to(box_pc),
+            run_time=1,
+        )
 
         self.next_slide()
 
@@ -547,7 +565,25 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.FadeIn(f_max, shift=0.3 * m.DOWN), run_time=1)
 
         self.next_slide()
-        self.play(self.camera.frame.animate.move_to(all_pc), run_time=1)
+        self.play(
+            self.next_slide_number_animation(),
+            self.frame_group.animate.move_to(all_pc),
+            run_time=1,
+        )
+
+        self.next_slide()
+        mat = [["W_{" + str(i) + "}"] for i in [2, 31, 23]]
+        mat_pc_1 = m.Matrix(mat).move_to(all_pc)
+        all_pc = mat_pc_1
+        self.play(m.Write(mat_pc_1), run_time=1)
+
+        self.next_slide()
+        mat = [
+            ["W_{" + str(i) + "}", "W_{" + str(j) + "}"]
+            for i, j in [(4, 10), (19, 5), (33, 6)]
+        ]
+        mat_pc_2 = m.Matrix(mat).move_to(all_pc)
+        self.play(m.Transform(all_pc, mat_pc_2))
 
         self.next_slide()
         mat = [
@@ -556,20 +592,6 @@ class Main(Slide, m.MovingCameraScene):
         ]
         mat_pc_3 = m.Matrix(mat).move_to(all_pc)
         self.play(m.Transform(all_pc, mat_pc_3))
-
-        self.next_slide()
-        mat = [
-            ["W_{" + str(i) + "}", "W_{" + str(j) + "}"]
-            for i, j in [(4, 10), (19, 5), (33, 6)]
-        ]
-        mat_pc_2 = m.Matrix(mat).move_to(all_pc)
-        self.play(m.Write(mat_pc_2))
-        all_pc = mat_pc_2
-
-        self.next_slide()
-        mat = [["W_{" + str(i) + "}"] for i in [2, 31, 23]]
-        mat_pc_1 = m.Matrix(mat).move_to(all_pc)
-        self.play(m.Transform(all_pc, mat_pc_1))
 
         self.next_slide()
         model_details = m.Tex(
@@ -583,7 +605,8 @@ class Main(Slide, m.MovingCameraScene):
             tex_environment=None,
         ).next_to(all_pc, m.DOWN, buff=4.0)
         self.play(
-            self.camera.frame.animate(run_time=1).move_to(model_details),
+            self.next_slide_number_animation(),
+            self.frame_group.animate(run_time=1).move_to(model_details),
             m.Write(model_details),
         )
 
@@ -593,7 +616,8 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.add(im_results)
         self.play(
-            self.camera.frame.animate.move_to(im_results),
+            self.next_slide_number_animation(),
+            self.frame_group.animate.move_to(im_results),
             run_time=1,
         )
 
@@ -608,7 +632,8 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.add(im_1, im_2)
         self.play(
-            self.camera.frame.animate.move_to(images),
+            self.next_slide_number_animation(),
+            self.frame_group.animate.move_to(images),
             run_time=1,
         )
         self.next_slide()
@@ -628,7 +653,8 @@ class Main(Slide, m.MovingCameraScene):
             font_size=0.6 * TITLE_FONT_SIZE,
         ).next_to(0.5 * (im_3.get_bottom() + im_4.get_bottom()), m.DOWN)
         self.play(
-            self.camera.frame.animate(run_time=1).move_to(new_images),
+            self.next_slide_number_animation(),
+            self.frame_group.animate(run_time=1).move_to(new_images),
             m.FadeIn(delta, shift=0.3 * m.DOWN),
         )
 
@@ -639,12 +665,20 @@ class Main(Slide, m.MovingCameraScene):
             + im_3.get_center()
             + im_4.get_center()
         )
-        self.play(self.camera.frame.animate.move_to(center).set(width=im_1.width * 3))
+        self.play(
+            self.next_slide_number_animation(),
+            self.frame_group.animate.move_to(center).set(width=im_1.width * 3),
+        )
 
         self.next_slide(notes="That's all folks!")
 
-        thanks = m.Tex("Thanks for listening!", color=m.RED, font_size=2 * TITLE_FONT_SIZE).move_to(
-            center
+        thanks = m.Tex("Thanks for listening!", font_size=2 * TITLE_FONT_SIZE).move_to(
+            self.camera.frame
         )
 
-        self.wipe(self.mobjects_without_canvas, thanks)
+        self.play(
+            m.FadeOut(
+                m.Group(*self.mobjects_without_canvas, self.slide_number),
+            ),
+            m.FadeIn(thanks),
+        )
