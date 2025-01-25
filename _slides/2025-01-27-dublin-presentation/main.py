@@ -228,11 +228,18 @@ class Main(Slide, m.MovingCameraScene):
                 r"Radio Propagation Modeling in an Urban Scenario\\using Generative Ray Path Sampling",
                 font_size=TITLE_FONT_SIZE,
             ),
-            m.Tex("Jérome Eertmans - January 27th, Dublin").scale(0.8),
+            m.Tex("Jérome Eertmans - January 27-30, Dublin").scale(0.8),
             m.Tex(
                 "Authors: Jérome Eertmans, Nicola Di Cicco, Claude Oestges, Laurent Jacques, Enrico Maria Vitucci, Vittorio Degli-Esposti"
             ).scale(0.5),
         ).arrange(m.DOWN, buff=1)
+
+        title += (
+            m.SVGMobject("images/uclouvain.svg", height=0.5)
+            .to_corner(m.UL)
+            .shift(0.25 * m.DOWN)
+        )
+        title += m.SVGMobject("images/unibo.svg", height=1.0).to_corner(m.UR)
 
         self.next_slide(
             notes="# Welcome!",
@@ -361,6 +368,7 @@ class Main(Slide, m.MovingCameraScene):
             m.Integer(0, group_with_commas=False, edge_to_fix=m.UR)
             .to_corner(m.UR)
             .set_color(m.YELLOW)
+            .set_stroke(width=2, color=m.BLACK)
         )
 
         self.play(self.next_slide_number_animation())
@@ -407,8 +415,8 @@ class Main(Slide, m.MovingCameraScene):
         scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).next_to(im, m.RIGHT, buff=8)
         box = m.SurroundingRectangle(scene, buff=0.3, color=m.BLACK)
 
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate(run_time=1).move_to(scene),
             m.Create(box),
         )
@@ -431,8 +439,9 @@ class Main(Slide, m.MovingCameraScene):
             box, m.RIGHT, buff=4.0
         )
         box_pc = m.SurroundingRectangle(pc, buff=0.3, color=m.BLACK)
+
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             m.GrowArrow(
                 m.Arrow(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK)
             ),
@@ -451,8 +460,8 @@ class Main(Slide, m.MovingCameraScene):
             box_pc.get_right(), all_pc.get_left(), buff=0.1, color=m.BLACK
         )
         arr.add_tip()
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             m.Create(
                 arr,
             ),
@@ -499,8 +508,8 @@ class Main(Slide, m.MovingCameraScene):
             all_pc, m.RIGHT, buff=4.0
         )
         box_pt = m.SurroundingRectangle(pt, buff=0.3, color=m.BLACK)
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             m.GrowArrow(
                 m.Arrow(all_pc.get_right(), box_pt.get_left(), buff=0.1, color=m.BLACK)
             ),
@@ -515,8 +524,8 @@ class Main(Slide, m.MovingCameraScene):
             box_pt, m.RIGHT, buff=4.0
         )
         box_pp = m.SurroundingRectangle(pp, buff=0.3, color=m.BLACK)
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             m.GrowArrow(
                 m.Arrow(box_pt.get_right(), box_pp.get_left(), buff=0.1, color=m.BLACK)
             ),
@@ -531,8 +540,8 @@ class Main(Slide, m.MovingCameraScene):
             box_pp, m.RIGHT, buff=4.0
         )
         box_em = m.SurroundingRectangle(em, buff=0.3, color=m.BLACK)
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             m.GrowArrow(
                 m.Arrow(box_pp.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK)
             ),
@@ -543,8 +552,8 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.FadeIn(em), run_time=1)
 
         self.next_slide()
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate.move_to(box_pc),
             run_time=1,
         )
@@ -565,8 +574,8 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.FadeIn(f_max, shift=0.3 * m.DOWN), run_time=1)
 
         self.next_slide()
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate.move_to(all_pc),
             run_time=1,
         )
@@ -575,7 +584,7 @@ class Main(Slide, m.MovingCameraScene):
         mat = [["W_{" + str(i) + "}"] for i in [2, 31, 23]]
         mat_pc_1 = m.Matrix(mat).move_to(all_pc)
         all_pc = mat_pc_1
-        self.play(m.Write(mat_pc_1), run_time=1)
+        self.play(m.Create(mat_pc_1), run_time=1)
 
         self.next_slide()
         mat = [
@@ -604,8 +613,8 @@ class Main(Slide, m.MovingCameraScene):
             font_size=TITLE_FONT_SIZE,
             tex_environment=None,
         ).next_to(all_pc, m.DOWN, buff=4.0)
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate(run_time=1).move_to(model_details),
             m.Write(model_details),
         )
@@ -615,8 +624,8 @@ class Main(Slide, m.MovingCameraScene):
             model_details, m.RIGHT, buff=5.0
         )
         self.add(im_results)
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate.move_to(im_results),
             run_time=1,
         )
@@ -631,8 +640,8 @@ class Main(Slide, m.MovingCameraScene):
             .next_to(im_results, m.RIGHT, buff=5.0)
         )
         self.add(im_1, im_2)
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate.move_to(images),
             run_time=1,
         )
@@ -645,16 +654,16 @@ class Main(Slide, m.MovingCameraScene):
             .arrange(m.RIGHT)
             .next_to(images, m.DOWN, buff=1.0)
         )
-        self.add(im_3, im_4)
         delta = m.MathTex(
             r"""\delta P_\text{dB} = 10 |\log_{10}\left(P_\text{GT}+\epsilon\right) - \log_{10}\left(P_\text{pred}+\epsilon\right)|
     \quad\text{and}\quad
     \delta P_\text{r,dB} = \frac{|\log_{10}\left(P_\text{GT}+\epsilon\right) - \log_{10}\left(P_\text{pred}+\epsilon\right)|}{|\log_{10}\left(P_\text{GT}+\epsilon\right)|}""",
             font_size=0.6 * TITLE_FONT_SIZE,
         ).next_to(0.5 * (im_3.get_bottom() + im_4.get_bottom()), m.DOWN)
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate(run_time=1).move_to(new_images),
+            m.FadeIn(new_images),
             m.FadeIn(delta, shift=0.3 * m.DOWN),
         )
 
@@ -665,8 +674,8 @@ class Main(Slide, m.MovingCameraScene):
             + im_3.get_center()
             + im_4.get_center()
         )
+        self.play(self.next_slide_number_animation())
         self.play(
-            self.next_slide_number_animation(),
             self.frame_group.animate.move_to(center).set(width=im_1.width * 3),
         )
 

@@ -37,4 +37,4 @@ which you can read by pressing <kbd>S</kbd>.
 ## Source code
 
 Available on GitHub:
-[`_slides/2023-03-27-eucap-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2023-12-07-confirmation/main.py).
+[`_slides/2023-12-07-confirmation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2023-12-07-confirmation/main.py).

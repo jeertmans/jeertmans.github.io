@@ -47,4 +47,4 @@ My presentation was recorded, so you can watch it on YouTube:
 ## Source code
 
 Available on GitHub:
-[`_slides/2023-07-17-siegen-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2024-04-16-milan-presentation/main.py).
+[`_slides/2024-04-16-milan-presentation/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2024-04-16-milan-presentation/main.py).
