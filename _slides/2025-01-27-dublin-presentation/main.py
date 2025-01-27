@@ -584,7 +584,7 @@ class Main(Slide, m.MovingCameraScene):
         mat = [["W_{" + str(i) + "}"] for i in [2, 31, 23]]
         mat_pc_1 = m.Matrix(mat).move_to(all_pc)
         all_pc = mat_pc_1
-        self.play(m.Create(mat_pc_1), run_time=1)
+        self.play(m.FadeIn(mat_pc_1), run_time=1)
 
         self.next_slide()
         mat = [
@@ -616,12 +616,44 @@ class Main(Slide, m.MovingCameraScene):
         self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate(run_time=1).move_to(model_details),
-            m.Write(model_details),
+            m.FadeIn(model_details),
         )
 
-        self.next_slide()
+        self.next_slide(notes="We define two metrics")
+        model_metrics = (
+            m.VGroup(
+                m.Tex(
+                    r"\underline{What we train on:}",
+                    font_size=TITLE_FONT_SIZE,
+                ),
+                m.Tex(
+                    r"\textbf{Accuracy:} \% of valid rays over the number of generated rays",
+                ),
+                m.Tex(
+                    r"\underline{What we would like to maximise:}",
+                    font_size=TITLE_FONT_SIZE,
+                ),
+                m.Tex(
+                    r"\textbf{Hit rate:} \% of \textit{different} valid rays found over the total number of existing valid rays",
+                ),
+            )
+            .arrange(m.DOWN, buff=1.0)
+            .next_to(model_details, m.RIGHT, buff=5.0)
+        )
+
+        self.play(self.next_slide_number_animation())
+        self.play(
+            self.frame_group.animate.move_to(model_metrics),
+            run_time=1,
+        )
+
+        for mob in model_metrics:
+            self.next_slide()
+            self.play(m.FadeIn(mob, shift=0.3 * m.DOWN), run_time=1.0)
+
+        self.next_slide(notes="Let's see training results")
         im_results = m.ImageMobject("images/results.png").next_to(
-            model_details, m.RIGHT, buff=5.0
+            model_metrics, m.RIGHT, buff=5.0
         )
         self.add(im_results)
         self.play(self.next_slide_number_animation())
@@ -630,7 +662,7 @@ class Main(Slide, m.MovingCameraScene):
             run_time=1,
         )
 
-        self.next_slide()
+        self.next_slide(notes="How does it translate to actual radio propagation?")
         im_1, im_2 = images = (
             m.Group(
                 m.ImageMobject("images/gt.png"),
@@ -679,15 +711,26 @@ class Main(Slide, m.MovingCameraScene):
             self.frame_group.animate.move_to(center).set(width=im_1.width * 3),
         )
 
-        self.next_slide(notes="That's all folks!")
+        self.next_slide(notes="Let's wrap up")
 
-        thanks = m.Tex("Thanks for listening!", font_size=2 * TITLE_FONT_SIZE).move_to(
-            self.camera.frame
-        )
+        summary = m.Tex(
+            r"\textbf{Summary:}\\\\",
+            r"$\bullet$ First application of our model to EM fields prediction\\",
+            r"$\bullet$ Preliminary results show a not-so-good match between hit rate and good coverage map\\",
+            r"$\bullet$ ML model cannot (yet) replace exhaustive RT\\",
+            r"$\bullet$ EM coverage map analysis could help us improve the model",
+            font_size=TITLE_FONT_SIZE,
+            tex_environment=None,
+        ).move_to(self.camera.frame)
 
         self.play(
             m.FadeOut(
                 m.Group(*self.mobjects_without_canvas, self.slide_number),
             ),
-            m.FadeIn(thanks),
+            m.FadeIn(summary[0]),
+            run_time=1,
         )
+
+        for i in range(4):
+            self.next_slide()
+            self.play(m.FadeIn(summary[i + 1], shift=0.3 * m.RIGHT), run_time=1)
