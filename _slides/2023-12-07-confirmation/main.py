@@ -838,7 +838,7 @@ class Main(Slide, MovingCameraScene):
 
         # How to trace paths
 
-        self.next_slide(notes="Let's go back to our first example." "")
+        self.next_slide(notes="Let's go back to our first example.")
         self.wipe(self.mobjects_without_canvas, [])
         BS = (
             SVGMobject("antenna", fill_color=self.BS_COLOR, z_index=1)
