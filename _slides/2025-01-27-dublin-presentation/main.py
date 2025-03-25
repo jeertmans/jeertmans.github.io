@@ -379,7 +379,7 @@ class Main(Slide, m.MovingCameraScene):
             if i < 3:
                 self.next_slide(notes=f"Face {i}")
             elif i == 3:
-                self.next_slide(notes=f"Other Faces...")
+                self.next_slide(notes="Other Faces...")
             face_index.set_value(i)
             self.play(
                 alpha.animate(rate_func=m.there_and_back).set_value(1),

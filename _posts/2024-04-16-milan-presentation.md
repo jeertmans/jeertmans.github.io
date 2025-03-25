@@ -19,15 +19,14 @@ Presentation slides and code for my talk in Milan, Italy.
 <!--more-->
 
 As part of my Short Term Scientific Mission (STSM)
-to Pr. Vittorio Degli Esposti's lab in UniBo,
+to Pr. Vittorio Degli-Esposti's lab in UniBo,
 I made a stopover in Milan. Below you can find my slides,
 *made during the train journey by combining
 previous presentations*,
 as well as the code to reproduce them locally.
 
 I am very much grateful to Nicola Di Cicco for inviting me for a small talk
-(in the hope
-to start new collaborations),
+(in the hope to start new collaborations),
 as well as the COST Interact action for funding this STSM!
 
 ## Slides

@@ -27,7 +27,10 @@ The work was pretty similar to the one presented at the
 and contains very minimal changes in the contents.
 
 Slides, however, were modified to contain more details about the mathematics
-behind our methods, as well as an example application to meta-surfaces.
+behind our methods, as well as an example application to meta-surfaces. For this
+presentation, I developed [Manim Slides](https://github.com/jeertmans/manim-slides), a successor of the
+[manim-presentation Python library](https://github.com/galatolofederico/manim-presentation). For more
+details, feel free to take a look at the [project page](/projects/manim-slides).
 
 ## Slides
 

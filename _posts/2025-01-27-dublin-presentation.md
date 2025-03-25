@@ -18,7 +18,11 @@ Presentation slides and code for my talk at the COST INTERACT meeting in Dublin,
 
 <!--more-->
 
-The presented work is a collaboration between UCLouvain and UniBo.
+The presented work is a collaboration between UCLouvain and UniBo. We investigated
+to possible use of generative Machine Learning to decrease the computational
+complexity of Ray Tracing. The aim is to train a model that learns how to generate
+*important* (see paper) paths, to avoid the usual exhaustive search through all
+potential ray paths, that has an exponentially growing computational cost.
 
 ## Slides
 

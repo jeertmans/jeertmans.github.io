@@ -18,7 +18,7 @@ Presentation slides and code for my talk in Siegen, Germany.
 
 <!--more-->
 
-On Jul 17th 2023, I have been invited to visit Pr. Andreas Kolb's lab and give a small talk
+On July 17th, 2023, I have been invited to visit Pr. Andreas Kolb's lab and give a small talk
 about my current research in the field of Ray Tracing applied to Telecommunictions. Indeed,
 Mohamed Saleh, one of his researchers, is working on applying Ray Tracing techniques at
 Terahertz frequencies to detect defects in carbon fibers.
