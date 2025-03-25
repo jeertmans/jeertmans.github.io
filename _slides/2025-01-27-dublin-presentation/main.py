@@ -443,7 +443,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(self.next_slide_number_animation())
         self.play(
             m.GrowArrow(
-                m.DottedLine(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK).add_tip()
+                m.Arrow(box.get_right(), box_pc.get_left(), buff=0.1, color=m.BLACK)
             ),
             self.frame_group.animate.move_to(box_pc),
             run_time=1,
@@ -592,8 +592,7 @@ class Main(Slide, m.MovingCameraScene):
             for i, j in [(4, 10), (19, 5), (33, 6)]
         ]
         mat_pc_2 = m.Matrix(mat).move_to(all_pc)
-        self.play(m.Write(mat_pc_2))
-        all_pc = mat_pc_2
+        self.play(m.Transform(all_pc, mat_pc_2))
 
         self.next_slide()
         mat = [
