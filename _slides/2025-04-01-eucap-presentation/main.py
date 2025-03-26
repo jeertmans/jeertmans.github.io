@@ -1,4 +1,6 @@
 import io
+
+import av
 from typing import Any
 
 import differt.plotting as dplt
@@ -50,6 +52,45 @@ m.Text.set_default(color=m.BLACK, font_size=CONTENT_FONT_SIZE)
 download_sionna_scenes()
 
 dplt.set_defaults("plotly")
+
+
+class VideoAnimation(m.Animation):
+    def __init__(self, video_mobject, **kwargs):
+        self.video_mobject = video_mobject
+        self.index = 0
+        self.dt = 1.0 / len(video_mobject)
+        super().__init__(video_mobject, **kwargs)
+
+    def interpolate_mobject(self, dt):
+        index = min(int(dt / self.dt), len(self.video_mobject) - 1)
+
+        if index != self.index:
+            self.index = index
+            self.video_mobject.pixel_array = self.video_mobject[index].pixel_array
+
+        return self
+
+
+class VideoMobject(m.ImageMobject):
+    def __init__(self, image_files, **kwargs):
+        if isinstance(image_files, str):
+            container = av.open(image_files)
+            image_files = [frame.to_ndarray(format="rgba") for frame in container.decode(video=0)]
+
+        assert len(image_files) > 0, "Cannot create empty video"
+        self.image_files = image_files
+        self.kwargs = kwargs
+        super().__init__(image_files[0], **kwargs)
+
+    def __len__(self):
+        return len(self.image_files)
+
+    def __getitem__(self, index):
+        return m.ImageMobject(self.image_files[index], **self.kwargs)
+
+    def play(self, **kwargs):
+        return VideoAnimation(self, **kwargs)
+
 
 
 def cleanup_figure(
@@ -203,7 +244,7 @@ class Main(Slide, m.MovingCameraScene):
                 self.next_slide_title_animation(title),
             )
 
-    def _construct(self):
+    def construct(self):
         # Config
 
         self.scene = TriangleScene.load_xml(
@@ -222,8 +263,6 @@ class Main(Slide, m.MovingCameraScene):
         self.add_to_canvas(slide_number=self.slide_number, slide_title=self.slide_title)
 
         self.frame_group = m.VGroup(self.camera.frame, self.slide_number)
-
-    def __(self):
 
         # Title
 
@@ -316,18 +355,23 @@ class Main(Slide, m.MovingCameraScene):
                     )
             return self.fig
 
-        im = m.always_redraw(
-            lambda: figure_to_mobject(
-                redraw_scene(),
-            )
-        )
+        # im = m.always_redraw(
+        #     lambda: figure_to_mobject(
+        #         redraw_scene(),
+        #     )
+        # )
+
+        im = VideoMobject("images/instant-rm.mp4")
 
         self.next_slide(
             notes="Some context",
         )
         self.add(im)
         self.wipe(title, [self.slide_title, im, self.slide_number])
+        self.next_slide(loop=True)
+        self.play(im.play(run_time=3))
         self.next_slide()
+        """
         self.play(
             self.next_slide_number_animation(),
             azimuth.animate.set_value(-jnp.pi / 2),
@@ -414,11 +458,7 @@ class Main(Slide, m.MovingCameraScene):
             count.animate.set_value(N_TRI * (N_TRI - 1)),
             run_time=1.0,
         )
-
-    def construct(self):
-        self._construct()
-
-        im = m.Dot()
+        """
 
         self.next_slide()
         scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).next_to(im, m.RIGHT, buff=8)
@@ -508,6 +548,38 @@ class Main(Slide, m.MovingCameraScene):
 
         ratio = self.camera.frame.width / old_width
 
+        self.next_slide(notes="What happens when we change the scene?")
+        dx = m.Tex(r"$\Delta x$?", font_size=TITLE_FONT_SIZE).next_to(box, m.UP, buff=1.0)
+        arr_dx = m.Arrow(dx.get_bottom(), box.get_top(), buff=0.1, color=m.BLACK)
+        self.play(self.next_slide_number_animation())
+        self.play(m.FadeIn(dx), run_time=1)
+        self.play(
+            m.GrowArrow(
+                arr_dx,
+            ),
+            run_time=1,
+        )
+
+        self.next_slide(notes="We have two approaches")
+        approaches = m.Tex(
+            r"\textbf{Approaches:}\\\\",
+            r"1 Dynamic (Dyn.) Ray Tracing: snapshot extrapolation\\",
+            r"2. Differentiable (Diff.) Ray Tracing (RT): automatic differentiation\\",
+            font_size=1.3*TITLE_FONT_SIZE,
+            tex_environment=None,
+        ).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+
+        self.play(self.next_slide_number_animation())
+        self.play(
+            m.Group(*self.mobjects_without_canvas).animate.fade(0.25),
+            m.FadeIn(approaches[0]),
+            run_time=1,
+        )
+
+        for i in range(2):
+            self.next_slide()
+            self.play(m.FadeIn(approaches[i + 1], shift=0.3 * m.RIGHT), run_time=1)
+
         self.next_slide(notes="Contents of this presentation")
         contents = m.Tex(
             r"\textbf{Contents:}\\\\",
@@ -529,6 +601,97 @@ class Main(Slide, m.MovingCameraScene):
         for i in range(4):
             self.next_slide()
             self.play(m.FadeIn(contents[i + 1], shift=0.3 * m.RIGHT), run_time=1)
+
+
+        self.next_slide(notes="Dynamic and Differentiable Ray Tracing")
+        text = m.Tex(
+            r"\textbf{Dynamic Ray Tracing (Dyn. RT):}\\\\",
+            r"$\bullet$ Can be added as a plugin to existing ray tracing software\\",
+            r"$\bullet$ Offers higher explainability\\",
+            r"$\bullet$ Computationally inexpensive\\",
+            r"$\bullet$ Efficient if scenes can be simplified\\",
+            r"$\bullet$ Hard to implement\\",
+            r"\\",
+            r"\textbf{Differentiable Ray Tracing (Diff. RT):}\\\\",
+            r"$\bullet$ Requires the use of AD software\\",
+            r"$\bullet$ Offers automated and scalable derivatives\\",
+            r"$\bullet$ Can be used to simulate complex scenes\\",
+            font_size=1.3*TITLE_FONT_SIZE,
+            tex_environment=None,
+        ).move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
+
+        self.add(text)
+        self.next_slide()
+        self.play(self.next_slide_number_animation())
+        self.play(
+            self.frame_group.animate.move_to(text),
+            run_time=1,
+        )
+
+        cells_im = m.ImageMobject("images/cells.png").scale(2.0).move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
+
+        self.add(cells_im)
+        self.play(self.next_slide_number_animation())
+        self.play(
+            self.frame_group.animate.move_to(cells_im),
+            run_time=1,
+        )
+
+        self.next_slide(notes="We define two metrics")
+        metrics = (
+            m.Tex(
+                r"""
+                For a given cell \(C_i\), we introduce the following metrics:
+
+\begin{itemize}
+  \item the area covered by each multipath cell, \(S_{i} = \text{area}(C_i)\);
+  \item and the average minimal inter-cell distance, \(\overline{d_{i}}\);
+\end{itemize}
+where \(i\) indicates the index of the multipath cell, \(\overline{\cdot}\) is the ensemble average over a given cell, and the minimal inter-cell distance of an object \(x \in C_i\) is:
+
+\begin{equation}
+    d_i(x) = \min\limits_{y \notin C_i} \text{dist}(x, y),
+\end{equation}
+that is, the minimum distance the object \(x\) has to travel to leave the cell \(C_i\).""",
+font_size=1.3*TITLE_FONT_SIZE,
+            )
+            
+            .move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
+        )
+
+        self.add(metrics)
+        self.play(self.next_slide_number_animation())
+        self.play(
+            self.frame_group.animate.move_to(metrics),
+            run_time=1,
+        )
+
+        mlms_im = m.ImageMobject("images/mlms.png").scale(2.0).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+
+        self.add(mlms_im)
+        self.play(self.next_slide_number_animation())
+        self.play(
+            self.frame_group.animate.move_to(mlms_im),
+            run_time=1,
+        )
+
+        hist_im = m.ImageMobject("images/results_hist.png").scale(2.0).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+
+        self.add(hist_im)
+        self.play(self.next_slide_number_animation())
+        self.play(
+            self.frame_group.animate.move_to(hist_im),
+            run_time=1,
+        )
+
+        table_im = m.ImageMobject("images/results_table.png").scale(2.0).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+
+        self.add(table_im)
+        self.play(self.next_slide_number_animation())
+        self.play(
+            self.frame_group.animate.move_to(table_im),
+            run_time=1,
+        )
 
         self.next_slide(notes="Let's wrap up")
         summary = m.Tex(
