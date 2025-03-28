@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -33,7 +34,7 @@ requires-dist = [
     { name = "differt", specifier = "==0.0.34" },
     { name = "equinox", specifier = ">=0.11.11" },
     { name = "kaleido", specifier = "==0.2.1" },
-    { name = "manim-slides", extras = ["manim", "pyside6"], specifier = "==5.5.0" },
+    { name = "manim-slides", extras = ["manim", "pyside6"], specifier = "==5.5.1" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "pillow", specifier = ">=11.1.0" },
     { name = "plotly", specifier = ">=5.24.1,<6" },
@@ -653,7 +654,7 @@ wheels = [
 
 [[package]]
 name = "manim-slides"
-version = "5.5.0"
+version = "5.5.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "av" },
@@ -673,9 +674,9 @@ dependencies = [
     { name = "rtoml" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1a/0d/49a41f5eedcd6f9032f4274cc2e4270fca6564143e01aadf7391eba11eab/manim_slides-5.5.0.tar.gz", hash = "sha256:4361ec95b95819b1aeaaf136d5b5a2c763eb87dbe3197984bd3c54bd402f9fdd", size = 1840344 }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/b4/e88de858cd65a62554c683910cce810ecaba8e46e0f0fc06576afed9e830/manim_slides-5.5.1.tar.gz", hash = "sha256:6ec7a0b4ff5a92e0ee02c2b46dd499d1a8522000fe595f798edaa22f4018f7de", size = 1840867 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/65/5b/b08bc558116d544c69c434b77475a34a174bbd49aad9fa250408f66d49ea/manim_slides-5.5.0-py3-none-any.whl", hash = "sha256:d923c11b3dee9424d90622c4329b7caf20eb0bc292cbe23d658aa59bf3b2d67e", size = 67317 },
+    { url = "https://files.pythonhosted.org/packages/19/ea/56071d273991064d6e8978345452b13693912b07b0033987cb8bbf060fa8/manim_slides-5.5.1-py3-none-any.whl", hash = "sha256:b6156d82625d851b6ad85c96673f69822c2a6d6c82cc6b341ff6563c0f9f1ccc", size = 67489 },
 ]
 
 [package.optional-dependencies]
