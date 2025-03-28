@@ -1055,21 +1055,21 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
         self.next_slide()
         self.play(
             m.FadeIn(
-                m.Tex("1", color=m.WHITE).next_to(texts[0], m.DOWN), shift=0.3 * m.DOWN
+                m.Tex("1").next_to(texts[0], m.DOWN), shift=0.3 * m.DOWN
             ),
             run_time=1.0,
         )
         self.next_slide()
         self.play(
             m.FadeIn(
-                m.Tex("1", color=m.WHITE).next_to(texts[2], m.DOWN), shift=0.3 * m.DOWN
+                m.Tex("1").next_to(texts[2], m.DOWN), shift=0.3 * m.DOWN
             ),
             run_time=1.0,
         )
         self.next_slide()
         self.play(
             m.FadeIn(
-                m.Tex("0", color=m.WHITE).next_to(texts[4], m.DOWN), shift=0.3 * m.DOWN
+                m.Tex("0").next_to(texts[4], m.DOWN), shift=0.3 * m.DOWN
             ),
             run_time=1.0,
         )
@@ -1123,13 +1123,13 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
             run_time=1.0,
         )
 
+        self.next_slide(notes="MLM")
         mlms_im = (
             m.ImageMobject("images/mlms.png")
             .scale(1.0)
             .move_to(self.camera.frame)
             .shift(m.DOWN * self.camera.frame.height)
         )
-
         self.add(mlms_im)
         self.play(self.next_slide_number_animation())
         self.play(
@@ -1137,13 +1137,13 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
             run_time=1,
         )
 
+        self.next_slide(notes="Table")
         hist_im = (
             m.ImageMobject("images/results_hist.png")
             .scale(1.0)
             .move_to(self.camera.frame)
             .shift(m.DOWN * self.camera.frame.height)
         )
-
         self.add(hist_im)
         self.play(self.next_slide_number_animation())
         self.play(
@@ -1151,13 +1151,13 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
             run_time=1,
         )
 
+        self.next_slide(notes="Table")
         table_im = (
             m.ImageMobject("images/results_table.png")
             .scale(1.0)
             .move_to(self.camera.frame)
             .shift(m.DOWN * self.camera.frame.height)
         )
-
         self.add(table_im)
         self.play(self.next_slide_number_animation())
         self.play(
