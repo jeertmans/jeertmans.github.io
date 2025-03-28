@@ -1168,7 +1168,7 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
         self.next_slide(notes="Let's wrap up")
         summary = m.Tex(
             r"\textbf{Summary:}\\\\",
-            r"$\bullet$ Both Dyn. and Diff. RT have have few open-source implementations\\",
+            r"$\bullet$ Both Dyn. and Diff. RT have few open-source implementations\\",
             r"$\bullet$ Dyn. RT offers higher explainability and can be added as a ``\textit{plugin}''\\",
             r"$\bullet$ Diff. RT offers automated and scalable derivatives\\",
             r"$\bullet$ Dyn. RT becomes efficient if scenes can be simplified\\",
