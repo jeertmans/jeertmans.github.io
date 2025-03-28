@@ -1,8 +1,8 @@
-import io
 import hashlib
+import io
 import os
-from functools import partial, wraps
 from collections.abc import Callable
+from functools import partial, wraps
 from typing import Any, ParamSpec
 
 import av
@@ -31,7 +31,6 @@ from differt.scene import (
     get_sionna_scene,
 )
 from differt.utils import dot
-from joblib import Memory
 from manim_slides import Slide
 from PIL import Image
 
@@ -228,16 +227,17 @@ def highlight_face(
 
     return fig
 
+
 P = ParamSpec("P")
+
 
 def cached(
     func: Callable[P, go.Figure],
     width: int | None = None,
     height: int | None = None,
     scale: int | float | None = 2,
-    dirname: str = ".cache"
+    dirname: str = ".cache",
 ) -> m.ImageMobject | m.opengl.OpenGLImageMobject:
-
     os.makedirs(dirname, exist_ok=True)
 
     @wraps(func)
@@ -250,12 +250,15 @@ def cached(
         else:
             fig = func(*args, **kwargs)
             fig.write_image(file, width=width, height=height, scale=scale)
-            img_bytes = fig.to_image(format="png", width=width, height=height, scale=scale)
+            img_bytes = fig.to_image(
+                format="png", width=width, height=height, scale=scale
+            )
             img_pil = Image.open(io.BytesIO(img_bytes))
         img_arr = np.asarray(img_pil)
         return m.ImageMobject(img_arr)
 
     return wrapper
+
 
 class Main(Slide, m.MovingCameraScene):
     skip_reversing = True
@@ -373,7 +376,6 @@ class Main(Slide, m.MovingCameraScene):
 
         receivers_grid = base_scene.with_receivers_grid(*batch, height=z0).receivers
         x, y, _ = jnp.unstack(receivers_grid, axis=-1)
-
 
         @cached
         def draw_power_scene_with_cars(
@@ -506,13 +508,12 @@ class Main(Slide, m.MovingCameraScene):
             """
         )
         im = m.always_redraw(
-            lambda: 
-                draw_power_scene_with_cars(
-                    dx=dx.get_value(),
-                    elev=elevation.get_value(),
-                    azim=azimuth.get_value(),
-                    dist=distance.get_value(),
-                ),
+            lambda: draw_power_scene_with_cars(
+                dx=dx.get_value(),
+                elev=elevation.get_value(),
+                azim=azimuth.get_value(),
+                dist=distance.get_value(),
+            ),
         )
         # del im
         # im = m.Dot()
