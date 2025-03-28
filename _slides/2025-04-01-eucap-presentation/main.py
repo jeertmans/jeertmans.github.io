@@ -1,18 +1,17 @@
 import io
 import hashlib
-import random
-from functools import partial
+import os
+from functools import partial, wraps
+from collections.abc import Callable
+from typing import Any, ParamSpec
 
+import av
+import differt.plotting as dplt
 import equinox as eqx
-import jax
 import jax.numpy as jnp
+import manim as m
 import numpy as np
-import plotly.express as px
 import plotly.graph_objects as go
-from jaxtyping import Array, Bool, Int
-from plotly.colors import convert_to_RGB_255
-from plotly.subplots import make_subplots
-
 from differt.em import (
     Dipole,
     materials,
@@ -22,31 +21,17 @@ from differt.em import (
 )
 from differt.geometry import (
     TriangleMesh,
-    merge_cell_ids,
-    min_distance_between_cells,
     normalize,
+    spherical_to_cartesian,
 )
-from differt.plotting import draw_image, draw_markers, reuse, set_defaults
+from differt.plotting import draw_image, reuse
 from differt.scene import (
     TriangleScene,
     download_sionna_scenes,
     get_sionna_scene,
 )
 from differt.utils import dot
-
-from typing import Any
-from functools import partial
-
-import av
-import differt.plotting as dplt
-import equinox as eqx
-import jax
-import jax.numpy as jnp
-import manim as m
-import numpy as np
-import plotly.graph_objects as go
-from differt.geometry import spherical_to_cartesian, TriangleMesh
-from differt.scene import TriangleScene, download_sionna_scenes, get_sionna_scene
+from joblib import Memory
 from manim_slides import Slide
 from PIL import Image
 
@@ -243,18 +228,34 @@ def highlight_face(
 
     return fig
 
+P = ParamSpec("P")
 
-def figure_to_mobject(
-    fig: go.Figure,
+def cached(
+    func: Callable[P, go.Figure],
     width: int | None = None,
     height: int | None = None,
     scale: int | float | None = 2,
+    dirname: str = ".cache"
 ) -> m.ImageMobject | m.opengl.OpenGLImageMobject:
-    img_bytes = fig.to_image(format="png", width=width, height=height, scale=scale)
-    img_pil = Image.open(io.BytesIO(img_bytes))
-    img_arr = np.asarray(img_pil)
-    return m.ImageMobject(img_arr)
 
+    os.makedirs(dirname, exist_ok=True)
+
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> m.ImageMobject:
+        h = hashlib.sha256()
+        h.update(f"{args}{kwargs}".encode())
+        file = os.path.join(dirname, f"{h.hexdigest()}.png")
+        if os.path.exists(file):
+            img_pil = Image.open(file)
+        else:
+            fig = func(*args, **kwargs)
+            fig.write_image(file, width=width, height=height, scale=scale)
+            img_bytes = fig.to_image(format="png", width=width, height=height, scale=scale)
+            img_pil = Image.open(io.BytesIO(img_bytes))
+        img_arr = np.asarray(img_pil)
+        return m.ImageMobject(img_arr)
+
+    return wrapper
 
 class Main(Slide, m.MovingCameraScene):
     skip_reversing = True
@@ -373,15 +374,18 @@ class Main(Slide, m.MovingCameraScene):
         receivers_grid = base_scene.with_receivers_grid(*batch, height=z0).receivers
         x, y, _ = jnp.unstack(receivers_grid, axis=-1)
 
-        def draw_power_scene_with_cars() -> go.Figure:
+
+        @cached
+        def draw_power_scene_with_cars(
+            dx: float, elev: float, azim: float, dist: float
+        ) -> go.Figure:
             with reuse() as fig:
-                base_scene.plot
                 scene = eqx.tree_at(
                     lambda s: s.mesh,
                     base_scene,
                     (
                         base_scene.mesh
-                        + cars(x.min() + 5, x.max() - 5, -3.0, 3.0, dx=dx.get_value())
+                        + cars(x.min() + 5, x.max() - 5, -3.0, 3.0, dx=dx)
                     ),
                 )
                 scene.plot()
@@ -389,9 +393,9 @@ class Main(Slide, m.MovingCameraScene):
                 cleanup_figure(fig)
                 move_camera(
                     fig,
-                    elevation=elevation.get_value(),
-                    azimuth=azimuth.get_value(),
-                    distance=distance.get_value(),
+                    elevation=elev,
+                    azimuth=azim,
+                    distance=dist,
                 )
                 ant = Dipole(2.4e9)  # 2.4 GHz
                 A_e = ant.aperture
@@ -502,12 +506,16 @@ class Main(Slide, m.MovingCameraScene):
             """
         )
         im = m.always_redraw(
-            lambda: figure_to_mobject(
-                draw_power_scene_with_cars(),
-            )
+            lambda: 
+                draw_power_scene_with_cars(
+                    dx=dx.get_value(),
+                    elev=elevation.get_value(),
+                    azim=azimuth.get_value(),
+                    dist=distance.get_value(),
+                ),
         )
-        del im
-        im = m.Dot()
+        # del im
+        # im = m.Dot()
         sionna_rt = m.Tex(
             r"\textit{Simple street cayon} from Sionna RT, simulated using DiffeRT",
             font_size=SOURCE_FONT_SIZE,
@@ -605,9 +613,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(self.next_slide_number_animation())
         self.play(
             m.GrowArrow(
-                m.Arrow(
-                    box_pt.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK
-                )
+                m.Arrow(box_pt.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK)
             ),
             self.frame_group.animate.move_to(box_em),
             run_time=1,
@@ -714,7 +720,6 @@ class Main(Slide, m.MovingCameraScene):
         ).move_to(self.camera.frame)
 
         self.play(self.next_slide_number_animation())
-        print(f"{self.mobjects_without_canvas=}")
         self.play(
             m.Group(*self.mobjects_without_canvas).animate.fade(0.95),
             m.FadeIn(what[0]),
@@ -1035,23 +1040,17 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
         self.play(rxs[-9].animate.scale(2.0).set_color(m.YELLOW), run_time=1.0)
         self.next_slide()
         self.play(
-            m.FadeIn(
-                m.Tex("1").next_to(texts[0], m.DOWN), shift=0.3 * m.DOWN
-            ),
+            m.FadeIn(m.Tex("1").next_to(texts[0], m.DOWN), shift=0.3 * m.DOWN),
             run_time=1.0,
         )
         self.next_slide()
         self.play(
-            m.FadeIn(
-                m.Tex("1").next_to(texts[2], m.DOWN), shift=0.3 * m.DOWN
-            ),
+            m.FadeIn(m.Tex("1").next_to(texts[2], m.DOWN), shift=0.3 * m.DOWN),
             run_time=1.0,
         )
         self.next_slide()
         self.play(
-            m.FadeIn(
-                m.Tex("0").next_to(texts[4], m.DOWN), shift=0.3 * m.DOWN
-            ),
+            m.FadeIn(m.Tex("0").next_to(texts[4], m.DOWN), shift=0.3 * m.DOWN),
             run_time=1.0,
         )
 
