@@ -1202,7 +1202,7 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
             run_time=1,
         )
         manim_slides = m.Tex(
-            "Slides were generated using Manim Slides, a free and open source tool.",
+            "Slides made with Manim Slides, free and open source tool.",
             font_size=SOURCE_FONT_SIZE,
         ).next_to(qrcodes, 2 * m.DOWN)
         self.play(
