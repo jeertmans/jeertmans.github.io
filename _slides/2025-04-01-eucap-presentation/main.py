@@ -109,7 +109,9 @@ class VideoMobject(m.ImageMobject):
     def __init__(self, image_files: str | list[str], **kwargs: Any) -> None:
         if isinstance(image_files, str):
             container = av.open(image_files)
-            image_files = [frame.to_ndarray(format="rgba") for frame in container.decode(video=0)]
+            image_files = [
+                frame.to_ndarray(format="rgba") for frame in container.decode(video=0)
+            ]
 
         assert len(image_files) > 0, "Cannot create empty video"
         self.image_files = image_files
@@ -125,15 +127,25 @@ class VideoMobject(m.ImageMobject):
     def play(self, **kwargs: Any) -> VideoAnimation:
         return VideoAnimation(self, **kwargs)
 
-#@partial(jax.jit, static_argnames=("n",))
+
+# @partial(jax.jit, static_argnames=("n",))
 @eqx.filter_jit
-def cars(x_min, x_max, y_min, y_max, dx = 0.0, n = 12):
-    car = TriangleMesh.box(length=3.0, width=1.4, height=2.0, with_top=True).translate(jnp.array([0.0, 0.0, 1.5])).set_assume_quads().set_face_colors(jnp.array([1.0, 0.0, 0.0])).set_materials("itu_metal")
+def cars(x_min, x_max, y_min, y_max, dx=0.0, n=12):
+    car = (
+        TriangleMesh.box(length=3.0, width=1.4, height=2.0, with_top=True)
+        .translate(jnp.array([0.0, 0.0, 1.5]))
+        .set_assume_quads()
+        .set_face_colors(jnp.array([1.0, 0.0, 0.0]))
+        .set_materials("itu_metal")
+    )
     xs = jnp.linspace(0.0, x_max - x_min, n)
     xl = ((xs + dx) % (x_max - x_min - 1.5)) + x_min + 1.5
     xr = ((xs - dx) % (x_max - x_min - 1.5)) + x_min + 1.5
-    cars = [car.translate(jnp.array([x, y_min, 0.0])) for x in xl] + [car.translate(jnp.array([x, y_max, 0.0])) for x in xr]
+    cars = [car.translate(jnp.array([x, y_min, 0.0])) for x in xl] + [
+        car.translate(jnp.array([x, y_max, 0.0])) for x in xr
+    ]
     return sum(cars, start=TriangleMesh.empty())
+
 
 def cleanup_figure(
     fig: go.Figure,
@@ -245,6 +257,8 @@ def figure_to_mobject(
 
 
 class Main(Slide, m.MovingCameraScene):
+    skip_reversing = True
+
     def write_slide_number(
         self, inital=1, text=m.Tex, animation=m.Write, position=m.ORIGIN
     ):
@@ -298,9 +312,12 @@ class Main(Slide, m.MovingCameraScene):
             .to_corner(m.DR)
         )
         self.slide_title = m.Tex("Context", font_size=TITLE_FONT_SIZE).to_corner(m.UL)
-        self.add_to_canvas(slide_number=self.slide_number, slide_title=self.slide_title)
-
         self.frame_group = m.VGroup(self.camera.frame, self.slide_number)
+        self.add_to_canvas(
+            slide_number=self.slide_number,
+            slide_title=self.slide_title,
+            frame_group=self.frame_group,
+        )
 
         # Title
 
@@ -309,7 +326,9 @@ class Main(Slide, m.MovingCameraScene):
                 r"Comparing Differentiable and Dynamic Ray Tracing:\\Introducing the Multipath Lifetime Map",
                 font_size=TITLE_FONT_SIZE,
             ),
-            m.Tex(r"Jérome Eertmans - April 1\textsuperscript{st}, Stockholm").scale(0.8),
+            m.Tex(r"Jérome Eertmans - April 1\textsuperscript{st}, Stockholm").scale(
+                0.8
+            ),
             m.Tex(
                 "Authors: Jérome Eertmans, Enrico Maria Vitucci, Vittorio Degli-Esposti, Laurent Jacques, Claude Oestges"
             ).scale(0.5),
@@ -348,27 +367,25 @@ class Main(Slide, m.MovingCameraScene):
         distance = m.ValueTracker(4)
         dx = m.ValueTracker(0.0)
 
-        batch = (100,100)
+        batch = (100, 100)
         z0 = 1.5
 
         receivers_grid = base_scene.with_receivers_grid(*batch, height=z0).receivers
         x, y, _ = jnp.unstack(receivers_grid, axis=-1)
 
         def draw_power_scene_with_cars() -> go.Figure:
-            
             with reuse() as fig:
                 base_scene.plot
                 scene = eqx.tree_at(
-                lambda s: s.mesh,
+                    lambda s: s.mesh,
                     base_scene,
-                    (base_scene.mesh + cars(x.min() + 5, x.max() - 5, -3.0, 3.0, dx=dx.get_value()))
+                    (
+                        base_scene.mesh
+                        + cars(x.min() + 5, x.max() - 5, -3.0, 3.0, dx=dx.get_value())
+                    ),
                 )
                 scene.plot()
-                scene = eqx.tree_at(
-                    lambda s: s.receivers,
-                    scene,
-                    receivers_grid
-                )
+                scene = eqx.tree_at(lambda s: s.receivers, scene, receivers_grid)
                 cleanup_figure(fig)
                 move_camera(
                     fig,
@@ -381,15 +398,16 @@ class Main(Slide, m.MovingCameraScene):
                 E = jnp.zeros((*batch, 3))
                 B = jnp.zeros_like(E)
 
-                eta_r = jnp.array([
-                    materials[mat_name].relative_permittivity(ant.frequency)
-                    for mat_name in scene.mesh.material_names
-                ])
+                eta_r = jnp.array(
+                    [
+                        materials[mat_name].relative_permittivity(ant.frequency)
+                        for mat_name in scene.mesh.material_names
+                    ]
+                )
                 n_r = jnp.sqrt(eta_r)
 
                 for order in range(2):
                     for paths in scene.compute_paths(order=order, chunk_size=1_000):
-
                         E_i, B_i = ant.fields(paths.vertices[..., 1, :])
 
                         if order > 0:
@@ -400,7 +418,9 @@ class Main(Slide, m.MovingCameraScene):
                                 scene.mesh.face_materials, obj_indices, axis=0
                             )
                             # [*batch num_path_candidates order 3]
-                            obj_normals = jnp.take(scene.mesh.normals, obj_indices, axis=0)
+                            obj_normals = jnp.take(
+                                scene.mesh.normals, obj_indices, axis=0
+                            )
                             # [*batch num_path_candidates order]
                             obj_n_r = jnp.take(n_r, mat_indices, axis=0)
                             # [*batch num_path_candidates order+1 3]
@@ -464,7 +484,11 @@ class Main(Slide, m.MovingCameraScene):
                 L_dB = 10 * jnp.log10(P / ant.reference_power)
 
                 draw_image(
-                    L_dB, x=x[0, :], y=y[:, 0], z0=z0, colorbar={"title": "Gain (dB)"},
+                    L_dB,
+                    x=x[0, :],
+                    y=y[:, 0],
+                    z0=z0,
+                    colorbar={"title": "Gain (dB)"},
                 )
                 return fig
 
@@ -482,11 +506,11 @@ class Main(Slide, m.MovingCameraScene):
                 draw_power_scene_with_cars(),
             )
         )
-        im = m.Dot()
-        sionna_rt = (
-            m.Tex(r"\textit{Simple street cayon} from Sionna RT, simulated using DiffeRT", font_size=SOURCE_FONT_SIZE)
-            .to_edge(m.DOWN)
-        )
+        # im = m.Dot()
+        sionna_rt = m.Tex(
+            r"\textit{Simple street cayon} from Sionna RT, simulated using DiffeRT",
+            font_size=SOURCE_FONT_SIZE,
+        ).to_edge(m.DOWN)
         self.add(im)
         self.add(sionna_rt)
         self.wipe(title, [self.slide_title, im, self.slide_number, sionna_rt])
@@ -495,7 +519,8 @@ class Main(Slide, m.MovingCameraScene):
             ## Context examples
 
             In this example, we have a street canyon with many cars that are moving.
-            """)
+            """
+        )
         self.play(
             self.next_slide_number_animation(),
             azimuth.animate.set_value(-jnp.pi / 2),
@@ -511,10 +536,10 @@ class Main(Slide, m.MovingCameraScene):
 
             While Ray Tracers and computers have become faster, recomputing all the
             paths everytime may not be the smartest approach.
-            """
+            """,
         )
         self.play(
-            azimuth.animate(rate_func=m.there_and_back).increment_value(jnp.pi / 2),
+            azimuth.animate(rate_func=m.linear).increment_value(2 * jnp.pi),
             dx.animate(rate_func=m.linear).increment_value(
                 (x.max() - x.min()) - 10.0,
             ),
@@ -522,11 +547,19 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.next_slide(notes="Dummy slide after loop")
         self.wait(1)
-        self.next_slide(notes="Let us recall the basics of Ray Tracing")
-        self.play(self.next_slide_number_animation())
+        self.next_slide(notes="")
 
-        self.next_slide(notes="A scene can be representated at any time as... some TX, some RX and some objects")
-        scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
+        self.next_slide(
+            notes="""
+            Let us recall the basics of Ray Tracing.
+            A scene can be representated at any time as... some TX, some RX and some objects.
+            """
+        )
+        scene = (
+            m.Tex("Scene", font_size=TITLE_FONT_SIZE)
+            .move_to(self.camera.frame)
+            .shift(m.RIGHT * self.camera.frame.width)
+        )
         box = m.SurroundingRectangle(scene, buff=0.3, color=m.BLACK)
         self.play(self.next_slide_number_animation())
         self.play(
@@ -590,7 +623,9 @@ class Main(Slide, m.MovingCameraScene):
         self.play(self.next_slide_number_animation())
         self.play(
             m.GrowArrow(
-                m.Arrow(all_rays.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK)
+                m.Arrow(
+                    all_rays.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK
+                )
             ),
             self.frame_group.animate.move_to(box_em),
             run_time=1,
@@ -600,10 +635,16 @@ class Main(Slide, m.MovingCameraScene):
 
         canvas = m.VGroup(group, box_em)
 
-        self.next_slide(notes="If you look at the bigger picture, radio-wave propagation through RT is a two-step process.")
+        old_width = self.camera.frame.width
+
+        self.next_slide(
+            notes="If you look at the bigger picture, radio-wave propagation through RT is a two-step process."
+        )
         self.play(self.next_slide_number_animation())
         self.play(
-            self.frame_group.animate.move_to(canvas.get_center()).set_width(1.1 * canvas.width),
+            self.frame_group.animate.move_to(canvas.get_center()).set_width(
+                1.1 * canvas.width
+            ),
             run_time=1,
         )
 
@@ -615,8 +656,11 @@ class Main(Slide, m.MovingCameraScene):
             As just said, we could recompute the rays and EM fields, but this is expensive.
             If the scene only scene changes a little, an suggestion is that we could use the previous rays or EM fields,
             and local derivatives, to predict the new rays or EM fields.
-            """)
-        dx = m.Tex(r"$\Delta x$?", font_size=TITLE_FONT_SIZE).next_to(box, m.UP, buff=1.0)
+            """
+        )
+        dx = m.Tex(r"$\Delta x$?", font_size=TITLE_FONT_SIZE).next_to(
+            box, m.UP, buff=1.0
+        )
         arr_dx = m.Arrow(dx.get_bottom(), box.get_top(), buff=0.1, color=m.BLACK)
         self.play(self.next_slide_number_animation())
         self.play(m.FadeIn(dx), run_time=1)
@@ -651,13 +695,17 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(notes="We have two approaches")
-        approaches = m.Tex(
-            r"\textbf{Approaches:}\\\\",
-            r"1. Dynamic (Dyn.) Ray Tracing: snapshots extrapolation using differentiation (by-hand)\\",
-            r"2. Differentiable (Diff.) Ray Tracing (RT): Machine Learning and Optimization using automatic differentiation (AD)",
-            font_size=TITLE_FONT_SIZE,
-            tex_environment=None,
-        ).move_to(self.camera.frame).next_to(canvas, 2*m.DOWN)
+        approaches = (
+            m.Tex(
+                r"\textbf{Approaches:}\\\\",
+                r"1. Dynamic (Dyn.) Ray Tracing: snapshots extrapolation using differentiation (by hand) \\",
+                r"2. Differentiable (Diff.) Ray Tracing (RT): Machine Learning and Optimization using automatic differentiation (AD)",
+                font_size=TITLE_FONT_SIZE,
+                tex_environment=None,
+            )
+            .move_to(self.camera.frame)
+            .next_to(canvas, 2 * m.DOWN)
+        )
 
         self.play(self.next_slide_number_animation())
         self.play(
@@ -669,21 +717,24 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide()
             self.play(m.FadeIn(approaches[i + 1], shift=0.3 * m.RIGHT), run_time=1)
 
-        self.next_slide(notes="""
-        Our work aims at reduce the current limitations:""")
+        self.next_slide(
+            notes="""
+        Our work aims at reduce the current limitations:"""
+        )
         what = m.Tex(
             r"\textbf{Current limitations:}\\\\",
             r"$\bullet$ Few available implementations\\",
             r"$\bullet$ Lack of comparison \textit{(see paper)}\\",
             r"$\bullet$ Unclear validity of extrapolation\\",
             r"$\bullet$ Multipath structure estimation based on measurements",
-            font_size=1.3*TITLE_FONT_SIZE,
+            font_size=1.3 * TITLE_FONT_SIZE,
             tex_environment=None,
         ).move_to(self.camera.frame)
 
         self.play(self.next_slide_number_animation())
+        print(f"{self.mobjects_without_canvas=}")
         self.play(
-            *[mobj.animate.fade(0.95) for mobj in self.mobjects_without_canvas if mobj != self.slide_number],
+            m.Group(*self.mobjects_without_canvas).animate.fade(0.95),
             m.FadeIn(what[0]),
             run_time=1,
         )
@@ -693,19 +744,23 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(what[i + 1], shift=0.3 * m.RIGHT), run_time=1)
 
         self.next_slide(notes="Contents of this presentation")
-        contents = m.Tex(
-            r"\textbf{Contents:}\\\\",
-            r"$\bullet$ Dynamic (Dyn.) and Differentiable (Diff.) Ray Tracing (RT)\\",
-            r"$\bullet$ Limits of extrapolation\\",
-            r"$\bullet$ Multipath Lifetime Map (MLM) and metrics\\",
-            r"$\bullet$ Results of MLMs for a moving RX",
-            font_size=1.3*TITLE_FONT_SIZE,
-            tex_environment=None,
-        ).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+        contents = (
+            m.Tex(
+                r"\textbf{Contents:}\\\\",
+                r"$\bullet$ Dynamic (Dyn.) and Differentiable (Diff.) Ray Tracing (RT)\\",
+                r"$\bullet$ Limits of extrapolation\\",
+                r"$\bullet$ Multipath Lifetime Map (MLM) and metrics\\",
+                r"$\bullet$ Results of MLMs for a moving RX",
+                font_size=CONTENT_FONT_SIZE,
+                tex_environment=None,
+            )
+            .move_to(self.camera.frame)
+            .shift(m.DOWN * self.camera.frame.height)
+        )
 
         self.play(self.next_slide_number_animation())
         self.play(
-            self.frame_group.animate.move_to(contents),
+            self.frame_group.animate.move_to(contents).set_width(old_width),
             m.FadeIn(contents[0]),
             run_time=1,
         )
@@ -714,15 +769,29 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide()
             self.play(m.FadeIn(contents[i + 1], shift=0.3 * m.RIGHT), run_time=1)
 
-        table = m.Table(
-            [["Unibo's", "Sionna, DiffeRT (ours)"],
-            [r"Manual\textscuperscript{*}", "Automatic"],
-            [r"Analytical\textscuperscript{*}", "Numerical"],
-            ["``Plugin''-compatible", r"Scalable, \textit{any} derivatives"],
-            ["Site-specific, local derivatives", "Requires AD framework"],
-            ],
-            row_labels=[m.Tex("Tools"), m.Tex("Differentiation"), m.Tex("Interpretability"), m.Tex("Pros"), m.Tex("Cons")],
-            col_labels=[m.Tex("Dyn. RT"), m.Tex("Diff. RT")]).move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
+        table = (
+            m.Table(
+                [
+                    ["Unibo's", r"Sionna\\DiffeRT (ours)"],
+                    [r"Manual\textsuperscript{*}", "Automatic"],
+                    [r"Analytical\textsuperscript{*}", "Numerical"],
+                    ["``Plugin''-compatible", r"Scalable\\\textit{Any} derivatives"],
+                    ["Site-specific, local derivatives", "Requires AD framework"],
+                ],
+                row_labels=[
+                    m.Tex(r"\textbf{Tools}"),
+                    m.Tex(r"\textbf{Differentiation}"),
+                    m.Tex(r"\textbf{Interpretability}"),
+                    m.Tex(r"\textbf{Pros}"),
+                    m.Tex(r"\textbf{Cons}"),
+                ],
+                col_labels=[m.Tex(r"\textbf{Dyn. RT"), m.Tex(r"\textbf{Diff. RT}")],
+                element_to_mobject=partial(m.Tex, font_size=CONTENT_FONT_SIZE),
+                line_config={"color": m.BLACK},
+            )
+            .move_to(self.camera.frame)
+            .shift(m.RIGHT * self.camera.frame.width)
+        ).savel(0.7)
 
         self.next_slide(notes="We rapidly compare the two approaches")
         self.play(self.next_slide_number_animation())
@@ -732,14 +801,215 @@ class Main(Slide, m.MovingCameraScene):
             run_time=1,
         )
 
-        cells_im = m.ImageMobject("images/cells.png").scale(2.0).move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
-
-        self.add(cells_im)
-        self.play(self.next_slide_number_animation())
-        self.play(
-            self.frame_group.animate.move_to(cells_im),
-            run_time=1,
+        rect = (
+            m.RoundedRectangle(width=3, height=3, color=m.BLACK)
+            .move_to(self.camera.frame)
+            .shift(m.RIGHT * self.camera.frame.width)
         )
+        center = rect.get_center()
+
+        tx_x = m.ValueTracker(-1.0)
+        tx_y = m.ValueTracker(0.0)
+        s1 = np.array([-0.5, +0.75, 0.0]) + center
+        e1 = np.array([0.5, +0.75, 0.0]) + center
+        s2 = np.array([-0.75, -0.75, 0.0]) + center
+        e2 = np.array([0.25, -0.75, 0.0]) + center
+        tx = m.always_redraw(
+            lambda: m.Dot(
+                np.array([tx_x.get_value(), tx_y.get_value(), 0.0]) + center,
+                color=m.BLACK,
+            )
+        )
+        self.next_slide(
+            notes="We will use a simple example to illustrate the limits of snapshot extrapolation."
+        )
+        self.play(
+            self.frame_group.animate.move_to(rect),
+            m.LaggedStart(
+                m.Write(m.DashedVMobject(rect, num_dashes=30, dashed_ratio=0.7)),
+                m.GrowFromCenter(tx),
+                m.Create(m.Line(s1, e1, color=m.BLACK)),
+                m.Create(m.Line(e2, s2, color=m.BLACK)),
+                lag_ratio=0.3,
+                run_time=1.0,
+            ),
+        )
+        self.next_slide(
+            notes="""
+            When performing RT, each reflection order is computed separately."
+            E.g., the LOS path is computed first.
+            Here, the lid region is the area where a LOS path exists.
+            """
+        )
+        texts = m.Tex(
+            "Line-of-sight",
+            "+",
+            "Reflection from $W_1$",
+            "+",
+            "Reflection from $W_2$",
+            color=m.WHITE,
+        ).next_to(rect, m.DOWN, buff=0.5)
+        texts[0].set_color(m.PINK)
+        texts[2].set_color(m.BLUE)
+        texts[4].set_color(m.GREEN)
+
+        nw = jnp.array([-1.5, +1.5, 0]) + center
+        ne = jnp.array([+1.5, +1.5, 0]) + center
+        sw = jnp.array([-1.5, -1.5, 0]) + center
+        se = jnp.array([+1.5, -1.5, 0]) + center
+
+        n_line = [nw, ne]
+        s_line = [sw, se]
+        r_line = [ne, se]
+
+        z_los = m.always_redraw(
+            lambda: m.Intersection(
+                rect,
+                m.Polygon(
+                    *[
+                        sw,
+                        m.line_intersection([tx.get_center(), s2], s_line),
+                        s2,
+                        e2,
+                        m.line_intersection(s_line, [tx.get_center(), e2]),
+                        se,
+                        ne,
+                        m.line_intersection([tx.get_center(), e1], n_line),
+                        e1,
+                        s1,
+                        m.line_intersection([tx.get_center(), s1], n_line),
+                        nw,
+                    ]
+                ),
+                color=m.PINK,
+                fill_opacity=0.5,
+                z_index=-1,
+            )
+        )
+        self.play(m.Write(z_los), m.FadeIn(texts[0]))
+        self.next_slide(
+            "We can apply the same reasoning to the first-order reflection on the upper wall."
+        )
+        self.play(m.FadeOut(z_los), m.FadeOut(texts[0]))
+
+        def reflection(
+            a: np.ndarray, b: np.ndarray, c: np.ndarray, d: np.ndarray
+        ) -> np.ndarray:
+            i = a - b
+            n = m.normalize(np.array([c[1] - d[1], d[0] - c[0], 0.0]))
+            return a - 2 * np.dot(i, n) * n
+
+        z_r1 = m.always_redraw(
+            lambda: m.Intersection(
+                rect,
+                m.Polygon(
+                    *[
+                        s1,
+                        m.line_intersection(
+                            [s1, reflection(tx.get_center(), s1, s1, e1)], s_line
+                        ),
+                        se,
+                        m.line_intersection(
+                            [e1, reflection(tx.get_center(), e1, s1, e1)], r_line
+                        ),
+                        e1,
+                    ]
+                ),
+                color=m.BLUE,
+                fill_opacity=0.5,
+                z_index=-1,
+            )
+        )
+        self.play(m.Write(z_r1), m.FadeIn(texts[2]))
+        self.next_slide("And the first-order reflection on the second wall.")
+        self.play(m.FadeOut(z_r1), m.FadeOut(texts[2]))
+
+        def get_xm() -> np.ndarray:
+            dx = tx_x.get_value() + 1.0
+            dy = tx_y.get_value()
+            x_start = -0.5 + 0.25 * dy / 0.75
+            return np.array([x_start + dx / 1.5, -0.75, 0.0]) + center
+
+        z_r2 = m.always_redraw(
+            lambda: m.Intersection(
+                rect,
+                m.Polygon(
+                    *[
+                        s2,
+                        e2,
+                        m.line_intersection(
+                            [e2, reflection(tx.get_center(), e2, s2, e2)], r_line
+                        ),
+                        ne,
+                        m.line_intersection(
+                            [get_xm(), reflection(tx.get_center(), get_xm(), s2, e2)],
+                            n_line,
+                        ),
+                        e1,
+                        m.line_intersection(
+                            [s2, reflection(tx.get_center(), s2, s2, e2)], [s1, e1]
+                        ),
+                    ]
+                ),
+                color=m.GREEN,
+                fill_opacity=0.5,
+                z_index=-1,
+            )
+        )
+        self.play(m.Write(z_r2), m.FadeIn(texts[4]))
+        self.next_slide(
+            notes="Of course, ray tracing is not limited to first-order reflection."
+        )
+        self.play(m.FadeOut(z_r2), m.FadeOut(texts[4]))
+
+        self.next_slide(
+            notes="By adding contributions from all previous reflections, we draw the multipath cells."
+        )
+        self.play(m.Write(z_los), m.FadeIn(texts[0]))
+        self.next_slide()
+        self.play(m.FadeIn(texts[1]))
+        self.next_slide()
+        self.play(m.Write(z_r1), m.FadeIn(texts[2]))
+        self.next_slide()
+        self.play(m.FadeIn(texts[3]))
+        self.next_slide()
+        self.play(m.Write(z_r2), m.FadeIn(texts[4]))
+        self.next_slide(
+            notes="""
+            The superposition of all cells if what we call the Multipath Lifetime Map.
+            A cell is defined as the area where the multipath structure remains the same,
+            and a cell can be split into multiple 
+            That,
+                        """
+        )
+        self.play(
+            m.FadeIn(
+                m.Tex(
+                    "This is a Multipath Lifetime Map (MLM) for a moving RX",
+                    font_size=TITLE_FONT_SIZE,
+                ).to_edge(m.DOWN),
+                shift=0.3 * m.UP,
+            )
+        )
+
+        self.next_slide(
+            loop=True,
+            notes="And of course, the map changes when any other object, like TX, moves.",
+        )
+        self.play(
+            tx_x.animate.increment_value(+0.10),
+            tx_y.animate.increment_value(+0.10),
+            run_time=1.0,
+        )
+        self.play(tx_x.animate.increment_value(-0.20), run_time=1.0)
+        self.play(tx_y.animate.increment_value(-0.20), run_time=1.0)
+        self.play(
+            tx_x.animate.increment_value(+0.10),
+            tx_y.animate.increment_value(+0.10),
+            run_time=1.0,
+        )
+        self.next_slide(notes="Dummy slide after loop")
+        self.wait(1)
 
         self.next_slide(notes="We define two metrics")
         metrics = (
@@ -757,20 +1027,108 @@ where \(i\) indicates the index of the multipath cell, \(\overline{\cdot}\) is t
     d_i(x) = \min\limits_{y \notin C_i} \text{dist}(x, y),
 \end{equation}
 that is, the minimum distance the object \(x\) has to travel to leave the cell \(C_i\).""",
-font_size=1.3*TITLE_FONT_SIZE,
+                font_size=CONTENT_FONT_SIZE,
             )
-            
-            .move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
+            .move_to(self.camera.frame)
+            .shift(m.RIGHT * self.camera.frame.width)
         )
 
-        self.add(metrics)
         self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate.move_to(metrics),
+            m.Write(metrics),
             run_time=1,
         )
 
-        mlms_im = m.ImageMobject("images/mlms.png").scale(2.0).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+        self.next_slide(notes="In practice, how to we compute the MLM?")
+        self.play(self.next_slide_number_animation())
+        self.play(self.frame_group.animate.move_to(rect), run_time=1)
+
+        self.next_slide(
+            notes="We place a grid of RXs in the scene and identify each path component"
+        )
+        rxs = m.VGroup(*[m.Dot(radius=0.05, color=m.RED) for _ in range(49)])
+        rxs.arrange_in_grid(rows=7, buff=0.33).move_to(rect.get_center())
+        self.play(m.LaggedStart([m.GrowFromCenter(rx) for rx in rxs]), run_time=1.0)
+        self.next_slide()
+        self.play(rxs[-9].animate.scale(2.0).set_color(m.YELLOW), run_time=1.0)
+        self.next_slide()
+        self.play(
+            m.FadeIn(
+                m.Tex("1", color=m.WHITE).next_to(texts[0], m.DOWN), shift=0.3 * m.DOWN
+            ),
+            run_time=1.0,
+        )
+        self.next_slide()
+        self.play(
+            m.FadeIn(
+                m.Tex("1", color=m.WHITE).next_to(texts[2], m.DOWN), shift=0.3 * m.DOWN
+            ),
+            run_time=1.0,
+        )
+        self.next_slide()
+        self.play(
+            m.FadeIn(
+                m.Tex("0", color=m.WHITE).next_to(texts[4], m.DOWN), shift=0.3 * m.DOWN
+            ),
+            run_time=1.0,
+        )
+
+        self.next_slide(
+            notes="""
+            We then repeat the process for all RXs, identifying uniques cells.
+            
+            All the implementations details are available in the paper and in the provided tutorial.
+            """
+        )
+        self.wait(1)
+        self.next_slide(
+            notes=""""
+            We can then compute the metrics.
+            If we know the density of RXs, the cell area can be estimated by counting the number of RX per cell.
+            """
+        )
+        self.play(
+            m.Write(m.Tex(r"\(S_{i}\)").next_to(rect, m.LEFT, buff=1.5)),
+            m.LaggedStart(
+                [
+                    rxs[i].animate.scale(2.0).set_color(m.YELLOW)
+                    for i in [-1, -8, -15, -16]
+                ]
+            ),
+            run_time=1.0,
+        )
+        self.next_slide(
+            notes=""""
+            We then compute the distance to the closest RX that is not in the same cell,
+            and average the distance over all RXs in the cell to obtain the
+            average inter-cell distance.
+            """
+        )
+        self.play(
+            m.Write(m.Tex(r"\(\overline{d_{i}}\)").next_to(rect, m.RIGHT, buff=1.5)),
+            m.LaggedStart(
+                [
+                    m.GrowArrow(
+                        m.Arrow(
+                            rxs[i],
+                            rxs[j],
+                            stroke_width=2,
+                            max_stroke_width_to_length_ratio=100,
+                        )
+                    )
+                    for i, j in [(-1, -2), (-8, -2), (-9, -10), (-15, -22), (-16, -17)]
+                ]
+            ),
+            run_time=1.0,
+        )
+
+        mlms_im = (
+            m.ImageMobject("images/mlms.png")
+            .scale(1.0)
+            .move_to(self.camera.frame)
+            .shift(m.DOWN * self.camera.frame.height)
+        )
 
         self.add(mlms_im)
         self.play(self.next_slide_number_animation())
@@ -779,7 +1137,12 @@ font_size=1.3*TITLE_FONT_SIZE,
             run_time=1,
         )
 
-        hist_im = m.ImageMobject("images/results_hist.png").scale(2.0).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+        hist_im = (
+            m.ImageMobject("images/results_hist.png")
+            .scale(1.0)
+            .move_to(self.camera.frame)
+            .shift(m.DOWN * self.camera.frame.height)
+        )
 
         self.add(hist_im)
         self.play(self.next_slide_number_animation())
@@ -788,7 +1151,12 @@ font_size=1.3*TITLE_FONT_SIZE,
             run_time=1,
         )
 
-        table_im = m.ImageMobject("images/results_table.png").scale(2.0).move_to(self.camera.frame).shift(m.DOWN*self.camera.frame.height)
+        table_im = (
+            m.ImageMobject("images/results_table.png")
+            .scale(1.0)
+            .move_to(self.camera.frame)
+            .shift(m.DOWN * self.camera.frame.height)
+        )
 
         self.add(table_im)
         self.play(self.next_slide_number_animation())
@@ -806,7 +1174,7 @@ font_size=1.3*TITLE_FONT_SIZE,
             r"$\bullet$ Dyn. RT becomes efficient if scenes can be simplified\\",
             r"$\bullet$ Visualizing MLMs highlights the complexity of multipath clusters and regions\\",
             r"$\bullet$ MLM's metrics allow to estimate the benefits of using Dyn. RT based on simulation \textit{only}",
-            font_size=1.3*TITLE_FONT_SIZE,
+            font_size=CONTENT_FONT_SIZE,
             tex_environment=None,
         ).move_to(self.camera.frame)
 
@@ -822,139 +1190,42 @@ font_size=1.3*TITLE_FONT_SIZE,
             self.next_slide()
             self.play(m.FadeIn(summary[i + 1], shift=0.3 * m.RIGHT), run_time=1)
 
-
         self.next_slide(notes="Finals words")
         m.ImageMobject.set_default(scale_to_resolution=540)
 
-        qrcodes = m.Group(
+        qrcodes = (
             m.Group(
-                m.ImageMobject("images/tutorial.png").scale(0.8),
-                m.VGroup(
-                    m.SVGMobject("images/book.svg").scale(0.3), 
-                m.Text("Interactive tutorial")
-                ).arrange(m.RIGHT),
-            ).arrange(m.DOWN),
-            m.Group(
-                m.ImageMobject("images/differt.png").scale(0.8),
-                m.VGroup(
-                    m.SVGMobject("images/github.svg").scale(0.3), 
-                m.Text("jeertmans/DiffeRT")
-                ).arrange(m.RIGHT),
-            ).arrange(m.DOWN),
-        ).arrange(m.RIGHT, buff=1.0).scale(1.5).move_to(self.camera.frame).shift(m.RIGHT*self.camera.frame.width)
+                m.Group(
+                    m.ImageMobject("images/tutorial.png").scale(0.8),
+                    m.VGroup(
+                        m.SVGMobject("images/book.svg").scale(0.3),
+                        m.Text("Interactive tutorial"),
+                    ).arrange(m.RIGHT),
+                ).arrange(m.DOWN),
+                m.Group(
+                    m.ImageMobject("images/differt.png").scale(0.8),
+                    m.VGroup(
+                        m.SVGMobject("images/github.svg").scale(0.3),
+                        m.Text("jeertmans/DiffeRT"),
+                    ).arrange(m.RIGHT),
+                ).arrange(m.DOWN),
+            )
+            .arrange(m.RIGHT, buff=1.0)
+            .scale(1)
+            .move_to(self.camera.frame)
+            .shift(m.RIGHT * self.camera.frame.width)
+        )
         self.play(
             self.frame_group.animate.move_to(qrcodes),
             m.FadeIn(qrcodes),
             run_time=1,
         )
-        manim_slides = m.Tex("Slides were generated using Manim Slides, free and open source tool.", font_size=1.3*SOURCE_FONT_SIZE).to_edge(m.DOWN)
+        manim_slides = m.Tex(
+            "Slides were generated using Manim Slides, a free and open source tool.",
+            font_size=SOURCE_FONT_SIZE,
+        ).next_to(qrcodes, 3 * m.DOWN)
         self.play(
-            m.FadeIn(manim_slides, shift=0.3*m.UP),
+            m.FadeIn(manim_slides, shift=0.3 * m.UP),
             run_time=1,
         )
         self.wait(1)
-
-class Cells(Slide):
-    def construct(self):
-        tx_x = m.ValueTracker(-1.0)
-        tx_y = m.ValueTracker(0.0)
-        s1 = np.array([-0.5, +0.75, 0.0])
-        e1 = np.array([0.5, +0.75, 0.0])
-        s2 = np.array([-.75, -0.75, 0.0])
-        e2 = np.array([0.25, -0.75, 0.0])
-        tx = m.always_redraw(lambda: m.Dot(np.array([tx_x.get_value(), tx_y.get_value(), 0.0])))
-        rect = m.RoundedRectangle(width=3, height=3, color=m.WHITE)
-        self.next_slide(notes="We will use a simple example to illustrate the limits of snapshot extrapolation.")
-        self.play(
-            m.LaggedStart(
-            m.Write(m.DashedVMobject(rect, num_dashes=30, dashed_ratio=0.7)),m.GrowFromCenter(tx),
-            m.Create(m.Line(s1, e1)), m.Create(m.Line(e2, s2)), lag_ratio=0.3,
-            run_time=1.0)
-        )
-        self.next_slide(notes="""
-            When performing RT, each reflection order is computed separately."
-            E.g., the LOS path is computed first.
-            Here, the lid region is the area where a LOS path exists.
-            """)
-        texts = m.Tex("Line-of-sight", "+", "Reflection from $W_1$", "+", "Reflection from $W_2$", color=m.WHITE).next_to(rect, m.DOWN, buff=0.5)
-        texts[0].set_color(m.PINK)
-        texts[2].set_color(m.BLUE)
-        texts[4].set_color(m.GREEN)
-
-        nw = jnp.array([-1.5, +1.5, 0])
-        ne = jnp.array([+1.5, +1.5, 0])
-        sw = jnp.array([-1.5, -1.5, 0])
-        se = jnp.array([+1.5, -1.5, 0])
-
-        n_line = [nw, ne]
-        s_line = [sw, se]
-        r_line = [ne, se]
-
-        z_los = m.always_redraw(lambda: m.Intersection(rect, m.Polygon(*[sw, m.line_intersection([tx.get_center(), s2], s_line), s2, e2, m.line_intersection(s_line, [tx.get_center(), e2]), se, ne, m.line_intersection([tx.get_center(), e1], n_line), e1, s1, m.line_intersection([tx.get_center(), s1], n_line), nw]), color=m.PINK, fill_opacity=0.5, z_index=-1))
-        self.play(m.Write(z_los), m.FadeIn(texts[0]))
-        self.next_slide("We can apply the same reasoning to the first-order reflection on the upper wall.")
-        self.play(m.FadeOut(z_los), m.FadeOut(texts[0]))
-
-        def reflection(a: np.ndarray, b: np.ndarray, c: np.ndarray, d: np.ndarray) -> np.ndarray:
-            i = a - b
-            n = m.normalize(np.array([c[1] - d[1], d[0] - c[0], 0.0]))
-            return a - 2 * np.dot(i, n) * n
-
-        z_r1 = m.always_redraw(lambda: m.Intersection(rect, m.Polygon(*[s1, m.line_intersection([s1, reflection(tx.get_center(), s1, s1, e1)], s_line), se, m.line_intersection([e1, reflection(tx.get_center(), e1, s1, e1)], r_line), e1]), color=m.BLUE, fill_opacity=0.5, z_index=-1))
-        self.play(m.Write(z_r1), m.FadeIn(texts[2]))
-        self.next_slide("And the first-order reflection on the second wall.")
-        self.play(m.FadeOut(z_r1), m.FadeOut(texts[2]))
-
-        def get_xm() -> np.ndarray:
-            dx = (tx_x.get_value() + 1.0)
-            dy = tx_y.get_value()
-            x_start = -0.5 + 0.25 * dy / 0.75
-            return np.array([x_start + dx / 1.5, -0.75, 0.0])
-
-        z_r2 = m.always_redraw(lambda: m.Intersection(rect, m.Polygon(*[s2, e2, m.line_intersection([e2, reflection(tx.get_center(), e2, s2, e2)], r_line), ne, m.line_intersection([get_xm(), reflection(tx.get_center(), get_xm(), s2, e2)], n_line), e1, m.line_intersection([s2, reflection(tx.get_center(), s2, s2, e2)], [s1, e1])]), color=m.GREEN, fill_opacity=0.5, z_index=-1))
-        self.play(m.Write(z_r2), m.FadeIn(texts[4]))
-        self.next_slide(notes="Of course, ray tracing is not limited to first-order reflection.")
-        self.play(m.FadeOut(z_r2), m.FadeOut(texts[4]))
-
-        self.next_slide(notes="By adding contributions from all previous reflections, we draw the multipath cells.")
-        self.play(m.Write(z_los), m.FadeIn(texts[0]))
-        self.next_slide()
-        self.play(m.FadeIn(texts[1]))
-        self.next_slide()
-        self.play(m.Write(z_r1), m.FadeIn(texts[2]))
-        self.next_slide()
-        self.play(m.FadeIn(texts[3]))
-        self.next_slide()
-        self.play(m.Write(z_r2), m.FadeIn(texts[4]))
-        self.next_slide(notes="""
-            The superposition of all cells if what we call the Multipath Lifetime Map.
-            A cell is defined as the area where the multipath structure remains the same,
-            and a cell can be split into multiple 
-            That,
-                        """)
-        self.play(m.FadeIn(m.Tex("This is a Multipath Lifetime Map (MLM) for a moving RX", font_size=TITLE_FONT_SIZE).to_edge(m.DOWN), shift=0.3*m.UP))
-
-        self.next_slide(loop=True, notes="And of course, the map changes when any other object, like TX, moves.")
-        self.play(x.animate.increment_value(+0.10), y.animate.increment_value(+0.10), run_time=1.0)
-        self.play(x.animate.increment_value(-0.20), run_time=1.0)
-        self.play(y.animate.increment_value(-0.20), run_time=1.0)
-        self.play(x.animate.increment_value(+0.10), y.animate.increment_value(+0.10), run_time=1.0)
-        self.next_slide(notes="Dummy slide after loop")
-        self.wait(1)
-        self.next_slide(notes="In practice, how to we compute the MLM?")
-
-        rxs = m.VGroup(*[m.Dot(radius=0.05, color=m.RED) for _ in range(49)])
-        rxs.arrange_in_grid(rows=7, buff=0.33).move_to(rect.get_center())
-        self.play(m.LaggedStart([m.GrowFromCenter(rx) for rx in rxs]), run_time=1.0)
-        self.next_slide()
-        self.play(rxs[-9].animate.scale(2.0).set_color(m.YELLOW), run_time=1.0)
-        self.next_slide()
-        self.play(m.FadeIn(m.Tex("1", color=m.WHITE).next_to(texts[0], m.DOWN), shift=0.3*m.DOWN), run_time=1.0)
-        self.next_slide()
-        self.play(m.FadeIn(m.Tex("1", color=m.WHITE).next_to(texts[2], m.DOWN), shift=0.3*m.DOWN), run_time=1.0)
-        self.next_slide()
-        self.play(m.FadeIn(m.Tex("0", color=m.WHITE).next_to(texts[4], m.DOWN), shift=0.3*m.DOWN), run_time=1.0)
-
-class MLMs(Slide):
-    def construct(self):
-        pass
