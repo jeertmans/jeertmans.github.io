@@ -506,7 +506,8 @@ class Main(Slide, m.MovingCameraScene):
                 draw_power_scene_with_cars(),
             )
         )
-        # im = m.Dot()
+        del im
+        im = m.Dot()
         sionna_rt = m.Tex(
             r"\textit{Simple street cayon} from Sionna RT, simulated using DiffeRT",
             font_size=SOURCE_FONT_SIZE,
@@ -791,7 +792,7 @@ class Main(Slide, m.MovingCameraScene):
             )
             .move_to(self.camera.frame)
             .shift(m.RIGHT * self.camera.frame.width)
-        ).savel(0.7)
+        ).scale(0.7)
 
         self.next_slide(notes="We rapidly compare the two approaches")
         self.play(self.next_slide_number_animation())
