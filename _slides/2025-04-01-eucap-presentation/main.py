@@ -3,9 +3,8 @@ import io
 import os
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import Any, ParamSpec
+from typing import ParamSpec
 
-import av
 import differt.plotting as dplt
 import equinox as eqx
 import jax.numpy as jnp
@@ -72,47 +71,6 @@ download_sionna_scenes()
 dplt.set_defaults("plotly")
 
 
-class VideoAnimation(m.Animation):
-    def __init__(self, video_mobject, **kwargs) -> None:
-        self.video_mobject = video_mobject
-        self.index = 0
-        self.dt = 1.0 / len(video_mobject)
-        super().__init__(video_mobject, **kwargs)
-
-    def interpolate_mobject(self, dt: float) -> "VideoAnimation":
-        index = min(int(dt / self.dt), len(self.video_mobject) - 1)
-
-        if index != self.index:
-            self.index = index
-            self.video_mobject.pixel_array = self.video_mobject[index].pixel_array
-
-        return self
-
-
-class VideoMobject(m.ImageMobject):
-    def __init__(self, image_files: str | list[str], **kwargs: Any) -> None:
-        if isinstance(image_files, str):
-            container = av.open(image_files)
-            image_files = [
-                frame.to_ndarray(format="rgba") for frame in container.decode(video=0)
-            ]
-
-        assert len(image_files) > 0, "Cannot create empty video"
-        self.image_files = image_files
-        self.kwargs = kwargs
-        super().__init__(image_files[0], **kwargs)
-
-    def __len__(self) -> int:
-        return len(self.image_files)
-
-    def __getitem__(self, index: int) -> m.ImageMobject:
-        return m.ImageMobject(self.image_files[index], **self.kwargs)
-
-    def play(self, **kwargs: Any) -> VideoAnimation:
-        return VideoAnimation(self, **kwargs)
-
-
-# @partial(jax.jit, static_argnames=("n",))
 @eqx.filter_jit
 def cars(x_min, x_max, y_min, y_max, dx=0.0, n=12):
     car = (
@@ -177,53 +135,6 @@ def move_camera(
     )
 
     fig.update_layout(scene_camera=camera)
-
-    return fig
-
-
-def set_opacity(
-    fig: go.Figure, *, opacity: int | float = 1, selector: dict[str, Any]
-) -> go.Figure:
-    fig.update_traces(opacity=opacity, selector=selector)
-    return fig
-
-
-def draw_triangle_edges(fig: go.Figure, *, scene: TriangleScene) -> go.Figure:
-    edges = scene.mesh.triangle_vertices
-    edges = jnp.stack((edges, jnp.roll(edges, shift=1, axis=-2)), axis=-2)
-    return dplt.draw_paths(
-        edges,
-        figure=fig,
-        name="triangles",
-        marker=dict(size=0),
-        line=dict(color="white"),
-        showlegend=False,
-    )
-
-
-original_color: m.ManimColor | None = None
-current_face_index: int | None = None
-
-
-def highlight_face(
-    fig: go.Figure, *, alpha: int | float = 0, face_index: int = 0
-) -> go.Figure:
-    global original_color
-    global current_face_index
-
-    if current_face_index is None and alpha == 0:
-        return fig
-
-    mesh = next(trace for trace in fig.data if trace.type == "mesh3d")
-
-    if original_color is None or current_face_index != face_index:
-        original_color = mesh.facecolor[2 * face_index + 0, :].copy()
-        current_face_index = face_index
-
-    new_color = original_color * (1 - alpha) + np.array([1.0, 1.0, 0.0]) * alpha
-
-    mesh.facecolor[2 * face_index + 0, :] = new_color
-    mesh.facecolor[2 * face_index + 1, :] = new_color
 
     return fig
 
@@ -586,9 +497,9 @@ class Main(Slide, m.MovingCameraScene):
             .next_to(box, m.DOWN)
         )
 
-        for x in group:
+        for obj in group:
             self.next_slide()
-            self.play(m.FadeIn(x, shift=0.3 * m.DOWN), run_time=1.0)
+            self.play(m.FadeIn(obj, shift=0.3 * m.DOWN), run_time=1.0)
 
         self.next_slide(notes="We then trace the rays between TX and RX")
         pt = m.Tex(r"Tracing of\\ray paths", font_size=TITLE_FONT_SIZE).next_to(
@@ -622,13 +533,24 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.Create(box_em), run_time=1)
         self.play(m.FadeIn(em), run_time=1)
 
-        canvas = m.VGroup(group, box_em)
-
-        old_width = self.camera.frame.width
+        self.next_slide(notes="E.g., EM fields can be used to compute the coverage map")
+        coverage_map = (
+            draw_power_scene_with_cars(
+                dx=0,
+                elev=0,
+                azim=0,
+                dist=10,
+            )
+            .scale(0.25)
+            .next_to(box_em, m.DOWN)
+        )
+        self.play(m.FadeIn(coverage_map, shift=0.3 * m.DOWN))
 
         self.next_slide(
             notes="If you look at the bigger picture, radio-wave propagation through RT is a two-step process."
         )
+        canvas = m.VGroup(group, box_em)
+        old_width = self.camera.frame.width
         self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate.move_to(canvas.get_center()).set_width(
