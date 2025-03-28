@@ -552,7 +552,7 @@ class Main(Slide, m.MovingCameraScene):
             dx.animate(rate_func=m.linear).increment_value(
                 (x.max() - x.min()) - 10.0,
             ),
-            run_time=4,
+            run_time=10.0,
         )
         self.next_slide(notes="Dummy slide after loop")
         self.wait(1)
@@ -688,7 +688,7 @@ class Main(Slide, m.MovingCameraScene):
                 r"\textbf{Approaches:}\\\\",
                 r"1. Dynamic (Dyn.) Ray Tracing: snapshots extrapolation using differentiation (by hand) \\",
                 r"2. Differentiable (Diff.) Ray Tracing (RT): Machine Learning and Optimization using automatic differentiation (AD)",
-                font_size=TITLE_FONT_SIZE,
+                font_size=CONTENT_FONT_SIZE,
                 tex_environment=None,
             )
             .move_to(self.camera.frame)
@@ -715,7 +715,7 @@ class Main(Slide, m.MovingCameraScene):
             r"$\bullet$ Lack of comparison \textit{(see paper)}\\",
             r"$\bullet$ Unclear validity of extrapolation\\",
             r"$\bullet$ Multipath structure estimation based on measurements",
-            font_size=1.3 * TITLE_FONT_SIZE,
+            font_size=CONTENT_FONT_SIZE,
             tex_environment=None,
         ).move_to(self.camera.frame)
 
@@ -783,9 +783,8 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(notes="We rapidly compare the two approaches")
         self.play(self.next_slide_number_animation())
         self.play(
-            self.frame_group.animate.move_to(table),
-            table.create(),
-            run_time=1,
+            self.frame_group.animate(run_time=1).move_to(table),
+            table.create(run_time=2),
         )
 
         rect = (
