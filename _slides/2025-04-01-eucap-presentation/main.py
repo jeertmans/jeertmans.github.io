@@ -597,35 +597,16 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.Create(box_pt), run_time=1)
         self.play(m.FadeIn(pt), run_time=1)
 
-        self.next_slide(notes="Here, rays are simply a collection of points")
-
-        all_rays = m.Tex(r"All rays\\from TX to RX", font_size=TITLE_FONT_SIZE).next_to(
-            box_pt, m.RIGHT, buff=4.0
-        )
-        arr = m.DashedLine(
-            box_pt.get_right(), all_rays.get_left(), buff=0.1, color=m.BLACK
-        )
-        arr.add_tip()
-        self.play(self.next_slide_number_animation())
-        self.play(
-            m.Create(
-                arr,
-            ),
-            self.frame_group.animate.move_to(all_rays),
-            run_time=1,
-        )
-        self.play(m.FadeIn(all_rays), run_time=1)
-
         self.next_slide(notes="And, using each reach ray, we compute the EM fields")
         em = m.Tex("EM fields", font_size=TITLE_FONT_SIZE).next_to(
-            all_rays, m.RIGHT, buff=4.0
+            box_pt, m.RIGHT, buff=4.0
         )
         box_em = m.SurroundingRectangle(em, buff=0.3, color=m.BLACK)
         self.play(self.next_slide_number_animation())
         self.play(
             m.GrowArrow(
                 m.Arrow(
-                    all_rays.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK
+                    box_pt.get_right(), box_em.get_left(), buff=0.1, color=m.BLACK
                 )
             ),
             self.frame_group.animate.move_to(box_em),
@@ -848,7 +829,6 @@ class Main(Slide, m.MovingCameraScene):
             "Reflection from $W_1$",
             "+",
             "Reflection from $W_2$",
-            color=m.WHITE,
         ).next_to(rect, m.DOWN, buff=0.5)
         texts[0].set_color(m.PINK)
         texts[2].set_color(m.BLUE)
@@ -1224,7 +1204,7 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
         manim_slides = m.Tex(
             "Slides were generated using Manim Slides, a free and open source tool.",
             font_size=SOURCE_FONT_SIZE,
-        ).next_to(qrcodes, 3 * m.DOWN)
+        ).next_to(qrcodes, 2 * m.DOWN)
         self.play(
             m.FadeIn(manim_slides, shift=0.3 * m.UP),
             run_time=1,
