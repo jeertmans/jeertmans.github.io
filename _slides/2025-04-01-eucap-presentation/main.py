@@ -57,6 +57,7 @@ tex_template.add_to_preamble(
     r"""
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+\usepackage{mathtools}
 """
 )
 
@@ -538,8 +539,8 @@ class Main(Slide, m.MovingCameraScene):
             draw_power_scene_with_cars(
                 dx=0,
                 elev=0,
-                azim=0,
-                dist=10,
+                azim=-np.pi / 2,
+                dist=2,
             )
             .scale(0.25)
             .next_to(box_em, m.DOWN)
@@ -606,27 +607,58 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(notes="We have two approaches")
-        approaches = (
-            m.Tex(
-                r"\textbf{Approaches:}\\\\",
-                r"1. Dynamic (Dyn.) Ray Tracing: snapshots extrapolation using differentiation (by hand) \\",
-                r"2. Differentiable (Diff.) Ray Tracing (RT): Machine Learning and Optimization using automatic differentiation (AD)",
-                font_size=CONTENT_FONT_SIZE,
-                tex_environment=None,
-            )
-            .move_to(self.camera.frame)
-            .next_to(canvas, 2 * m.DOWN)
+        # TODO: fix position
+        dynrt = m.Tex(
+            "A) Dynamic (Dyn.) RT: snapshots extrapolation using local derivatives",
+            font_size=CONTENT_FONT_SIZE,
+        ).move_to(self.camera.frame).to_corner(m.UL)
+        diffrt = m.Tex(
+            "B) Differentiable (Diff.) RT: optimization using automatic differentiation (AD)",
+            font_size=CONTENT_FONT_SIZE,
+        ).move_to(self.camera.frame).to_corner(m.DL)
+
+        self.play(self.next_slide_number_animation())
+        self.play(
+            m.FadeIn(dynrt, shift=0.3 * m.RIGHT),
+            run_time=1,
+        )
+
+        self.next_slide(notes="If we name the path tracing step as f(x).")
+        fx = m.Tex(r"$f(x)$\\\rotatebox{90}{$\,=$}", font_size=CONTENT_FONT_SIZE).next_to(
+            box_pt, m.UP, buff=0.5
+        )
+        self.play(self.next_slide_number_animation())
+        self.play(m.FadeIn(fx), run_time=1)
+
+        self.next_slide(notes="And a full RT simulation as a 'snaphost'")
+        brace = m.Brace(canvas, direction=m.UP, buff=2.0, color=m.BLACK)
+        self.play(m.Write(brace), run_time=1.0)
+        self.play(
+            m.FadeIn(
+                m.Tex("Snapshot", font_size=CONTENT_FONT_SIZE).next_to(brace, m.UP),
+                shift=0.3 * m.UP,
+            ),
+            run_time=1.0,
+        )
+
+        self.next_slide(
+            notes="Then we extrapolate future snapshots using previous ones and local derivatives"
+        )
+        self.play(
+            m.FadeIn(
+                m.Tex(
+                    r"$f(x+\Delta x) \approx f(x) + \frac{\partial f}{\partial x} \Delta x $",
+                    font_size=CONTENT_FONT_SIZE,
+                ).next_to(m.Group(box_pt, box_em), m.UP)
+            ),
+            run_time=1.0,
         )
 
         self.play(self.next_slide_number_animation())
         self.play(
-            m.FadeIn(approaches[0]),
+            m.FadeIn(diffrt, shift=0.3 * m.RIGHT),
             run_time=1,
         )
-
-        for i in range(2):
-            self.next_slide()
-            self.play(m.FadeIn(approaches[i + 1], shift=0.3 * m.RIGHT), run_time=1)
 
         self.next_slide(
             notes="""
