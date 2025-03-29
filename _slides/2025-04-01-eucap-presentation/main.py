@@ -1,6 +1,7 @@
 import hashlib
 import io
 import os
+import random
 from collections.abc import Callable
 from functools import partial, wraps
 from typing import ParamSpec
@@ -20,18 +21,22 @@ from differt.em import (
 )
 from differt.geometry import (
     TriangleMesh,
+    merge_cell_ids,
     normalize,
     spherical_to_cartesian,
 )
-from differt.plotting import draw_image, reuse
+from differt.plotting import draw_image, draw_markers, reuse
 from differt.scene import (
     TriangleScene,
     download_sionna_scenes,
     get_sionna_scene,
 )
 from differt.utils import dot
+from jaxtyping import Array, Bool, Int
 from manim_slides import Slide
 from PIL import Image
+from plotly.colors import convert_to_RGB_255
+from plotly.subplots import make_subplots
 
 # Constants
 
@@ -70,6 +75,106 @@ m.Text.set_default(color=m.BLACK, font_size=CONTENT_FONT_SIZE)
 download_sionna_scenes()
 
 dplt.set_defaults("plotly")
+
+
+def hashfun(*objects: bytes) -> bytes:
+    m = hashlib.sha256()
+
+    for obj in objects:
+        m.update(obj)
+
+    return m.digest()
+
+
+def get_cell_hashes(
+    cell_ids: Int[Array, " *batch"],
+    mask: Bool[Array, "*batch num_path_candidates"],
+) -> dict[int, bytes]:
+    mask = mask.reshape(-1, mask.shape[-1])
+
+    return {
+        int(i): hashfun(mask[i, :].tobytes())
+        for i in jnp.unique(cell_ids, return_index=True)[1]
+    }
+
+
+def merge_cell_ids_and_hashes(
+    cell_ids: Int[Array, " *batch"],
+    new_cell_ids: Int[Array, " *batch"],
+    cell_hashes: dict[int, bytes],
+    new_cell_hashes: dict[int, bytes],
+) -> tuple[Int[Array, " *batch"], dict[int, bytes]]:
+    ret_cell_ids = merge_cell_ids(cell_ids, new_cell_ids)
+
+    ret_cell_hashes = {}
+
+    for index in jnp.unique(ret_cell_ids, return_index=True)[1]:
+        i = cell_ids.ravel()[index]
+        j = new_cell_ids.ravel()[index]
+
+        ret_cell_hashes[int(index)] = hashfun(
+            cell_hashes[int(i)],
+            new_cell_hashes[int(j)],
+        )
+
+    return ret_cell_ids, ret_cell_hashes
+
+
+def draw_mesh_2d(mesh: TriangleMesh, figure: go.Figure) -> None:
+    assert mesh.object_bounds is not None
+
+    for i, j in mesh.object_bounds:
+        sub_mesh = mesh[i:j]
+
+        (xs, ys, (_, z_max)) = sub_mesh.bounding_box.T
+
+        layer = "below" if z_max < 1e-6 else None
+
+        assert sub_mesh.face_colors is not None
+        color = convert_to_RGB_255(sub_mesh.face_colors[0, :])
+
+        figure.add_shape(
+            type="rect",
+            x0=xs[0],
+            y0=ys[0],
+            x1=xs[1],
+            y1=ys[1],
+            fillcolor=f"rgb{color!s}",
+            layer=layer,
+        )
+
+
+def random_rgb(cell_hash: bytes) -> str:
+    rng = random.Random(cell_hash)
+    r = rng.randint(0, 255)
+    g = rng.randint(0, 255)
+    b = rng.randint(0, 255)
+    return f"rgb({r},{g},{b})"
+
+
+def create_discrete_colorscale(
+    cell_ids: Int[Array, " *batch"],
+    cell_hashes: dict[int, bytes],
+    first_is_multipath_cell: bool,
+) -> list[list[float | str]]:
+    unique_ids = jnp.unique(cell_ids).tolist()
+    min_id = min(unique_ids)
+    max_id = max(unique_ids)
+    scale_factor = 1 + max_id - min_id
+
+    def scale(id_: int) -> float:
+        return (id_ - min_id) / scale_factor
+
+    colorscale = [
+        [scale(id_ + offset), random_rgb(cell_hashes[id_])]
+        for id_ in unique_ids
+        for offset in (0, 1)
+    ]
+
+    if first_is_multipath_cell:  # Let's hide the cell with no multipath
+        colorscale[0][1] = colorscale[1][1] = "rgba(0,0,0,0)"
+
+    return colorscale
 
 
 @eqx.filter_jit
@@ -675,7 +780,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         gx = m.Tex(
             r"\rotatebox{90}{$\,=$}\\\vspace{.15cm}$g(x)$", font_size=TITLE_FONT_SIZE
-        ).next_to(box_em, m.DOWN, buff=0.2)
+        ).next_to(coverage_map, m.DOWN, buff=0.2)
         self.play(self.next_slide_number_animation())
         self.play(m.FadeIn(gx), run_time=1)
 
@@ -685,7 +790,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             m.FadeIn(
                 m.Tex(
-                    r"$x_{i+1} = x_{i} + \alpha_{i} \cdot \nabla g(x)$",
+                    r"$x_{i+1} = x_{i} + \alpha_{i} \cdot \nabla g(x_i)$",
                     font_size=CONTENT_FONT_SIZE,
                 ).next_to(m.Group(box_pt, box_em), m.DOWN)
             ),
@@ -732,6 +837,7 @@ class Main(Slide, m.MovingCameraScene):
             m.Tex(
                 r"$\Rightarrow$ Introduce simulation tool and metrics to\\(...)",
                 font_size=CONTENT_FONT_SIZE,
+                tex_environment=None,
             ).next_to(what[4], m.RIGHT),
         ).shift(3 * m.LEFT)
 
@@ -1125,19 +1231,127 @@ i.e., the minimum distance an object \(x\) has to travel to leave \(C_i\).""",
             run_time=1.0,
         )
 
-        self.next_slide(notes="MLM")
-        mlms_im = (
-            m.ImageMobject("images/mlms.png")
-            .scale(1.0)
-            .move_to(self.camera.frame)
-            .shift(m.DOWN * self.camera.frame.height)
+        @cached
+        def draw_mlms(
+            x_pos: float,
+        ) -> go.Figure:
+            fig = make_subplots(
+                rows=1,
+                cols=2,
+                specs=[[{"type": "scene"}], [{"type": "heatmap"}]],
+            )
+
+            scene_grid = eqx.tree_at(
+                lambda s: s.receivers,
+                base_scene,
+                receivers_grid,
+            )
+
+            with reuse(figure=fig) as fig:
+                scene.plot(tx_kwargs={"visible": False}, row=1, col=1)
+                draw_mesh_2d(scene.mesh, fig)
+
+                scene_grid = eqx.tree_at(
+                    lambda s: s.transmitters,
+                    scene_grid,
+                    scene_grid.transmitters.at[0].set(x_pos),
+                )
+                cell_ids = jnp.zeros(batch, dtype=jnp.int32)
+                cell_hashes = {0: b""}
+                has_multipath = jnp.zeros(batch, dtype=bool)
+
+                for order in range(2):
+                    for paths in scene_grid.compute_paths(
+                        order=order, chunk_size=1_000
+                    ):
+                        new_cell_ids = paths.multipath_cells()
+                        new_cell_hashes = get_cell_hashes(new_cell_ids, paths.mask)
+                        has_multipath |= paths.mask.any(axis=-1)
+                        cell_ids, cell_hashes = merge_cell_ids_and_hashes(
+                            cell_ids,
+                            new_cell_ids,
+                            cell_hashes,
+                            new_cell_hashes,
+                        )
+
+                if not has_multipath.all():
+                    cell_id = jnp.max(cell_ids, initial=0, where=~has_multipath)
+                    cell_hashes[-1] = cell_hashes.pop(int(cell_id))
+
+                cell_ids = jnp.where(has_multipath, cell_ids, -1)
+                unique_ids, renumbered_cell_ids = jnp.unique(
+                    cell_ids, return_inverse=True
+                )
+                renumbered_cell_ids = renumbered_cell_ids.reshape(cell_ids.shape)
+                renumbered_cell_hashes = {
+                    i: cell_hashes[int(id_)] for i, id_ in enumerate(unique_ids)
+                }
+                colorscale = create_discrete_colorscale(
+                    renumbered_cell_ids,
+                    renumbered_cell_hashes,
+                    first_is_multipath_cell=bool(~has_multipath.all()),
+                )
+
+                draw_markers(
+                    np.asarray(scene_grid.transmitters.reshape(-1, 3)),
+                    labels=["tx"],
+                    showlegend=False,
+                    row=1,
+                    col=1,
+                )
+
+                tx_x, tx_y, _ = scene_grid.transmitters.reshape(3, 1)
+
+                fig.add_scatter(
+                    x=tx_x,
+                    y=tx_y,
+                    mode="markers+text",
+                    text=["tx"],
+                    marker={"color": "#EF553B", "size": 15},
+                    showlegend=False,
+                    row=1,
+                    col=2,
+                )
+
+                fig.add_heatmap(
+                    x=np.asarray(x[0, :]),
+                    y=np.asarray(y[:, 0]),
+                    z=np.asarray(renumbered_cell_ids),
+                    colorscale=colorscale,
+                    hovertemplate="cell id: %{z}",
+                    showscale=False,
+                    row=1,
+                    col=2,
+                )
+                return fig
+
+        self.next_slide(
+            notes="""
+            # MLM example
+            """
         )
+        x_pos = m.ValueTracker(x.min())
+        mlms_center = self.camera.frame + m.DOWN * self.camera.frame.height
+        mlms_im = m.always_redraw(
+            lambda: draw_mlms(
+                x_pos=x_pos.get_value(),
+            ).move_to(mlms_center),
+        )
+        # del im
+        # im = m.Dot()
+        self.next_slide(notes="MLM")
         self.add(mlms_im)
         self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate.move_to(mlms_im),
             run_time=1,
         )
+
+        self.next_slide(loop=True, notes="Animate MLMs")
+        self.play(x_pos.animate(rate_func=m.linear).set_value(x.max()), run_time=3)
+        self.play(x_pos.animate(rate_func=m.linear).set_value(x.min()), run_time=3)
+        self.next_slide(notes="Dummy slide after loop.")
+        self.wait(1)
 
         self.next_slide(notes="Table")
         hist_im = (
