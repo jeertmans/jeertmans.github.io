@@ -242,9 +242,9 @@ class Main(Slide, m.MovingCameraScene):
                 r"Comparing Differentiable and Dynamic Ray Tracing:\\Introducing the Multipath Lifetime Map",
                 font_size=TITLE_FONT_SIZE,
             ),
-            m.Tex(r"Jérome Eertmans - April 1\textsuperscript{st}, Stockholm").scale(
-                0.8
-            ),
+            m.Tex(
+                r"Jérome Eertmans - April 1\textsuperscript{st}, EuCAP 2025, Stockholm"
+            ).scale(0.8),
             m.Tex(
                 "Authors: Jérome Eertmans, Enrico Maria Vitucci, Vittorio Degli-Esposti, Laurent Jacques, Claude Oestges"
             ).scale(0.5),
@@ -608,14 +608,21 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="We have two approaches")
         # TODO: fix position
-        dynrt = m.Tex(
-            "A) Dynamic (Dyn.) RT: snapshots extrapolation using local derivatives",
-            font_size=CONTENT_FONT_SIZE,
-        ).move_to(self.camera.frame).to_corner(m.UL)
-        diffrt = m.Tex(
-            "B) Differentiable (Diff.) RT: optimization using automatic differentiation (AD)",
-            font_size=CONTENT_FONT_SIZE,
-        ).move_to(self.camera.frame).to_corner(m.DL)
+        dynrt, diffrt = (
+            m.VGroup(
+                m.Tex(
+                    "A) Dynamic (Dyn.) RT: snapshots extrapolation using local derivatives",
+                    font_size=CONTENT_FONT_SIZE,
+                ),
+                m.Tex(
+                    "B) Differentiable (Diff.) RT: optimization using automatic differentiation (AD)",
+                    font_size=CONTENT_FONT_SIZE,
+                ),
+            )
+            .next_to(canvas, m.DOWN)
+            .arrange(m.DOWN, center=False, aligned_edge=m.LEFT)
+            .shift(2 * m.LEFT + 1.5 * m.DOWN)
+        )
 
         self.play(self.next_slide_number_animation())
         self.play(
@@ -624,18 +631,18 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(notes="If we name the path tracing step as f(x).")
-        fx = m.Tex(r"$f(x)$\\\rotatebox{90}{$\,=$}", font_size=CONTENT_FONT_SIZE).next_to(
-            box_pt, m.UP, buff=0.5
-        )
+        fx = m.Tex(
+            r"$f(x)$\\\vspace{.15cm}\rotatebox{90}{$\,=$}", font_size=TITLE_FONT_SIZE
+        ).next_to(box_pt, m.UP, buff=0.2)
         self.play(self.next_slide_number_animation())
         self.play(m.FadeIn(fx), run_time=1)
 
         self.next_slide(notes="And a full RT simulation as a 'snaphost'")
         brace = m.Brace(canvas, direction=m.UP, buff=2.0, color=m.BLACK)
-        self.play(m.Write(brace), run_time=1.0)
+        self.play(m.FadeIn(brace, shift=0.3 * m.UP), run_time=1.0)
         self.play(
             m.FadeIn(
-                m.Tex("Snapshot", font_size=CONTENT_FONT_SIZE).next_to(brace, m.UP),
+                m.Tex("Snapshot", font_size=TITLE_FONT_SIZE).next_to(brace, m.UP),
                 shift=0.3 * m.UP,
             ),
             run_time=1.0,
@@ -654,10 +661,35 @@ class Main(Slide, m.MovingCameraScene):
             run_time=1.0,
         )
 
+        self.next_slide(
+            notes="Diff. RT is about being able to differentiate any function of our code with respect to any parameter."
+        )
         self.play(self.next_slide_number_animation())
         self.play(
             m.FadeIn(diffrt, shift=0.3 * m.RIGHT),
             run_time=1,
+        )
+
+        self.next_slide(
+            notes="E.g., we define an objective function g(x), here, the power."
+        )
+        gx = m.Tex(
+            r"\rotatebox{90}{$\,=$}\\\vspace{.15cm}$g(x)$", font_size=TITLE_FONT_SIZE
+        ).next_to(box_em, m.DOWN, buff=0.2)
+        self.play(self.next_slide_number_animation())
+        self.play(m.FadeIn(gx), run_time=1)
+
+        self.next_slide(
+            notes="And use AD to perform gradient descend to find the optimal parameters."
+        )
+        self.play(
+            m.FadeIn(
+                m.Tex(
+                    r"$x_{i+1} = x_{i} + \alpha_{i} \cdot \nabla g(x)$",
+                    font_size=CONTENT_FONT_SIZE,
+                ).next_to(m.Group(box_pt, box_em), m.DOWN)
+            ),
+            run_time=1.0,
         )
 
         self.next_slide(
@@ -667,9 +699,9 @@ class Main(Slide, m.MovingCameraScene):
         what = m.Tex(
             r"\textbf{Current limitations:}\\\\",
             r"$\bullet$ Few available implementations\\",
-            r"$\bullet$ Lack of comparison \textit{(see paper)}\\",
+            r"$\bullet$ Lack of comparison and confusion\\",
             r"$\bullet$ Unclear validity of extrapolation\\",
-            r"$\bullet$ Multipath structure estimation based on measurements",
+            r"$\bullet$ Multipath structure estimation\\(based on measurements)",
             font_size=CONTENT_FONT_SIZE,
             tex_environment=None,
         ).move_to(self.camera.frame)
@@ -685,11 +717,45 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide()
             self.play(m.FadeIn(what[i + 1], shift=0.3 * m.RIGHT), run_time=1)
 
+        contribs = m.VGroup(
+            m.Tex(r"\textbf{Contributions}", font_size=CONTENT_FONT_SIZE).next_to(
+                what[0], m.RIGHT
+            ),
+            m.Tex(
+                r"$\Rightarrow$ Provide a qualitative comparison \textit{(details in paper)}",
+                font_size=CONTENT_FONT_SIZE,
+            ).next_to(what[1:3], m.RIGHT),
+            m.Tex(
+                r"$\Rightarrow$ Illustrate the limits of Dyn. RT",
+                font_size=CONTENT_FONT_SIZE,
+            ).next_to(what[3], m.RIGHT),
+            m.Tex(
+                r"$\Rightarrow$ Introduce simulation tool and metrics to\\(...)",
+                font_size=CONTENT_FONT_SIZE,
+            ).next_to(what[4], m.RIGHT),
+        ).shift(3 * m.LEFT)
+
+        for contrib in contribs[:-1]:
+            contrib.align_to(contribs[-1], m.LEFT)
+
+        self.next_slide(notes="Our contributions are as follows")
+        self.play(self.next_slide_number_animation())
+        self.play(
+            what.animate.shift(4 * m.LEFT),
+            m.FadeIn(contribs[0]),
+            run_time=1,
+        )
+
+        for i, j in [(slice(1, 3), 1), (3, 2), (4, 3)]:
+            self.next_slide()
+            self.play(m.Circumscribe(what[i], color=m.RED), run_time=1)
+            self.play(m.FadeIn(contribs[j], shift=0.3 * m.RIGHT), run_time=1)
+
         self.next_slide(notes="Contents of this presentation")
         contents = (
             m.Tex(
                 r"\textbf{Contents:}\\\\",
-                r"$\bullet$ Dynamic (Dyn.) and Differentiable (Diff.) Ray Tracing (RT)\\",
+                r"$\bullet$ Methods comparison\\",
                 r"$\bullet$ Limits of extrapolation\\",
                 r"$\bullet$ Multipath Lifetime Map (MLM) and metrics\\",
                 r"$\bullet$ Results of MLMs for a moving RX",
@@ -716,7 +782,7 @@ class Main(Slide, m.MovingCameraScene):
                 [
                     ["Unibo's", r"Sionna\\DiffeRT (ours)"],
                     [r"Manual\textsuperscript{*}", "Automatic"],
-                    [r"Analytical\textsuperscript{*}", "Numerical"],
+                    [r"High (analytical\textsuperscript{*})", "Low (numerical)"],
                     ["``Plugin''-compatible", r"Scalable\\\textit{Any} derivatives"],
                     ["Site-specific, local derivatives", "Requires AD framework"],
                 ],
@@ -739,7 +805,8 @@ class Main(Slide, m.MovingCameraScene):
         self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate(run_time=1).move_to(table),
-            table.create(run_time=2),
+            table.create(),
+            run_time=2.0,
         )
 
         rect = (
@@ -792,6 +859,8 @@ class Main(Slide, m.MovingCameraScene):
         texts[0].set_color(m.PINK)
         texts[2].set_color(m.BLUE)
         texts[4].set_color(m.GREEN)
+
+        # TODO: fix blinking blue zone
 
         nw = jnp.array([-1.5, +1.5, 0]) + center
         ne = jnp.array([+1.5, +1.5, 0]) + center
@@ -926,8 +995,8 @@ class Main(Slide, m.MovingCameraScene):
             m.FadeIn(
                 m.Tex(
                     "This is a Multipath Lifetime Map (MLM) for a moving RX",
-                    font_size=TITLE_FONT_SIZE,
-                ).to_edge(m.DOWN),
+                    font_size=CONTENT_FONT_SIZE,
+                ).next_to(texts, 2 * m.DOWN),
                 shift=0.3 * m.UP,
             )
         )
@@ -955,18 +1024,17 @@ class Main(Slide, m.MovingCameraScene):
         metrics = (
             m.Tex(
                 r"""
-                For a given cell \(C_i\), we introduce the following metrics:
+                For each cell \(C_i\), we compute:
 
 \begin{itemize}
-  \item the area covered by each multipath cell, \(S_{i} = \text{area}(C_i)\);
-  \item and the average minimal inter-cell distance, \(\overline{d_{i}}\);
+  \item the \textbf{area covered by each multipath cell}, \(S_{i} = \text{area}(C_i)\);
+  \item and the \textbf{average minimal inter-cell distance}, \(\overline{d_{i}}\);
 \end{itemize}
-where \(i\) indicates the index of the multipath cell, \(\overline{\cdot}\) is the ensemble average over a given cell, and the minimal inter-cell distance of an object \(x \in C_i\) is:
-
+where
 \begin{equation}
     d_i(x) = \min\limits_{y \notin C_i} \text{dist}(x, y),
 \end{equation}
-that is, the minimum distance the object \(x\) has to travel to leave the cell \(C_i\).""",
+i.e., the minimum distance an object \(x\) has to travel to leave \(C_i\).""",
                 font_size=CONTENT_FONT_SIZE,
             )
             .move_to(self.camera.frame)
@@ -1101,11 +1169,12 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
 
         self.next_slide(notes="Let's wrap up")
         summary = m.Tex(
-            r"\textbf{Summary:}\\\\",
-            r"$\bullet$ Both Dyn. and Diff. RT have few open-source implementations\\",
-            r"$\bullet$ Dyn. RT offers higher explainability and can be added as a ``\textit{plugin}''\\",
-            r"$\bullet$ Diff. RT offers automated and scalable derivatives\\",
-            r"$\bullet$ Dyn. RT becomes efficient if scenes can be simplified\\",
+            r"\textbf{Take away messages:}\\\\",
+            r"$\bullet$ Dyn. and Diff. RT are different techniques levaraging derivatives\\",
+            r"$\bullet$ Dyn. RT targets moving scenes\\",
+            r"$\bullet$ Diff. RT targets optimization (e.g., ML) problems\\",
+            r"$\bullet$ Multipath Lifetime is similar to concepts of channel stationarity\\",
+            r"$\bullet$ MLM are not limited to moving RXs: moving TXs, rotating walls, ...\\",
             r"$\bullet$ Visualizing MLMs highlights the complexity of multipath clusters and regions\\",
             r"$\bullet$ MLM's metrics allow to estimate the benefits of using Dyn. RT based on simulation \textit{only}",
             font_size=CONTENT_FONT_SIZE,
@@ -1120,7 +1189,7 @@ that is, the minimum distance the object \(x\) has to travel to leave the cell \
             run_time=1,
         )
 
-        for i in range(6):
+        for i in range(7):
             self.next_slide()
             self.play(m.FadeIn(summary[i + 1], shift=0.3 * m.RIGHT), run_time=1)
 
