@@ -39,19 +39,21 @@ Creating a Manim presentation is an iterative process, often requiring multiple 
 
 ### Use a virtual environment and pin dependencies
 
-To avoid compatibility issues, always use a virtual environment and explicitly define your dependencies in a `pyproject.toml`{: .filepath} file (or `requirements.txt`{: .filepath} if using an older setup). Manim often introduces breaking changes between versions, so I strongly recommend using strict versioning, e.g., `manim==0.19` instead of simply `manim`. Here's an example setup:
+To avoid compatibility issues, always use a virtual environment and explicitly define your dependencies in a `pyproject.toml`{: .filepath} file (or `requirements.txt`{: .filepath}). Manim often introduces breaking changes between versions, so I strongly recommend using strict versioning, e.g., `manim==0.19` instead of simply `manim`. Here's an example setup:
 
-```toml
+```
 [dependency-groups]
-dev = [
-  "manim-slides[manim,pyside6]==5.5.1", # Includes the Qt GUI for debugging presentations
+dev = [ 
+  # Includes the Qt GUI for debugging presentations
+  "manim-slides[manim,pyside6]==5.5.1",
 ]
 
 [project]
 dependencies = [
   "choreographer<1",
   "kaleido==0.2.1",
-  "manim-slides[manim]==5.5.1", # ManimCE version auto-defined from Manim Slides
+  # ManimCE version auto-defined from Manim Slides
+  "manim-slides[manim]==5.5.1",
   "pandas>=2.2.3",
   "pillow>=11.1.0",
   "plotly>=5.24.1,<6",
