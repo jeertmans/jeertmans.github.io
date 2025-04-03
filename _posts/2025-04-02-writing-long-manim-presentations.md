@@ -15,11 +15,6 @@ Sharing my setup and tips for writing long Manim (Slides) presentations!
 
 <!--more-->
 
-> This post is still a draft, and additions/changes are expected! If you are interested,
-> please come back in a few days (April 5th at the latest) or wait for my announcement on
-> [r/manim](https://www.reddit.com/r/manim/) for the full content. Thanks!
-{: .prompt-warning }
-
 ## Introduction
 
 Recently, I completed [another Manim Slides presentation](/posts/eucap2025-presentation/), and I feel that my experience writing slides with Manim is becoming progressively smoother.
@@ -226,6 +221,7 @@ Rendering `Tex` objects repeatedly slows things down. If LaTeX typesetting isn't
 
 ## Additional Tips
 
+- **Set your computer to high performance mode**: Rendering is a CPU- and GPU-intensive task, so don't forget to put your computer in high performance mode (modern computers have a CPU frequency that can be changed) and plug it in, as it will probably drain your battery;
 - **Cache expensive objects**: If an object takes a long time to generate, consider caching it;
 - **Pre-render static content**: If some elements remain unchanged, render them once and reuse them;
 - **Use placeholder objects**: During development, replace complex objects with simple placeholders (e.g., a `Dot()`);
