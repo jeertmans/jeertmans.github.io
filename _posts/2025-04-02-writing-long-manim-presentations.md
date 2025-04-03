@@ -15,54 +15,43 @@ Sharing my setup and tips for writing long Manim (Slides) presentations!
 
 <!--more-->
 
-> This post is still a draft, and additions / changes are expected! If you are interested,
+> This post is still a draft, and additions/changes are expected! If you are interested,
 > please come back in a few days (April 5th at the latest) or wait for my announcement on
 > [r/manim](https://www.reddit.com/r/manim/) for the full content. Thanks!
 {: .prompt-warning }
 
-Recently, I finished another Manim Slides presentation and I feel
-that my experience of writing slides using Manim becomes more and more smoother.
+## Introduction
 
-However, this hasn't been always an easy process, especially in my early days
-of using Manim. Moreover, Manim Slides, the tool I developped to generate
-slides from Manim videos, has evolved quite a lot since 2023, and now offers
-much more options for rapid development of slides than it did in its first versions.
+Recently, I completed [another Manim Slides presentation](/posts/eucap2025-presentation/), and I feel that my experience writing slides with Manim is becoming progressively smoother.
 
-When reading the Manim subreddit and discord group, I often see people
-asking for tips to reduce the time for rendering animations.
+However, this wasn't always the case, especially in my early days of using Manim. Additionally, Manim Slides---the tool I developed to generate slides from Manim videos---has evolved significantly since its creation, offering many more options for rapid slide development than its earlier versions.
 
-This blog post is about sharing my experience with rendering Manim animations,
-and my tips to make your experience as smooth as possible, in order to minimize
-the time you spend waiting for your slides to render.
+When browsing the [Manim subreddit](https://www.reddit.com/r/manim/) and [Discord server](https://discord.com/invite/bYCyhM9Kz2), I often see people asking for tips on reducing animation rendering time. This blog post shares my experience rendering Manim animations and provides practical tips to streamline your workflow and minimize time spent waiting for slides to render.
 
-I have split this in multiple sections, each addressing one important aspect to
-take into account when using Manim. The last section will give tips about those
-preparing slides specifically.
+I've split this guide into multiple sections, each addressing key aspects to consider when using Manim. The final section provides additional tips specific to preparing slides. I also recommend checking out the code of my Manim Slides presentations, a link is provided in each blog post.
 
-> This tutorial is written based on ManimCE, but most of its content can also be applied to users of ManimGL.
+> This tutorial is based on [ManimCE](https://github.com/ManimCommunity/manim), but most of its content is also applicable to users of [ManimGL](https://github.com/3b1b/manim).
 {: .prompt-info }
 
 ## Environment setup
 
-Preparing slides is usually an iterative process, and it mights takes multiple iterations before you are happy with them.
-This post focuses on setting up the good habits to make this iterative process as smooth as possible, and it starts with your
-development environment.
+Creating a Manim presentation is an iterative process, often requiring multiple refinements before you achieve the desired outcome. To make this process as smooth as possible, setting up a robust development environment is essential.
 
-First, please create a virtual environment and clearly indicate the exact dependencies in a file like `pyproject.toml`{: .filepath} (or the old `requirements.txt`{: .filepath}). Manim usually contains breaking changes between versions, and so does other packages, so I recommend using strict dependency specifier, e.g., `manim==0.19` instead of just `manim`. E.g., it could look something like this:
+### Use a virtual environment and pin dependencies
+
+To avoid compatibility issues, always use a virtual environment and explicitly define your dependencies in a `pyproject.toml`{: .filepath} file (or `requirements.txt`{: .filepath} if using an older setup). Manim often introduces breaking changes between versions, so I strongly recommend using strict versioning, e.g., `manim==0.19` instead of simply `manim`. Here's an example setup:
 
 ```toml
 [dependency-groups]
 dev = [
-  # We want the Qt GUI for debugging our presentations
-  "manim-slides[manim,pyside6]==5.5.1",
+  "manim-slides[manim,pyside6]==5.5.1", # Includes the Qt GUI for debugging presentations
 ]
 
 [project]
 dependencies = [
   "choreographer<1",
   "kaleido==0.2.1",
-  # ManimCE's version is automatically defined from Manim Slides' extra
-  "manim-slides[manim]==5.5.1",
+  "manim-slides[manim]==5.5.1", # ManimCE version auto-defined from Manim Slides
   "pandas>=2.2.3",
   "pillow>=11.1.0",
   "plotly>=5.24.1,<6",
@@ -75,40 +64,175 @@ version = "0.1.0"
 ```
 {: file="pyproject.toml" }
 
-### Using Git (or any VCS)
+To manage your virtual environment, I recommend [**uv**](https://github.com/astral-sh/uv), but many other options exist!
 
-This is probably not required, but I highly recommend any person making presentations,
-and this is not limited to Manim users, but also applies any compiled document (LaTeX, Typst, Markdown, etc.),
-to use a version-control system (VCS) like Git.
+### Use version control
 
-You will make errors, you will want to revert changes, and what is better than a tool
-that allows you to track the history of changes and help you go back in the past to retrieve code
-that was previously working?
+Long presentations involve extensive revisions, so I highly recommend using a version control system like Git. This allows you to track changes, revert mistakes, and restore previous versions if something goes wrong.
 
- I will not motivate nor explain 
+This post isn't a Git tutorial, but I recommend checking out [W3Schools' Git Tutorial](https://www.w3schools.com/git/).
 
-Maybe, multiple days will pass between two iterations, and 
+### Use formatting and linting tools
 
-First of all, when prepar
+Manim projects can get messy. To keep your code readable and maintainable, use auto-formatting and linting tools like:
 
-### Formatting and linting your code
+- [**Black**](https://github.com/psf/black): Automatically formats Python code;
+- [**Flake8**](https://github.com/PyCQA/flake8): Catches potential bugs and style inconsistencies;
+- [**isort**](https://github.com/PyCQA/isort): Ensures consistent import ordering;
+- [**Ruff**](https://github.com/astral-sh/ruff): My favorite tool, as it combines formatting, linting, and more at lightning speed!
 
-Writing long presentations often means long code. Manim isn't the best package
-when it comes to good coding practice (the `from manim import *` is one of the best example of things ),
-so your code will probably not look very clean (and so does my code), but it is always nice to use tools
-that format or lint your code to help you write more readable code. This is purely esthetic, but it will likely help you debug your code later.
+Even though these tools don't impact the rendering performance directly, they help you maintain a clean and structured codebase, making debugging much easier.
 
-Again, it won't go into details here and 
+## Manim rendering strategies
 
-## Manim rendering options
+By default, animations are rendered at a relatively high quality. While Manim[^1] provides a caching mechanism, it is usually not necessary to render everything when creating slides.
 
-blabla.
+Instead, it is beneficial to split the whole video (or presentation) into indenpendant parts, and render them separately at a lower resolution for a faster development experience.
 
-If you are using Manim Slides, blabla.
+Below are a few strategies I often take to reduce
+Manim offers various rendering options that can significantly affect performance. Here are some ways to optimize rendering times:
 
-## Manim for presentations
+[^1]: To my best knowledge, only ManimCE provides animations caching, **not** ManimGL.
 
----
+### Use Low-Resolution Previews
 
-Thank you for reading this post!
-Do not hesitate to reach me for questions or else!
+Instead of rendering everything at full quality, use:
+
+```bash
+manim -ql --fps=10 your_script.py YourClass
+```
+
+> Warning: Setting an FPS too low may cause animations to appear choppy.
+{: .prompt-warning }
+
+Adding `--preview` will automatically open a video player after[^2] rendering.
+
+Only render the presentation in high quality with it is ready, and full HD is usually sufficient for most applications.
+
+[^2]: When using the OpenGL renderer, the preview will open a window during rendering, and show the progress in real time.
+
+### Manim Slides for Presentations
+
+If you're using Manim for *PowerPoint*-like presentations, I recommend my library, [Manim Slides](/projects/manim-slides), as it provides many nice output formats for presenting your slides, as well as a few useful utilities for animating slides, see the [reference documentation](https://manim-slides.eertmans.be/latest/reference/index.html).
+
+Here are a few Manim Slides-specific tips:
+
+1. **Skip rendering reversed animations if they are not needed**: By default, reversed slides are generated, which increases the rendering time. However, reversed animations are not always desired, especially as they are not use by all output formats, such as PPTX or HTML. You can disable rendering reversed slides with:
+   ```python
+   from manim import *
+   from manim_slides import Slide
+  
+   class Presentation(Slide):
+       skip_reversing = True
+       def construct(self):
+           self.play(...)
+   ```
+  
+   You can find more options in the [API documentation](https://manim-slides.eertmans.be/latest/reference/api.html#slide);
+2. **Use relative Mobject positioning**: This is not unique to slides, but prefer positioning your objects relative to each other (e.g., using `next_to()` method) instead of using absolute coordinates. The motivation is that you never know the final position of each object in the canvas, because you can always add or remove slides in between. Using relative coordinates help mitigate the issue of having to correct the coordinates of objects. A good example of relative positioning combined with `MovingCameraScene` is my [EuCAP 2025 presentation](/posts/eucap2025-presentation/).
+
+### Keep Slides Modular
+
+Instead of writing one long `construct()` method, break your presentation into smaller, reusable functions:
+
+```python
+from manim import *
+
+class Presentation(Scene):
+    def construct(self):
+        self.introduction()
+        self.explain_concepts()
+        self.show_final_result()
+
+    def introduction(self):
+        self.play(...)
+
+    def explain_concepts(self):
+        self.play(...)
+
+    def show_final_result(self):
+        self.play(...)
+```
+
+Then, you can comment out sections during testing to speed up debugging:
+
+```python
+# self.introduction()
+self.explain_concepts()
+# self.show_final_result()
+```
+
+Alternatively, define separate classes for each section:
+
+```python
+class Introduction(Scene):
+    def construct(self):
+        ...
+
+class ExplainConcepts(Scene):
+    def construct(self):
+        ...
+
+class ShowFinalResults(Scene):
+    def construct(self):
+        ...
+```
+
+Then, render only the scene you need from the command line.
+
+### Skip Animations
+
+Manim allows you to skip rendering some animations, either from the command line:
+
+```bash
+manim render your_file.py YourClass -na,b
+```
+
+to render from animation number `a` to animation number `b`. Or from the code itself,
+
+```python
+class Presentation(Scene):
+    def construct(self):
+        self.next_section(skip_animations=True)
+        self.play(...)  # This is skipped
+        self.next_section()
+        self.play(...)  # This isn't
+```
+
+to skip all animations within a section[^3].
+
+> If you are using Manim Slides, we instead recommend the following:
+> 
+> ```python
+> self.next_slide(skip_animations=True)
+> ```
+> 
+> Or globally skip animations until further notice:
+> 
+> ```python
+> self.start_skip_animations()
+> ... # Animations here will be skipped
+> self.stop_skip_animations()
+> ```
+{: .prompt-tip }
+
+[^3]: Sections are only available with ManimCE (and Manim Slides).
+
+### Avoid Overusing TeX
+
+Rendering `Tex` objects repeatedly slows things down. If LaTeX typesetting isn't required, prefer `Text` objects.
+
+## Additional Tips
+
+- **Cache expensive objects**: If an object takes a long time to generate, consider caching it;
+- **Pre-render static content**: If some elements remain unchanged, render them once and reuse them;
+- **Use placeholder objects**: During development, replace complex objects with simple placeholders (e.g., a `Dot()`);
+- **Debug outside Manim**: If a TeX formula fails, test it in a `.tex` file first.
+
+## Conclusion
+
+Creating Manim presentations efficiently requires good coding habits, a solid development environment, and smart rendering strategies. By following these tips, you’ll significantly improve your workflow and spend less time waiting for renders.
+
+If you have any question, please feel free to use the comments section! For bugs report, post an issue on the appropriate GitHub repository.
+
+I hope you enjoyed this post and that you learned a few nice things that you could apply to your own workflow!
