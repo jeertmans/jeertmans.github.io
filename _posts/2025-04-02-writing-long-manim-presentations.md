@@ -15,6 +15,11 @@ Sharing my setup and tips for writing long Manim (Slides) presentations!
 
 <!--more-->
 
+> This post is still a draft, and additions / changes are expected! If you are interested,
+> please come back in a few days (April 5th at the latest) or wait for my announcement on
+> [r/manim](https://www.reddit.com/r/manim/) for the full content. Thanks!
+{: .prompt-warning }
+
 Recently, I finished another Manim Slides presentation and I feel
 that my experience of writing slides using Manim becomes more and more smoother.
 
@@ -94,6 +99,12 @@ so your code will probably not look very clean (and so does my code), but it is 
 that format or lint your code to help you write more readable code. This is purely esthetic, but it will likely help you debug your code later.
 
 Again, it won't go into details here and 
+
+## Manim rendering options
+
+blabla.
+
+If you are using Manim Slides, blabla.
 
 ## Manim for presentations
 
