@@ -10,7 +10,7 @@ tags:
   - manim-slides
 image:
   path: /assets/images/misc/dublin.png
-  alt: Dublin, Ireland - Image by <a href="https://pixabay.com/users/leonhard_niederwimmer-1131094/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4945565">Leonhard Niederwimmer</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4945565">Pixabay</a>
+  alt: Dublin, Ireland - Image by Leonhard Niederwimmer from Pixabay
 permalink: /posts/cost-interact-january-2024-presentation/
 ---
 
