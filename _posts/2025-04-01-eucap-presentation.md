@@ -15,7 +15,7 @@ github: jeertmans/DiffeRT
 publication_id: eucap2025
 image:
   path: /assets/images/misc/stockholm.jpg
-  alt: 'Stockholm, Sweden - Image by <a href="https://pixabay.com/users/monicavolpin-1476511/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4738114">Monica Volpin</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4738114">Pixabay</a>'
+  alt: Stockholm, Sweden - Image by <a href="https://pixabay.com/users/monicavolpin-1476511/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4738114">Monica Volpin</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4738114">Pixabay</a>
 permalink: /posts/eucap2025-presentation/
 ---
 
