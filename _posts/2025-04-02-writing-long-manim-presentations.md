@@ -38,7 +38,7 @@ To avoid compatibility issues, always use a virtual environment and explicitly d
 
 ```
 [dependency-groups]
-dev = [ 
+dev = [
   # Includes the Qt GUI for debugging presentations
   "manim-slides[manim,pyside6]==5.5.1",
 ]
@@ -118,13 +118,13 @@ Here are a few Manim Slides-specific tips:
    ```python
    from manim import *
    from manim_slides import Slide
-  
+
    class Presentation(Slide):
        skip_reversing = True
        def construct(self):
            self.play(...)
    ```
-  
+
    You can find more options in the [API documentation](https://manim-slides.eertmans.be/latest/reference/api.html#slide);
 2. **Use relative Mobject positioning**: This is not unique to slides, but prefer positioning your objects relative to each other (e.g., using `next_to()` method) instead of using absolute coordinates. The motivation is that you never know the final position of each object in the canvas, because you can always add or remove slides in between. Using relative coordinates help mitigate the issue of having to correct the coordinates of objects. A good example of relative positioning combined with `MovingCameraScene` is my [EuCAP 2025 presentation](/posts/eucap2025-presentation/).
 
@@ -199,13 +199,13 @@ class Presentation(Scene):
 to skip all animations within a section[^3].
 
 > If you are using Manim Slides, we instead recommend the following:
-> 
+>
 > ```python
 > self.next_slide(skip_animations=True)
 > ```
-> 
+>
 > Or globally skip animations until further notice:
-> 
+>
 > ```python
 > self.start_skip_animations()
 > ... # Animations here will be skipped
