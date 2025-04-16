@@ -36,7 +36,7 @@ Creating a Manim presentation is an iterative process, often requiring multiple 
 
 To avoid compatibility issues, always use a virtual environment and explicitly define your dependencies in a `pyproject.toml`{: .filepath} file (or `requirements.txt`{: .filepath}). Manim often introduces breaking changes between versions, so I strongly recommend using strict versioning, e.g., `manim==0.19` instead of simply `manim`. Here's an example setup:
 
-```
+```toml
 [dependency-groups]
 dev = [ 
   # Includes the Qt GUI for debugging presentations
@@ -124,6 +124,7 @@ Here are a few Manim Slides-specific tips:
        def construct(self):
            self.play(...)
    ```
+   {: file="your_script.py" }
   
    You can find more options in the [API documentation](https://manim-slides.eertmans.be/latest/reference/api.html#slide);
 2. **Use relative Mobject positioning**: This is not unique to slides, but prefer positioning your objects relative to each other (e.g., using `next_to()` method) instead of using absolute coordinates. The motivation is that you never know the final position of each object in the canvas, because you can always add or remove slides in between. Using relative coordinates help mitigate the issue of having to correct the coordinates of objects. A good example of relative positioning combined with `MovingCameraScene` is my [EuCAP 2025 presentation](/posts/eucap2025-presentation/).
@@ -150,14 +151,18 @@ class Presentation(Scene):
     def show_final_result(self):
         self.play(...)
 ```
+ {: file="your_script.py" }
 
 Then, you can comment out sections during testing to speed up debugging:
 
 ```python
-# self.introduction()
-self.explain_concepts()
-# self.show_final_result()
+class Presentation(Scene):
+    def construct(self):
+        # self.introduction()
+        self.explain_concepts()
+        # self.show_final_result()
 ```
+ {: file="your_script.py" .nolineno }
 
 Alternatively, define separate classes for each section:
 
@@ -174,6 +179,7 @@ class ShowFinalResults(Scene):
     def construct(self):
         ...
 ```
+ {: file="your_script.py" }
 
 Then, render only the scene you need from the command line.
 
@@ -195,22 +201,29 @@ class Presentation(Scene):
         self.next_section()
         self.play(...)  # This isn't
 ```
+ {: file="your_script.py" }
 
 to skip all animations within a section[^3].
 
 > If you are using Manim Slides, we instead recommend the following:
 > 
-> ```python
-> self.next_slide(skip_animations=True)
 > ```
+>         # Some animations...
+>         self.next_slide(skip_animations=True)
+>         # More animations...
+> ```
+> {: file="your_script.py" .nolineno }
 > 
 > Or globally skip animations until further notice:
 > 
 > ```python
-> self.start_skip_animations()
-> ... # Animations here will be skipped
-> self.stop_skip_animations()
+>         # Some animations...
+>         self.start_skip_animations()
+>         # Animations here will be skipped...
+>         self.stop_skip_animations()
+>         # More animations...
 > ```
+{: file="your_script.py" .nolineno }
 {: .prompt-tip }
 
 [^3]: Sections are only available with ManimCE (and Manim Slides).
