@@ -1,5 +1,5 @@
 ---
-title: "EuCAP2024 -Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization"
+title: "EuCAP2024 - Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization"
 categories:
   - Research
   - Software
