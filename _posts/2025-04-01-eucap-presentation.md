@@ -33,7 +33,7 @@ methodology on which Dynamic Ray Tracing relies, and provide a novel
 visual tool to better study those limits: the Multipath Lifetime Map.
 
 Finally, an
-[interative tutorial](https://differt.rtfd.io/eucap2025/notebooks/multipath.html)
+[interactive tutorial](https://differt.rtfd.io/eucap2025/notebooks/multipath.html)
 is available to guide the readers through the implementation of our presented tool and metrics.
 
 ## Slides

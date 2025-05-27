@@ -31,11 +31,12 @@ exponential complexity of generating all path candidates by using a surrogate mo
 learns how to only suggest the most promising candidate rays, i.e., the candidates are
 likely to generate a physically valid ray path.
 
-My participation to ICMLCN was also a great opportunity to demonstrate *DiffeRT*, so I prepared
+My participation to ICMLCN was also a great opportunity to demonstrate *DiffeRT*,
+the open-source Ray Tracing tool I develop for my research, so I prepared
 a small poster for that too. I also participated in the on-site 3-minute thesis contest.
 
 Finally, an
-[interative tutorial](https://differt.rtfd.io/icmlcn2025/notebooks/sampling_paths.html)
+[interactive tutorial](https://differt.rtfd.io/icmlcn2025/notebooks/sampling_paths.html)
 is available to guide the readers through the implementation and training of our presented model.
 
 ## Media
@@ -44,11 +45,13 @@ Below, you can find the different media I used to present my research at ICMLCN.
 
 ### Paper poster
 
-<embed src="/assets/pdf/2025-05-27-icmlcn-paper-poster.pdf" width="500" height="375" type="application/pdf">
+<iframe src="/assets/pdf/2025-05-27-icmlcn-paper-poster.pdf" width="100%" height="415px" allowfullscreen></iframe>
 
 ### Demo poster
 
-<embed src="/assets/pdf/2025-05-27-icmlcn-demo-poster.pdf" width="500" height="375" type="application/pdf">
+<iframe src="/assets/pdf/2025-05-27-icmlcn-demo-poster.pdf" width="100%" height="415px" allowfullscreen></iframe>
+
+I also made a small 1-minute video showcasing *DiffeRT*'s main features.
 
 {% include embed/youtube.html id='KANntIi1hjs' %}
 
