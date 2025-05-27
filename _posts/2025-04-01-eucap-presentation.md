@@ -6,7 +6,6 @@ categories:
 tags:
   - ray-tracing
   - propagation
-  - video
   - programming
   - manim
   - manim-slides
