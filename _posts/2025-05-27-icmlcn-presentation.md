@@ -23,7 +23,7 @@ Posters and 3-minute thesis presented at ICMLCN 2025!
 
 At ICMLCN 2025, I presented our paper
 *Towards Generative Ray Path Sampling for Faster Point-to-Point Ray Tracing*
-{% cite Eert2505:Comparing %}. This work is the result of a collaboration with Pr. Degli-Esposti's laboratory
+{% cite Eert2505:Comparing %}. This work is the result of a collaboration with Professors Vittorio Degli-Esposti and Enrico Maria Vitucci's laboratory
 from University of Bologna, where I worked for 4 months in late 2024.
 In this work, we introduce a novel Machine Learning approach to Ray Tracing:
 sampling path candidates using a generative model. The core motivation is to avoid the
