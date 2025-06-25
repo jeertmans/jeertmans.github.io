@@ -6,7 +6,6 @@ categories:
 tags:
   - ray-tracing
   - propagation
-  - video
   - programming
   - manim
   - manim-slides
@@ -25,7 +24,7 @@ Our paper has been accepted to EuCAP 2025!
 
 At EuCAP 2025, I presented our paper
 *Comparing Differentiable and Dynamic Ray Tracing: Introducing the Multipath Lifetime Map*
-{% cite Eert2504:Comparing %}. This work is the result of a collaboration with Pr. Degli-Esposti's laboratory
+{% cite Eert2504:Comparing %}. This work is the result of a collaboration with Professors Vittorio Degli-Esposti and Enrico Maria Vitucci's laboratory
 from University of Bologna, where I worked for 4 months in late 2024.
 In this work,
 we investigate review the Dynamic and Differentiable Ray Tracing techniques,
@@ -34,7 +33,7 @@ methodology on which Dynamic Ray Tracing relies, and provide a novel
 visual tool to better study those limits: the Multipath Lifetime Map.
 
 Finally, an
-[interative tutorial](https://differt.rtfd.io/eucap2025/notebooks/multipath.html)
+[interactive tutorial](https://differt.rtfd.io/eucap2025/notebooks/multipath.html)
 is available to guide the readers through the implementation of our presented tool and metrics.
 
 ## Slides

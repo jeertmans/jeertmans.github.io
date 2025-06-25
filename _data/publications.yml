@@ -7,7 +7,9 @@
   - Preprint
   - Poster
   - Software
+  download: /assets/publications/icmlcn2025-paper.pdf
   arxiv: https://arxiv.org/abs/2410.23773
+  bibtex: /assets/publications/icmlcn2025-paper.bib
 - title: 'EuCAP 2025 - Comparing Differentiable and Dynamic Ray Tracing: Introducing the Multipath Lifetime Map'
   id: eucap2025
   date: 2024-10-18
