@@ -149,7 +149,9 @@ class Main(Slide, m.MovingCameraScene):
             run_time=2.0,
         )
 
-        self.next_slide(notes="Ray Tracing Pipeline")
+        self.next_slide(
+            notes="Let's review the Ray Tracing Pipeline. A scene is made of..."
+        )
         scene = m.Tex("Scene", font_size=TITLE_FONT_SIZE).next_to(
             curse, m.RIGHT, buff=8
         )
@@ -172,7 +174,9 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide()
             self.play(m.FadeIn(x, shift=0.3 * m.DOWN), run_time=1.0)
 
-        self.next_slide()
+        self.next_slide(
+            notes="To trace all rays from TX to RX, we usually first generate a set of path candidates."
+        )
         pc = m.Tex("Path candidates", font_size=TITLE_FONT_SIZE).next_to(
             box, m.RIGHT, buff=4.0
         )
@@ -189,7 +193,9 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.Create(box_pc), run_time=1)
         self.play(m.FadeIn(pc), run_time=1)
 
-        self.next_slide()
+        self.next_slide(
+            notes="That set of path candidates is usually made of all possible paths for a given order N."
+        )
 
         all_pc = m.Tex("paths for order $N$", font_size=TITLE_FONT_SIZE).next_to(
             box_pc, m.RIGHT, buff=4.0
@@ -214,7 +220,9 @@ class Main(Slide, m.MovingCameraScene):
         mat = mat[:3] + [[r"\vdots"]] + mat[-3:]
         mat_all_pc_1 = m.Matrix(mat).move_to(all_pc)
 
-        self.next_slide()
+        self.next_slide(
+            notes="For example, for first order, we try reflection on each possible object."
+        )
         self.wipe(all_pc, [mat_all_pc_1], direction=m.UP)
         all_pc = mat_all_pc_1
 
@@ -227,7 +235,9 @@ class Main(Slide, m.MovingCameraScene):
         mat = mat[:3] + [[r"\vdots", r"\vdots"]] + mat[-3:]
         mat_all_pc_2 = m.Matrix(mat).move_to(all_pc)
 
-        self.next_slide()
+        self.next_slide(
+            notes="For second order, we try reflection on each possible object, followed by reflection on each other object."
+        )
         self.play(m.Transform(all_pc, mat_all_pc_2))
 
         mat = [
@@ -240,10 +250,14 @@ class Main(Slide, m.MovingCameraScene):
         mat = mat[:3] + [[r"\vdots", r"\vdots", r"\vdots"]] + mat[-3:]
         mat_all_pc_3 = m.Matrix(mat).move_to(all_pc)
 
-        self.next_slide()
+        self.next_slide(
+            notes="For third order, we try reflection on each possible object, followed by reflection on each other object, followed by reflection on each other object..."
+        )
         self.play(m.Transform(all_pc, mat_all_pc_3))
 
-        self.next_slide()
+        self.next_slide(
+            notes="For each path candidate, we trace the corresponding ray."
+        )
         pt = m.Tex("Path tracing", font_size=TITLE_FONT_SIZE).next_to(
             all_pc, m.RIGHT, buff=4.0
         )
@@ -259,7 +273,9 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.Create(box_pt), run_time=1)
         self.play(m.FadeIn(pt), run_time=1)
 
-        self.next_slide()
+        self.next_slide(
+            notes="We then check if the ray is valid, i.e. if it intersects with the RX and does not intersect with any object in the scene."
+        )
         pp = m.Tex("Post-processing", font_size=TITLE_FONT_SIZE).next_to(
             box_pt, m.RIGHT, buff=4.0
         )
@@ -275,7 +291,9 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.Create(box_pp), run_time=1)
         self.play(m.FadeIn(pp), run_time=1)
 
-        self.next_slide()
+        self.next_slide(
+            notes="We then select the valid rays, and compute the EM fields at the RX."
+        )
         em = m.Tex("EM fields", font_size=TITLE_FONT_SIZE).next_to(
             box_pp, m.RIGHT, buff=4.0
         )
@@ -291,14 +309,18 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.Create(box_em), run_time=1)
         self.play(m.FadeIn(em), run_time=1)
 
-        self.next_slide()
+        self.next_slide(
+            notes="This is the Ray Tracing pipeline, but it is computationally expensive, especially for large scenes. Going back to the path candidates, we can see that the number of paths grows exponentially with the order N, and that most of them are invalid. This is the challenge we want to address with our model."
+        )
         self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate.move_to(box_pc),
             run_time=1,
         )
 
-        self.next_slide()
+        self.next_slide(
+            notes="Our idea is to use a generative model to select the most promising path candidates, i.e. the ones that are more likely to lead to valid rays. This way, we can reduce the number of rays we need to trace, and thus speed up the RT pipeline."
+        )
 
         gm = m.Tex("Generative model", font_size=TITLE_FONT_SIZE, color=m.RED).move_to(
             pc
@@ -307,26 +329,30 @@ class Main(Slide, m.MovingCameraScene):
 
         self.wipe([pc, box_pc, all_pc], [gm, box_gm], direction=m.DOWN)
 
-        self.next_slide()
+        self.next_slide(
+            notes="Our model learns to generate path candidates with the highest probability of leading to valid rays."
+        )
         f_max = m.MathTex(
             r"\mathbb P\big[f_w(\text{TX}, \text{RX}, \text{OBJECTS}) = \text{VALID PATH}\big]"
         ).next_to(box_gm.get_bottom(), m.DOWN)
         self.play(m.FadeIn(f_max, shift=0.3 * m.DOWN), run_time=1)
 
-        self.next_slide()
+        self.next_slide(
+            notes="Now, our path candidates steps only generates a limited number of path candidates, which are the most promising ones according to the generative model."
+        )
         self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate.move_to(all_pc),
             run_time=1,
         )
 
-        self.next_slide()
+        self.next_slide(notes="1st order.")
         mat = [["W_{" + str(i) + "}"] for i in [2, 31, 23]]
         mat_pc_1 = m.Matrix(mat).move_to(all_pc)
         all_pc = mat_pc_1
         self.play(m.FadeIn(mat_pc_1), run_time=1)
 
-        self.next_slide()
+        self.next_slide(notes="2nd order.")
         mat = [
             ["W_{" + str(i) + "}", "W_{" + str(j) + "}"]
             for i, j in [(4, 10), (19, 5), (33, 6)]
@@ -334,7 +360,7 @@ class Main(Slide, m.MovingCameraScene):
         mat_pc_2 = m.Matrix(mat).move_to(all_pc)
         self.play(m.Transform(all_pc, mat_pc_2))
 
-        self.next_slide()
+        self.next_slide(notes="3rd order.")
         mat = [
             ["W_{" + str(i) + "}", "W_{" + str(j) + "}", "W_{" + str(k) + "}"]
             for i, j, k in [(2, 5, 7), (3, 0, 4), (10, 6, 17)]
@@ -342,7 +368,9 @@ class Main(Slide, m.MovingCameraScene):
         mat_pc_3 = m.Matrix(mat).move_to(all_pc)
         self.play(m.Transform(all_pc, mat_pc_3))
 
-        self.next_slide()
+        self.next_slide(
+            notes="Our model is a reinforcement learning model, which means it learns to generate path candidates by maximizing a reward function. The reward function is based on the validity of the rays traced from the path candidates, and it is designed to encourage the model to generate path candidates that lead to valid rays."
+        )
         model_details = m.Tex(
             r"""Model details:\\
 \begin{enumerate}
@@ -391,7 +419,19 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide()
             self.play(m.FadeIn(mob, shift=0.3 * m.DOWN), run_time=1.0)
 
-        self.next_slide(notes="Let's see training results")
+        self.next_slide(
+            notes="""
+        Let's see training results on 1st and 2nd order reflection in a street canyon.
+                        
+        For 1st order, we see that the accuracy is low, while the hit rate is good. This means that our model is able to generate some valid rays, but it will generate a diverse set of valid rays, which is what we want.
+                        
+        For 2nd order, the hit rate only reaches 30%, which is not yet sufficient to replace exhaustive RT with our model.
+                        
+        In both cases, the accuracy is far better than the one of a random model, which would generate valid rays with a probability of 3% for 1st and 0.03% for second order reflection.
+                        
+        Ongoing research has already shown that the model can be improved, reaching above 80% of hit rate for both cases.
+        """
+        )
         im_results = m.ImageMobject("images/results.png").next_to(
             model_metrics, m.RIGHT, buff=5.0
         )
@@ -456,7 +496,7 @@ class Main(Slide, m.MovingCameraScene):
         summary = m.Tex(
             r"\textbf{Summary:}\\\\",
             r"$\bullet$ First application of our model to EM fields prediction\\",
-            r"$\bullet$ Preliminary results show a not-so-good match between hit rate and good coverage map\\",
+            r"$\bullet$ Preliminary results show a not-so-good match between\\\phantom{$\bullet$ }hit rate and good coverage map\\",
             r"$\bullet$ ML model cannot (yet) replace exhaustive RT\\",
             r"$\bullet$ EM coverage map analysis could help us improve the model",
             font_size=TITLE_FONT_SIZE,
@@ -465,7 +505,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.play(
             m.FadeOut(
-                m.Group(*self.mobjects_without_canvas, self.slide_number),
+                m.Group(*self.mobjects_without_canvas),
             ),
             m.FadeIn(summary[0]),
             run_time=1,
@@ -491,6 +531,7 @@ class Main(Slide, m.MovingCameraScene):
             .shift(m.RIGHT * self.camera.frame.width)
         )
 
+        self.play(self.next_slide_number_animation())
         self.play(
             self.frame_group.animate(run_time=1).move_to(future),
             m.FadeIn(future[0]),
@@ -526,6 +567,7 @@ class Main(Slide, m.MovingCameraScene):
             .move_to(self.camera.frame)
             .shift(m.RIGHT * self.camera.frame.width)
         )
+        self.play(self.next_slide_number_animation())
         self.play(
             self.camera.frame.animate.move_to(qrcodes),
             m.FadeIn(qrcodes),
