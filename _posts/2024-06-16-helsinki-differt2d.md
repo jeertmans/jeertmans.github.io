@@ -14,7 +14,8 @@ github: jeertmans/DiffeRT2d
 image:
   path: /assets/images/misc/helsinki.jpg
   alt: "Helsinki Cathedral, Helsinki, Finland - Tapio Haaja, Unsplash"
-permalink: /posts/cost-interact-june-2024-differt2d-presentation/
+permalink: /posts/cost-interact-june-2024-differt2d/
+redirect_from: /posts/cost-interact-june-2024-differt2d-presentation/
 ---
 
 Presentation of the DiffeRT2d toolbox to the COST INTERACT community.
