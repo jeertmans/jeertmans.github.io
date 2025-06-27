@@ -12,8 +12,7 @@ image:
   path: /assets/images/misc/dublin.png
   alt: Dublin, Ireland - Image by Leonhard Niederwimmer from Pixabay
 permalink: /posts/cost-interact-january-2024/
-redirect-from:
-  - /posts/cost-interact-january-2024-presentation/
+redirect_from: /posts/cost-interact-january-2024-presentation/
 ---
 
 Presentation slides and code for my talk at the COST INTERACT meeting in Dublin, Ireland.
