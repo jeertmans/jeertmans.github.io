@@ -14,7 +14,9 @@ publication_id: icmlcn2025
 image:
   path: /assets/images/misc/barcelona.jpg
   alt: Barcelona, Spain - Image by Michal Jarmoluk en Pixabay
-permalink: /posts/icmlcn2025-presentation/
+permalink: /posts/icmlcn2025/
+redirect-from:
+  - /posts/icmlcn2025-presentation/
 ---
 
 Posters and 3-minute thesis presented at ICMLCN 2025!
