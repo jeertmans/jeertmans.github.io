@@ -4,11 +4,12 @@ categories:
   - Research
   - Software
 tags:
-  - ray-tracing
-  - propagation
-  - video
-  - programming
   - library
+  - machine-learning
+  - programming
+  - propagation
+  - ray-tracing
+  - video
 website: /r/cost20120-helsinki
 github: jeertmans/DiffeRT2d
 image:

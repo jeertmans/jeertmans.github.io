@@ -3,11 +3,11 @@ title: "COST INTERACT - Min-Path-Tracing: A Diffraction Aware Alternative to Ima
 categories:
   - Research
 tags:
-  - ray-tracing
+  - manim
+  - programming
   - propagation
   - video
-  - programming
-  - manim
+  - ray-tracing
 publication_id: cost2022
 image:
   path: /assets/images/misc/lyon.png

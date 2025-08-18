@@ -4,10 +4,10 @@ categories:
   - Tutorial
 tags:
   - continuous integration
-  - rust
-  - github
   - docker
+  - github
   - programming
+  - rust
 image:
   path: /assets/images/misc/github_workflow.png
   alt: "Testing a GitHub action... with a GitHub action!"

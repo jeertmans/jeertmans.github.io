@@ -4,11 +4,11 @@ categories:
   - Research
   - Software
 tags:
-  - ray-tracing
-  - propagation
-  - video
-  - programming
   - library
+  - programming
+  - propagation
+  - ray-tracing
+  - video
 website: https://eertmans.be/DiffeRT2d/
 github: jeertmans/DiffeRT2d
 image:
