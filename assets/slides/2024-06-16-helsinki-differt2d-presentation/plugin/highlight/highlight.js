@@ -43,9 +43,9 @@
   }
   class a {
     constructor(e) {
-      void 0 === e.data && (e.data = {}),
+      (void 0 === e.data && (e.data = {}),
         (this.data = e.data),
-        (this.isMatchIgnored = !1);
+        (this.isMatchIgnored = !1));
     }
     ignoreMatch() {
       this.isMatchIgnored = !0;
@@ -72,7 +72,7 @@
   const r = (e) => !!e.scope;
   class o {
     constructor(e, t) {
-      (this.buffer = ""), (this.classPrefix = t.classPrefix), e.walk(this);
+      ((this.buffer = ""), (this.classPrefix = t.classPrefix), e.walk(this));
     }
     addText(e) {
       this.buffer += n(e);
@@ -105,11 +105,11 @@
   }
   const s = (e = {}) => {
     const t = { children: [] };
-    return Object.assign(t, e), t;
+    return (Object.assign(t, e), t);
   };
   class l {
     constructor() {
-      (this.rootNode = s()), (this.stack = [this.rootNode]);
+      ((this.rootNode = s()), (this.stack = [this.rootNode]));
     }
     get top() {
       return this.stack[this.stack.length - 1];
@@ -122,7 +122,7 @@
     }
     openNode(e) {
       const t = s({ scope: e });
-      this.add(t), this.stack.push(t);
+      (this.add(t), this.stack.push(t));
     }
     closeNode() {
       if (this.stack.length > 1) return this.stack.pop();
@@ -159,7 +159,7 @@
   }
   class c extends l {
     constructor(e) {
-      super(), (this.options = e);
+      (super(), (this.options = e));
     }
     addText(e) {
       "" !== e && this.add(e);
@@ -172,13 +172,13 @@
     }
     __addSublanguage(e, t) {
       const a = e.root;
-      t && (a.scope = `language:${t}`), this.add(a);
+      (t && (a.scope = `language:${t}`), this.add(a));
     }
     toHTML() {
       return new o(this, this.options).value();
     }
     finalize() {
-      return this.closeAllNodes(), !0;
+      return (this.closeAllNodes(), !0);
     }
   }
   function _(e) {
@@ -223,11 +223,11 @@
             i += n;
             break;
           }
-          (i += n.substring(0, e.index)),
+          ((i += n.substring(0, e.index)),
             (n = n.substring(e.index + e[0].length)),
             "\\" === e[0][0] && e[1]
               ? (i += "\\" + String(Number(e[1]) + t))
-              : ((i += e[0]), "(" === e[0] && a++);
+              : ((i += e[0]), "(" === e[0] && a++));
         }
         return i;
       })
@@ -382,7 +382,7 @@
     if (e.match) {
       if (e.begin || e.end)
         throw new Error("begin & end are not supported with match");
-      (e.begin = e.match), delete e.match;
+      ((e.begin = e.match), delete e.match);
     }
   }
   function q(e, t) {
@@ -392,7 +392,7 @@
       if (!e.beforeMatch) return;
       if (e.starts) throw new Error("beforeMatch cannot be used with starts");
       const a = Object.assign({}, e);
-      Object.keys(e).forEach((t) => {
+      (Object.keys(e).forEach((t) => {
         delete e[t];
       }),
         (e.keywords = a.keywords),
@@ -402,7 +402,7 @@
           contains: [Object.assign(a, { endsParent: !0 })],
         }),
         (e.relevance = 0),
-        delete a.beforeMatch;
+        delete a.beforeMatch);
     },
     $ = [
       "of",
@@ -431,11 +431,11 @@
       n
     );
     function i(e, a) {
-      t && (a = a.map((e) => e.toLowerCase())),
+      (t && (a = a.map((e) => e.toLowerCase())),
         a.forEach(function (t) {
           const a = t.split("|");
           n[a[0]] = [e, K(a[0], a[1])];
-        });
+        }));
     }
   }
   function K(e, t) {
@@ -465,11 +465,11 @@
       r = {},
       o = {};
     for (let e = 1; e <= t.length; e++)
-      (o[e + n] = i[e]), (r[e + n] = !0), (n += E(t[e - 1]));
-    (e[a] = o), (e[a]._emit = r), (e[a]._multi = !0);
+      ((o[e + n] = i[e]), (r[e + n] = !0), (n += E(t[e - 1])));
+    ((e[a] = o), (e[a]._emit = r), (e[a]._multi = !0));
   }
   function ae(e) {
-    !(function (e) {
+    (!(function (e) {
       e.scope &&
         "object" == typeof e.scope &&
         null !== e.scope &&
@@ -482,32 +482,30 @@
         if (Array.isArray(e.begin)) {
           if (e.skip || e.excludeBegin || e.returnBegin)
             throw (
-              (X(
+              X(
                 "skip, excludeBegin, returnBegin not compatible with beginScope: {}",
               ),
-              ee)
+              ee
             );
           if ("object" != typeof e.beginScope || null === e.beginScope)
             throw (X("beginScope must be object"), ee);
-          te(e, e.begin, { key: "beginScope" }),
-            (e.begin = b(e.begin, { joinWith: "" }));
+          (te(e, e.begin, { key: "beginScope" }),
+            (e.begin = b(e.begin, { joinWith: "" })));
         }
       })(e),
       (function (e) {
         if (Array.isArray(e.end)) {
           if (e.skip || e.excludeEnd || e.returnEnd)
             throw (
-              (X(
-                "skip, excludeEnd, returnEnd not compatible with endScope: {}",
-              ),
-              ee)
+              X("skip, excludeEnd, returnEnd not compatible with endScope: {}"),
+              ee
             );
           if ("object" != typeof e.endScope || null === e.endScope)
             throw (X("endScope must be object"), ee);
-          te(e, e.end, { key: "endScope" }),
-            (e.end = b(e.end, { joinWith: "" }));
+          (te(e, e.end, { key: "endScope" }),
+            (e.end = b(e.end, { joinWith: "" })));
         }
-      })(e);
+      })(e));
   }
   function ne(e) {
     function t(t, a) {
@@ -521,21 +519,22 @@
     }
     class a {
       constructor() {
-        (this.matchIndexes = {}),
+        ((this.matchIndexes = {}),
           (this.regexes = []),
           (this.matchAt = 1),
-          (this.position = 0);
+          (this.position = 0));
       }
       addRule(e, t) {
-        (t.position = this.position++),
+        ((t.position = this.position++),
           (this.matchIndexes[this.matchAt] = t),
           this.regexes.push([t, e]),
-          (this.matchAt += E(e) + 1);
+          (this.matchAt += E(e) + 1));
       }
       compile() {
         0 === this.regexes.length && (this.exec = () => null);
         const e = this.regexes.map((e) => e[1]);
-        (this.matcherRe = t(b(e, { joinWith: "|" }), !0)), (this.lastIndex = 0);
+        ((this.matcherRe = t(b(e, { joinWith: "|" }), !0)),
+          (this.lastIndex = 0));
       }
       exec(e) {
         this.matcherRe.lastIndex = this.lastIndex;
@@ -543,16 +542,16 @@
         if (!t) return null;
         const a = t.findIndex((e, t) => t > 0 && void 0 !== e),
           n = this.matchIndexes[a];
-        return t.splice(0, a), Object.assign(t, n);
+        return (t.splice(0, a), Object.assign(t, n));
       }
     }
     class n {
       constructor() {
-        (this.rules = []),
+        ((this.rules = []),
           (this.multiRegexes = []),
           (this.count = 0),
           (this.lastIndex = 0),
-          (this.regexIndex = 0);
+          (this.regexIndex = 0));
       }
       getMatcher(e) {
         if (this.multiRegexes[e]) return this.multiRegexes[e];
@@ -571,7 +570,7 @@
         this.regexIndex = 0;
       }
       addRule(e, t) {
-        this.rules.push([e, t]), "begin" === t.type && this.count++;
+        (this.rules.push([e, t]), "begin" === t.type && this.count++);
       }
       exec(e) {
         const t = this.getMatcher(this.regexIndex);
@@ -581,7 +580,7 @@
           if (a && a.index === this.lastIndex);
           else {
             const t = this.getMatcher(0);
-            (t.lastIndex = this.lastIndex + 1), (a = t.exec(e));
+            ((t.lastIndex = this.lastIndex + 1), (a = t.exec(e)));
           }
         return (
           a &&
@@ -603,11 +602,11 @@
       (function a(r, o) {
         const s = r;
         if (r.isCompiled) return s;
-        [G, V, ae, z].forEach((e) => e(r, o)),
+        ([G, V, ae, z].forEach((e) => e(r, o)),
           e.compilerExtensions.forEach((e) => e(r, o)),
           (r.__beforeBegin = null),
           [Y, H, q].forEach((e) => e(r, o)),
-          (r.isCompiled = !0);
+          (r.isCompiled = !0));
         let l = null;
         return (
           "object" == typeof r.keywords &&
@@ -670,7 +669,7 @@
   }
   class re extends Error {
     constructor(e, t) {
-      super(e), (this.name = "HTMLInjectionError"), (this.html = t);
+      (super(e), (this.name = "HTMLInjectionError"), (this.html = t));
     }
   }
   const oe = n,
@@ -700,7 +699,7 @@
       function S(e, t, a) {
         let n = "",
           i = "";
-        "object" == typeof t
+        ("object" == typeof t
           ? ((n = e), (a = t.ignoreIllegals), (i = t.language))
           : (J("10.7.0", "highlight(lang, code, ...args) has been deprecated."),
             J(
@@ -709,11 +708,11 @@
             ),
             (i = e),
             (n = t)),
-          void 0 === a && (a = !0);
+          void 0 === a && (a = !0));
         const r = { code: n, language: i };
         v("before:highlight", r);
         const o = r.result ? r.result : b(r.language, r.code, a);
-        return (o.code = r.code), v("after:highlight", o), o;
+        return ((o.code = r.code), v("after:highlight", o), o);
       }
       function b(e, t, i, r) {
         const l = Object.create(null);
@@ -742,27 +741,27 @@
                 m(t[0], a);
               }
             } else a += t[0];
-            (e = v.keywordPatternRe.lastIndex),
-              (t = v.keywordPatternRe.exec(y));
+            ((e = v.keywordPatternRe.lastIndex),
+              (t = v.keywordPatternRe.exec(y)));
           }
           var n;
-          (a += y.substring(e)), A.addText(a);
+          ((a += y.substring(e)), A.addText(a));
         }
         function d() {
-          null != v.subLanguage
+          (null != v.subLanguage
             ? (function () {
                 if ("" === y) return;
                 let e = null;
                 if ("string" == typeof v.subLanguage) {
                   if (!n[v.subLanguage]) return void A.addText(y);
-                  (e = b(v.subLanguage, y, !0, I[v.subLanguage])),
-                    (I[v.subLanguage] = e._top);
+                  ((e = b(v.subLanguage, y, !0, I[v.subLanguage])),
+                    (I[v.subLanguage] = e._top));
                 } else e = T(y, v.subLanguage.length ? v.subLanguage : null);
-                v.relevance > 0 && (D += e.relevance),
-                  A.__addSublanguage(e._emitter, e.language);
+                (v.relevance > 0 && (D += e.relevance),
+                  A.__addSublanguage(e._emitter, e.language));
               })()
             : c(),
-            (y = "");
+            (y = ""));
         }
         function m(e, t) {
           "" !== e && (A.startScope(t), A.addText(e), A.endScope());
@@ -777,7 +776,7 @@
             }
             const n = R.classNameAliases[e[a]] || e[a],
               i = t[a];
-            n ? m(i, n) : ((y = i), c(), (y = "")), a++;
+            (n ? m(i, n) : ((y = i), c(), (y = "")), a++);
           }
         }
         function u(e, t) {
@@ -806,7 +805,7 @@
           if (i) {
             if (e["on:end"]) {
               const n = new a(e);
-              e["on:end"](t, n), n.isMatchIgnored && (i = !1);
+              (e["on:end"](t, n), n.isMatchIgnored && (i = !1));
             }
             if (i) {
               for (; e.endsParent && e.parent; ) e = e.parent;
@@ -834,16 +833,16 @@
                   d(),
                   r.excludeEnd && (y = a));
           do {
-            v.scope && A.closeNode(),
+            (v.scope && A.closeNode(),
               v.skip || v.subLanguage || (D += v.relevance),
-              (v = v.parent);
+              (v = v.parent));
           } while (v !== i.parent);
-          return i.starts && u(i.starts, e), r.returnEnd ? 0 : a.length;
+          return (i.starts && u(i.starts, e), r.returnEnd ? 0 : a.length);
         }
         let C = {};
         function f(n, r) {
           const s = r && r[0];
-          if (((y += n), null == s)) return d(), 0;
+          if (((y += n), null == s)) return (d(), 0);
           if (
             "begin" === C.type &&
             "end" === r.type &&
@@ -894,12 +893,13 @@
               "potential infinite loop, way more iterations than matches",
             );
           }
-          return (y += s), s.length;
+          return ((y += s), s.length);
         }
         const R = N(e);
         if (!R)
           throw (
-            (X(s.replace("{}", e)), new Error('Unknown language: "' + e + '"'))
+            X(s.replace("{}", e)),
+            new Error('Unknown language: "' + e + '"')
           );
         const O = ne(R);
         let h = "",
@@ -920,9 +920,9 @@
           if (R.__emitTokens) R.__emitTokens(t, A);
           else {
             for (v.matcher.considerAll(); ; ) {
-              L++,
+              (L++,
                 x ? (x = !1) : v.matcher.considerAll(),
-                (v.matcher.lastIndex = M);
+                (v.matcher.lastIndex = M));
               const e = v.matcher.exec(t);
               if (!e) break;
               const a = f(t.substring(M, e.index), e);
@@ -981,7 +981,7 @@
               _top: l,
               _emitter: new _.__emitter(_),
             };
-            return t._emitter.addText(e), t;
+            return (t._emitter.addText(e), t);
           })(e),
           i = t
             .filter(N)
@@ -998,7 +998,7 @@
           }),
           [o, s] = r,
           c = o;
-        return (c.secondBest = s), c;
+        return ((c.secondBest = s), c);
       }
       function C(e) {
         let t = null;
@@ -1047,11 +1047,11 @@
         t = e;
         const n = t.textContent,
           r = a ? S(n, { language: a, ignoreIllegals: !0 }) : T(n);
-        (e.innerHTML = r.value),
+        ((e.innerHTML = r.value),
           (e.dataset.highlighted = "yes"),
           (function (e, t, a) {
             const n = (t && i[t]) || a;
-            e.classList.add("hljs"), e.classList.add(`language-${n}`);
+            (e.classList.add("hljs"), e.classList.add(`language-${n}`));
           })(e, a, r.language),
           (e.result = {
             language: r.language,
@@ -1063,7 +1063,7 @@
               language: r.secondBest.language,
               relevance: r.secondBest.relevance,
             }),
-          v("after:highlightElement", { el: e, result: r, text: n });
+          v("after:highlightElement", { el: e, result: r, text: n }));
       }
       let f = !1;
       function R() {
@@ -1071,13 +1071,13 @@
         document.querySelectorAll(_.cssSelector).forEach(C);
       }
       function N(e) {
-        return (e = (e || "").toLowerCase()), n[e] || n[i[e]];
+        return ((e = (e || "").toLowerCase()), n[e] || n[i[e]]);
       }
       function O(e, { languageName: t }) {
-        "string" == typeof e && (e = [e]),
+        ("string" == typeof e && (e = [e]),
           e.forEach((e) => {
             i[e.toLowerCase()] = t;
-          });
+          }));
       }
       function h(e) {
         const t = N(e);
@@ -1089,7 +1089,7 @@
           e[a] && e[a](t);
         });
       }
-      "undefined" != typeof window &&
+      ("undefined" != typeof window &&
         window.addEventListener &&
         window.addEventListener(
           "DOMContentLoaded",
@@ -1114,18 +1114,18 @@
             _ = se(_, e);
           },
           initHighlighting: () => {
-            R(),
+            (R(),
               J(
                 "10.6.0",
                 "initHighlighting() deprecated.  Use highlightAll() now.",
-              );
+              ));
           },
           initHighlightingOnLoad: function () {
-            R(),
+            (R(),
               J(
                 "10.6.0",
                 "initHighlightingOnLoad() deprecated.  Use highlightAll() now.",
-              );
+              ));
           },
           registerLanguage: function (t, a) {
             let i = null;
@@ -1142,12 +1142,12 @@
                 !o)
               )
                 throw e;
-              X(e), (i = l);
+              (X(e), (i = l));
             }
-            i.name || (i.name = t),
+            (i.name || (i.name = t),
               (n[t] = i),
               (i.rawDefinition = a.bind(null, e)),
-              i.aliases && O(i.aliases, { languageName: t });
+              i.aliases && O(i.aliases, { languageName: t }));
           },
           unregisterLanguage: function (e) {
             delete n[e];
@@ -1161,8 +1161,8 @@
           autoDetection: h,
           inherit: se,
           addPlugin: function (e) {
-            !(function (e) {
-              e["before:highlightBlock"] &&
+            (!(function (e) {
+              (e["before:highlightBlock"] &&
                 !e["before:highlightElement"] &&
                 (e["before:highlightElement"] = (t) => {
                   e["before:highlightBlock"](Object.assign({ block: t.el }, t));
@@ -1173,9 +1173,9 @@
                     e["after:highlightBlock"](
                       Object.assign({ block: t.el }, t),
                     );
-                  });
+                  }));
             })(e),
-              r.push(e);
+              r.push(e));
           },
           removePlugin: function (e) {
             const t = r.indexOf(e);
@@ -1195,9 +1195,9 @@
           either: g,
           optional: p,
           anyNumberOfTimes: m,
-        });
+        }));
       for (const e in F) "object" == typeof F[e] && t(F[e]);
-      return Object.assign(e, F), e;
+      return (Object.assign(e, F), e);
     },
     _e = ce({});
   _e.newInstance = () => ce({});
@@ -1586,9 +1586,9 @@
     Ss,
     bs,
     Ts = _e;
-  (_e.HighlightJS = _e), (_e.default = _e);
+  ((_e.HighlightJS = _e), (_e.default = _e));
   var Cs = Ts;
-  Cs.registerLanguage(
+  (Cs.registerLanguage(
     "1c",
     (me ||
       ((me = 1),
@@ -7151,7 +7151,7 @@
             };
           function l(e, t) {
             const a = [{ begin: e, end: t }];
-            return (a[0].contains = a), a;
+            return ((a[0].contains = a), a);
           }
           const c = {
               className: "string",
@@ -7489,7 +7489,7 @@
                 s,
               ],
             });
-          (o.contains = [
+          ((o.contains = [
             c,
             l,
             i,
@@ -7506,7 +7506,7 @@
               e.QUOTE_STRING_MODE,
               n,
               e.inherit(e.C_BLOCK_COMMENT_MODE, { illegal: /\n/ }),
-            ]);
+            ]));
           const d = {
               variants: [c, l, i, e.APOS_STRING_MODE, e.QUOTE_STRING_MODE],
             },
@@ -8549,7 +8549,7 @@
             },
             r = e.inherit(n, { contains: [] }),
             o = e.inherit(i, { contains: [] });
-          n.contains.push(o), i.contains.push(r);
+          (n.contains.push(o), i.contains.push(r));
           let s = [t, a];
           return (
             [n, i, r, o].forEach((e) => {
@@ -10067,7 +10067,7 @@
                 relevance: 0,
               },
             ].concat(s, l);
-          (c.contains = u), (p.contains = u);
+          ((c.contains = u), (p.contains = u));
           const g = [
             { begin: /^\s*=>/, starts: { end: "$", contains: u } },
             {
@@ -10221,9 +10221,9 @@
             d,
           ];
           const p = [i, o, m, s, e.QUOTE_STRING_MODE, r, l, c, _, d];
-          (s.contains[1].contains = p),
+          ((s.contains[1].contains = p),
             (l.contains = p),
-            (d.contains[1].contains = p);
+            (d.contains[1].contains = p));
           const u = {
             className: "params",
             begin: "\\(",
@@ -15479,7 +15479,7 @@
       (function () {
         if (Za) return Xa;
         function e(e, t = {}) {
-          return (t.variants = e), t;
+          return ((t.variants = e), t);
         }
         return (
           (Za = 1),
@@ -30102,10 +30102,10 @@
                 const t = [];
                 return (
                   e.forEach((e) => {
-                    t.push(e),
+                    (t.push(e),
                       e.toLowerCase() === e
                         ? t.push(e.toUpperCase())
-                        : t.push(e.toLowerCase());
+                        : t.push(e.toLowerCase()));
                   }),
                   t
                 );
@@ -42584,7 +42584,7 @@
       Ss),
     ),
     (Cs.HighlightJS = Cs),
-    (Cs.default = Cs);
+    (Cs.default = Cs));
   var fs = e(Cs);
   !(function (e, t) {
     var a,
@@ -42680,7 +42680,7 @@
         return void 0 !== t[a] ? t[a] : e;
       });
     }
-    fs
+    (fs
       ? ((fs.initLineNumbersOnLoad = function (a) {
           "interactive" === t.readyState || "complete" === t.readyState
             ? _(a)
@@ -42692,7 +42692,7 @@
         (fs.lineNumbersValue = function (e, t) {
           if ("string" == typeof e) {
             var a = document.createElement("code");
-            return (a.innerHTML = e), m(a, t);
+            return ((a.innerHTML = e), m(a, t));
           }
         }),
         ((a = t.createElement("style")).type = "text/css"),
@@ -42756,7 +42756,7 @@
               : a.toString()),
           e.clipboardData.setData("text/plain", t),
           e.preventDefault());
-      });
+      }));
   })(window, document);
   /*!
    * reveal.js plugin that adds syntax highlight support.
@@ -42769,14 +42769,14 @@
     hljs: fs,
     init: function (e) {
       let t = e.getConfig().highlight || {};
-      (t.highlightOnLoad =
+      ((t.highlightOnLoad =
         "boolean" != typeof t.highlightOnLoad || t.highlightOnLoad),
         (t.escapeHTML = "boolean" != typeof t.escapeHTML || t.escapeHTML),
         Array.from(e.getRevealElement().querySelectorAll("pre code")).forEach(
           (e) => {
             e.parentNode.classList.add("code-wrapper");
             let a = e.querySelector('script[type="text/template"]');
-            a && (e.textContent = a.innerHTML),
+            (a && (e.textContent = a.innerHTML),
               e.hasAttribute("data-trim") &&
                 "function" == typeof e.innerHTML.trim &&
                 (e.innerHTML = (function (e) {
@@ -42821,7 +42821,7 @@
                   fs.highlightElement(e.currentTarget);
                 },
                 !1,
-              );
+              ));
           },
         ),
         "function" == typeof t.beforeHighlight && t.beforeHighlight(fs),
@@ -42843,7 +42843,7 @@
             .forEach(function (e) {
               Rs.scrollHighlightedLineIntoView(e, {}, !0);
             });
-        });
+        }));
     },
     highlightBlock: function (e) {
       if (
@@ -42855,10 +42855,10 @@
           a = Rs.deserializeHighlightSteps(e.getAttribute("data-line-numbers"));
         if (a.length > 1) {
           var n = parseInt(e.getAttribute("data-fragment-index"), 10);
-          ("number" != typeof n || isNaN(n)) && (n = null),
+          (("number" != typeof n || isNaN(n)) && (n = null),
             a.slice(1).forEach(function (a) {
               var i = e.cloneNode(!0);
-              i.setAttribute(
+              (i.setAttribute(
                 "data-line-numbers",
                 Rs.serializeHighlightSteps([a]),
               ),
@@ -42879,13 +42879,13 @@
                     i.previousElementSibling,
                     t,
                   ),
-                );
+                ));
             }),
             e.removeAttribute("data-fragment-index"),
             e.setAttribute(
               "data-line-numbers",
               Rs.serializeHighlightSteps([a[0]]),
-            );
+            ));
         }
         var i =
           "function" == typeof e.closest
@@ -42893,8 +42893,8 @@
             : null;
         if (i) {
           var r = function () {
-            Rs.scrollHighlightedLineIntoView(e, t, !0),
-              i.removeEventListener("visible", r);
+            (Rs.scrollHighlightedLineIntoView(e, t, !0),
+              i.removeEventListener("visible", r));
           };
           i.addEventListener("visible", r);
         }
@@ -42902,9 +42902,9 @@
       }
     },
     scrollHighlightedLineIntoView: function (e, t, a) {
-      cancelAnimationFrame(t.animationFrameID),
+      (cancelAnimationFrame(t.animationFrameID),
         t.currentBlock && (e.scrollTop = t.currentBlock.scrollTop),
-        (t.currentBlock = e);
+        (t.currentBlock = e));
       var n = this.getHighlightedLineBounds(e),
         i = e.offsetHeight,
         r = getComputedStyle(e);
@@ -42922,9 +42922,9 @@
         if (e.scrollHeight <= i) return;
         var c = 0,
           _ = function () {
-            (c = Math.min(c + 0.02, 1)),
+            ((c = Math.min(c + 0.02, 1)),
               (e.scrollTop = o + (s - o) * Rs.easeInOutQuart(c)),
-              c < 1 && (t.animationFrameID = requestAnimationFrame(_));
+              c < 1 && (t.animationFrameID = requestAnimationFrame(_)));
           };
         _();
       }
@@ -42946,7 +42946,7 @@
       a.length &&
         a[0].forEach(function (t) {
           var a = [];
-          "number" == typeof t.end
+          ("number" == typeof t.end
             ? (a = [].slice.call(
                 e.querySelectorAll(
                   "table tr:nth-child(n+" +
@@ -42964,7 +42964,7 @@
               (a.forEach(function (e) {
                 e.classList.add("highlight-line");
               }),
-              e.classList.add("has-highlights"));
+              e.classList.add("has-highlights")));
         });
     },
     deserializeHighlightSteps: function (e) {

@@ -78,7 +78,7 @@
         let i = e[t];
         e[t] = s(unescape(i));
       }
-      return void 0 !== e.dependencies && delete e.dependencies, e;
+      return (void 0 !== e.dependencies && delete e.dependencies, e);
     },
     c = {
       mp4: "video/mp4",
@@ -103,45 +103,45 @@
         n =
           "requestAnimationFrame" in e
             ? function () {
-                e.cancelAnimationFrame(a),
+                (e.cancelAnimationFrame(a),
                   (a = e.requestAnimationFrame(function () {
                     return o(
                       s.filter(function (e) {
                         return e.dirty && e.active;
                       }),
                     );
-                  }));
+                  })));
               }
             : function () {},
         r = function (e) {
           return function () {
-            s.forEach(function (t) {
+            (s.forEach(function (t) {
               return (t.dirty = e);
             }),
-              n();
+              n());
           };
         },
         o = function (e) {
-          e
+          (e
             .filter(function (e) {
               return !e.styleComputed;
             })
             .forEach(function (e) {
               e.styleComputed = h(e);
             }),
-            e.filter(u).forEach(g);
+            e.filter(u).forEach(g));
           var t = e.filter(c);
-          t.forEach(d),
+          (t.forEach(d),
             t.forEach(function (e) {
-              g(e), l(e);
+              (g(e), l(e));
             }),
-            t.forEach(p);
+            t.forEach(p));
         },
         l = function (e) {
           return (e.dirty = 0);
         },
         d = function (e) {
-          (e.availableWidth = e.element.parentNode.clientWidth),
+          ((e.availableWidth = e.element.parentNode.clientWidth),
             (e.currentWidth = e.element.scrollWidth),
             (e.previousFontSize = e.currentFontSize),
             (e.currentFontSize = Math.min(
@@ -154,7 +154,7 @@
             (e.whiteSpace =
               e.multiLine && e.currentFontSize === e.minSize
                 ? "normal"
-                : "nowrap");
+                : "nowrap"));
         },
         c = function (e) {
           return (
@@ -184,9 +184,9 @@
           );
         },
         g = function (e) {
-          (e.element.style.whiteSpace = e.whiteSpace),
+          ((e.element.style.whiteSpace = e.whiteSpace),
             (e.element.style.display = e.display),
-            (e.element.style.fontSize = e.currentFontSize + "px");
+            (e.element.style.fontSize = e.currentFontSize + "px"));
         },
         p = function (e) {
           e.element.dispatchEvent(
@@ -201,18 +201,18 @@
         },
         v = function (e, t) {
           return function () {
-            (e.dirty = t), e.active && n();
+            ((e.dirty = t), e.active && n());
           };
         },
         m = function (e) {
           return function () {
-            (s = s.filter(function (t) {
+            ((s = s.filter(function (t) {
               return t.element !== e.element;
             })),
               e.observeMutations && e.observer.disconnect(),
               (e.element.style.whiteSpace = e.originalStyle.whiteSpace),
               (e.element.style.display = e.originalStyle.display),
-              (e.element.style.fontSize = e.originalStyle.fontSize);
+              (e.element.style.fontSize = e.originalStyle.fontSize));
           };
         },
         f = function (e) {
@@ -242,7 +242,7 @@
         },
         E = null,
         S = function () {
-          e.clearTimeout(E), (E = e.setTimeout(r(2), k.observeWindowDelay));
+          (e.clearTimeout(E), (E = e.setTimeout(r(2), k.observeWindowDelay)));
         },
         A = ["resize", "orientationchange"];
       return (
@@ -266,7 +266,7 @@
           var t = Object.assign({}, a, { element: e, active: !0 });
           return (
             (function (e) {
-              (e.originalStyle = {
+              ((e.originalStyle = {
                 whiteSpace: e.element.style.whiteSpace,
                 display: e.element.style.display,
                 fontSize: e.element.style.fontSize,
@@ -274,7 +274,7 @@
                 b(e),
                 (e.newbie = !0),
                 (e.dirty = !0),
-                s.push(e);
+                s.push(e));
             })(t),
             {
               element: e,
@@ -285,7 +285,7 @@
             }
           );
         });
-      return n(), r;
+      return (n(), r);
     }
     function k(e) {
       var i =
@@ -297,16 +297,16 @@
   })("undefined" == typeof window ? null : window);
   class v {
     constructor(e) {
-      (this.Reveal = e),
-        (this.startEmbeddedIframe = this.startEmbeddedIframe.bind(this));
+      ((this.Reveal = e),
+        (this.startEmbeddedIframe = this.startEmbeddedIframe.bind(this)));
     }
     shouldPreload(e) {
       if (this.Reveal.isScrollView()) return !0;
       let t = this.Reveal.getConfig().preloadIframes;
-      return "boolean" != typeof t && (t = e.hasAttribute("data-preload")), t;
+      return ("boolean" != typeof t && (t = e.hasAttribute("data-preload")), t);
     }
     load(e, i = {}) {
-      (e.style.display = this.Reveal.getConfig().display),
+      ((e.style.display = this.Reveal.getConfig().display),
         t(
           e,
           "img[data-src], video[data-src], audio[data-src], iframe[data-src]",
@@ -318,15 +318,15 @@
         }),
         t(e, "video, audio").forEach((e) => {
           let i = 0;
-          t(e, "source[data-src]").forEach((e) => {
-            e.setAttribute("src", e.getAttribute("data-src")),
+          (t(e, "source[data-src]").forEach((e) => {
+            (e.setAttribute("src", e.getAttribute("data-src")),
               e.removeAttribute("data-src"),
               e.setAttribute("data-lazy-loaded", ""),
-              (i += 1);
+              (i += 1));
           }),
             u && "VIDEO" === e.tagName && e.setAttribute("playsinline", ""),
-            i > 0 && e.load();
-        });
+            i > 0 && e.load());
+        }));
       let s = e.slideBackgroundElement;
       if (s) {
         s.style.display = "block";
@@ -358,19 +358,19 @@
                   .join(","));
           else if (r && !this.Reveal.isSpeakerNotes()) {
             let e = document.createElement("video");
-            o && e.setAttribute("loop", ""),
+            (o && e.setAttribute("loop", ""),
               l && (e.muted = !0),
               u && ((e.muted = !0), e.setAttribute("playsinline", "")),
               r.split(",").forEach((t) => {
                 const i = document.createElement("source");
                 i.setAttribute("src", t);
                 let s = ((e = "") => c[e.split(".").pop()])(t);
-                s && i.setAttribute("type", s), e.appendChild(i);
+                (s && i.setAttribute("type", s), e.appendChild(i));
               }),
-              t.appendChild(e);
+              t.appendChild(e));
           } else if (a && !0 !== i.excludeIframes) {
             let e = document.createElement("iframe");
-            e.setAttribute("allowfullscreen", ""),
+            (e.setAttribute("allowfullscreen", ""),
               e.setAttribute("mozallowfullscreen", ""),
               e.setAttribute("webkitallowfullscreen", ""),
               e.setAttribute("allow", "autoplay"),
@@ -379,7 +379,7 @@
               (e.style.height = "100%"),
               (e.style.maxHeight = "100%"),
               (e.style.maxWidth = "100%"),
-              t.appendChild(e);
+              t.appendChild(e));
           }
         }
         let n = t.querySelector("iframe[data-src]");
@@ -404,7 +404,7 @@
     unload(e) {
       e.style.display = "none";
       let i = this.Reveal.getSlideBackground(e);
-      i &&
+      (i &&
         ((i.style.display = "none"),
         t(i, "iframe[src]").forEach((e) => {
           e.removeAttribute("src");
@@ -413,15 +413,15 @@
           e,
           "video[data-lazy-loaded][src], audio[data-lazy-loaded][src], iframe[data-lazy-loaded][src]",
         ).forEach((e) => {
-          e.setAttribute("data-src", e.getAttribute("src")),
-            e.removeAttribute("src");
+          (e.setAttribute("data-src", e.getAttribute("src")),
+            e.removeAttribute("src"));
         }),
         t(e, "video[data-lazy-loaded] source[src], audio source[src]").forEach(
           (e) => {
-            e.setAttribute("data-src", e.getAttribute("src")),
-              e.removeAttribute("src");
+            (e.setAttribute("data-src", e.getAttribute("src")),
+              e.removeAttribute("src"));
           },
-        );
+        ));
     }
     formatEmbeddedContent() {
       let e = (e, i, s) => {
@@ -435,10 +435,10 @@
             t.setAttribute(e, i + (/\?/.test(i) ? "&" : "?") + s);
         });
       };
-      e("src", "youtube.com/embed/", "enablejsapi=1"),
+      (e("src", "youtube.com/embed/", "enablejsapi=1"),
         e("data-src", "youtube.com/embed/", "enablejsapi=1"),
         e("src", "player.vimeo.com/", "api=1"),
-        e("data-src", "player.vimeo.com/", "api=1");
+        e("data-src", "player.vimeo.com/", "api=1"));
     }
     startEmbeddedContent(e) {
       e &&
@@ -462,14 +462,14 @@
                 "function" == typeof t.catch &&
                 !1 === e.controls &&
                 t.catch(() => {
-                  (e.controls = !0),
+                  ((e.controls = !0),
                     e.addEventListener("play", () => {
                       e.controls = !1;
-                    });
+                    }));
                 });
             } else
-              e.removeEventListener("loadeddata", this.startEmbeddedMedia),
-                e.addEventListener("loadeddata", this.startEmbeddedMedia);
+              (e.removeEventListener("loadeddata", this.startEmbeddedMedia),
+                e.addEventListener("loadeddata", this.startEmbeddedMedia));
         }),
         t(e, "iframe[src]").forEach((e) => {
           (r(e, ".fragment") && !r(e, ".fragment.visible")) ||
@@ -486,11 +486,11 @@
     startEmbeddedMedia(e) {
       let t = !!r(e.target, "html"),
         i = !!r(e.target, ".present");
-      t &&
+      (t &&
         i &&
         (e.target.paused || e.target.ended) &&
         ((e.target.currentTime = 0), e.target.play()),
-        e.target.removeEventListener("loadeddata", this.startEmbeddedMedia);
+        e.target.removeEventListener("loadeddata", this.startEmbeddedMedia));
     }
     startEmbeddedIframe(e) {
       let t = e.target;
@@ -499,7 +499,7 @@
           s = !!r(e.target, ".present");
         if (i && s) {
           let e = this.Reveal.getConfig().autoPlayMedia;
-          "boolean" != typeof e &&
+          ("boolean" != typeof e &&
             (e =
               t.hasAttribute("data-autoplay") || !!r(t, ".slide-background")),
             /youtube\.com\/embed\//.test(t.getAttribute("src")) && e
@@ -509,12 +509,12 @@
                 )
               : /player\.vimeo\.com\//.test(t.getAttribute("src")) && e
                 ? t.contentWindow.postMessage('{"method":"play"}', "*")
-                : t.contentWindow.postMessage("slide:start", "*");
+                : t.contentWindow.postMessage("slide:start", "*"));
         }
       }
     }
     stopEmbeddedContent(i, s = {}) {
-      (s = e({ unloadIframes: !0 }, s)),
+      ((s = e({ unloadIframes: !0 }, s)),
         i &&
           i.parentNode &&
           (t(i, "video, audio").forEach((e) => {
@@ -523,8 +523,8 @@
               (e.setAttribute("data-paused-by-reveal", ""), e.pause());
           }),
           t(i, "iframe").forEach((e) => {
-            e.contentWindow && e.contentWindow.postMessage("slide:stop", "*"),
-              e.removeEventListener("load", this.startEmbeddedIframe);
+            (e.contentWindow && e.contentWindow.postMessage("slide:stop", "*"),
+              e.removeEventListener("load", this.startEmbeddedIframe));
           }),
           t(i, 'iframe[src*="youtube.com/embed/"]').forEach((e) => {
             !e.hasAttribute("data-ignore") &&
@@ -543,8 +543,8 @@
           }),
           !0 === s.unloadIframes &&
             t(i, "iframe[data-src]").forEach((e) => {
-              e.setAttribute("src", "about:blank"), e.removeAttribute("src");
-            }));
+              (e.setAttribute("src", "about:blank"), e.removeAttribute("src"));
+            })));
     }
   }
   const m = ".slides section",
@@ -559,18 +559,18 @@
       this.Reveal = e;
     }
     render() {
-      (this.element = document.createElement("div")),
+      ((this.element = document.createElement("div")),
         (this.element.className = "slide-number"),
-        this.Reveal.getRevealElement().appendChild(this.element);
+        this.Reveal.getRevealElement().appendChild(this.element));
     }
     configure(e, t) {
       let i = "none";
-      e.slideNumber &&
+      (e.slideNumber &&
         !this.Reveal.isPrintView() &&
         ("all" === e.showSlideNumber ||
           ("speaker" === e.showSlideNumber && this.Reveal.isSpeakerNotes())) &&
         (i = "block"),
-        (this.element.style.display = i);
+        (this.element.style.display = i));
     }
     update() {
       this.Reveal.getConfig().slideNumber &&
@@ -583,10 +583,10 @@
         s = "h.v";
       if ("function" == typeof i.slideNumber) t = i.slideNumber(e);
       else {
-        "string" == typeof i.slideNumber && (s = i.slideNumber),
+        ("string" == typeof i.slideNumber && (s = i.slideNumber),
           /c/.test(s) ||
             1 !== this.Reveal.getHorizontalSlides().length ||
-            (s = "c");
+            (s = "c"));
         let a = e && "uncounted" === e.dataset.visibility ? 0 : 1;
         switch (((t = []), s)) {
           case "c":
@@ -620,13 +620,13 @@
   }
   class S {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.onInput = this.onInput.bind(this)),
         (this.onBlur = this.onBlur.bind(this)),
-        (this.onKeyDown = this.onKeyDown.bind(this));
+        (this.onKeyDown = this.onKeyDown.bind(this)));
     }
     render() {
-      (this.element = document.createElement("div")),
+      ((this.element = document.createElement("div")),
         (this.element.className = "jump-to-slide"),
         (this.jumpInput = document.createElement("input")),
         (this.jumpInput.type = "text"),
@@ -635,12 +635,12 @@
         this.jumpInput.addEventListener("input", this.onInput),
         this.jumpInput.addEventListener("keydown", this.onKeyDown),
         this.jumpInput.addEventListener("blur", this.onBlur),
-        this.element.appendChild(this.jumpInput);
+        this.element.appendChild(this.jumpInput));
     }
     show() {
-      (this.indicesOnShow = this.Reveal.getIndices()),
+      ((this.indicesOnShow = this.Reveal.getIndices()),
         this.Reveal.getRevealElement().appendChild(this.element),
-        this.jumpInput.focus();
+        this.jumpInput.focus());
     }
     hide() {
       this.isVisible() &&
@@ -653,7 +653,7 @@
       return !!this.element.parentNode;
     }
     jump() {
-      clearTimeout(this.jumpTimeout), delete this.jumpTimeout;
+      (clearTimeout(this.jumpTimeout), delete this.jumpTimeout);
       let e,
         t = this.jumpInput.value.trim("");
       if (/^\d+$/.test(t)) {
@@ -681,8 +681,8 @@
       );
     }
     jumpAfter(e) {
-      clearTimeout(this.jumpTimeout),
-        (this.jumpTimeout = setTimeout(() => this.jump(), e));
+      (clearTimeout(this.jumpTimeout),
+        (this.jumpTimeout = setTimeout(() => this.jump(), e)));
     }
     search(e) {
       const t = new RegExp("\\b" + e.trim() + "\\b", "i"),
@@ -690,21 +690,21 @@
       return i ? this.Reveal.getIndices(i) : null;
     }
     cancel() {
-      this.Reveal.slide(
+      (this.Reveal.slide(
         this.indicesOnShow.h,
         this.indicesOnShow.v,
         this.indicesOnShow.f,
       ),
-        this.hide();
+        this.hide());
     }
     confirm() {
-      this.jump(), this.hide();
+      (this.jump(), this.hide());
     }
     destroy() {
-      this.jumpInput.removeEventListener("input", this.onInput),
+      (this.jumpInput.removeEventListener("input", this.onInput),
         this.jumpInput.removeEventListener("keydown", this.onKeyDown),
         this.jumpInput.removeEventListener("blur", this.onBlur),
-        this.element.remove();
+        this.element.remove());
     }
     onKeyDown(e) {
       13 === e.keyCode
@@ -763,17 +763,17 @@
       this.Reveal = e;
     }
     render() {
-      (this.element = document.createElement("div")),
+      ((this.element = document.createElement("div")),
         (this.element.className = "backgrounds"),
-        this.Reveal.getRevealElement().appendChild(this.element);
+        this.Reveal.getRevealElement().appendChild(this.element));
     }
     create() {
-      (this.element.innerHTML = ""),
+      ((this.element.innerHTML = ""),
         this.element.classList.add("no-transition"),
         this.Reveal.getHorizontalSlides().forEach((e) => {
           let i = this.createBackground(e, this.element);
           t(e, "section").forEach((e) => {
-            this.createBackground(e, i), i.classList.add("stack");
+            (this.createBackground(e, i), i.classList.add("stack"));
           });
         }),
         this.Reveal.getConfig().parallaxBackgroundImage
@@ -793,7 +793,7 @@
           : ((this.element.style.backgroundImage = ""),
             this.Reveal.getRevealElement().classList.remove(
               "has-parallax-background",
-            ));
+            )));
     }
     createBackground(e, t) {
       let i = document.createElement("div");
@@ -827,7 +827,7 @@
           backgroundOpacity: e.getAttribute("data-background-opacity"),
         },
         a = e.hasAttribute("data-preload");
-      e.classList.remove("has-dark-background"),
+      (e.classList.remove("has-dark-background"),
         e.classList.remove("has-light-background"),
         t.removeAttribute("data-loaded"),
         t.removeAttribute("data-background-hash"),
@@ -877,7 +877,7 @@
         s.backgroundRepeat && (i.style.backgroundRepeat = s.backgroundRepeat),
         s.backgroundPosition &&
           (i.style.backgroundPosition = s.backgroundPosition),
-        s.backgroundOpacity && (i.style.opacity = s.backgroundOpacity);
+        s.backgroundOpacity && (i.style.opacity = s.backgroundOpacity));
       const n = this.getContrastClass(e);
       "string" == typeof n && e.classList.add(n);
     }
@@ -915,7 +915,7 @@
         o = i.rtl ? "past" : "future";
       if (
         (Array.from(this.element.childNodes).forEach((i, s) => {
-          i.classList.remove("past", "present", "future"),
+          (i.classList.remove("past", "present", "future"),
             s < a.h
               ? i.classList.add(r)
               : s > a.h
@@ -930,7 +930,7 @@
                   : t > i
                     ? e.classList.add("future")
                     : (e.classList.add("present"), s === a.h && (n = e));
-              });
+              }));
         }),
         this.previousBackground &&
           !this.previousBackground.closest("body") &&
@@ -945,7 +945,7 @@
             t = this.previousBackground.querySelector("video");
           if (e && t) {
             const i = e.parentNode;
-            t.parentNode.appendChild(e), i.appendChild(t);
+            (t.parentNode.appendChild(e), i.appendChild(t));
           }
         }
       }
@@ -972,14 +972,14 @@
         }
         this.previousBackground = n;
       }
-      s &&
+      (s &&
         this.bubbleSlideContrastClassToElement(
           s,
           this.Reveal.getRevealElement(),
         ),
         setTimeout(() => {
           this.element.classList.remove("no-transition");
-        }, 10);
+        }, 10));
     }
     updateParallax() {
       let e = this.Reveal.getIndices();
@@ -996,24 +996,24 @@
           o,
           l = this.element.offsetWidth,
           d = s.length;
-        (r =
+        ((r =
           "number" ==
           typeof this.Reveal.getConfig().parallaxBackgroundHorizontal
             ? this.Reveal.getConfig().parallaxBackgroundHorizontal
             : d > 1
               ? (t - l) / (d - 1)
               : 0),
-          (o = r * e.h * -1);
+          (o = r * e.h * -1));
         let c,
           h,
           u = this.element.offsetHeight,
           g = a.length;
-        (c =
+        ((c =
           "number" == typeof this.Reveal.getConfig().parallaxBackgroundVertical
             ? this.Reveal.getConfig().parallaxBackgroundVertical
             : (i - u) / (g - 1)),
           (h = g > 0 ? c * e.v : 0),
-          (this.element.style.backgroundPosition = o + "px " + -h + "px");
+          (this.element.style.backgroundPosition = o + "px " + -h + "px"));
       }
     }
     destroy() {
@@ -1041,9 +1041,9 @@
       ) {
         this.autoAnimateStyleSheet = this.autoAnimateStyleSheet || l();
         let i = this.getAutoAnimateOptions(t);
-        (e.dataset.autoAnimate = "pending"),
+        ((e.dataset.autoAnimate = "pending"),
           (t.dataset.autoAnimate = "pending"),
-          (i.slideDirection = s > a ? "forward" : "backward");
+          (i.slideDirection = s > a ? "forward" : "backward"));
         let n = "none" === e.style.display;
         n && (e.style.display = this.Reveal.getConfig().display);
         let r = this.getAutoAnimatableElements(e, t).map((e) =>
@@ -1056,21 +1056,21 @@
         ) {
           let e = 0.8 * i.duration,
             s = 0.2 * i.duration;
-          this.getUnmatchedAutoAnimateElements(t).forEach((e) => {
+          (this.getUnmatchedAutoAnimateElements(t).forEach((e) => {
             let t = this.getAutoAnimateOptions(e, i),
               s = "unmatched";
-            (t.duration === i.duration && t.delay === i.delay) ||
+            ((t.duration === i.duration && t.delay === i.delay) ||
               ((s = "unmatched-" + k++),
               r.push(
                 `[data-auto-animate="running"] [data-auto-animate-target="${s}"] { transition: opacity ${t.duration}s ease ${t.delay}s; }`,
               )),
-              (e.dataset.autoAnimateTarget = s);
+              (e.dataset.autoAnimateTarget = s));
           }, this),
             r.push(
               `[data-auto-animate="running"] [data-auto-animate-target="unmatched"] { transition: opacity ${e}s ease ${s}s; }`,
-            );
+            ));
         }
-        (this.autoAnimateStyleSheet.innerHTML = r.join("")),
+        ((this.autoAnimateStyleSheet.innerHTML = r.join("")),
           requestAnimationFrame(() => {
             this.autoAnimateStyleSheet &&
               (getComputedStyle(this.autoAnimateStyleSheet).fontWeight,
@@ -1083,11 +1083,11 @@
               toSlide: t,
               sheet: this.autoAnimateStyleSheet,
             },
-          });
+          }));
       }
     }
     reset() {
-      t(
+      (t(
         this.Reveal.getRevealElement(),
         '[data-auto-animate]:not([data-auto-animate=""])',
       ).forEach((e) => {
@@ -1103,14 +1103,14 @@
           (this.autoAnimateStyleSheet.parentNode.removeChild(
             this.autoAnimateStyleSheet,
           ),
-          (this.autoAnimateStyleSheet = null));
+          (this.autoAnimateStyleSheet = null)));
     }
     autoAnimateElements(e, t, i, s, a) {
-      (e.dataset.autoAnimateTarget = ""), (t.dataset.autoAnimateTarget = a);
+      ((e.dataset.autoAnimateTarget = ""), (t.dataset.autoAnimateTarget = a));
       let n = this.getAutoAnimateOptions(t, s);
-      void 0 !== i.delay && (n.delay = i.delay),
+      (void 0 !== i.delay && (n.delay = i.delay),
         void 0 !== i.duration && (n.duration = i.duration),
-        void 0 !== i.easing && (n.easing = i.easing);
+        void 0 !== i.easing && (n.easing = i.easing));
       let r = this.getAutoAnimatableProperties("from", e, i),
         o = this.getAutoAnimatableProperties("to", t, i);
       if (
@@ -1130,19 +1130,19 @@
             scaleX: r.width / o.width,
             scaleY: r.height / o.height,
           };
-        (t.x = Math.round(1e3 * t.x) / 1e3),
+        ((t.x = Math.round(1e3 * t.x) / 1e3),
           (t.y = Math.round(1e3 * t.y) / 1e3),
           (t.scaleX = Math.round(1e3 * t.scaleX) / 1e3),
-          (t.scaleX = Math.round(1e3 * t.scaleX) / 1e3);
+          (t.scaleX = Math.round(1e3 * t.scaleX) / 1e3));
         let s = !1 !== i.translate && (0 !== t.x || 0 !== t.y),
           a = !1 !== i.scale && (0 !== t.scaleX || 0 !== t.scaleY);
         if (s || a) {
           let e = [];
-          s && e.push(`translate(${t.x}px, ${t.y}px)`),
+          (s && e.push(`translate(${t.x}px, ${t.y}px)`),
             a && e.push(`scale(${t.scaleX}, ${t.scaleY})`),
             (r.styles.transform = e.join(" ")),
             (r.styles["transform-origin"] = "top left"),
-            (o.styles.transform = "none");
+            (o.styles.transform = "none"));
         }
       }
       for (let e in o.styles) {
@@ -1156,7 +1156,7 @@
       let l = "",
         d = Object.keys(o.styles);
       if (d.length > 0) {
-        (r.styles.transition = "none"),
+        ((r.styles.transition = "none"),
           (o.styles.transition = `all ${n.duration}s ${n.easing} ${n.delay}s`),
           (o.styles["transition-property"] = d.join(", ")),
           (o.styles["will-change"] = d.join(", ")),
@@ -1173,7 +1173,7 @@
             Object.keys(o.styles)
               .map((e) => e + ": " + o.styles[e] + " !important;")
               .join("") +
-            "}");
+            "}"));
       }
       return l;
     }
@@ -1212,13 +1212,13 @@
             height: t.offsetHeight * i,
           };
         }
-        (a.x = e.x), (a.y = e.y), (a.width = e.width), (a.height = e.height);
+        ((a.x = e.x), (a.y = e.y), (a.width = e.width), (a.height = e.height));
       }
       const n = getComputedStyle(t);
       return (
         (i.styles || s.autoAnimateStyles).forEach((t) => {
           let i;
-          "string" == typeof t && (t = { property: t }),
+          ("string" == typeof t && (t = { property: t }),
             void 0 !== t.from && "from" === e
               ? (i = { value: t.from, explicitValue: !0 })
               : void 0 !== t.to && "to" === e
@@ -1228,7 +1228,7 @@
                       parseFloat(n["line-height"]) /
                       parseFloat(n["font-size"])),
                   isNaN(i) && (i = n[t.property])),
-            "" !== i && (a.styles[t.property] = i);
+            "" !== i && (a.styles[t.property] = i));
         }),
         a
       );
@@ -1241,7 +1241,7 @@
         ).call(this, e, t),
         s = [];
       return i.filter((e, t) => {
-        if (-1 === s.indexOf(e.to)) return s.push(e.to), !0;
+        if (-1 === s.indexOf(e.to)) return (s.push(e.to), !0);
       });
     }
     getAutoAnimatePairs(e, t) {
@@ -1324,7 +1324,7 @@
     findAutoAnimateMatches(e, t, i, s, a, n) {
       let r = {},
         o = {};
-      [].slice.call(t.querySelectorAll(s)).forEach((e, t) => {
+      ([].slice.call(t.querySelectorAll(s)).forEach((e, t) => {
         const i = a(e);
         "string" == typeof i && i.length && ((r[i] = r[i] || []), r[i].push(e));
       }),
@@ -1339,7 +1339,7 @@
               : r[s][t] && ((l = r[s][t]), (r[s][t] = null));
           }
           l && e.push({ from: l, to: t, options: n });
-        });
+        }));
     }
     getUnmatchedAutoAnimateElements(e) {
       return [].slice.call(e.children).reduce((e, t) => {
@@ -1355,17 +1355,17 @@
   }
   class C {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.active = !1),
         (this.activatedCallbacks = []),
-        (this.onScroll = this.onScroll.bind(this));
+        (this.onScroll = this.onScroll.bind(this)));
     }
     activate() {
       if (this.active) return;
       const e = this.Reveal.getState();
-      (this.active = !0),
+      ((this.active = !0),
         (this.slideHTMLBeforeActivation =
-          this.Reveal.getSlidesElement().innerHTML);
+          this.Reveal.getSlidesElement().innerHTML));
       const i = t(this.Reveal.getRevealElement(), f),
         s = t(this.Reveal.getRevealElement(), ".backgrounds>.slide-background");
       let a;
@@ -1381,10 +1381,10 @@
       const d = (e, t, i, n) => {
         let o;
         if (l && this.Reveal.shouldAutoAnimateBetween(l, e))
-          (o = document.createElement("div")),
+          ((o = document.createElement("div")),
             (o.className = "scroll-page-content scroll-auto-animate-page"),
             (o.style.display = "none"),
-            l.closest(".scroll-page-content").parentNode.appendChild(o);
+            l.closest(".scroll-page-content").parentNode.appendChild(o));
         else {
           const e = document.createElement("div");
           if (((e.className = "scroll-page"), r.push(e), n && s.length > t)) {
@@ -1395,22 +1395,22 @@
               : a && (e.style.background = a);
           } else a && (e.style.background = a);
           const i = document.createElement("div");
-          (i.className = "scroll-page-sticky"),
+          ((i.className = "scroll-page-sticky"),
             e.appendChild(i),
             (o = document.createElement("div")),
             (o.className = "scroll-page-content"),
-            i.appendChild(o);
+            i.appendChild(o));
         }
-        o.appendChild(e),
+        (o.appendChild(e),
           e.classList.remove("past", "future"),
           e.setAttribute("data-index-h", t),
           e.setAttribute("data-index-v", i),
           e.slideBackgroundElement &&
             (e.slideBackgroundElement.remove("past", "future"),
             o.insertBefore(e.slideBackgroundElement, e)),
-          (l = e);
+          (l = e));
       };
-      i.forEach((e, t) => {
+      (i.forEach((e, t) => {
         this.Reveal.isVerticalStack(e)
           ? e.querySelectorAll("section").forEach((e, i) => {
               d(e, t, i, !0);
@@ -1429,12 +1429,12 @@
         this.viewportElement.classList.remove("loading-scroll-mode"),
         this.viewportElement.addEventListener("scroll", this.onScroll, {
           passive: !0,
-        });
+        }));
     }
     deactivate() {
       if (!this.active) return;
       const e = this.Reveal.getState();
-      (this.active = !1),
+      ((this.active = !1),
         this.viewportElement.removeEventListener("scroll", this.onScroll),
         this.viewportElement.classList.remove("reveal-scroll"),
         this.removeProgressBar(),
@@ -1442,7 +1442,7 @@
           this.slideHTMLBeforeActivation),
         this.Reveal.sync(),
         this.Reveal.setState(e),
-        (this.slideHTMLBeforeActivation = null);
+        (this.slideHTMLBeforeActivation = null));
     }
     toggle(e) {
       "boolean" == typeof e
@@ -1457,7 +1457,7 @@
       return this.active;
     }
     createProgressBar() {
-      (this.progressBar = document.createElement("div")),
+      ((this.progressBar = document.createElement("div")),
         (this.progressBar.className = "scrollbar"),
         (this.progressBarInner = document.createElement("div")),
         (this.progressBarInner.className = "scrollbar-inner"),
@@ -1468,29 +1468,29 @@
         this.viewportElement.insertBefore(
           this.progressBar,
           this.viewportElement.firstChild,
-        );
+        ));
       const e = (e) => {
           let t =
             (e.clientY - this.progressBarInner.getBoundingClientRect().top) /
             this.progressBarHeight;
-          (t = Math.max(Math.min(t, 1), 0)),
+          ((t = Math.max(Math.min(t, 1), 0)),
             (this.viewportElement.scrollTop =
               t *
               (this.viewportElement.scrollHeight -
-                this.viewportElement.offsetHeight));
+                this.viewportElement.offsetHeight)));
         },
         t = (i) => {
-          (this.draggingProgressBar = !1),
+          ((this.draggingProgressBar = !1),
             this.showProgressBar(),
             document.removeEventListener("mousemove", e),
-            document.removeEventListener("mouseup", t);
+            document.removeEventListener("mouseup", t));
         };
       this.progressBarInner.addEventListener("mousedown", (i) => {
-        i.preventDefault(),
+        (i.preventDefault(),
           (this.draggingProgressBar = !0),
           document.addEventListener("mousemove", e),
           document.addEventListener("mouseup", t),
-          e(i);
+          e(i));
       });
     }
     removeProgressBar() {
@@ -1511,15 +1511,15 @@
         a = this.viewportElement.offsetHeight,
         n = t.height * i,
         r = s ? n : a;
-      (this.scrollTriggerHeight = s ? n : a),
+      ((this.scrollTriggerHeight = s ? n : a),
         this.viewportElement.style.setProperty("--page-height", r + "px"),
         (this.viewportElement.style.scrollSnapType =
           "string" == typeof e.scrollSnap ? `y ${e.scrollSnap}` : ""),
-        (this.slideTriggers = []);
+        (this.slideTriggers = []));
       const o = Array.from(
         this.Reveal.getRevealElement().querySelectorAll(".scroll-page"),
       );
-      (this.pages = o.map((i) => {
+      ((this.pages = o.map((i) => {
         const n = this.createPage({
           pageElement: i,
           slideElement: i.querySelector("section"),
@@ -1529,7 +1529,7 @@
           autoAnimateElements: i.querySelectorAll(".scroll-auto-animate-page"),
           autoAnimatePages: [],
         });
-        n.pageElement.style.setProperty(
+        (n.pageElement.style.setProperty(
           "--slide-height",
           !0 === e.center ? "auto" : t.height + "px",
         ),
@@ -1540,22 +1540,22 @@
           }),
           this.createFragmentTriggersForPage(n),
           n.autoAnimateElements.length > 0 &&
-            this.createAutoAnimateTriggersForPage(n);
+            this.createAutoAnimateTriggersForPage(n));
         let o = Math.max(n.scrollTriggers.length - 1, 0);
-        (o += n.autoAnimatePages.reduce(
+        ((o += n.autoAnimatePages.reduce(
           (e, t) => e + Math.max(t.scrollTriggers.length - 1, 0),
           n.autoAnimatePages.length,
         )),
           n.pageElement
             .querySelectorAll(".scroll-snap-point")
-            .forEach((e) => e.remove());
+            .forEach((e) => e.remove()));
         for (let e = 0; e < o + 1; e++) {
           const t = document.createElement("div");
-          (t.className = "scroll-snap-point"),
+          ((t.className = "scroll-snap-point"),
             (t.style.height = this.scrollTriggerHeight + "px"),
             (t.style.scrollSnapAlign = s ? "center" : "start"),
             n.pageElement.appendChild(t),
-            0 === e && (t.style.marginTop = -this.scrollTriggerHeight + "px");
+            0 === e && (t.style.marginTop = -this.scrollTriggerHeight + "px"));
         }
         return (
           s && n.scrollTriggers.length > 0
@@ -1584,7 +1584,7 @@
         e.scrollProgress && this.totalScrollTriggerCount > 1
           ? (this.progressBar || this.createProgressBar(),
             this.syncProgressBar())
-          : this.removeProgressBar();
+          : this.removeProgressBar());
     }
     setTriggerRanges() {
       this.totalScrollTriggerCount = this.slideTriggers.reduce(
@@ -1600,10 +1600,10 @@
               this.totalScrollTriggerCount,
         ];
         const s = (t.range[1] - t.range[0]) / t.page.scrollTriggers.length;
-        t.page.scrollTriggers.forEach((t, i) => {
+        (t.page.scrollTriggers.forEach((t, i) => {
           t.range = [e + i * s, e + (i + 1) * s];
         }),
-          (e = t.range[1]);
+          (e = t.range[1]));
       });
     }
     createFragmentTriggersForPage(e, t) {
@@ -1665,17 +1665,17 @@
       const e = this.viewportElement.scrollHeight,
         t = this.viewportElement.offsetHeight,
         i = t / e;
-      (this.progressBarHeight = this.progressBarInner.offsetHeight),
+      ((this.progressBarHeight = this.progressBarInner.offsetHeight),
         (this.playheadHeight = Math.max(i * this.progressBarHeight, 8)),
         (this.progressBarScrollableHeight =
-          this.progressBarHeight - this.playheadHeight);
+          this.progressBarHeight - this.playheadHeight));
       const s = (t / e) * this.progressBarHeight,
         a = Math.min(s / 8, 4);
-      (this.progressBarPlayhead.style.height = this.playheadHeight - a + "px"),
+      ((this.progressBarPlayhead.style.height = this.playheadHeight - a + "px"),
         s > 6
           ? this.slideTriggers.forEach((e) => {
               const { page: t } = e;
-              (t.progressBarSlide = document.createElement("div")),
+              ((t.progressBarSlide = document.createElement("div")),
                 (t.progressBarSlide.className = "scrollbar-slide"),
                 (t.progressBarSlide.style.top =
                   e.range[0] * this.progressBarHeight + "px"),
@@ -1703,9 +1703,9 @@
                     0 === s && (n.style.display = "none"),
                     n
                   );
-                }));
+                })));
             })
-          : this.pages.forEach((e) => (e.progressBarSlide = null));
+          : this.pages.forEach((e) => (e.progressBarSlide = null)));
     }
     syncScrollPosition() {
       const e = this.viewportElement.offsetHeight,
@@ -1718,15 +1718,15 @@
           0,
         );
       let r;
-      this.slideTriggers.forEach((e) => {
+      (this.slideTriggers.forEach((e) => {
         const { page: i } = e;
-        a >= e.range[0] - 2 * t && a <= e.range[1] + 2 * t && !i.loaded
+        (a >= e.range[0] - 2 * t && a <= e.range[1] + 2 * t && !i.loaded
           ? ((i.loaded = !0), this.Reveal.slideContent.load(i.slideElement))
           : i.loaded &&
             ((i.loaded = !1), this.Reveal.slideContent.unload(i.slideElement)),
           a >= e.range[0] && a <= e.range[1]
             ? (this.activateTrigger(e), (r = e.page))
-            : e.active && this.deactivateTrigger(e);
+            : e.active && this.deactivateTrigger(e));
       }),
         r &&
           r.scrollTriggers.forEach((e) => {
@@ -1734,7 +1734,7 @@
               ? this.activateTrigger(e)
               : e.active && this.deactivateTrigger(e);
           }),
-        this.setProgressBarValue(i / (this.viewportElement.scrollHeight - e));
+        this.setProgressBarValue(i / (this.viewportElement.scrollHeight - e)));
     }
     setProgressBarValue(e) {
       this.progressBar &&
@@ -1742,24 +1742,24 @@
         this.getAllPages()
           .filter((e) => e.progressBarSlide)
           .forEach((e) => {
-            e.progressBarSlide.classList.toggle("active", !0 === e.active),
+            (e.progressBarSlide.classList.toggle("active", !0 === e.active),
               e.scrollTriggers.forEach((t, i) => {
                 e.scrollTriggerElements[i].classList.toggle(
                   "active",
                   !0 === e.active && !0 === t.active,
                 );
-              });
+              }));
           }),
         this.showProgressBar());
     }
     showProgressBar() {
-      this.progressBar.classList.add("visible"),
+      (this.progressBar.classList.add("visible"),
         clearTimeout(this.hideProgressBarTimeout),
         "auto" !== this.Reveal.getConfig().scrollProgress ||
           this.draggingProgressBar ||
           (this.hideProgressBarTimeout = setTimeout(() => {
             this.progressBar && this.progressBar.classList.remove("visible");
-          }, 500));
+          }, 500)));
     }
     prev() {
       this.viewportElement.scrollTop -= this.scrollTriggerHeight;
@@ -1778,9 +1778,9 @@
       } else this.activatedCallbacks.push(() => this.scrollToSlide(e));
     }
     storeScrollPosition() {
-      clearTimeout(this.storeScrollPositionTimeout),
+      (clearTimeout(this.storeScrollPositionTimeout),
         (this.storeScrollPositionTimeout = setTimeout(() => {
-          sessionStorage.setItem(
+          (sessionStorage.setItem(
             "reveal-scroll-top",
             this.viewportElement.scrollTop,
           ),
@@ -1788,8 +1788,8 @@
               "reveal-scroll-origin",
               location.origin + location.pathname,
             ),
-            (this.storeScrollPositionTimeout = null);
-        }, 50));
+            (this.storeScrollPositionTimeout = null));
+        }, 50)));
     }
     restoreScrollPosition() {
       const e = sessionStorage.getItem("reveal-scroll-top"),
@@ -1808,7 +1808,7 @@
           indexh: a,
           indexv: n,
         } = e;
-        (s.style.display = "block"),
+        ((s.style.display = "block"),
           t.classList.add("present"),
           i && i.classList.add("present"),
           this.Reveal.setCurrentScrollPage(t, a, n),
@@ -1820,7 +1820,7 @@
             s.parentNode.querySelectorAll(".scroll-page-content"),
           ).forEach((e) => {
             e !== s && (e.style.display = "none");
-          });
+          }));
       }
     }
     deactivatePage(e) {
@@ -1848,7 +1848,7 @@
       return this.pages.flatMap((e) => [e, ...(e.autoAnimatePages || [])]);
     }
     onScroll() {
-      this.syncScrollPosition(), this.storeScrollPosition();
+      (this.syncScrollPosition(), this.storeScrollPosition());
     }
     get viewportElement() {
       return this.Reveal.getViewportElement();
@@ -1870,7 +1870,7 @@
         r = Math.floor(a.height * (1 + e.margin)),
         o = a.width,
         d = a.height;
-      await new Promise(requestAnimationFrame),
+      (await new Promise(requestAnimationFrame),
         l("@page{size:" + n + "px " + r + "px; margin: 0px;}"),
         l(
           ".reveal section>img, .reveal section>video, .reveal section>iframe{max-width: " +
@@ -1881,29 +1881,29 @@
         ),
         document.documentElement.classList.add("reveal-print", "print-pdf"),
         (document.body.style.width = n + "px"),
-        (document.body.style.height = r + "px");
+        (document.body.style.height = r + "px"));
       const c = this.Reveal.getViewportElement();
       let h;
       if (c) {
         const e = window.getComputedStyle(c);
         e && e.background && (h = e.background);
       }
-      await new Promise(requestAnimationFrame),
+      (await new Promise(requestAnimationFrame),
         this.Reveal.layoutSlideContents(o, d),
-        await new Promise(requestAnimationFrame);
+        await new Promise(requestAnimationFrame));
       const u = i.map((e) => e.scrollHeight),
         g = [],
         p = i[0].parentNode;
       let v = 1;
-      i.forEach(function (i, a) {
+      (i.forEach(function (i, a) {
         if (!1 === i.classList.contains("stack")) {
           let l = (n - o) / 2,
             c = (r - d) / 2;
           const p = u[a];
           let m = Math.max(Math.ceil(p / r), 1);
-          (m = Math.min(m, e.pdfMaxPagesPerSlide)),
+          ((m = Math.min(m, e.pdfMaxPagesPerSlide)),
             ((1 === m && e.center) || i.classList.contains("center")) &&
-              (c = Math.max((r - p) / 2, 0));
+              (c = Math.max((r - p) / 2, 0)));
           const f = document.createElement("div");
           if (
             (g.push(f),
@@ -1924,7 +1924,7 @@
               const i = 8,
                 s = "string" == typeof e.showNotes ? e.showNotes : "inline",
                 a = document.createElement("div");
-              a.classList.add("speaker-notes"),
+              (a.classList.add("speaker-notes"),
                 a.classList.add("speaker-notes-pdf"),
                 a.setAttribute("data-layout", s),
                 (a.innerHTML = t),
@@ -1933,15 +1933,15 @@
                   : ((a.style.left = i + "px"),
                     (a.style.bottom = i + "px"),
                     (a.style.width = n - 2 * i + "px"),
-                    f.appendChild(a));
+                    f.appendChild(a)));
             }
           }
           if (s) {
             const e = document.createElement("div");
-            e.classList.add("slide-number"),
+            (e.classList.add("slide-number"),
               e.classList.add("slide-number-pdf"),
               (e.innerHTML = v++),
-              f.appendChild(e);
+              f.appendChild(e));
           }
           if (e.pdfSeparateFragments) {
             const e = this.Reveal.fragments.sort(
@@ -1949,26 +1949,26 @@
               !0,
             );
             let t;
-            e.forEach(function (e, i) {
-              t &&
+            (e.forEach(function (e, i) {
+              (t &&
                 t.forEach(function (e) {
                   e.classList.remove("current-fragment");
                 }),
                 e.forEach(function (e) {
                   e.classList.add("visible", "current-fragment");
-                }, this);
+                }, this));
               const a = f.cloneNode(!0);
               if (s) {
                 const e = i + 1;
                 a.querySelector(".slide-number-pdf").innerHTML += "." + e;
               }
-              g.push(a), (t = e);
+              (g.push(a), (t = e));
             }, this),
               e.forEach(function (e) {
                 e.forEach(function (e) {
                   e.classList.remove("visible", "current-fragment");
                 });
-              });
+              }));
           } else
             t(f, ".fragment:not(.fade-out)").forEach(function (e) {
               e.classList.add("visible");
@@ -1979,7 +1979,7 @@
         g.forEach((e) => p.appendChild(e)),
         this.Reveal.slideContent.layout(this.Reveal.getSlidesElement()),
         this.Reveal.dispatchEvent({ type: "pdf-ready" }),
-        c.classList.remove("loading-scroll-mode");
+        c.classList.remove("loading-scroll-mode"));
     }
     isActive() {
       return "print" === this.Reveal.getConfig().view;
@@ -1994,12 +1994,12 @@
     }
     disable() {
       t(this.Reveal.getSlidesElement(), ".fragment").forEach((e) => {
-        e.classList.add("visible"), e.classList.remove("current-fragment");
+        (e.classList.add("visible"), e.classList.remove("current-fragment"));
       });
     }
     enable() {
       t(this.Reveal.getSlidesElement(), ".fragment").forEach((e) => {
-        e.classList.remove("visible"), e.classList.remove("current-fragment");
+        (e.classList.remove("visible"), e.classList.remove("current-fragment"));
       });
     }
     availableRoutes() {
@@ -2016,20 +2016,20 @@
       let i = [],
         s = [],
         a = [];
-      e.forEach((e) => {
+      (e.forEach((e) => {
         if (e.hasAttribute("data-fragment-index")) {
           let t = parseInt(e.getAttribute("data-fragment-index"), 10);
-          i[t] || (i[t] = []), i[t].push(e);
+          (i[t] || (i[t] = []), i[t].push(e));
         } else s.push([e]);
       }),
-        (i = i.concat(s));
+        (i = i.concat(s)));
       let n = 0;
       return (
         i.forEach((e) => {
-          e.forEach((e) => {
-            a.push(e), e.setAttribute("data-fragment-index", n);
+          (e.forEach((e) => {
+            (a.push(e), e.setAttribute("data-fragment-index", n));
           }),
-            n++;
+            n++);
         }),
         !0 === t ? i : a
       );
@@ -2037,10 +2037,10 @@
     sortAll() {
       this.Reveal.getHorizontalSlides().forEach((e) => {
         let i = t(e, "section");
-        i.forEach((e, t) => {
+        (i.forEach((e, t) => {
           this.sort(e.querySelectorAll(".fragment"));
         }, this),
-          0 === i.length && this.sort(e.querySelectorAll(".fragment"));
+          0 === i.length && this.sort(e.querySelectorAll(".fragment")));
       });
     }
     update(e, t, i = this.Reveal.getCurrentSlide()) {
@@ -2055,7 +2055,7 @@
           let t = this.sort(i.querySelectorAll(".fragment.visible")).pop();
           t && (e = parseInt(t.getAttribute("data-fragment-index") || 0, 10));
         }
-        Array.from(t).forEach((t, i) => {
+        (Array.from(t).forEach((t, i) => {
           if (
             (t.hasAttribute("data-fragment-index") &&
               (i = parseInt(t.getAttribute("data-fragment-index"), 10)),
@@ -2063,7 +2063,7 @@
             i <= e)
           ) {
             let a = t.classList.contains("visible");
-            t.classList.add("visible"),
+            (t.classList.add("visible"),
               t.classList.remove("current-fragment"),
               i === e &&
                 (this.Reveal.announceStatus(this.Reveal.getStatusText(t)),
@@ -2075,10 +2075,10 @@
                   target: t,
                   type: "visible",
                   bubbles: !1,
-                }));
+                })));
           } else {
             let e = t.classList.contains("visible");
-            t.classList.remove("visible"),
+            (t.classList.remove("visible"),
               t.classList.remove("current-fragment"),
               e &&
                 (this.Reveal.slideContent.stopEmbeddedContent(t),
@@ -2087,12 +2087,12 @@
                   target: t,
                   type: "hidden",
                   bubbles: !1,
-                }));
+                })));
           }
         }),
           (e = "number" == typeof e ? e : -1),
           (e = Math.max(Math.min(e, a), -1)),
-          i.setAttribute("data-fragment", e);
+          i.setAttribute("data-fragment", e));
       }
       return (
         s.hidden.length &&
@@ -2146,9 +2146,9 @@
   }
   class T {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.active = !1),
-        (this.onSlideClicked = this.onSlideClicked.bind(this));
+        (this.onSlideClicked = this.onSlideClicked.bind(this)));
     }
     activate() {
       if (
@@ -2156,7 +2156,7 @@
         !this.Reveal.isScrollView() &&
         !this.isActive()
       ) {
-        (this.active = !0),
+        ((this.active = !0),
           this.Reveal.getRevealElement().classList.add("overview"),
           this.Reveal.cancelAutoSlide(),
           this.Reveal.getSlidesElement().appendChild(
@@ -2165,17 +2165,17 @@
           t(this.Reveal.getRevealElement(), m).forEach((e) => {
             e.classList.contains("stack") ||
               e.addEventListener("click", this.onSlideClicked, !0);
-          });
+          }));
         const e = 70,
           i = this.Reveal.getComputedSlideSize();
-        (this.overviewSlideWidth = i.width + e),
+        ((this.overviewSlideWidth = i.width + e),
           (this.overviewSlideHeight = i.height + e),
           this.Reveal.getConfig().rtl &&
             (this.overviewSlideWidth = -this.overviewSlideWidth),
           this.Reveal.updateSlidesVisibility(),
           this.layout(),
           this.update(),
-          this.Reveal.layout();
+          this.Reveal.layout());
         const s = this.Reveal.getIndices();
         this.Reveal.dispatchEvent({
           type: "overviewshown",
@@ -2188,30 +2188,30 @@
       }
     }
     layout() {
-      this.Reveal.getHorizontalSlides().forEach((e, i) => {
-        e.setAttribute("data-index-h", i),
+      (this.Reveal.getHorizontalSlides().forEach((e, i) => {
+        (e.setAttribute("data-index-h", i),
           a(e, "translate3d(" + i * this.overviewSlideWidth + "px, 0, 0)"),
           e.classList.contains("stack") &&
             t(e, "section").forEach((e, t) => {
-              e.setAttribute("data-index-h", i),
+              (e.setAttribute("data-index-h", i),
                 e.setAttribute("data-index-v", t),
                 a(
                   e,
                   "translate3d(0, " + t * this.overviewSlideHeight + "px, 0)",
-                );
-            });
+                ));
+            }));
       }),
         Array.from(this.Reveal.getBackgroundsElement().childNodes).forEach(
           (e, i) => {
-            a(e, "translate3d(" + i * this.overviewSlideWidth + "px, 0, 0)"),
+            (a(e, "translate3d(" + i * this.overviewSlideWidth + "px, 0, 0)"),
               t(e, ".slide-background").forEach((e, t) => {
                 a(
                   e,
                   "translate3d(0, " + t * this.overviewSlideHeight + "px, 0)",
                 );
-              });
+              }));
           },
-        );
+        ));
     }
     update() {
       const e = Math.min(window.innerWidth, window.innerHeight),
@@ -2227,7 +2227,7 @@
     }
     deactivate() {
       if (this.Reveal.getConfig().overview) {
-        (this.active = !1),
+        ((this.active = !1),
           this.Reveal.getRevealElement().classList.remove("overview"),
           this.Reveal.getRevealElement().classList.add("overview-deactivating"),
           setTimeout(() => {
@@ -2239,16 +2239,16 @@
             this.Reveal.getBackgroundsElement(),
           ),
           t(this.Reveal.getRevealElement(), m).forEach((e) => {
-            a(e, ""), e.removeEventListener("click", this.onSlideClicked, !0);
+            (a(e, ""), e.removeEventListener("click", this.onSlideClicked, !0));
           }),
           t(this.Reveal.getBackgroundsElement(), ".slide-background").forEach(
             (e) => {
               a(e, "");
             },
           ),
-          this.Reveal.transformSlides({ overview: "" });
+          this.Reveal.transformSlides({ overview: "" }));
         const e = this.Reveal.getIndices();
-        this.Reveal.slide(e.h, e.v),
+        (this.Reveal.slide(e.h, e.v),
           this.Reveal.layout(),
           this.Reveal.cueAutoSlide(),
           this.Reveal.dispatchEvent({
@@ -2258,7 +2258,7 @@
               indexv: e.v,
               currentSlide: this.Reveal.getCurrentSlide(),
             },
-          });
+          }));
       }
     }
     toggle(e) {
@@ -2292,13 +2292,13 @@
   }
   class N {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.shortcuts = {}),
         (this.bindings = {}),
-        (this.onDocumentKeyDown = this.onDocumentKeyDown.bind(this));
+        (this.onDocumentKeyDown = this.onDocumentKeyDown.bind(this)));
     }
     configure(e, t) {
-      "linear" === e.navigationMode
+      ("linear" === e.navigationMode
         ? ((this.shortcuts["&#8594;  ,  &#8595;  ,  SPACE  ,  N  ,  L  ,  J"] =
             "Next slide"),
           (this.shortcuts["&#8592;  ,  &#8593;  ,  P  ,  H  ,  K"] =
@@ -2316,7 +2316,7 @@
         (this.shortcuts["B  ,  ."] = "Pause"),
         (this.shortcuts.F = "Fullscreen"),
         (this.shortcuts.G = "Jump to slide"),
-        (this.shortcuts["ESC, O"] = "Slide overview");
+        (this.shortcuts["ESC, O"] = "Slide overview"));
     }
     bind() {
       document.addEventListener("keydown", this.onDocumentKeyDown, !1);
@@ -2394,25 +2394,25 @@
         for (d in t.keyboard)
           if (parseInt(d, 10) === i) {
             let i = t.keyboard[d];
-            "function" == typeof i
+            ("function" == typeof i
               ? i.apply(null, [e])
               : "string" == typeof i &&
                 "function" == typeof this.Reveal[i] &&
                 this.Reveal[i].call(),
-              (u = !0);
+              (u = !0));
           }
       if (!1 === u)
         for (d in this.bindings)
           if (parseInt(d, 10) === i) {
             let t = this.bindings[d].callback;
-            "function" == typeof t
+            ("function" == typeof t
               ? t.apply(null, [e])
               : "string" == typeof t &&
                 "function" == typeof this.Reveal[t] &&
                 this.Reveal[t].call(),
-              (u = !0);
+              (u = !0));
           }
-      !1 === u &&
+      (!1 === u &&
         ((u = !0),
         80 === i || 33 === i
           ? this.Reveal.prev({ skipFragments: e.altKey })
@@ -2485,16 +2485,16 @@
           : (27 !== i && 79 !== i) ||
             (!1 === this.Reveal.closeOverlay() && this.Reveal.overview.toggle(),
             e.preventDefault && e.preventDefault()),
-        this.Reveal.cueAutoSlide();
+        this.Reveal.cueAutoSlide());
     }
   }
   class M {
     MAX_REPLACE_STATE_FREQUENCY = 1e3;
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.writeURLTimeout = 0),
         (this.replaceStateTimestamp = 0),
-        (this.onWindowHashChange = this.onWindowHashChange.bind(this));
+        (this.onWindowHashChange = this.onWindowHashChange.bind(this)));
     }
     bind() {
       window.addEventListener("hashchange", this.onWindowHashChange, !1);
@@ -2558,18 +2558,18 @@
       }
     }
     replaceState(e) {
-      window.history.replaceState(null, null, e),
-        (this.replaceStateTimestamp = Date.now());
+      (window.history.replaceState(null, null, e),
+        (this.replaceStateTimestamp = Date.now()));
     }
     debouncedReplaceState(e) {
-      clearTimeout(this.replaceStateTimeout),
+      (clearTimeout(this.replaceStateTimeout),
         Date.now() - this.replaceStateTimestamp >
         this.MAX_REPLACE_STATE_FREQUENCY
           ? this.replaceState(e)
           : (this.replaceStateTimeout = setTimeout(
               () => this.replaceState(e),
               this.MAX_REPLACE_STATE_FREQUENCY,
-            ));
+            )));
     }
     getHash(e) {
       let t = "/",
@@ -2581,12 +2581,12 @@
         (this.Reveal.getConfig().fragmentInURL || (a.f = void 0),
         "string" == typeof s && s.length)
       )
-        (t = "/" + s), a.f >= 0 && (t += "/" + a.f);
+        ((t = "/" + s), a.f >= 0 && (t += "/" + a.f));
       else {
         let e = this.Reveal.getConfig().hashOneBasedIndex ? 1 : 0;
-        (a.h > 0 || a.v > 0 || a.f >= 0) && (t += a.h + e),
+        ((a.h > 0 || a.v > 0 || a.f >= 0) && (t += a.h + e),
           (a.v > 0 || a.f >= 0) && (t += "/" + (a.v + e)),
-          a.f >= 0 && (t += "/" + a.f);
+          a.f >= 0 && (t += "/" + a.f));
       }
       return t;
     }
@@ -2596,19 +2596,19 @@
   }
   class I {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.onNavigateLeftClicked = this.onNavigateLeftClicked.bind(this)),
         (this.onNavigateRightClicked = this.onNavigateRightClicked.bind(this)),
         (this.onNavigateUpClicked = this.onNavigateUpClicked.bind(this)),
         (this.onNavigateDownClicked = this.onNavigateDownClicked.bind(this)),
         (this.onNavigatePrevClicked = this.onNavigatePrevClicked.bind(this)),
         (this.onNavigateNextClicked = this.onNavigateNextClicked.bind(this)),
-        (this.onEnterFullscreen = this.onEnterFullscreen.bind(this));
+        (this.onEnterFullscreen = this.onEnterFullscreen.bind(this)));
     }
     render() {
       const e = this.Reveal.getConfig().rtl,
         i = this.Reveal.getRevealElement();
-      (this.element = document.createElement("aside")),
+      ((this.element = document.createElement("aside")),
         (this.element.className = "controls"),
         (this.element.innerHTML = `<button class="navigate-left" aria-label="${e ? "next slide" : "previous slide"}"><div class="controls-arrow"></div></button>\n\t\t\t<button class="navigate-right" aria-label="${e ? "previous slide" : "next slide"}"><div class="controls-arrow"></div></button>\n\t\t\t<button class="navigate-up" aria-label="above slide"><div class="controls-arrow"></div></button>\n\t\t\t<button class="navigate-down" aria-label="below slide"><div class="controls-arrow"></div></button>`),
         this.Reveal.getRevealElement().appendChild(this.element),
@@ -2622,21 +2622,22 @@
         (this.controlsRightArrow =
           this.element.querySelector(".navigate-right")),
         (this.controlsLeftArrow = this.element.querySelector(".navigate-left")),
-        (this.controlsDownArrow = this.element.querySelector(".navigate-down"));
+        (this.controlsDownArrow =
+          this.element.querySelector(".navigate-down")));
     }
     configure(e, t) {
-      (this.element.style.display = e.controls ? "block" : "none"),
+      ((this.element.style.display = e.controls ? "block" : "none"),
         this.element.setAttribute("data-controls-layout", e.controlsLayout),
         this.element.setAttribute(
           "data-controls-back-arrows",
           e.controlsBackArrows,
-        );
+        ));
     }
     bind() {
       let e = ["touchstart", "click"];
-      g && (e = ["touchstart"]),
+      (g && (e = ["touchstart"]),
         e.forEach((e) => {
-          this.controlsLeft.forEach((t) =>
+          (this.controlsLeft.forEach((t) =>
             t.addEventListener(e, this.onNavigateLeftClicked, !1),
           ),
             this.controlsRight.forEach((t) =>
@@ -2656,12 +2657,12 @@
             ),
             this.controlsFullscreen.forEach((t) =>
               t.addEventListener(e, this.onEnterFullscreen, !1),
-            );
-        });
+            ));
+        }));
     }
     unbind() {
       ["touchstart", "click"].forEach((e) => {
-        this.controlsLeft.forEach((t) =>
+        (this.controlsLeft.forEach((t) =>
           t.removeEventListener(e, this.onNavigateLeftClicked, !1),
         ),
           this.controlsRight.forEach((t) =>
@@ -2681,12 +2682,12 @@
           ),
           this.controlsFullscreen.forEach((t) =>
             t.removeEventListener(e, this.onEnterFullscreen, !1),
-          );
+          ));
       });
     }
     update() {
       let e = this.Reveal.availableRoutes();
-      [
+      ([
         ...this.controlsLeft,
         ...this.controlsRight,
         ...this.controlsUp,
@@ -2694,67 +2695,67 @@
         ...this.controlsPrev,
         ...this.controlsNext,
       ].forEach((e) => {
-        e.classList.remove("enabled", "fragmented"),
-          e.setAttribute("disabled", "disabled");
+        (e.classList.remove("enabled", "fragmented"),
+          e.setAttribute("disabled", "disabled"));
       }),
         e.left &&
           this.controlsLeft.forEach((e) => {
-            e.classList.add("enabled"), e.removeAttribute("disabled");
+            (e.classList.add("enabled"), e.removeAttribute("disabled"));
           }),
         e.right &&
           this.controlsRight.forEach((e) => {
-            e.classList.add("enabled"), e.removeAttribute("disabled");
+            (e.classList.add("enabled"), e.removeAttribute("disabled"));
           }),
         e.up &&
           this.controlsUp.forEach((e) => {
-            e.classList.add("enabled"), e.removeAttribute("disabled");
+            (e.classList.add("enabled"), e.removeAttribute("disabled"));
           }),
         e.down &&
           this.controlsDown.forEach((e) => {
-            e.classList.add("enabled"), e.removeAttribute("disabled");
+            (e.classList.add("enabled"), e.removeAttribute("disabled"));
           }),
         (e.left || e.up) &&
           this.controlsPrev.forEach((e) => {
-            e.classList.add("enabled"), e.removeAttribute("disabled");
+            (e.classList.add("enabled"), e.removeAttribute("disabled"));
           }),
         (e.right || e.down) &&
           this.controlsNext.forEach((e) => {
-            e.classList.add("enabled"), e.removeAttribute("disabled");
-          });
+            (e.classList.add("enabled"), e.removeAttribute("disabled"));
+          }));
       let t = this.Reveal.getCurrentSlide();
       if (t) {
         let e = this.Reveal.fragments.availableRoutes();
-        e.prev &&
+        (e.prev &&
           this.controlsPrev.forEach((e) => {
-            e.classList.add("fragmented", "enabled"),
-              e.removeAttribute("disabled");
+            (e.classList.add("fragmented", "enabled"),
+              e.removeAttribute("disabled"));
           }),
           e.next &&
             this.controlsNext.forEach((e) => {
-              e.classList.add("fragmented", "enabled"),
-                e.removeAttribute("disabled");
+              (e.classList.add("fragmented", "enabled"),
+                e.removeAttribute("disabled"));
             }),
           this.Reveal.isVerticalSlide(t)
             ? (e.prev &&
                 this.controlsUp.forEach((e) => {
-                  e.classList.add("fragmented", "enabled"),
-                    e.removeAttribute("disabled");
+                  (e.classList.add("fragmented", "enabled"),
+                    e.removeAttribute("disabled"));
                 }),
               e.next &&
                 this.controlsDown.forEach((e) => {
-                  e.classList.add("fragmented", "enabled"),
-                    e.removeAttribute("disabled");
+                  (e.classList.add("fragmented", "enabled"),
+                    e.removeAttribute("disabled"));
                 }))
             : (e.prev &&
                 this.controlsLeft.forEach((e) => {
-                  e.classList.add("fragmented", "enabled"),
-                    e.removeAttribute("disabled");
+                  (e.classList.add("fragmented", "enabled"),
+                    e.removeAttribute("disabled"));
                 }),
               e.next &&
                 this.controlsRight.forEach((e) => {
-                  e.classList.add("fragmented", "enabled"),
-                    e.removeAttribute("disabled");
-                }));
+                  (e.classList.add("fragmented", "enabled"),
+                    e.removeAttribute("disabled"));
+                })));
       }
       if (this.Reveal.getConfig().controlsTutorial) {
         let t = this.Reveal.getIndices();
@@ -2771,33 +2772,33 @@
       }
     }
     destroy() {
-      this.unbind(), this.element.remove();
+      (this.unbind(), this.element.remove());
     }
     onNavigateLeftClicked(e) {
-      e.preventDefault(),
+      (e.preventDefault(),
         this.Reveal.onUserInput(),
         "linear" === this.Reveal.getConfig().navigationMode
           ? this.Reveal.prev()
-          : this.Reveal.left();
+          : this.Reveal.left());
     }
     onNavigateRightClicked(e) {
-      e.preventDefault(),
+      (e.preventDefault(),
         this.Reveal.onUserInput(),
         "linear" === this.Reveal.getConfig().navigationMode
           ? this.Reveal.next()
-          : this.Reveal.right();
+          : this.Reveal.right());
     }
     onNavigateUpClicked(e) {
-      e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.up();
+      (e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.up());
     }
     onNavigateDownClicked(e) {
-      e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.down();
+      (e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.down());
     }
     onNavigatePrevClicked(e) {
-      e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.prev();
+      (e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.prev());
     }
     onNavigateNextClicked(e) {
-      e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.next();
+      (e.preventDefault(), this.Reveal.onUserInput(), this.Reveal.next());
     }
     onEnterFullscreen(e) {
       const t = this.Reveal.getConfig(),
@@ -2807,15 +2808,15 @@
   }
   class B {
     constructor(e) {
-      (this.Reveal = e),
-        (this.onProgressClicked = this.onProgressClicked.bind(this));
+      ((this.Reveal = e),
+        (this.onProgressClicked = this.onProgressClicked.bind(this)));
     }
     render() {
-      (this.element = document.createElement("div")),
+      ((this.element = document.createElement("div")),
         (this.element.className = "progress"),
         this.Reveal.getRevealElement().appendChild(this.element),
         (this.bar = document.createElement("span")),
-        this.element.appendChild(this.bar);
+        this.element.appendChild(this.bar));
     }
     configure(e, t) {
       this.element.style.display = e.progress ? "block" : "none";
@@ -2833,15 +2834,15 @@
     update() {
       if (this.Reveal.getConfig().progress && this.bar) {
         let e = this.Reveal.getProgress();
-        this.Reveal.getTotalSlides() < 2 && (e = 0),
-          (this.bar.style.transform = "scaleX(" + e + ")");
+        (this.Reveal.getTotalSlides() < 2 && (e = 0),
+          (this.bar.style.transform = "scaleX(" + e + ")"));
       }
     }
     getMaxWidth() {
       return this.Reveal.getRevealElement().offsetWidth;
     }
     onProgressClicked(e) {
-      this.Reveal.onUserInput(e), e.preventDefault();
+      (this.Reveal.onUserInput(e), e.preventDefault());
       let t = this.Reveal.getSlides(),
         i = t.length,
         s = Math.floor((e.clientX / this.getMaxWidth()) * i);
@@ -2855,15 +2856,15 @@
   }
   class H {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.lastMouseWheelStep = 0),
         (this.cursorHidden = !1),
         (this.cursorInactiveTimeout = 0),
         (this.onDocumentCursorActive = this.onDocumentCursorActive.bind(this)),
-        (this.onDocumentMouseScroll = this.onDocumentMouseScroll.bind(this));
+        (this.onDocumentMouseScroll = this.onDocumentMouseScroll.bind(this)));
     }
     configure(e, t) {
-      e.mouseWheel
+      (e.mouseWheel
         ? document.addEventListener("wheel", this.onDocumentMouseScroll, !1)
         : document.removeEventListener("wheel", this.onDocumentMouseScroll, !1),
         e.hideInactiveCursor
@@ -2887,7 +2888,7 @@
               "mousedown",
               this.onDocumentCursorActive,
               !1,
-            ));
+            )));
     }
     showCursor() {
       this.cursorHidden &&
@@ -2900,7 +2901,7 @@
         (this.Reveal.getRevealElement().style.cursor = "none"));
     }
     destroy() {
-      this.showCursor(),
+      (this.showCursor(),
         document.removeEventListener("wheel", this.onDocumentMouseScroll, !1),
         document.removeEventListener(
           "mousemove",
@@ -2911,15 +2912,15 @@
           "mousedown",
           this.onDocumentCursorActive,
           !1,
-        );
+        ));
     }
     onDocumentCursorActive(e) {
-      this.showCursor(),
+      (this.showCursor(),
         clearTimeout(this.cursorInactiveTimeout),
         (this.cursorInactiveTimeout = setTimeout(
           this.hideCursor.bind(this),
           this.Reveal.getConfig().hideCursorTime,
-        ));
+        )));
     }
     onDocumentMouseScroll(e) {
       if (Date.now() - this.lastMouseWheelStep > 1e3) {
@@ -2931,7 +2932,7 @@
   }
   const D = (e, t) => {
     const i = document.createElement("script");
-    (i.type = "text/javascript"),
+    ((i.type = "text/javascript"),
       (i.async = !1),
       (i.defer = !1),
       (i.src = e),
@@ -2942,18 +2943,18 @@
               ((i.onload = i.onreadystatechange = i.onerror = null), t());
           }),
         (i.onerror = (e) => {
-          (i.onload = i.onreadystatechange = i.onerror = null),
-            t(new Error("Failed loading script: " + i.src + "\n" + e));
-        }));
+          ((i.onload = i.onreadystatechange = i.onerror = null),
+            t(new Error("Failed loading script: " + i.src + "\n" + e)));
+        })));
     const s = document.querySelector("head");
     s.insertBefore(i, s.lastChild);
   };
   class F {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.state = "idle"),
         (this.registeredPlugins = {}),
-        (this.asyncDependencies = []);
+        (this.asyncDependencies = []));
     }
     load(e, t) {
       return (
@@ -2971,8 +2972,8 @@
           ) {
             s = i.length;
             const t = (t) => {
-              t && "function" == typeof t.callback && t.callback(),
-                0 == --s && this.initPlugins().then(e);
+              (t && "function" == typeof t.callback && t.callback(),
+                0 == --s && this.initPlugins().then(e));
             };
             i.forEach((e) => {
               "string" == typeof e.id
@@ -2996,14 +2997,14 @@
               0 == --i ? this.loadAsync().then(e) : s();
             },
             n = 0;
-          (s = () => {
+          ((s = () => {
             let e = t[n++];
             if ("function" == typeof e.init) {
               let t = e.init(this.Reveal);
               t && "function" == typeof t.then ? t.then(a) : a();
             } else a();
           }),
-            s();
+            s());
         }
       });
     }
@@ -3043,16 +3044,16 @@
       return this.registeredPlugins;
     }
     destroy() {
-      Object.values(this.registeredPlugins).forEach((e) => {
+      (Object.values(this.registeredPlugins).forEach((e) => {
         "function" == typeof e.destroy && e.destroy();
       }),
         (this.registeredPlugins = {}),
-        (this.asyncDependencies = []);
+        (this.asyncDependencies = []));
     }
   }
   class z {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.touchStartX = 0),
         (this.touchStartY = 0),
         (this.touchStartCount = 0),
@@ -3062,7 +3063,7 @@
         (this.onPointerUp = this.onPointerUp.bind(this)),
         (this.onTouchStart = this.onTouchStart.bind(this)),
         (this.onTouchMove = this.onTouchMove.bind(this)),
-        (this.onTouchEnd = this.onTouchEnd.bind(this));
+        (this.onTouchEnd = this.onTouchEnd.bind(this)));
     }
     bind() {
       let e = this.Reveal.getRevealElement();
@@ -3080,7 +3081,7 @@
     }
     unbind() {
       let e = this.Reveal.getRevealElement();
-      e.removeEventListener("pointerdown", this.onPointerDown, !1),
+      (e.removeEventListener("pointerdown", this.onPointerDown, !1),
         e.removeEventListener("pointermove", this.onPointerMove, !1),
         e.removeEventListener("pointerup", this.onPointerUp, !1),
         e.removeEventListener("MSPointerDown", this.onPointerDown, !1),
@@ -3088,7 +3089,7 @@
         e.removeEventListener("MSPointerUp", this.onPointerUp, !1),
         e.removeEventListener("touchstart", this.onTouchStart, !1),
         e.removeEventListener("touchmove", this.onTouchMove, !1),
-        e.removeEventListener("touchend", this.onTouchEnd, !1);
+        e.removeEventListener("touchend", this.onTouchEnd, !1));
     }
     isSwipePrevented(e) {
       if (n(e, "video[controls], audio[controls]")) return !0;
@@ -3101,9 +3102,9 @@
     onTouchStart(e) {
       if (((this.touchCaptured = !1), this.isSwipePrevented(e.target)))
         return !0;
-      (this.touchStartX = e.touches[0].clientX),
+      ((this.touchStartX = e.touches[0].clientX),
         (this.touchStartY = e.touches[0].clientY),
-        (this.touchStartCount = e.touches.length);
+        (this.touchStartCount = e.touches.length));
     }
     onTouchMove(e) {
       if (this.isSwipePrevented(e.target)) return !0;
@@ -3117,7 +3118,7 @@
           let a = this.Reveal.availableRoutes({ includeFragments: !0 }),
             n = i - this.touchStartX,
             r = s - this.touchStartY;
-          n > 40 && Math.abs(n) > Math.abs(r)
+          (n > 40 && Math.abs(n) > Math.abs(r)
             ? ((this.touchCaptured = !0),
               "linear" === t.navigationMode
                 ? t.rtl
@@ -3145,7 +3146,7 @@
             t.embedded
               ? (this.touchCaptured || this.Reveal.isVerticalSlide()) &&
                 e.preventDefault()
-              : e.preventDefault();
+              : e.preventDefault());
         }
       }
     }
@@ -3172,9 +3173,9 @@
     O = "blur";
   class W {
     constructor(e) {
-      (this.Reveal = e),
+      ((this.Reveal = e),
         (this.onRevealPointerDown = this.onRevealPointerDown.bind(this)),
-        (this.onDocumentPointerDown = this.onDocumentPointerDown.bind(this));
+        (this.onDocumentPointerDown = this.onDocumentPointerDown.bind(this)));
     }
     configure(e, t) {
       e.embedded ? this.blur() : (this.focus(), this.unbind());
@@ -3188,7 +3189,7 @@
         );
     }
     unbind() {
-      this.Reveal.getRevealElement().removeEventListener(
+      (this.Reveal.getRevealElement().removeEventListener(
         "pointerdown",
         this.onRevealPointerDown,
         !1,
@@ -3197,27 +3198,27 @@
           "pointerdown",
           this.onDocumentPointerDown,
           !1,
-        );
+        ));
     }
     focus() {
-      this.state !== q &&
+      (this.state !== q &&
         (this.Reveal.getRevealElement().classList.add("focused"),
         document.addEventListener(
           "pointerdown",
           this.onDocumentPointerDown,
           !1,
         )),
-        (this.state = q);
+        (this.state = q));
     }
     blur() {
-      this.state !== O &&
+      (this.state !== O &&
         (this.Reveal.getRevealElement().classList.remove("focused"),
         document.removeEventListener(
           "pointerdown",
           this.onDocumentPointerDown,
           !1,
         )),
-        (this.state = O);
+        (this.state = O));
     }
     isFocused() {
       return this.state === q;
@@ -3238,11 +3239,11 @@
       this.Reveal = e;
     }
     render() {
-      (this.element = document.createElement("div")),
+      ((this.element = document.createElement("div")),
         (this.element.className = "speaker-notes"),
         this.element.setAttribute("data-prevent-swipe", ""),
         this.element.setAttribute("tabindex", "0"),
-        this.Reveal.getRevealElement().appendChild(this.element);
+        this.Reveal.getRevealElement().appendChild(this.element));
     }
     configure(e, t) {
       e.showNotes &&
@@ -3294,7 +3295,7 @@
   }
   class V {
     constructor(e, t) {
-      (this.diameter = 100),
+      ((this.diameter = 100),
         (this.diameter2 = this.diameter / 2),
         (this.thickness = 6),
         (this.playing = !1),
@@ -3310,18 +3311,18 @@
         (this.canvas.style.height = this.diameter2 + "px"),
         (this.context = this.canvas.getContext("2d")),
         this.container.appendChild(this.canvas),
-        this.render();
+        this.render());
     }
     setPlaying(e) {
       const t = this.playing;
-      (this.playing = e), !t && this.playing ? this.animate() : this.render();
+      ((this.playing = e), !t && this.playing ? this.animate() : this.render());
     }
     animate() {
       const e = this.progress;
-      (this.progress = this.progressCheck()),
+      ((this.progress = this.progressCheck()),
         e > 0.8 && this.progress < 0.2 && (this.progressOffset = this.progress),
         this.render(),
-        this.playing && requestAnimationFrame(this.animate.bind(this));
+        this.playing && requestAnimationFrame(this.animate.bind(this)));
     }
     render() {
       let e = this.playing ? this.progress : 0,
@@ -3332,7 +3333,7 @@
       this.progressOffset += 0.1 * (1 - this.progressOffset);
       const n = -Math.PI / 2 + e * (2 * Math.PI),
         r = -Math.PI / 2 + this.progressOffset * (2 * Math.PI);
-      this.context.save(),
+      (this.context.save(),
         this.context.clearRect(0, 0, this.diameter, this.diameter),
         this.context.beginPath(),
         this.context.arc(i, s, t + 4, 0, 2 * Math.PI, !1),
@@ -3361,7 +3362,7 @@
             this.context.lineTo(0, a),
             (this.context.fillStyle = "#fff"),
             this.context.fill()),
-        this.context.restore();
+        this.context.restore());
     }
     on(e, t) {
       this.canvas.addEventListener(e, t, !1);
@@ -3370,8 +3371,8 @@
       this.canvas.removeEventListener(e, t, !1);
     }
     destroy() {
-      (this.playing = !1),
-        this.canvas.parentNode && this.container.removeChild(this.canvas);
+      ((this.playing = !1),
+        this.canvas.parentNode && this.container.removeChild(this.canvas));
     }
   }
   var j = {
@@ -3507,7 +3508,7 @@
       me = new z(l),
       fe = new U(l);
     function ye() {
-      (D = !0),
+      ((D = !0),
         A.showHiddenSlides ||
           t(Y.wrapper, 'section[data-visibility="hidden"]').forEach((e) => {
             const t = e.parentNode;
@@ -3516,11 +3517,11 @@
               : e.remove();
           }),
         (function () {
-          Y.slides.classList.add("no-transition"),
+          (Y.slides.classList.add("no-transition"),
             u
               ? Y.wrapper.classList.add("no-hover")
-              : Y.wrapper.classList.remove("no-hover");
-          ae.render(),
+              : Y.wrapper.classList.remove("no-hover"));
+          (ae.render(),
             te.render(),
             ie.render(),
             he.render(),
@@ -3533,7 +3534,12 @@
                 if (i.parentNode === e) return i;
               }
               let n = document.createElement(t);
-              return (n.className = i), (n.innerHTML = s), e.appendChild(n), n;
+              return (
+                (n.className = i),
+                (n.innerHTML = s),
+                e.appendChild(n),
+                n
+              );
             })(
               Y.wrapper,
               "div",
@@ -3557,7 +3563,7 @@
                 Y.wrapper.appendChild(e));
               return e;
             })()),
-            Y.wrapper.setAttribute("role", "application");
+            Y.wrapper.setAttribute("role", "application"));
         })(),
         A.postMessage && window.addEventListener("message", At, !1),
         setInterval(() => {
@@ -3592,13 +3598,13 @@
         })(),
         ce.readURL(),
         setTimeout(() => {
-          Y.slides.classList.remove("no-transition"),
+          (Y.slides.classList.remove("no-transition"),
             Y.wrapper.classList.add("ready"),
             Ce({
               type: "ready",
               data: { indexh: c, indexv: h, currentSlide: p },
-            });
-        }, 1);
+            }));
+        }, 1));
     }
     function be(e) {
       Y.statusElement.textContent = e;
@@ -3615,13 +3621,13 @@
             t += we(e);
           });
       }
-      return (t = t.trim()), "" === t ? "" : t + " ";
+      return ((t = t.trim()), "" === t ? "" : t + " ");
     }
     function Ee(t) {
       const s = { ...A };
       if (("object" == typeof t && e(A, t), !1 === l.isReady())) return;
       const a = Y.wrapper.querySelectorAll(m).length;
-      Y.wrapper.classList.remove(s.transition),
+      (Y.wrapper.classList.remove(s.transition),
         Y.wrapper.classList.add(A.transition),
         Y.wrapper.setAttribute("data-transition-speed", A.transitionSpeed),
         Y.wrapper.setAttribute(
@@ -3665,10 +3671,10 @@
         de.configure(A, s),
         oe.configure(A, s),
         te.configure(A, s),
-        Je();
+        Je());
     }
     function Se() {
-      window.addEventListener("resize", Lt, !1),
+      (window.addEventListener("resize", Lt, !1),
         A.touch && me.bind(),
         A.keyboard && de.bind(),
         A.progress && ue.bind(),
@@ -3679,10 +3685,10 @@
         Y.slides.addEventListener("transitionend", Rt, !1),
         Y.pauseOverlay.addEventListener("click", Ke, !1),
         A.focusBodyOnPageVisibilityChange &&
-          document.addEventListener("visibilitychange", Ct, !1);
+          document.addEventListener("visibilitychange", Ct, !1));
     }
     function Ae() {
-      me.unbind(),
+      (me.unbind(),
         ve.unbind(),
         de.unbind(),
         he.unbind(),
@@ -3691,7 +3697,7 @@
         window.removeEventListener("resize", Lt, !1),
         Y.slides.removeEventListener("click", kt, !1),
         Y.slides.removeEventListener("transitionend", Rt, !1),
-        Y.pauseOverlay.removeEventListener("click", Ke, !1);
+        Y.pauseOverlay.removeEventListener("click", Ke, !1));
     }
     function Re(e, t, i) {
       n.addEventListener(e, t, i);
@@ -3700,11 +3706,11 @@
       n.removeEventListener(e, t, i);
     }
     function Le(e) {
-      "string" == typeof e.layout && (X.layout = e.layout),
+      ("string" == typeof e.layout && (X.layout = e.layout),
         "string" == typeof e.overview && (X.overview = e.overview),
         X.layout
           ? a(Y.slides, X.layout + " " + X.overview)
-          : a(Y.slides, X.overview);
+          : a(Y.slides, X.overview));
     }
     function Ce({ target: t = Y.wrapper, type: i, data: s, bubbles: a = !0 }) {
       let n = document.createEvent("HTMLEvents", 1, 2);
@@ -3731,7 +3737,7 @@
     function Pe(t, i) {
       if (A.postMessageEvents && window.parent !== window.self) {
         let s = { namespace: "reveal", eventName: t, state: ut() };
-        e(s, i), window.parent.postMessage(JSON.stringify(s), "*");
+        (e(s, i), window.parent.postMessage(JSON.stringify(s), "*"));
       }
     }
     function Te(e = "a") {
@@ -3747,7 +3753,7 @@
       });
     }
     function Me(e) {
-      Be(),
+      (Be(),
         (Y.overlay = document.createElement("div")),
         Y.overlay.classList.add("overlay"),
         Y.overlay.classList.add("overlay-preview"),
@@ -3763,7 +3769,7 @@
         Y.overlay.querySelector(".close").addEventListener(
           "click",
           (e) => {
-            Be(), e.preventDefault();
+            (Be(), e.preventDefault());
           },
           !1,
         ),
@@ -3773,15 +3779,15 @@
             Be();
           },
           !1,
-        );
+        ));
     }
     function Ie() {
       if (A.help) {
-        Be(),
+        (Be(),
           (Y.overlay = document.createElement("div")),
           Y.overlay.classList.add("overlay"),
           Y.overlay.classList.add("overlay-help"),
-          Y.wrapper.appendChild(Y.overlay);
+          Y.wrapper.appendChild(Y.overlay));
         let e = '<p class="title">Keyboard Shortcuts</p><br/>',
           t = de.getShortcuts(),
           i = de.getBindings();
@@ -3791,15 +3797,15 @@
           i[t].key &&
             i[t].description &&
             (e += `<tr><td>${i[t].key}</td><td>${i[t].description}</td></tr>`);
-        (e += "</table>"),
+        ((e += "</table>"),
           (Y.overlay.innerHTML = `\n\t\t\t\t<header>\n\t\t\t\t\t<a class="close" href="#"><span class="icon"></span></a>\n\t\t\t\t</header>\n\t\t\t\t<div class="viewport">\n\t\t\t\t\t<div class="viewport-inner">${e}</div>\n\t\t\t\t</div>\n\t\t\t`),
           Y.overlay.querySelector(".close").addEventListener(
             "click",
             (e) => {
-              Be(), e.preventDefault();
+              (Be(), e.preventDefault());
             },
             !1,
-          );
+          ));
       }
     }
     function Be() {
@@ -3821,7 +3827,7 @@
             );
           const i = ne.isActive() ? Fe(e, t) : Fe(),
             s = $;
-          De(A.width, A.height),
+          (De(A.width, A.height),
             (Y.slides.style.width = i.width + "px"),
             (Y.slides.style.height = i.height + "px"),
             ($ = Math.min(
@@ -3842,7 +3848,7 @@
                 (Y.slides.style.top = "50%"),
                 (Y.slides.style.bottom = "auto"),
                 (Y.slides.style.right = "auto"),
-                Le({ layout: "translate(-50%, -50%) scale(" + $ + ")" }));
+                Le({ layout: "translate(-50%, -50%) scale(" + $ + ")" })));
           const a = Array.from(Y.wrapper.querySelectorAll(m));
           for (let e = 0, t = a.length; e < t; e++) {
             const t = a[e];
@@ -3857,7 +3863,7 @@
           s !== $ &&
             Ce({ type: "resize", data: { oldScale: s, scale: $, size: i } });
         }
-        !(function () {
+        (!(function () {
           if (
             Y.wrapper &&
             !A.disableLayout &&
@@ -3878,7 +3884,7 @@
           ne.layout(),
           ue.update(),
           ae.updateParallax(),
-          le.isActive() && le.update();
+          le.isActive() && le.update());
       }
     }
     function De(e, i) {
@@ -3902,8 +3908,8 @@
           const i = t.naturalWidth || t.videoWidth,
             a = t.naturalHeight || t.videoHeight,
             n = Math.min(e / i, s / a);
-          (t.style.width = i * n + "px"), (t.style.height = a * n + "px");
-        } else (t.style.width = e + "px"), (t.style.height = s + "px");
+          ((t.style.width = i * n + "px"), (t.style.height = a * n + "px"));
+        } else ((t.style.width = e + "px"), (t.style.height = s + "px"));
       });
     }
     function Fe(e, t) {
@@ -3966,14 +3972,16 @@
     function je() {
       if (A.pause) {
         const e = Y.wrapper.classList.contains("paused");
-        pt(),
+        (pt(),
           Y.wrapper.classList.add("paused"),
-          !1 === e && Ce({ type: "paused" });
+          !1 === e && Ce({ type: "paused" }));
       }
     }
     function Ke() {
       const e = Y.wrapper.classList.contains("paused");
-      Y.wrapper.classList.remove("paused"), gt(), e && Ce({ type: "resumed" });
+      (Y.wrapper.classList.remove("paused"),
+        gt(),
+        e && Ce({ type: "resumed" }));
     }
     function $e(e) {
       "boolean" == typeof e ? (e ? je() : Ke()) : Xe() ? Ke() : je();
@@ -4000,23 +4008,23 @@
         return void (t && ne.scrollToSlide(t));
       }
       if (0 === r.length) return;
-      void 0 !== i || le.isActive() || (i = qe(r[e])),
+      (void 0 !== i || le.isActive() || (i = qe(r[e])),
         g &&
           g.parentNode &&
           g.parentNode.classList.contains("stack") &&
-          ze(g.parentNode, h);
+          ze(g.parentNode, h));
       const o = O.concat();
       O.length = 0;
       let l = c || 0,
         d = h || 0;
-      (c = Qe(f, void 0 === e ? c : e)), (h = Qe(y, void 0 === i ? h : i));
+      ((c = Qe(f, void 0 === e ? c : e)), (h = Qe(y, void 0 === i ? h : i)));
       let u = c !== l || h !== d;
       u || (g = null);
       let v = r[c],
         m = v.querySelectorAll("section");
-      n.classList.toggle("is-vertical-slide", m.length > 1), (p = m[h] || v);
+      (n.classList.toggle("is-vertical-slide", m.length > 1), (p = m[h] || v));
       let b = !1;
-      u &&
+      (u &&
         g &&
         p &&
         !le.isActive() &&
@@ -4036,17 +4044,17 @@
               t(Y.wrapper, f + ".stack").forEach((e) => {
                 ze(e, 0);
               });
-            }, 0));
+            }, 0)));
       e: for (let e = 0, t = O.length; e < t; e++) {
         for (let t = 0; t < o.length; t++)
           if (o[t] === O[e]) {
             o.splice(t, 1);
             continue e;
           }
-        Y.viewport.classList.add(O[e]), Ce({ type: O[e] });
+        (Y.viewport.classList.add(O[e]), Ce({ type: O[e] }));
       }
       for (; o.length; ) Y.viewport.classList.remove(o.pop());
-      u && xe(a),
+      (u && xe(a),
         (!u && g) || (ee.stopEmbeddedContent(g), ee.startEmbeddedContent(p)),
         requestAnimationFrame(() => {
           be(we(p));
@@ -4064,7 +4072,7 @@
           (setTimeout(() => {
             Y.slides.classList.remove("disable-slide-transitions");
           }, 0),
-          A.autoAnimate && se.run(g, p));
+          A.autoAnimate && se.run(g, p)));
     }
     function _e(e, t, i, s) {
       return (
@@ -4076,7 +4084,7 @@
       );
     }
     function Je() {
-      Ae(),
+      (Ae(),
         Se(),
         He(),
         (J = A.autoSlide),
@@ -4095,7 +4103,7 @@
         !1 === A.autoPlayMedia
           ? ee.stopEmbeddedContent(p, { unloadIframes: !1 })
           : ee.startEmbeddedContent(p),
-        le.isActive() && le.layout();
+        le.isActive() && le.layout());
     }
     function Ge(e = rt()) {
       e.forEach((t, i) => {
@@ -4112,12 +4120,13 @@
         r = !1,
         o = !1;
       if (a) {
-        A.loop && (i >= a && (r = !0), (i %= a) < 0 && ((i = a + i), (o = !0))),
-          (i = Math.max(Math.min(i, a - 1), 0));
+        (A.loop &&
+          (i >= a && (r = !0), (i %= a) < 0 && ((i = a + i), (o = !0))),
+          (i = Math.max(Math.min(i, a - 1), 0)));
         for (let e = 0; e < a; e++) {
           let t = s[e],
             a = A.rtl && !Oe(t);
-          t.classList.remove("past"),
+          (t.classList.remove("past"),
             t.classList.remove("present"),
             t.classList.remove("future"),
             t.setAttribute("hidden", ""),
@@ -4130,14 +4139,14 @@
                 : e > i
                   ? (t.classList.add(a ? "past" : "future"),
                     A.fragments && et(t))
-                  : e === i && A.fragments && (r ? et(t) : o && Ze(t));
+                  : e === i && A.fragments && (r ? et(t) : o && Ze(t)));
         }
         let e = s[i],
           t = e.classList.contains("present");
-        e.classList.add("present"),
+        (e.classList.add("present"),
           e.removeAttribute("hidden"),
           e.removeAttribute("aria-hidden"),
-          t || Ce({ target: e, type: "visible", bubbles: !1 });
+          t || Ce({ target: e, type: "visible", bubbles: !1 }));
         let l = e.getAttribute("data-state");
         l && (O = O.concat(l.split(" ")));
       } else i = 0;
@@ -4145,7 +4154,7 @@
     }
     function Ze(e) {
       t(e, ".fragment").forEach((e) => {
-        e.classList.add("visible"), e.classList.remove("current-fragment");
+        (e.classList.add("visible"), e.classList.remove("current-fragment"));
       });
     }
     function et(e) {
@@ -4160,8 +4169,8 @@
         a = s.length;
       if (a && void 0 !== c) {
         let n = le.isActive() ? 10 : A.viewDistance;
-        u && (n = le.isActive() ? 6 : A.mobileViewDistance),
-          re.isActive() && (n = Number.MAX_VALUE);
+        (u && (n = le.isActive() ? 6 : A.mobileViewDistance),
+          re.isActive() && (n = Number.MAX_VALUE));
         for (let r = 0; r < a; r++) {
           let o = s[r],
             l = t(o, "section"),
@@ -4175,17 +4184,17 @@
             let t = qe(o);
             for (let s = 0; s < d; s++) {
               let a = l[s];
-              (i = r === (c || 0) ? Math.abs((h || 0) - s) : Math.abs(s - t)),
-                e + i < n ? ee.load(a) : ee.unload(a);
+              ((i = r === (c || 0) ? Math.abs((h || 0) - s) : Math.abs(s - t)),
+                e + i < n ? ee.load(a) : ee.unload(a));
             }
           }
         }
-        dt()
+        (dt()
           ? Y.wrapper.classList.add("has-vertical-slides")
           : Y.wrapper.classList.remove("has-vertical-slides"),
           lt()
             ? Y.wrapper.classList.add("has-horizontal-slides")
-            : Y.wrapper.classList.remove("has-horizontal-slides");
+            : Y.wrapper.classList.remove("has-horizontal-slides"));
       }
     }
     function it({ includeFragments: e = !1 } = {}) {
@@ -4207,14 +4216,14 @@
         !0 === e)
       ) {
         let e = oe.availableRoutes();
-        (s.left = s.left || e.prev),
+        ((s.left = s.left || e.prev),
           (s.up = s.up || e.prev),
           (s.down = s.down || e.next),
-          (s.right = s.right || e.next);
+          (s.right = s.right || e.next));
       }
       if (A.rtl) {
         let e = s.left;
-        (s.left = s.right), (s.right = e);
+        ((s.left = s.right), (s.right = e));
       }
       return s;
     }
@@ -4241,16 +4250,16 @@
         a = h;
       if (e)
         if (ne.isActive())
-          (s = parseInt(e.getAttribute("data-index-h"), 10)),
+          ((s = parseInt(e.getAttribute("data-index-h"), 10)),
             e.getAttribute("data-index-v") &&
-              (a = parseInt(e.getAttribute("data-index-v"), 10));
+              (a = parseInt(e.getAttribute("data-index-v"), 10)));
         else {
           let i = Oe(e),
             n = i ? e.parentNode : e,
             r = rt();
-          (s = Math.max(r.indexOf(n), 0)),
+          ((s = Math.max(r.indexOf(n), 0)),
             (a = void 0),
-            i && (a = Math.max(t(e.parentNode, "section").indexOf(e), 0));
+            i && (a = Math.max(t(e.parentNode, "section").indexOf(e), 0)));
         }
       if (!e && p) {
         if (p.querySelectorAll(".fragment").length > 0) {
@@ -4305,7 +4314,7 @@
           i = e ? e.getAttribute("data-autoslide") : null,
           s = p.parentNode ? p.parentNode.getAttribute("data-autoslide") : null,
           a = p.getAttribute("data-autoslide");
-        i
+        (i
           ? (J = parseInt(i, 10))
           : a
             ? (J = parseInt(a, 10))
@@ -4325,17 +4334,17 @@
             le.isActive() ||
             (Ve() && !oe.availableRoutes().next && !0 !== A.loop) ||
             ((G = setTimeout(() => {
-              "function" == typeof A.autoSlideMethod
+              ("function" == typeof A.autoSlideMethod
                 ? A.autoSlideMethod()
                 : St(),
-                gt();
+                gt());
             }, J)),
             (Q = Date.now())),
-          w && w.setPlaying(-1 !== G);
+          w && w.setPlaying(-1 !== G));
       }
     }
     function pt() {
-      clearTimeout(G), (G = -1);
+      (clearTimeout(G), (G = -1));
     }
     function vt() {
       J &&
@@ -4402,12 +4411,12 @@
         return ne.next();
       if (e || !1 === oe.next()) {
         let t = it();
-        t.down && t.right && A.loop && We() && (t.down = !1),
+        (t.down && t.right && A.loop && We() && (t.down = !1),
           t.down
             ? wt({ skipFragments: e })
             : A.rtl
               ? ft({ skipFragments: e })
-              : yt({ skipFragments: e });
+              : yt({ skipFragments: e }));
       }
     }
     function At(e) {
@@ -4460,7 +4469,7 @@
         Y.wrapper &&
         (e.stopImmediatePropagation(),
         setTimeout(() => {
-          l.layout(), l.focus.focus();
+          (l.layout(), l.focus.focus());
         }, 1));
     }
     function Pt(e) {
@@ -4542,15 +4551,15 @@
           Y.slides.style.removeProperty("right"),
           Y.slides.style.removeProperty("transform"),
           Array.from(Y.wrapper.querySelectorAll(m)).forEach((e) => {
-            e.style.removeProperty("display"),
+            (e.style.removeProperty("display"),
               e.style.removeProperty("top"),
               e.removeAttribute("hidden"),
-              e.removeAttribute("aria-hidden");
+              e.removeAttribute("aria-hidden"));
           }));
       },
       sync: Je,
       syncSlide: function (e = p) {
-        ae.sync(e), oe.sync(e), ee.load(e), ae.update(), fe.update();
+        (ae.sync(e), oe.sync(e), ee.load(e), ae.update(), fe.update());
       },
       syncFragments: oe.sync.bind(oe),
       slide: Ye,
@@ -4630,8 +4639,8 @@
           Ye(s(e.indexh), s(e.indexv), s(e.indexf));
           let t = s(e.paused),
             i = s(e.overview);
-          "boolean" == typeof t && t !== Xe() && $e(t),
-            "boolean" == typeof i && i !== le.isActive() && le.toggle(i);
+          ("boolean" == typeof t && t !== Xe() && $e(t),
+            "boolean" == typeof i && i !== le.isActive() && le.toggle(i));
         }
       },
       getProgress: function () {
@@ -4683,9 +4692,9 @@
       getComputedSlideSize: Fe,
       setCurrentScrollPage: function (e, t, i) {
         let s = c || 0;
-        (c = t), (h = i);
+        ((c = t), (h = i));
         const a = p !== e;
-        (g = p),
+        ((g = p),
           (p = e),
           p && g && A.autoAnimate && _e(g, p, s, h) && se.run(g, p),
           a &&
@@ -4697,7 +4706,7 @@
           requestAnimationFrame(() => {
             be(we(p));
           }),
-          xe();
+          xe());
       },
       getScale: () => $,
       getConfig: () => A,

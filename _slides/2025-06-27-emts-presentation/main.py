@@ -119,7 +119,7 @@ class Main(Slide, m.MovingCameraScene):
         We give some context:
         - Ray Tracing (RT) is a powerful technique for simulating electromagnetic (EM) fields in complex environments.
         - It is computationally expensive, especially for large scenes.
-        - Ray Launching (RL) is a faster alternative, but it sacrifices accuracy, or \\* requires a lot of rays to be launched. 
+        - Ray Launching (RL) is a faster alternative, but it sacrifices accuracy, or \\* requires a lot of rays to be launched.
         """
         )
         self.play(self.next_slide_number_animation())
@@ -139,7 +139,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(
             notes="""
         We present the main issue behind (exhaustive) RT:
-        we try many rays, but only a few are valid. 
+        we try many rays, but only a few are valid.
         """
         )
         self.play(self.next_slide_number_animation())
@@ -422,13 +422,13 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(
             notes="""
         Let's see training results on 1st and 2nd order reflection in a street canyon.
-                        
+
         For 1st order, we see that the accuracy is low, while the hit rate is good. This means that our model is able to generate some valid rays, but it will generate a diverse set of valid rays, which is what we want.
-                        
+
         For 2nd order, the hit rate only reaches 30%, which is not yet sufficient to replace exhaustive RT with our model.
-                        
+
         In both cases, the accuracy is far better than the one of a random model, which would generate valid rays with a probability of 3% for 1st and 0.03% for second order reflection.
-                        
+
         Ongoing research has already shown that the model can be improved, reaching above 80% of hit rate for both cases.
         """
         )

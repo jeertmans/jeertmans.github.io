@@ -128,7 +128,7 @@ import hljs from "highlight.js";
       return void 0 !== t[n] ? t[n] : e;
     });
   }
-  hljs
+  (hljs
     ? ((hljs.initLineNumbersOnLoad = function (e) {
         "interactive" === o.readyState || "complete" === o.readyState
           ? n(e)
@@ -140,7 +140,7 @@ import hljs from "highlight.js";
       (hljs.lineNumbersValue = function (e, n) {
         if ("string" != typeof e) return;
         var t = document.createElement("code");
-        return (t.innerHTML = e), f(t, n);
+        return ((t.innerHTML = e), f(t, n));
       }),
       ((e = o.createElement("style")).type = "text/css"),
       (e.innerHTML = p(
@@ -165,7 +165,7 @@ import hljs from "highlight.js";
             : t.toString()),
         e.clipboardData.setData("text/plain", n),
         e.preventDefault());
-    });
+    }));
 })(window, document);
 
 /*!
