@@ -9,13 +9,12 @@ dependencies = [
   "choreographer<1",
   "equinox>=0.11.11",
   "kaleido==0.2.1",
-  "manim-slides[manim,pyside6]==5.5.1",
+  "manim-slides[manim]==5.5.1",
   "pandas>=2.2.3",
   "pillow>=11.1.0",
   "plotly>=5.24.1,<6",
   "scipy>=1.15.1",
 ]
-description = "Add your description here"
 name = "2025-04-01-eucap-presentation"
 requires-python = ">=3.11"
 version = "0.1.0"

@@ -33,3 +33,5 @@ _slides/*/*_assets/
 _slides/*/*.pptx
 _slides/*/*.pdf
 _slides/*/*.html
+_slides/*/.python-version
+_slides/*/uv.lock
