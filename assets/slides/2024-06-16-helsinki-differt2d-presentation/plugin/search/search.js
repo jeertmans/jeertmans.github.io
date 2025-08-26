@@ -17,7 +17,7 @@
    */ return () => {
     let e, t, n, i, o, l, r;
     function s() {
-      (t = document.createElement("div")),
+      ((t = document.createElement("div")),
         t.classList.add("searchbox"),
         (t.style.position = "absolute"),
         (t.style.top = "10px"),
@@ -41,7 +41,7 @@
           "keyup",
           function (t) {
             if (13 === t.keyCode)
-              t.preventDefault(),
+              (t.preventDefault(),
                 (function () {
                   if (l) {
                     var t = n.value;
@@ -55,18 +55,18 @@
                     (i.length && i.length <= o && (o = 0),
                     i.length > o && (e.slide(i[o].h, i[o].v), o++));
                 })(),
-                (l = !1);
+                (l = !1));
             else l = !0;
           },
           !1,
         ),
-        d();
+        d());
     }
     function a() {
-      t || s(), (t.style.display = "inline"), n.focus(), n.select();
+      (t || s(), (t.style.display = "inline"), n.focus(), n.select());
     }
     function d() {
-      t || s(), (t.style.display = "none"), r && r.remove();
+      (t || s(), (t.style.display = "none"), r && r.remove());
     }
     function c(t, n) {
       var i = document.getElementById(t) || document.body,
@@ -77,8 +77,8 @@
         a = 0,
         d = "",
         c = [];
-      (this.setRegex = function (e) {
-        (e = e.trim()), (d = new RegExp("(" + e + ")", "i"));
+      ((this.setRegex = function (e) {
+        ((e = e.trim()), (d = new RegExp("(" + e + ")", "i")));
       }),
         (this.getRegex = function () {
           return d
@@ -101,17 +101,17 @@
                   y = !1;
                 for (n = 0; n < h; n++)
                   c[n].h === p.h && c[n].v === p.v && (y = !0);
-                y || c.push(p),
+                (y || c.push(p),
                   s[f[0].toLowerCase()] ||
-                    (s[f[0].toLowerCase()] = r[a++ % r.length]);
+                    (s[f[0].toLowerCase()] = r[a++ % r.length]));
                 var g = document.createElement(o);
-                g.appendChild(document.createTextNode(f[0])),
+                (g.appendChild(document.createTextNode(f[0])),
                   (g.style.backgroundColor = s[f[0].toLowerCase()]),
                   (g.style.fontStyle = "inherit"),
-                  (g.style.color = "#000");
+                  (g.style.color = "#000"));
                 var v = t.splitText(f.index);
-                (v.nodeValue = v.nodeValue.substring(f[0].length)),
-                  t.parentNode.insertBefore(g, v);
+                ((v.nodeValue = v.nodeValue.substring(f[0].length)),
+                  t.parentNode.insertBefore(g, v));
               }
           }
         }),
@@ -125,13 +125,13 @@
         }),
         (this.apply = function (e) {
           if (null != e && e)
-            return this.remove(), this.setRegex(e), this.hiliteWords(i), c;
-        });
+            return (this.remove(), this.setRegex(e), this.hiliteWords(i), c);
+        }));
     }
     return {
       id: "search",
       init: (n) => {
-        (e = n),
+        ((e = n),
           e.registerKeyboardShortcut("CTRL + Shift + F", "Search"),
           document.addEventListener(
             "keydown",
@@ -143,7 +143,7 @@
                 "inline" !== t.style.display ? a() : d());
             },
             !1,
-          );
+          ));
       },
       open: a,
     };

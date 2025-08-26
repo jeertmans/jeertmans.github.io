@@ -26,8 +26,9 @@ section.has-light-background h6 {
  *********************************************/
 :root {
   --r-background-color: #282a36;
-  --r-main-font: -apple-system, BlinkMacSystemFont, avenir next, avenir,
-    segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial,
+  --r-main-font:
+    -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui,
+    helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial,
     sans-serif;
   --r-main-font-size: 40px;
   --r-main-color: #f8f8f2;
@@ -45,8 +46,9 @@ section.has-light-background h6 {
   --r-heading2-size: 2.11em;
   --r-heading3-size: 1.55em;
   --r-heading4-size: 1em;
-  --r-code-font: Fira Code, Menlo, Consolas, Monaco, Liberation Mono,
-    Lucida Console, monospace;
+  --r-code-font:
+    Fira Code, Menlo, Consolas, Monaco, Liberation Mono, Lucida Console,
+    monospace;
   --r-link-color: #ff79c6;
   --r-link-color-dark: #ff2da5;
   --r-link-color-hover: #8be9fd;

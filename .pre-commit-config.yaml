@@ -8,11 +8,11 @@ repos:
     - --sort-by-bibkey
     - --drop=abstract
 - repo: https://github.com/kynan/nbstripout
-  rev: 0.6.1
+  rev: 0.8.1
   hooks:
   - id: nbstripout
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
+  rev: v6.0.0
   hooks:
   - id: check-ast
   - id: check-case-conflict
@@ -30,14 +30,14 @@ repos:
   - id: prettier
     types_or: [css, javascript, json]
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.12.0
+  rev: v2.15.0
   hooks:
   - id: pretty-format-yaml
     args: [--autofix]
   - id: pretty-format-toml
     args: [--autofix, --trailing-commas]
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.3.0
+  rev: v0.12.10
   hooks:
   - id: ruff
     args: [--fix]
