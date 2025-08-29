@@ -12,6 +12,9 @@ node_modules/
 # Python
 *.pyc
 .mypy_cache/
+uv.lock
+.python-version
+
 
 # Notebooks
 _notebooks/.ipynb_checkpoints/
@@ -33,5 +36,3 @@ _slides/*/*_assets/
 _slides/*/*.pptx
 _slides/*/*.pdf
 _slides/*/*.html
-_slides/*/.python-version
-_slides/*/uv.lock

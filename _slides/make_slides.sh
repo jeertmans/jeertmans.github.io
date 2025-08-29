@@ -1,2 +1,1 @@
-rm -rf ../../assets/slides/
-find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && manim "$(basename {})" --media_dir="../media/$(dirname {})" && manim-slides convert Main "../../assets/slides/$(dirname {}).html"'
+find -iname "main.py" | xargs -I {} bash -c 'cd $(dirname {}) && uv run manim "$(basename {})" --media_dir="../media/$(dirname {})" && uv run manim-slides convert Main "../../assets/slides/$(dirname {}).html" --one-file && uv run manim-slides convert Main "../../assets/slides/$(dirname {}).pptx" && uv run manim-slides convert Main "../../assets/slides/$(dirname {}).pdf"'

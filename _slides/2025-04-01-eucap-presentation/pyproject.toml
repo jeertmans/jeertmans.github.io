@@ -9,7 +9,7 @@ dependencies = [
   "choreographer<1",
   "equinox>=0.11.11",
   "kaleido==0.2.1",
-  "manim-slides[manim]==5.5.1",
+  "manim-slides[manim]==5.5.2",
   "pandas>=2.2.3",
   "pillow>=11.1.0",
   "plotly>=5.24.1,<6",

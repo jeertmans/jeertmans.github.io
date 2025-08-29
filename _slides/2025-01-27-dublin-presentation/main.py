@@ -160,6 +160,8 @@ def figure_to_mobject(
 
 
 class Main(Slide, m.MovingCameraScene):
+    max_duration_before_split_reverse = None
+
     def write_slide_number(
         self, inital=1, text=m.Tex, animation=m.Write, position=m.ORIGIN
     ):
@@ -248,7 +250,7 @@ class Main(Slide, m.MovingCameraScene):
 
         # Some variables
 
-        N_FACES = self.scene.mesh.num_objects
+        N_FACES = self.scene.mesh.num_primitives
         N_TRI = self.scene.mesh.num_triangles
 
         alpha = m.ValueTracker(0)

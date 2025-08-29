@@ -6,18 +6,21 @@
 version: 2
 updates:
 - package-ecosystem: pip
-  directory: /
+  directories:
+  - "_slides/*"
   schedule:
-    interval: daily
+    interval: monthly
   labels:
   - python
   - dependencies
   - automerge
+  allow:
+  - dependency-name: "manim-slides"
 
 - package-ecosystem: github-actions
   directory: /
   schedule:
-    interval: daily
+    interval: monthly
   labels:
   - github-actions
   - dependencies
@@ -26,7 +29,7 @@ updates:
 - package-ecosystem: bundler
   directory: /
   schedule:
-    interval: daily
+    interval: monthly
   labels:
   - gems
   - dependencies

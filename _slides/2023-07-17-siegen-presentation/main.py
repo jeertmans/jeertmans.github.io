@@ -170,6 +170,8 @@ Slides generation
 
 
 class Main(Slide):
+    max_duration_before_split_reverse = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.slide_no = None
@@ -313,14 +315,13 @@ class Main(Slide):
                     public.add(listener.copy().shift(i * UP + j * LEFT))
 
         self.play(Write(speaker), Write(listener), Write(public))
-        self.next_slide()
 
         # Slide: show emetting sound waves & received power
 
         circle = Circle(radius=1, color=BLUE).shift(speaker.get_center())
-        self.start_loop()
+        self.next_slide(loop=True)
         self.play(Broadcast(circle, focal_point=speaker.get_center(), run_time=6))
-        self.end_loop()
+        self.next_slide()
 
         arrow_end = Dot(public[13].get_center())
         arrow_end.set_opacity(0)

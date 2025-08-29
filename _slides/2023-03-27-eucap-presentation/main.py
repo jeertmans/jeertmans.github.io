@@ -168,6 +168,8 @@ Slides generation
 
 
 class Main(Slide):
+    max_duration_before_split_reverse = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.slide_no = None

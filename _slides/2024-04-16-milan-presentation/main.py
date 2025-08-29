@@ -82,6 +82,8 @@ class VideoMobject(ImageMobject):
 
 
 class Main(Slide, MovingCameraScene):
+    max_duration_before_split_reverse = None
+
     def write_slide_number(self, inital=1, text=Tex, animation=Write, position=ORIGIN):
         self.slide_no = inital
         self.slide_text = text(str(inital)).shift(position)

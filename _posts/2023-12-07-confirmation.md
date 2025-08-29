@@ -30,6 +30,12 @@ which you can read by pressing <kbd>S</kbd>.
 
 {% include slides.html url="/assets/slides/2023-12-07-confirmation.html" %}
 
+If you prefer,
+<a href="/assets/slides/2023-12-07-confirmation.pptx">PowerPoint <i class="far fa-file-powerpoint fa-fw"></i></a>
+and
+<a href="/assets/slides/2023-12-07-confirmation.pdf">PDF <i class="far fa-file-pdf fa-fw"></i></a>
+versions are also available.
+
 ## References
 
 {% bibliography --cited %}

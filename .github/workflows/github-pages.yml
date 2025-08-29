@@ -46,14 +46,10 @@ jobs:
       with:
         fetch-depth: 0
         submodules: true
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v6
       with:
-        python-version: '3.10'
-        cache: pip   # caching pip dependencies
-    - name: Install Python dependencies
-      run: |
-        pip install -r requirements.txt
+        enable-cache: true
     - name: Convert notebooks to posts
       run: ./notebooks_to_posts.sh
     - name: Upload notebooks
