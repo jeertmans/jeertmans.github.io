@@ -1,9 +1,9 @@
 [project]
-name = "2024-04-16-milan-presentation"
-version = "0.1.0"
-requires-python = ">=3.10,<3.12"
 dependencies = [
-    "manim-slides[manim]==5.5.2",
-    "numpy>=2.2.6",
-    "opencv-python>=4.11.0.86",
+  "manim-slides[manim]==5.5.2",
+  "numpy>=2.2.6",
+  "opencv-python>=4.11.0.86",
 ]
+name = "2024-04-16-milan-presentation"
+requires-python = ">=3.10,<3.12"
+version = "0.1.0"
