@@ -627,7 +627,9 @@ class Main(Slide, MovingCameraScene):
             ),
         )
 
-        for i, (arrow, text) in enumerate(zip(pipeline[1::2], pipeline[2::2])):
+        for i, (arrow, text) in enumerate(
+            zip(pipeline[1::2], pipeline[2::2], strict=False)
+        ):
             self.next_slide(notes="Next pipeline step.")
             self.play(
                 LaggedStart(
@@ -1368,7 +1370,7 @@ class Main(Slide, MovingCameraScene):
                 Transform(refl, diff)
                 if not isinstance(refl, DecimalNumber)
                 else FadeTransform(refl, diff)
-                for refl, diff in zip(refl_config, diff_config)
+                for refl, diff in zip(refl_config, diff_config, strict=False)
             ],
             Restore(W1_),
             Restore(UE_),
@@ -1423,7 +1425,7 @@ class Main(Slide, MovingCameraScene):
                 Transform(refl, diff)
                 if not isinstance(refl, DecimalNumber)
                 else FadeTransform(refl, diff)
-                for refl, diff in zip(diff_config, refr_config)
+                for refl, diff in zip(diff_config, refr_config, strict=False)
             ],
             Transform(interaction, Tex("Refraction").move_to(interaction)),
             Transform(
