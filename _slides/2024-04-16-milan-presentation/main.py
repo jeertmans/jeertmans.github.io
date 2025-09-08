@@ -456,7 +456,9 @@ class Main(Slide, MovingCameraScene):
             ),
         )
 
-        for i, (arrow, text) in enumerate(zip(pipeline[1::2], pipeline[2::2])):
+        for i, (arrow, text) in enumerate(
+            zip(pipeline[1::2], pipeline[2::2], strict=False)
+        ):
             self.next_slide(notes="Next pipeline step.")
             self.play(
                 LaggedStart(
