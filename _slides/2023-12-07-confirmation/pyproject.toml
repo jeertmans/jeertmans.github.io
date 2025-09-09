@@ -1,12 +1,12 @@
 [project]
-name = "2023-12-07-confirmation"
-version = "0.1.0"
-requires-python = ">=3.10,<3.12"
 dependencies = [
-    "manim-slides[manim]==5.5.2",
-    "numpy>=1.26.2",
-    "opencv-python>=4.8.1.78",
-    "setuptools>=69.0.2,<81",
-    "shapely>=2.0.2",
-    "sympy>=1.12",
+  "manim-slides[manim]==5.5.2",
+  "numpy>=1.26.2",
+  "opencv-python>=4.8.1.78",
+  "setuptools>=69.0.2,<81",
+  "shapely>=2.0.2",
+  "sympy>=1.12",
 ]
+name = "2023-12-07-confirmation"
+requires-python = ">=3.10,<3.12"
+version = "0.1.0"

@@ -1,23 +1,22 @@
-[project]
-name = "jeertmans-github-io"
-version = "0.1.0"
-requires-python = ">=3.11"
-dependencies = [
-    "matplotlib>=3.10.5",
-    "numpy>=2.3.2",
-    "pandas>=2.3.2",
-    "plotly>=6.3.0",
-    "scipy>=1.16.1",
-]
-
 [dependency-groups]
 dev = [
-    "jupyter-contrib-nbextensions>=0.7.0",
-    "notebook<7",
+  "jupyter-contrib-nbextensions>=0.7.0",
+  "notebook<7",
 ]
 
-[tool.ruff]
+[project]
+dependencies = [
+  "matplotlib>=3.10.5",
+  "numpy>=2.3.2",
+  "pandas>=2.3.2",
+  "plotly>=6.3.0",
+  "scipy>=1.16.1",
+]
+name = "jeertmans-github-io"
+requires-python = ">=3.11"
+version = "0.1.0"
 
+[tool.ruff]
 extend-include = ["*.ipynb"]
 
 [tool.ruff.format]
