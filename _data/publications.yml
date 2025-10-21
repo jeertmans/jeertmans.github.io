@@ -1,15 +1,25 @@
-- title: Preprint - Towards Generative Ray Path Sampling for Faster Point-to-Point Ray Tracing
+- title: Preprint - Fast, Differentiable, GPU-Accelerated Ray Tracing for Multiple Diffraction and Reflection Paths
+  id: eucap2026
+  date: 2025-10-17
+  tags:
+  - Conference
+  - Paper
+  - Preprint
+  download: /assets/publications/eucap2026-paper.pdf
+  arxiv: https://arxiv.org/abs/2410.14535
+  bibtex: /assets/publications/eucap2026-paper.bib
+- title: ICMLCN 2025 - Towards Generative Ray Path Sampling for Faster Point-to-Point Ray Tracing
   id: icmlcn2025
   date: 2024-10-31
   tags:
   - Conference
   - Paper
-  - Preprint
   - Poster
   - Software
   download: /assets/publications/icmlcn2025-paper.pdf
   arxiv: https://arxiv.org/abs/2410.23773
   bibtex: /assets/publications/icmlcn2025-paper.bib
+  doi: 10.1109/ICMLCN64995.2025.11140249
 - title: 'EuCAP 2025 - Comparing Differentiable and Dynamic Ray Tracing: Introducing the Multipath Lifetime Map'
   id: eucap2025
   date: 2024-10-18
