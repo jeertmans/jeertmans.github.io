@@ -1,11 +1,11 @@
 [project]
-name = "2023-03-27-eucap-presentation"
-version = "0.1.0"
-requires-python = ">=3.10,<3.12"
 dependencies = [
-    "manim-slides[manim]==5.5.2",
-    "numpy>=1.26.4",
-    "setuptools>=80.9.0,<81",
-    "shapely>=2.1.1",
-    "sympy>=1.14.0",
+  "manim-slides[manim]==5.5.2",
+  "numpy>=1.26.4",
+  "setuptools>=80.9.0,<81",
+  "shapely>=2.1.1",
+  "sympy>=1.14.0",
 ]
+name = "2023-03-27-eucap-presentation"
+requires-python = ">=3.10,<3.12"
+version = "0.1.0"
