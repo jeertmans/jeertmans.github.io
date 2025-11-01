@@ -81,13 +81,13 @@ jobs:
         bundler-cache: true   # runs 'bundle install' and caches installed gems automatically
 
     - name: Download notebooks
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: notebooks
         path: _posts
 
     - name: Download notebooks assets
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: notebooks-assets
         path: assets/notebooks
