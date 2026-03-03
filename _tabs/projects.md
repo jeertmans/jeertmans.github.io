@@ -3,7 +3,7 @@ layout: projects
 icon: fas fa-laptop-code
 ---
 
-![Jérome's GitHub stats](https://github-readme-stats.vercel.app/api?username=jeertmans&theme=transparent&show_icons=true){: .shadow .right }
+![Jérome's GitHub stats](https://raw.githubusercontent.com/jeertmans/jeertmans/refs/heads/main/profile/stats.svg){: .shadow .right }
 
 I love programming, and I love the philosophy of open sourcing content!
 

@@ -457,16 +457,18 @@ class Main(Slide):
         ).set_color(BLACK)
 
         alpha_d = always_redraw(
-            lambda: VGroup(
-                Tex(r"$\alpha$~=~"),
-                DecimalNumber(
-                    alpha.get_value() if alpha.get_value() > 1.0 else 1.0,
-                    num_decimal_places=1,
-                ),
+            lambda: (
+                VGroup(
+                    Tex(r"$\alpha$~=~"),
+                    DecimalNumber(
+                        alpha.get_value() if alpha.get_value() > 1.0 else 1.0,
+                        num_decimal_places=1,
+                    ),
+                )
+                .arrange(RIGHT, buff=0.3)
+                .set_color(BLACK)
+                .next_to(grid, 0.5 * DOWN)
             )
-            .arrange(RIGHT, buff=0.3)
-            .set_color(BLACK)
-            .next_to(grid, 0.5 * DOWN)
         )
 
         y_label = grid.get_y_axis_label("y", edge=LEFT, direction=LEFT, buff=0.4)

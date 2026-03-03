@@ -1333,11 +1333,13 @@ i.e., the minimum distance an object \(x\) has to travel to leave \(C_i\).""",
         x_pos = m.ValueTracker(x.min())
         mlms_center = self.camera.frame.get_center() + m.DOWN * self.camera.frame.height
         mlms_im = m.always_redraw(
-            lambda: draw_mlms(
-                x_pos=x_pos.get_value(),
-            )
-            .scale(0.5)
-            .move_to(mlms_center),
+            lambda: (
+                draw_mlms(
+                    x_pos=x_pos.get_value(),
+                )
+                .scale(0.5)
+                .move_to(mlms_center)
+            ),
         )
         self.add(mlms_im)
         self.play(self.next_slide_number_animation())
