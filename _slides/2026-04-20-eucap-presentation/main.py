@@ -28,11 +28,13 @@ WARNING_SOFT = m.ManimColor("#fff7ed")
 SECTIONS = ["Motivation", "State of Art", "Approach", "Results", "Future"]
 
 
-def title_box(text: str) -> m.VGroup:
+def title_box(text: str, underline: bool = True) -> m.VGroup:
     line = m.Line(m.LEFT * 6.2, m.RIGHT * 6.2, color=ACCENT, stroke_width=6)
     title = m.Text(text, font_size=HEADER_SIZE, color=TEXT, weight=m.BOLD, font=FONT_FAMILY)
     title.next_to(line, m.UP, buff=0.2)
-    return m.VGroup(line, title).to_edge(m.UP, buff=0.45)
+    if not underline:
+        return title.to_edge(m.UP, buff=0.45)
+    return m.VGroup(title, line).to_edge(m.UP, buff=0.45)
 
 
 def bullets(items: list[str], font_size: int = BODY_SIZE, width: float = 11.5) -> m.VGroup:
@@ -57,11 +59,11 @@ class Main(Slide, m.MovingCameraScene):
 
         m.Text.set_default(color=TEXT, font=FONT_FAMILY)
 
-        slide_tag = m.Text("slide 1", font_size=20, color=MUTED, font=FONT_FAMILY)
-        slide_tag.to_edge(m.RIGHT, buff=0.4).to_edge(m.DOWN, buff=0.58)
+        slide_tag = m.Text("1", font_size=20)
+        slide_tag.to_corner(m.DR)
 
         section_boxes = m.VGroup()
-        for name in SECTIONS:
+        for idx, name in enumerate(SECTIONS):
             box = m.RoundedRectangle(
                 width=2.25,
                 height=0.42,
@@ -71,7 +73,7 @@ class Main(Slide, m.MovingCameraScene):
                 stroke_color=LINE_SOFT,
                 stroke_width=1.3,
             )
-            txt = m.Text(name, font_size=16, color=MUTED, font=FONT_FAMILY).move_to(box)
+            txt = m.Text(name, font_size=16, color=TEXT if idx == 0 else MUTED).move_to(box)
             section_boxes.add(m.VGroup(box, txt))
         section_boxes.arrange(m.RIGHT, buff=0.12).to_edge(m.DOWN, buff=0.12)
 
@@ -79,40 +81,32 @@ class Main(Slide, m.MovingCameraScene):
             width=2.25,
             height=0.42,
             corner_radius=0.1,
-            fill_opacity=0,
             stroke_color=ACCENT,
             stroke_width=2.2,
-        ).move_to(section_boxes[0]).set_opacity(0)
+        ).move_to(section_boxes[0])
 
-        self.add(section_boxes, section_cursor, slide_tag)
-
-        current_slide = 1
+        current_slide = None
         current_section = None
-        section_cursor_visible = False
 
         def next_meta(new_section=None):
             nonlocal current_slide
             nonlocal current_section
-            nonlocal section_cursor_visible
+            if current_slide is None:
+                current_slide = 1
+                return []
             current_slide += 1
-            new_tag = m.Text(f"slide {current_slide}", font_size=20, color=MUTED, font=FONT_FAMILY)
+            new_tag = m.Text(f"{current_slide}", font_size=slide_tag.font_size)
             new_tag.move_to(slide_tag).align_to(slide_tag, m.RIGHT)
             anims = [m.Transform(slide_tag, new_tag)]
             if new_section is not None and new_section != current_section:
                 cursor_target = section_boxes[new_section]
                 current_section = new_section
-                if not section_cursor_visible:
-                    anims.append(section_cursor.animate.set_opacity(1).move_to(cursor_target))
-                    section_cursor_visible = True
-                else:
-                    anims.append(section_cursor.animate.move_to(cursor_target))
+                anims.append(section_cursor.animate.move_to(cursor_target))
                 for idx, grp in enumerate(section_boxes):
                     active = idx == new_section
                     target_fill = GREEN_SOFT if active else CARD
-                    target_stroke = LINE_SOFT
                     target_text = TEXT if active else MUTED
                     anims.append(grp[0].animate.set_fill(target_fill, opacity=1))
-                    anims.append(grp[0].animate.set_stroke(target_stroke, width=1.3))
                     anims.append(grp[1].animate.set_color(target_text))
             return anims
 
@@ -127,28 +121,23 @@ class Main(Slide, m.MovingCameraScene):
             "Fast, Differentiable, GPU-Accelerated\nRay Tracing for Multiple Diffraction and Reflection Paths",
             font_size=TITLE_SIZE,
             weight=m.BOLD,
-            color=TEXT,
-            font=FONT_FAMILY,
             line_spacing=0.9,
         )
         title.set(width=12.3)
         authors = m.Text(
             "Jérome Eertmans, Sophie Lequeu, Benoît Legat, Laurent Jacques, Claude Oestges",
             font_size=SMALL_SIZE,
-            color=TEXT,
-            font=FONT_FAMILY,
         )
         aff = m.Text(
             "ICTEAM, Université catholique de Louvain - EuCAP 2026",
             font_size=SMALL_SIZE,
             color=MUTED,
-            font=FONT_FAMILY,
         )
         author_block = m.VGroup(authors, aff).arrange(m.DOWN, buff=0.22)
 
         top_band = m.RoundedRectangle(
             width=13.4,
-            height=6.8,
+            height=7.3,
             corner_radius=0.25,
             stroke_color=ACCENT,
             stroke_width=2.5,
@@ -163,11 +152,11 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(
             notes="Welcome and one-sentence summary: unified GPU-ready differentiable path tracing for reflection and diffraction sequences.",
         )
-        self.play(m.FadeIn(top_band, shift=0.2 * m.UP), m.Write(title), m.FadeIn(title_logo))
+        self.play(m.FadeIn(top_band, shift=0.2 * m.UP), m.FadeIn(title, shift=0.2 * m.LEFT), m.FadeIn(title_logo))
         self.play(m.GrowFromCenter(accent_line), m.FadeIn(author_block, shift=0.2 * m.UP))
 
         # Slide 2 - Motivation (jump directly)
-        mot_header = title_box("1. Motivation")
+        mot_header = title_box("1. Motivation", underline=True)
         mot_bullets = bullets(
             [
                 "Wireless simulation is moving from static CPU pipelines to real-time GPU pipelines.",
@@ -180,7 +169,7 @@ class Main(Slide, m.MovingCameraScene):
         mot_bullets.next_to(mot_header, m.DOWN, buff=0.7).align_to(m.LEFT * 5.8, m.LEFT)
 
         shift_box_left = m.RoundedRectangle(
-            width=5.9,
+            width=4.0,
             height=1.6,
             corner_radius=0.15,
             fill_opacity=1,
@@ -189,7 +178,7 @@ class Main(Slide, m.MovingCameraScene):
             stroke_width=2,
         )
         shift_box_right = m.RoundedRectangle(
-            width=5.9,
+            width=4.2,
             height=1.6,
             corner_radius=0.15,
             fill_opacity=1,
@@ -197,30 +186,38 @@ class Main(Slide, m.MovingCameraScene):
             stroke_color=SECOND,
             stroke_width=2,
         )
-        shift_box_left.to_edge(m.DOWN, buff=0.55).shift(3.1 * m.LEFT)
-        shift_box_right.to_edge(m.DOWN, buff=0.55).shift(3.1 * m.RIGHT)
+        m.VGroup(shift_box_left, shift_box_right).arrange(m.RIGHT, buff=0.8)
 
-        old_txt = m.Text("Traditional RT\nCPU-oriented\nNon-differentiable", font_size=23, color=TEXT)
-        new_txt = m.Text("Differentiable RT\nGPU-enabled\nOptimization-ready", font_size=23, color=TEXT)
+        old_txt = m.Text("Traditional RT\nCPU-oriented\nNon-differentiable", font_size=23)
+        new_txt = m.Text("Differentiable RT\nGPU-enabled\nOptimization-ready", font_size=23)
         old_txt.move_to(shift_box_left)
         new_txt.move_to(shift_box_right)
-        arrow = m.Arrow(shift_box_left.get_right(), shift_box_right.get_left(), color=TEXT, stroke_width=4)
+        arrow = m.Arrow(shift_box_left.get_right(), shift_box_right.get_left(), color=TEXT, stroke_width=4, buff=0.0)
 
         self.next_slide(
             notes="Motivate the paradigm shift and stress why differentiability matters for inverse localization and material calibration demos.",
         )
         self.play(
             *next_meta(new_section=0),
-            m.FadeOut(top_band, title_group, title_logo),
-            m.FadeIn(mot_header),
-            m.LaggedStart(*[m.FadeIn(b, shift=0.15 * m.UP) for b in mot_bullets], lag_ratio=0.08),
+            self.wipe([top_band, title_group, title_logo], [mot_header], return_animation=True),
+            m.FadeIn(m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP),
         )
-        self.remove(title_logo)
+        self.remove(top_band, title_group, title_logo)
+        for b in mot_bullets:
+            self.next_slide(notes=f"Motivation bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        # TODO: fix glitch animation where shift box right blinks before fading in
+        self.next_slide(notes="We observe a paradigm shift: RT is becoming differentiable and GPU-friendly, unlocking new applications but also requiring new methods.")
         self.play(
-            m.FadeIn(shift_box_left, shift_box_right),
-            m.Write(old_txt),
-            m.Write(new_txt),
+            mot_bullets.animate.set_opacity(0.25),
+            m.FadeIn(shift_box_left, old_txt, shift=0.2 * m.RIGHT),
+        )
+
+        self.next_slide(notes="to...")
+        self.play(
             m.GrowArrow(arrow),
+            m.FadeIn(shift_box_right, new_txt, shift=0.2 * m.LEFT),
         )
 
         # Slide 3 - Table of contents
@@ -251,8 +248,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(notes="Quick map of the presentation and pacing.")
         self.play(
             *next_meta(),
-            m.FadeOut(mot_header, mot_bullets, shift_box_left, shift_box_right, old_txt, new_txt, arrow),
-            m.FadeIn(toc_header),
+            self.wipe([mot_header[0], mot_bullets, shift_box_left, shift_box_right, old_txt, new_txt, arrow], [toc_header], return_animation=True),
         )
         self.play(m.LaggedStart(*[m.FadeIn(item, shift=0.1 * m.UP) for item in toc], lag_ratio=0.08))
 
