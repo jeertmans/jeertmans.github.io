@@ -1,7 +1,11 @@
-import manim as m
+import csv
+import math
 import textwrap
-from manim_slides import Slide
+from pathlib import Path
 
+import manim as m
+import numpy as np
+from manim_slides import Slide
 
 TITLE_SIZE = 46
 HEADER_SIZE = 36
@@ -27,17 +31,29 @@ WARNING_SOFT = m.ManimColor("#fff7ed")
 
 SECTIONS = ["Motivation", "State of Art", "Approach", "Results", "Future"]
 
+SOLVER_SPECS = [
+    ("gd", "GD", m.ManimColor("#a16207"), False),
+    ("malbani", "CA", m.ManimColor("#6b7280"), False),
+    ("l-bfgs", "L-BFGS", m.ManimColor("#111827"), False),
+    ("ours", "ours", m.ManimColor("#1d4ed8"), False),
+    ("ours-64", "ours-64", m.ManimColor("#7f1d1d"), True),
+]
 
-def title_box(text: str, underline: bool = True) -> m.VGroup:
+
+def title_box(text: str, underline: bool = False) -> m.VGroup:
     line = m.Line(m.LEFT * 6.2, m.RIGHT * 6.2, color=ACCENT, stroke_width=6)
-    title = m.Text(text, font_size=HEADER_SIZE, color=TEXT, weight=m.BOLD, font=FONT_FAMILY)
+    title = m.Text(
+        text, font_size=HEADER_SIZE, color=TEXT, weight=m.BOLD, font=FONT_FAMILY
+    )
     title.next_to(line, m.UP, buff=0.2)
     if not underline:
         return title.to_edge(m.UP, buff=0.45)
     return m.VGroup(title, line).to_edge(m.UP, buff=0.45)
 
 
-def bullets(items: list[str], font_size: int = BODY_SIZE, width: float = 11.5) -> m.VGroup:
+def bullets(
+    items: list[str], font_size: int = BODY_SIZE, width: float = 11.5
+) -> m.VGroup:
     groups = []
     for item in items:
         dot = m.Dot(radius=0.05, color=ACCENT)
@@ -46,6 +62,68 @@ def bullets(items: list[str], font_size: int = BODY_SIZE, width: float = 11.5) -
         line = m.VGroup(dot, txt).arrange(m.RIGHT, aligned_edge=m.UP, buff=0.28)
         groups.append(line)
     return m.VGroup(*groups).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.35)
+
+
+def load_benchmark_rows(path: Path) -> list[dict[str, float]]:
+    rows = []
+    with path.open(newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            parsed = {}
+            for key, value in row.items():
+                parsed[key] = float(value)
+            rows.append(parsed)
+    return rows
+
+
+def extract_solver_points(
+    rows: list[dict[str, float]], solver: str, n: int
+) -> list[tuple[float, float]]:
+    t_key = f"t_{solver}_{n}"
+    e_key = f"e_{solver}_{n}"
+    pts = []
+    for row in rows:
+        t = row.get(t_key)
+        e = row.get(e_key)
+        if t is None or e is None:
+            continue
+        if not math.isfinite(t) or not math.isfinite(e) or t <= 0 or e <= 0:
+            continue
+        pts.append((1000.0 * t, e))
+    pts.sort(key=lambda p: p[0])
+    return pts
+
+
+def make_solver_curve(
+    ax: m.Axes,
+    points: list[tuple[float, float]],
+    color: m.ManimColor,
+    dashed: bool,
+) -> m.VGroup:
+    coords = [ax.c2p(x, y) for x, y in points]
+    line = m.VMobject()
+    if len(coords) >= 2:
+        line.set_points_as_corners(coords)
+        line.set_stroke(color=color, width=2.8)
+        if dashed:
+            line = m.DashedVMobject(
+                line, num_dashes=max(8, len(coords) * 2), dashed_ratio=0.58
+            )
+    dots = m.VGroup(*[m.Dot(p, color=color, radius=0.03) for p in coords])
+    return m.VGroup(line, dots)
+
+
+def solver_legend() -> m.VGroup:
+    entries = []
+    for _, label, color, dashed in SOLVER_SPECS:
+        base_line = m.Line(m.LEFT * 0.22, m.RIGHT * 0.22, color=color, stroke_width=3)
+        if dashed:
+            base_line = m.DashedVMobject(base_line, num_dashes=6)
+        dot = m.Dot(radius=0.028, color=color)
+        marker = m.VGroup(base_line, dot)
+        txt = m.Text(label, font_size=17, color=TEXT)
+        entries.append(m.VGroup(marker, txt).arrange(m.RIGHT, buff=0.1))
+    return m.VGroup(*entries).arrange(m.RIGHT, buff=0.36)
 
 
 class Main(Slide, m.MovingCameraScene):
@@ -68,12 +146,14 @@ class Main(Slide, m.MovingCameraScene):
                 width=2.25,
                 height=0.42,
                 corner_radius=0.1,
-                fill_color=CARD,
+                fill_color=GREEN_SOFT if idx == 0 else CARD,
                 fill_opacity=1,
                 stroke_color=LINE_SOFT,
                 stroke_width=1.3,
             )
-            txt = m.Text(name, font_size=16, color=TEXT if idx == 0 else MUTED).move_to(box)
+            txt = m.Text(name, font_size=16, color=TEXT if idx == 0 else MUTED).move_to(
+                box
+            )
             section_boxes.add(m.VGroup(box, txt))
         section_boxes.arrange(m.RIGHT, buff=0.12).to_edge(m.DOWN, buff=0.12)
 
@@ -146,14 +226,22 @@ class Main(Slide, m.MovingCameraScene):
         )
         accent_line = m.Line(m.LEFT * 5.8, m.RIGHT * 5.8, color=SECOND, stroke_width=4)
 
-        title_group = m.VGroup(title, accent_line, author_block).arrange(m.DOWN, buff=0.5)
+        title_group = m.VGroup(title, accent_line, author_block).arrange(
+            m.DOWN, buff=0.5
+        )
         title_group.move_to(top_band.get_center())
 
         self.next_slide(
             notes="Welcome and one-sentence summary: unified GPU-ready differentiable path tracing for reflection and diffraction sequences.",
         )
-        self.play(m.FadeIn(top_band, shift=0.2 * m.UP), m.FadeIn(title, shift=0.2 * m.LEFT), m.FadeIn(title_logo))
-        self.play(m.GrowFromCenter(accent_line), m.FadeIn(author_block, shift=0.2 * m.UP))
+        self.play(
+            m.FadeIn(top_band, shift=0.2 * m.UP),
+            m.FadeIn(title, shift=0.2 * m.LEFT),
+            m.FadeIn(title_logo),
+        )
+        self.play(
+            m.GrowFromCenter(accent_line), m.FadeIn(author_block, shift=0.2 * m.UP)
+        )
 
         # Slide 2 - Motivation (jump directly)
         mot_header = title_box("1. Motivation", underline=True)
@@ -188,27 +276,43 @@ class Main(Slide, m.MovingCameraScene):
         )
         m.VGroup(shift_box_left, shift_box_right).arrange(m.RIGHT, buff=0.8)
 
-        old_txt = m.Text("Traditional RT\nCPU-oriented\nNon-differentiable", font_size=23)
-        new_txt = m.Text("Differentiable RT\nGPU-enabled\nOptimization-ready", font_size=23)
+        old_txt = m.Text(
+            "Traditional RT\nCPU-oriented\nNon-differentiable", font_size=23
+        )
+        new_txt = m.Text(
+            "Differentiable RT\nGPU-enabled\nOptimization-ready", font_size=23
+        )
         old_txt.move_to(shift_box_left)
         new_txt.move_to(shift_box_right)
-        arrow = m.Arrow(shift_box_left.get_right(), shift_box_right.get_left(), color=TEXT, stroke_width=4, buff=0.0)
+        arrow = m.Arrow(
+            shift_box_left.get_right(),
+            shift_box_right.get_left(),
+            color=TEXT,
+            stroke_width=4,
+            buff=0.0,
+        )
 
         self.next_slide(
             notes="Motivate the paradigm shift and stress why differentiability matters for inverse localization and material calibration demos.",
         )
         self.play(
             *next_meta(new_section=0),
-            self.wipe([top_band, title_group, title_logo], [mot_header], return_animation=True),
-            m.FadeIn(m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP),
+            self.wipe(
+                [top_band, title_group, title_logo], [mot_header], return_animation=True
+            ),
+            m.FadeIn(
+                m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP
+            ),
         )
         self.remove(top_band, title_group, title_logo)
         for b in mot_bullets:
-            self.next_slide(notes=f"Motivation bullet")
+            self.next_slide(notes="Motivation bullet")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         # TODO: fix glitch animation where shift box right blinks before fading in
-        self.next_slide(notes="We observe a paradigm shift: RT is becoming differentiable and GPU-friendly, unlocking new applications but also requiring new methods.")
+        self.next_slide(
+            notes="We observe a paradigm shift: RT is becoming differentiable and GPU-friendly, unlocking new applications but also requiring new methods."
+        )
         self.play(
             mot_bullets.animate.set_opacity(0.25),
             m.FadeIn(shift_box_left, old_txt, shift=0.2 * m.RIGHT),
@@ -248,9 +352,25 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(notes="Quick map of the presentation and pacing.")
         self.play(
             *next_meta(),
-            self.wipe([mot_header[0], mot_bullets, shift_box_left, shift_box_right, old_txt, new_txt, arrow], [toc_header], return_animation=True),
+            self.wipe(
+                [
+                    mot_header[0],
+                    mot_bullets,
+                    shift_box_left,
+                    shift_box_right,
+                    old_txt,
+                    new_txt,
+                    arrow,
+                ],
+                [toc_header],
+                return_animation=True,
+            ),
         )
-        self.play(m.LaggedStart(*[m.FadeIn(item, shift=0.1 * m.UP) for item in toc], lag_ratio=0.08))
+        self.play(
+            m.LaggedStart(
+                *[m.FadeIn(item, shift=0.1 * m.UP) for item in toc], lag_ratio=0.08
+            )
+        )
 
         # Slide 4 - State of the art
         soa_header = title_box("2. State of the Art")
@@ -276,22 +396,45 @@ class Main(Slide, m.MovingCameraScene):
         c1 = m.Dot(comp.c2p(0.8, 3.2), color=SECOND)
         c2 = m.Dot(comp.c2p(2.0, 1.5), color=ACCENT)
         c3 = m.Dot(comp.c2p(3.2, 0.9), color=BLUE_GRAY)
-        l1 = m.Text("Image method", font_size=20, color=TEXT).next_to(c1, m.UP, buff=0.1)
-        l2 = m.Text("MPT / Fermat", font_size=20, color=TEXT).next_to(c2, m.UP, buff=0.1)
-        l3 = m.Text("Hybrid methods", font_size=20, color=TEXT).next_to(c3, m.UP, buff=0.1)
-        xlab = m.Text("Generality", font_size=20, color=MUTED).next_to(comp.x_axis, m.DOWN, buff=0.15)
-        ylab = m.Text("Speed", font_size=20, color=MUTED).next_to(comp.y_axis, m.LEFT, buff=0.15).rotate(m.PI / 2)
+        l1 = m.Text("Image method", font_size=20, color=TEXT).next_to(
+            c1, m.UP, buff=0.1
+        )
+        l2 = m.Text("MPT / Fermat", font_size=20, color=TEXT).next_to(
+            c2, m.UP, buff=0.1
+        )
+        l3 = m.Text("Hybrid methods", font_size=20, color=TEXT).next_to(
+            c3, m.UP, buff=0.1
+        )
+        xlab = m.Text("Generality", font_size=20, color=MUTED).next_to(
+            comp.x_axis, m.DOWN, buff=0.15
+        )
+        ylab = (
+            m.Text("Speed", font_size=20, color=MUTED)
+            .next_to(comp.y_axis, m.LEFT, buff=0.15)
+            .rotate(m.PI / 2)
+        )
 
         self.next_slide(
             notes="Recall prior work from the paper and highlight Fermat-based path formulation as the unifying physical principle.",
         )
         self.play(
             *next_meta(new_section=1),
-            m.FadeOut(toc, toc_header),
-            m.FadeIn(soa_header),
-            m.LaggedStart(*[m.FadeIn(line, shift=0.15 * m.UP) for line in soa_left], lag_ratio=0.07),
+            self.wipe([toc, toc_header], [soa_header], return_animation=True),
         )
-        self.play(m.Create(comp), m.FadeIn(c1, c2, c3), m.FadeIn(l1, l2, l3, xlab, ylab))
+
+        for b in soa_left:
+            self.next_slide(notes="State of the art bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        self.next_slide(
+            notes="Qualitative comparison of the different methods in terms of generality and speed."
+        )
+        self.play(
+            soa_left.animate.set_opacity(0.25),
+            m.Create(comp),
+            m.FadeIn(c1, c2, c3),
+            m.FadeIn(l1, l2, l3, xlab, ylab),
+        )
 
         # Slide 5 - Limitations and our approach
         lim_header = title_box("3. Current Limitations and Our Approach")
@@ -308,21 +451,45 @@ class Main(Slide, m.MovingCameraScene):
         lim_b.next_to(lim_header, m.DOWN, buff=0.62).align_to(m.LEFT * 5.8, m.LEFT)
 
         pipeline = m.VGroup(
-            m.RoundedRectangle(width=2.8, height=1.0, corner_radius=0.1, fill_color=RED_SOFT, fill_opacity=1, stroke_color=SECOND),
-            m.RoundedRectangle(width=2.8, height=1.0, corner_radius=0.1, fill_color=ORANGE_SOFT_2, fill_opacity=1, stroke_color=SECOND),
-            m.RoundedRectangle(width=2.8, height=1.0, corner_radius=0.1, fill_color=GREEN_SOFT_2, fill_opacity=1, stroke_color=ACCENT),
+            m.RoundedRectangle(
+                width=2.8,
+                height=1.0,
+                corner_radius=0.1,
+                fill_color=RED_SOFT,
+                fill_opacity=1,
+                stroke_color=SECOND,
+            ),
+            m.RoundedRectangle(
+                width=2.8,
+                height=1.0,
+                corner_radius=0.1,
+                fill_color=ORANGE_SOFT_2,
+                fill_opacity=1,
+                stroke_color=SECOND,
+            ),
+            m.RoundedRectangle(
+                width=2.8,
+                height=1.0,
+                corner_radius=0.1,
+                fill_color=GREEN_SOFT_2,
+                fill_opacity=1,
+                stroke_color=ACCENT,
+            ),
         ).arrange(m.RIGHT, buff=0.6)
-        pipeline.to_edge(m.DOWN, buff=0.7)
         ptxt = [
             m.Text("Enumerate", font_size=24, color=TEXT),
             m.Text("Convex Solve", font_size=24, color=TEXT),
             m.Text("Differentiate", font_size=24, color=TEXT),
         ]
-        for box, txt in zip(pipeline, ptxt):
+        for box, txt in zip(pipeline, ptxt, strict=False):
             txt.move_to(box)
         p_arrows = m.VGroup(
-            m.Arrow(pipeline[0].get_right(), pipeline[1].get_left(), buff=0.1, color=MUTED),
-            m.Arrow(pipeline[1].get_right(), pipeline[2].get_left(), buff=0.1, color=MUTED),
+            m.Arrow(
+                pipeline[0].get_right(), pipeline[1].get_left(), buff=0, color=MUTED
+            ),
+            m.Arrow(
+                pipeline[1].get_right(), pipeline[2].get_left(), buff=0, color=MUTED
+            ),
         )
 
         self.next_slide(
@@ -330,34 +497,54 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(new_section=2),
-            m.FadeOut(soa_header, soa_left, comp, c1, c2, c3, l1, l2, l3, xlab, ylab),
-            m.FadeIn(lim_header),
-            m.LaggedStart(*[m.FadeIn(line, shift=0.15 * m.UP) for line in lim_b], lag_ratio=0.07),
+            self.wipe(
+                [soa_header, soa_left, comp, c1, c2, c3, l1, l2, l3, xlab, ylab],
+                [lim_header],
+                return_animation=True,
+            ),
         )
-        self.play(m.FadeIn(pipeline), m.GrowArrow(p_arrows[0]), m.GrowArrow(p_arrows[1]), *[m.Write(t) for t in ptxt])
+
+        for b in lim_b:
+            self.next_slide(notes="Limits and approach bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        self.next_slide(
+            "Our approach: a single convex optimization template for all path types, enabling efficient GPU batching and differentiable integration."
+        )
+        self.play(
+            lim_b.animate.set_opacity(0.25),
+            m.FadeIn(pipeline),
+            m.GrowArrow(p_arrows[0]),
+            m.GrowArrow(p_arrows[1]),
+            *[m.Write(t) for t in ptxt],
+        )
 
         # Slide 6 - Apart on refraction extension
-        apart_header = title_box("Aparte: Refraction Is Also Natural")
+        apart_header = title_box("Aparte: Handling Refraction")
         apart_text = bullets(
             [
                 "Not shown in the paper: refractive index can be included directly.",
-                "Replace geometric length by optical path length in the objective.",
-                "Convex structure can be preserved in relevant geometric settings.",
-                "Same differentiable workflow can expose gradients wrt material parameters.",
+                "Problem remains convex.",
             ],
             font_size=28,
         )
-        apart_text.next_to(apart_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
+        apart_text.next_to(apart_header, m.DOWN, buff=0.65).align_to(
+            m.LEFT * 5.8, m.LEFT
+        )
 
-        eq_card = m.RoundedRectangle(
-            width=5.9,
-            height=2.0,
-            corner_radius=0.16,
-            fill_color=CARD,
-            fill_opacity=0.95,
-            stroke_color=ACCENT,
-            stroke_width=2,
-        ).to_edge(m.RIGHT, buff=0.9).shift(0.45 * m.DOWN)
+        eq_card = (
+            m.RoundedRectangle(
+                width=5.9,
+                height=2.0,
+                corner_radius=0.16,
+                fill_color=CARD,
+                fill_opacity=0.95,
+                stroke_color=ACCENT,
+                stroke_width=2,
+            )
+            .to_edge(m.RIGHT, buff=0.9)
+            .shift(0.45 * m.DOWN)
+        )
         eq_txt = m.MathTex(
             r"\min_{\mathbf{T}}\sum_i n_i\,\|\Delta \mathbf{x}_i\|",
             color=TEXT,
@@ -369,9 +556,21 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(),
-            m.FadeOut(lim_header, lim_b, pipeline, p_arrows, *ptxt),
-            m.FadeIn(apart_header),
-            m.LaggedStart(*[m.FadeIn(line, shift=0.15 * m.UP) for line in apart_text], lag_ratio=0.08),
+            self.wipe(
+                [lim_header, lim_b, pipeline, p_arrows, *ptxt],
+                [apart_header],
+                return_animation=True,
+            ),
+        )
+
+        for b in apart_text:
+            self.next_slide(notes="Apart bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        self.next_slide(
+            notes="Equations: the same formulation holds with a weighted sum of segment lengths, where weights are the refractive indices."
+        )
+        self.play(
             m.FadeIn(eq_card),
             m.Write(eq_txt),
         )
@@ -387,20 +586,40 @@ class Main(Slide, m.MovingCameraScene):
             ],
             font_size=28,
         )
-        meth1_lines.next_to(meth1_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
+        meth1_lines.next_to(meth1_header, m.DOWN, buff=0.65).align_to(
+            m.LEFT * 5.8, m.LEFT
+        )
 
-        eq_form = m.MathTex(
-            r"\mathbf{T}^*=\arg\min_{\mathbf{T}} L(\mathbf{T};\mathbf{A},\mathbf{B})",
-            font_size=38,
-            color=TEXT,
-        ).to_edge(m.RIGHT, buff=0.75).shift(0.3 * m.DOWN)
+        eq_form = (
+            m.MathTex(
+                r"\mathbf{T}^*=\arg\min_{\mathbf{T}} L(\mathbf{T};\mathbf{A},\mathbf{B})",
+                font_size=38,
+                color=TEXT,
+            )
+            .to_edge(m.RIGHT, buff=0.75)
+            .shift(0.3 * m.DOWN)
+        )
 
-        self.next_slide(notes="First method slide: focus on the optimization problem and the unified parameterization.")
+        self.next_slide(
+            notes="First method slide: focus on the optimization problem and the unified parameterization."
+        )
         self.play(
             *next_meta(),
-            m.FadeOut(apart_header, apart_text, eq_card, eq_txt),
-            m.FadeIn(meth1_header),
-            m.LaggedStart(*[m.FadeIn(line, shift=0.1 * m.UP) for line in meth1_lines], lag_ratio=0.07),
+            self.wipe(
+                [apart_header, apart_text, eq_card, eq_txt],
+                [meth1_header],
+                return_animation=True,
+            ),
+        )
+
+        for b in meth1_lines:
+            self.next_slide(notes="Methodology (1) bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        self.next_slide(
+            notes="Key equation: path as the solution of a convex optimization problem. Emphasize the unified formulation and how it enables batching."
+        )
+        self.play(
             m.Write(eq_form),
         )
 
@@ -415,20 +634,305 @@ class Main(Slide, m.MovingCameraScene):
             ],
             font_size=28,
         )
-        meth2_lines.next_to(meth2_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
+        meth2_lines.next_to(meth2_header, m.DOWN, buff=0.65).align_to(
+            m.LEFT * 5.8, m.LEFT
+        )
 
         eqs = m.VGroup(
-            m.MathTex(r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)=\mathbf{0}", font_size=34, color=TEXT),
-            m.MathTex(r"\frac{\partial \mathbf{T}^*}{\partial\theta}=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L", font_size=34, color=TEXT),
+            m.MathTex(
+                r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)=\mathbf{0}",
+                font_size=34,
+                color=TEXT,
+            ),
+            m.MathTex(
+                r"\frac{\partial \mathbf{T}^*}{\partial\theta}=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L",
+                font_size=34,
+                color=TEXT,
+            ),
         ).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.28)
         eqs.to_edge(m.RIGHT, buff=0.8).shift(0.35 * m.DOWN)
 
-        self.next_slide(notes="Second method slide: explain solver mechanics then switch to implicit differentiation.")
-        self.play(*next_meta(), m.FadeOut(meth1_header, meth1_lines, eq_form), m.FadeIn(meth2_header))
-        self.play(m.LaggedStart(*[m.FadeIn(line, shift=0.1 * m.UP) for line in meth2_lines], lag_ratio=0.07))
+        self.next_slide(
+            notes="Second method slide: explain solver mechanics then switch to implicit differentiation."
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(
+                [meth1_header, meth1_lines, eq_form],
+                [meth2_header],
+                return_animation=True,
+            ),
+        )
+
+        for b in meth2_lines:
+            self.next_slide(notes="Methodology (2) bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        self.next_slide(
+            notes="Equations: first-order optimality condition and implicit differentiation formula for the Jacobian of the solution with respect to parameters."
+        )
         self.play(m.LaggedStart(*[m.Write(eq) for eq in eqs], lag_ratio=0.15))
 
-        # Slide 9 - Results setup
+        # Slide 9 - Methodology III (Reverse-mode AD)
+        ad_header = title_box("Methodology III: Reverse-Mode AD")
+
+        def op_node(label: str, pos: tuple[float, float, float]) -> m.VGroup:
+            box = m.RoundedRectangle(
+                width=1.25,
+                height=0.75,
+                corner_radius=0.13,
+                fill_color=m.ManimColor("#cfcfcf"),
+                fill_opacity=1,
+                stroke_color=TEXT,
+                stroke_width=2,
+            )
+            txt = m.MathTex(label, color=TEXT, font_size=34)
+            return m.VGroup(box, txt).move_to(pos)
+
+        # Core graph nodes
+        x_var = m.MathTex("x", color=TEXT, font_size=40).move_to((-6.1, 1.75, 0))
+        y_var = m.MathTex("y", color=TEXT, font_size=40).move_to((-6.1, -1.2, 0))
+        sq = op_node(r"\cdot^2", (-4.9, 1.75, 0))
+        exp = op_node(r"\exp(\cdot)", (-2.85, 1.75, 0))
+        cos = op_node(r"\cos(\cdot)", (-2.85, -0.15, 0))
+        sin = op_node(r"\sin(\cdot)", (-2.85, -2.0, 0))
+        mul1 = op_node(r"\times", (-0.25, 1.75, 0))
+        mul2 = op_node(r"\times", (-0.25, -1.85, 0))
+        add1 = op_node("+", (2.2, 1.75, 0))
+        add2 = op_node("+", (2.2, -1.85, 0))
+        cst = m.MathTex("C", color=TEXT, font_size=44).move_to((2.2, -0.05, 0))
+        out1 = m.MathTex(r"z_1 + C", color=TEXT, font_size=40).move_to((4.2, 1.75, 0))
+        out2 = m.MathTex(r"z_2 + C", color=TEXT, font_size=40).move_to((4.2, -1.85, 0))
+
+        # Forward labels
+        u_lbl = m.MathTex(r"u=x^2", color=TEXT, font_size=30).move_to((-3.95, 2.25, 0))
+        v_lbl = m.MathTex(r"v=e^u", color=TEXT, font_size=30).move_to((-1.5, 2.25, 0))
+        w1_lbl = (
+            m.MathTex(r"w_1=\cos(y)", color=TEXT, font_size=30)
+            .move_to((-1.95, 0.8, 0))
+            .rotate(0.55)
+        )
+        w2_lbl = (
+            m.MathTex(r"w_2=\sin(y)", color=TEXT, font_size=30)
+            .move_to((-1.95, -1.05, 0))
+            .rotate(0.23)
+        )
+        z1_lbl = m.MathTex(r"z_1=w_1v", color=TEXT, font_size=30).move_to(
+            (1.0, 2.25, 0)
+        )
+        z2_lbl = m.MathTex(r"z_2=w_2v", color=TEXT, font_size=30).move_to(
+            (1.0, -1.35, 0)
+        )
+
+        # Reverse labels
+        blue = m.ManimColor("#1d4ed8")
+        f1_adj = m.MathTex(r"\bar{f}_1=1", color=blue, font_size=34).move_to(
+            (5.5, 1.1, 0)
+        )
+        f2_adj = (
+            m.MathTex(r"\bar{f}_2=0", color=blue, font_size=34)
+            .move_to((5.5, -2.5, 0))
+            .set_opacity(0.4)
+        )
+        x_adj = m.MathTex(r"\bar{x}=2x\bar{u}", color=blue, font_size=34).move_to(
+            (-6.0, 0.85, 0)
+        )
+        y_adj = m.MathTex(
+            r"\bar{y}=-\bar{w}_1\sin(y)+\bar{w}_2\cos(y)",
+            color=blue,
+            font_size=30,
+        ).move_to((-5.2, -2.8, 0))
+        v_adj = m.MathTex(
+            r"\bar{v}=\bar{z}_1w_1+\bar{z}_2w_2", color=blue, font_size=30
+        ).move_to((-1.45, 1.1, 0))
+        u_adj = m.MathTex(r"\bar{u}=\bar{v}e^u", color=blue, font_size=30).move_to(
+            (-3.95, 1.1, 0)
+        )
+        w1_adj = (
+            m.MathTex(r"\bar{w}_1=\bar{z}_1v", color=blue, font_size=30)
+            .move_to((-1.15, -0.6, 0))
+            .rotate(0.55)
+        )
+        w2_adj = (
+            m.MathTex(r"\bar{w}_2=\bar{z}_2v", color=blue, font_size=30)
+            .move_to((-1.2, -2.25, 0))
+            .set_opacity(0.4)
+            .rotate(0.23)
+        )
+        z1_adj = m.MathTex(r"\bar{z}_1=\bar{f}_1", color=blue, font_size=30).move_to(
+            (1.0, 1.25, 0)
+        )
+        z2_adj = (
+            m.MathTex(r"\bar{z}_2=\bar{f}_2", color=blue, font_size=30)
+            .move_to((1.0, -2.35, 0))
+            .set_opacity(0.4)
+        )
+
+        # Forward flow arrows (black)
+        forward_edges = m.VGroup(
+            m.Arrow(
+                x_var.get_right(), sq.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                sq.get_right(), exp.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                exp.get_right(), mul1.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                exp.get_bottom() + 0.05 * m.DOWN,
+                mul2.get_top() + 0.03 * m.UP,
+                color=TEXT,
+                buff=0.04,
+                stroke_width=3,
+            ),
+            m.Arrow(
+                y_var.get_right(), cos.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                y_var.get_right(), sin.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                cos.get_right(),
+                mul1.get_bottom() + 0.1 * m.LEFT,
+                color=TEXT,
+                buff=0.04,
+                stroke_width=3,
+            ),
+            m.Arrow(
+                sin.get_right(), mul2.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                mul1.get_right(), add1.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                mul2.get_right(), add2.get_left(), color=TEXT, buff=0.04, stroke_width=3
+            ),
+            m.Arrow(
+                cst.get_top(), add1.get_bottom(), color=TEXT, buff=0.06, stroke_width=3
+            ),
+            m.Arrow(
+                cst.get_bottom(), add2.get_top(), color=TEXT, buff=0.06, stroke_width=3
+            ),
+            m.Arrow(
+                add1.get_right(), out1.get_left(), color=TEXT, buff=0.05, stroke_width=3
+            ),
+            m.Arrow(
+                add2.get_right(), out2.get_left(), color=TEXT, buff=0.05, stroke_width=3
+            ),
+        )
+
+        # Reverse flow arrows (blue, dashed)
+        def rev_arrow(a: np.ndarray, b: np.ndarray, faded: bool = False) -> m.Mobject:
+            # ln = m.DashedLine(a, b, color=blue, dash_length=0.09, stroke_width=3)
+            # ln.add_tip(tip_shape=m.StealthTip, tip_length=0.13, tip_width=0.13)
+            ln = m.Arrow(
+                a, b, color=blue, buff=0.04, stroke_width=3, tip_shape=m.StealthTip
+            )
+            if faded:
+                ln.set_opacity(0.4)
+            return ln
+
+        reverse_edges = m.VGroup(
+            rev_arrow(out1.get_left(), add1.get_right()),
+            rev_arrow(add1.get_left(), mul1.get_right()),
+            rev_arrow(mul1.get_left(), exp.get_right()),
+            rev_arrow(mul1.get_bottom() + 0.1 * m.LEFT, cos.get_right()),
+            rev_arrow(cos.get_left(), y_var.get_right()),
+            rev_arrow(exp.get_left(), sq.get_right()),
+            rev_arrow(sq.get_left(), x_var.get_right()),
+            rev_arrow(out2.get_left(), add2.get_right(), faded=True),
+            rev_arrow(add2.get_left(), mul2.get_right(), faded=True),
+            rev_arrow(
+                mul2.get_top() + 0.03 * m.UP,
+                exp.get_bottom() + 0.05 * m.DOWN,
+                faded=True,
+            ),
+            rev_arrow(mul2.get_left(), sin.get_right(), faded=True),
+            rev_arrow(sin.get_left(), y_var.get_right(), faded=True),
+        )
+
+        function_def = m.MathTex(
+            r"f(x,y)=\begin{bmatrix}f_1(x,y)\\f_2(x,y)\end{bmatrix}=\begin{bmatrix}\cos(y)e^{x^2}+C\\\sin(y)e^{x^2}+C\end{bmatrix}",
+            color=TEXT,
+            font_size=36,
+        ).move_to((0, 3.2, 0))
+
+        forward_labels = m.VGroup(u_lbl, v_lbl, w1_lbl, w2_lbl, z1_lbl, z2_lbl)
+        reverse_labels = m.VGroup(
+            f1_adj,
+            f2_adj,
+            x_adj,
+            y_adj,
+            v_adj,
+            u_adj,
+            w1_adj,
+            w2_adj,
+            z1_adj,
+            z2_adj,
+        )
+
+        graph_nodes = m.VGroup(
+            x_var,
+            y_var,
+            sq,
+            exp,
+            cos,
+            sin,
+            mul1,
+            mul2,
+            add1,
+            add2,
+            cst,
+            out1,
+            out2,
+        )
+
+        ad_group = m.VGroup(
+            function_def,
+            graph_nodes,
+            forward_edges,
+            reverse_edges,
+            forward_labels,
+            reverse_labels,
+        ).scale(0.7)
+        ad_group.next_to(ad_header, m.DOWN, buff=0.35)
+
+        self.next_slide(
+            notes="Introduce reverse-mode AD on this toy graph and display the two-output function definition.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(
+                [meth2_header, meth2_lines, eqs],
+                [ad_header, function_def, graph_nodes],
+                return_animation=True,
+            ),
+        )
+
+        self.next_slide(
+            notes="Forward pass: computation graph flows from left to right.",
+        )
+        self.play(
+            *next_meta(),
+            m.LaggedStart(
+                *[m.GrowArrow(edge) for edge in forward_edges], lag_ratio=0.08
+            ),
+            m.LaggedStart(*[m.FadeIn(lbl) for lbl in forward_labels], lag_ratio=0.12),
+        )
+
+        self.next_slide(
+            notes="Reverse pass: adjoint flow propagates from right to left.",
+        )
+        self.play(
+            *next_meta(),
+            m.LaggedStart(
+                *[m.GrowArrow(edge) for edge in reverse_edges], lag_ratio=0.08
+            ),
+            m.LaggedStart(*[m.FadeIn(lbl) for lbl in reverse_labels], lag_ratio=0.08),
+        )
+
+        # Slide 10 - Results setup
         res_setup_header = title_box("4. Results: Benchmark Setup")
         res_setup_bullets = bullets(
             [
@@ -439,97 +943,170 @@ class Main(Slide, m.MovingCameraScene):
             ],
             font_size=28,
         )
-        res_setup_bullets.next_to(res_setup_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
-        setup_card = m.RoundedRectangle(
-            width=5.8,
-            height=3.8,
-            corner_radius=0.14,
-            fill_color=CARD,
-            fill_opacity=1,
-            stroke_color=ACCENT,
-            stroke_width=2,
-        ).to_edge(m.RIGHT, buff=0.8).shift(0.2 * m.DOWN)
-        setup_txt = m.Text("[Placeholder:\nbenchmark table/scene]", font_size=24, color=MUTED).move_to(setup_card)
+        res_setup_bullets.next_to(res_setup_header, m.DOWN, buff=0.65).align_to(
+            m.LEFT * 5.8, m.LEFT
+        )
 
-        self.next_slide(notes="Results setup slide to make the benchmark conditions explicit before the plots.")
+        self.next_slide(
+            notes="Results setup slide to make the benchmark conditions explicit before the plots."
+        )
         self.play(
             *next_meta(new_section=3),
-            m.FadeOut(meth2_header, meth2_lines, eqs),
-            m.FadeIn(res_setup_header),
-            m.LaggedStart(*[m.FadeIn(line, shift=0.1 * m.UP) for line in res_setup_bullets], lag_ratio=0.07),
-            m.FadeIn(setup_card),
-            m.Write(setup_txt),
+            self.wipe([ad_header, ad_group], [res_setup_header], return_animation=True),
         )
+
+        for b in res_setup_bullets:
+            self.next_slide(notes="Setup bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         # Slide 10 - Results performance
         res_header = title_box("Results: Accuracy vs Runtime")
-        res_cards = m.VGroup(
-            m.RoundedRectangle(width=4.0, height=2.2, corner_radius=0.14, fill_color=CARD, fill_opacity=1, stroke_color=ACCENT, stroke_width=2),
-            m.RoundedRectangle(width=4.0, height=2.2, corner_radius=0.14, fill_color=CARD, fill_opacity=1, stroke_color=SECOND, stroke_width=2),
-            m.RoundedRectangle(width=4.0, height=2.2, corner_radius=0.14, fill_color=CARD, fill_opacity=1, stroke_color=BLUE_GRAY, stroke_width=2),
-        ).arrange(m.RIGHT, buff=0.45).next_to(res_header, m.DOWN, buff=0.8)
-        res_labels = [
-            m.Text("Diffraction\nplaceholder", font_size=26, color=TEXT),
-            m.Text("Reflection\nplaceholder", font_size=26, color=TEXT),
-            m.Text("Mixed\nplaceholder", font_size=26, color=TEXT),
-        ]
-        for card, lab in zip(res_cards, res_labels):
-            lab.move_to(card)
+        data_dir = Path(__file__).resolve().parent / "data"
+        refl_rows = load_benchmark_rows(data_dir / "perf_refl_2d.txt")
+        diff_rows = load_benchmark_rows(data_dir / "perf_diff_1d.txt")
 
-        key_takeaway = m.Text(
-            "Takeaway: unified solver remains stable across interaction types\nwhile keeping GPU-friendly execution.",
-            font_size=28,
-            color=TEXT,
-            line_spacing=0.95,
-        ).to_edge(m.DOWN, buff=0.55)
+        refl_axis = m.Axes(
+            x_range=[-0.7, 1.7, 1],
+            y_range=[-7, 1, 1],
+            x_length=5.8,
+            y_length=3.25,
+            axis_config={"color": MUTED, "include_numbers": True, "stroke_width": 1.6},
+            x_axis_config={"scaling": m.LogBase(custom_labels=True)},
+            y_axis_config={"scaling": m.LogBase(custom_labels=True)},
+            tips=False,
+        )
+        diff_axis = m.Axes(
+            x_range=[-0.7, 1.7, 1],
+            y_range=[-7, 1, 1],
+            x_length=5.8,
+            y_length=3.25,
+            axis_config={"color": MUTED, "include_numbers": True, "stroke_width": 1.6},
+            x_axis_config={"scaling": m.LogBase(custom_labels=True)},
+            y_axis_config={"scaling": m.LogBase(custom_labels=True)},
+            tips=False,
+        )
+        for axes in (refl_axis, diff_axis):
+            for ax in (axes.x_axis, axes.y_axis):
+                for number in ax.labels:
+                    number.set_color(MUTED)
+
+        axes_group = (
+            m.VGroup(refl_axis, diff_axis)
+            .arrange(m.RIGHT, buff=0.7)
+            .next_to(res_header, m.DOWN, buff=0.82)
+        ).scale(0.8)
+
+        refl_title = m.Text("Reflection-only", font_size=24, color=TEXT).next_to(
+            refl_axis, m.UP, buff=0.12
+        )
+        diff_title = m.Text("Diffraction-only", font_size=24, color=TEXT).next_to(
+            diff_axis, m.UP, buff=0.12
+        )
+        shared_xlabel = m.Text(
+            "Execution time (ms)", font_size=22, color=MUTED
+        ).next_to(axes_group, m.DOWN, buff=0.1)
+        refl_ylabel = (
+            m.Text("Average error", font_size=21, color=MUTED)
+            .rotate(m.PI / 2)
+            .next_to(refl_axis, m.LEFT, buff=0.22)
+        )
+
+        legend = solver_legend().next_to(shared_xlabel, m.DOWN, buff=0.16)
+        n_badge = m.Text("n = 1", font_size=24, color=TEXT, weight=m.BOLD).next_to(
+            legend, m.DOWN, buff=0.16
+        )
+
+        refl_curves = m.VGroup()
+        diff_curves = m.VGroup()
+        for solver, _, color, dashed in SOLVER_SPECS:
+            refl_curves.add(
+                make_solver_curve(
+                    refl_axis,
+                    extract_solver_points(refl_rows, solver, n=1),
+                    color,
+                    dashed,
+                )
+            )
+            diff_curves.add(
+                make_solver_curve(
+                    diff_axis,
+                    extract_solver_points(diff_rows, solver, n=1),
+                    color,
+                    dashed,
+                )
+            )
 
         self.next_slide(
-            notes="Main performance slide comparing the interaction families and baseline behavior.",
+            notes="Main benchmark figure, split into two panels: reflection-only on the left and diffraction-only on the right.",
         )
         self.play(
             *next_meta(),
-            m.FadeOut(res_setup_header, res_setup_bullets, setup_card, setup_txt),
-            m.FadeIn(res_header),
-            m.LaggedStart(*[m.FadeIn(card, shift=0.2 * m.UP) for card in res_cards], lag_ratio=0.12),
-            *[m.Write(lab) for lab in res_labels],
-            m.FadeIn(key_takeaway, shift=0.1 * m.UP),
+            self.wipe(
+                [res_setup_header, res_setup_bullets],
+                [
+                    res_header,
+                    refl_axis,
+                    diff_axis,
+                    refl_title,
+                    diff_title,
+                    shared_xlabel,
+                    refl_ylabel,
+                    n_badge,
+                ],
+                return_animation=True,
+            ),
         )
 
-        # Slide 11 - Results gradients
-        details_header = title_box("Results: Implicit vs Automatic Differentiation")
-        details = bullets(
-            [
-                "Gradient benchmark computed at converged paths.",
-                "Implicit differentiation avoids backprop through all solver steps.",
-                "Observed speedup is close to one order of magnitude.",
-                "Gain remains strong as interaction count grows.",
-            ],
-            font_size=28,
-        )
-        details.next_to(details_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
+        for idx, (_, label, _, _) in enumerate(SOLVER_SPECS):
+            self.next_slide(notes=f"Draw {label} for n=1 on both panels.")
+            self.play(
+                m.Create(refl_curves[idx][0]),
+                m.Create(diff_curves[idx][0]),
+                m.FadeIn(refl_curves[idx][1]),
+                m.FadeIn(diff_curves[idx][1]),
+                m.FadeIn(legend[idx]),
+            )
 
-        plot_placeholder = m.RoundedRectangle(
-            width=6.5,
-            height=4.2,
-            corner_radius=0.12,
-            fill_color=CARD,
-            fill_opacity=0.95,
-            stroke_color=SLATE_SOFT,
-            stroke_width=2,
-        ).to_edge(m.RIGHT, buff=0.65).shift(0.2 * m.DOWN)
-        plot_text = m.Text("[Insert Figure: impl-vs-auto]", font_size=24, color=MUTED).move_to(plot_placeholder)
+        for n in range(2, 6):
+            new_refl = m.VGroup()
+            new_diff = m.VGroup()
+            for solver, _, color, dashed in SOLVER_SPECS:
+                new_refl.add(
+                    make_solver_curve(
+                        refl_axis,
+                        extract_solver_points(refl_rows, solver, n=n),
+                        color,
+                        dashed,
+                    )
+                )
+                new_diff.add(
+                    make_solver_curve(
+                        diff_axis,
+                        extract_solver_points(diff_rows, solver, n=n),
+                        color,
+                        dashed,
+                    )
+                )
 
-        self.next_slide(
-            notes="Walk through one benchmark axis at a time; keep this slide as your detailed quantitative discussion.",
-        )
-        self.play(
-            *next_meta(),
-            m.FadeOut(res_header, res_cards, *res_labels, key_takeaway),
-            m.FadeIn(details_header),
-            m.LaggedStart(*[m.FadeIn(d, shift=0.1 * m.UP) for d in details], lag_ratio=0.06),
-            m.FadeIn(plot_placeholder),
-            m.Write(plot_text),
-        )
+            self.next_slide(
+                notes=f"Update both panels to n={n} while preserving solver ordering and style."
+            )
+            self.play(
+                m.Transform(
+                    n_badge,
+                    m.Text(f"n = {n}", font_size=24, color=TEXT, weight=m.BOLD).move_to(
+                        n_badge
+                    ),
+                ),
+                *[
+                    m.Transform(refl_curves[i], new_refl[i])
+                    for i in range(len(SOLVER_SPECS))
+                ],
+                *[
+                    m.Transform(diff_curves[i], new_diff[i])
+                    for i in range(len(SOLVER_SPECS))
+                ],
+            )
 
         # Slide 12 - Ongoing and future research
         fut_header = title_box("5. Ongoing and Future Research")
@@ -565,9 +1142,33 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(new_section=4),
-            m.FadeOut(details_header, details, plot_placeholder, plot_text),
-            m.FadeIn(fut_header),
-            m.LaggedStart(*[m.FadeIn(item, shift=0.1 * m.UP) for item in fut_items], lag_ratio=0.06),
+            self.wipe(
+                [
+                    res_header,
+                    refl_axis,
+                    diff_axis,
+                    refl_title,
+                    diff_title,
+                    shared_xlabel,
+                    refl_ylabel,
+                    legend,
+                    n_badge,
+                    refl_curves,
+                    diff_curves,
+                ],
+                [fut_header],
+                return_animation=True,
+            ),
+        )
+
+        for b in fut_items:
+            self.next_slide(notes="Future bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        self.next_slide(
+            notes="Final note on the solver bottleneck and the need for more open implementations to bridge theory and practice."
+        )
+        self.play(
             m.FadeIn(warning),
             m.Write(warning_txt),
         )
@@ -575,19 +1176,28 @@ class Main(Slide, m.MovingCameraScene):
         # Slide 13 - Closing with QR codes
         end = m.VGroup(
             m.Text("Thank you", font_size=68, color=TEXT, weight=m.BOLD),
-            m.Text("Questions?", font_size=46, color=ACCENT),
-            m.Text("Live demo next: inverse localization / calibration", font_size=25, color=MUTED),
+            m.Text("Happy to answer questions!", font_size=46, color=ACCENT),
         ).arrange(m.DOWN, buff=0.3)
         end.to_edge(m.UP, buff=1.0)
 
         qr_differt = m.ImageMobject("images/differt.png").set(width=2.45)
         qr_github = m.ImageMobject("images/github.png").set(width=2.45)
-        qr_left = m.Group(qr_differt, m.Text("DiffeRT", font_size=24, color=TEXT)).arrange(m.DOWN, buff=0.15)
-        qr_right = m.Group(qr_github, m.Text("GitHub Implementation", font_size=24, color=TEXT)).arrange(m.DOWN, buff=0.15)
-        qr_group = m.Group(qr_left, qr_right).arrange(m.RIGHT, buff=1.4).to_edge(m.DOWN, buff=0.55)
+        qr_left = m.Group(
+            qr_differt, m.Text("DiffeRT", font_size=24, color=TEXT)
+        ).arrange(m.DOWN, buff=0.15)
+        qr_right = m.Group(
+            qr_github, m.Text("GitHub Implementation", font_size=24, color=TEXT)
+        ).arrange(m.DOWN, buff=0.15)
+        qr_group = (
+            m.Group(qr_left, qr_right)
+            .arrange(m.RIGHT, buff=1.4)
+            .to_edge(m.DOWN, buff=1.0)
+        )
 
-        self.next_slide(notes="Closing and transition to the live demo. Invite audience to scan DiffeRT and code links.")
-        self.play(*next_meta(), m.FadeOut(fut_header, fut_items, warning, warning_txt), m.FadeIn(end, shift=0.2 * m.UP))
-        self.play(m.FadeIn(qr_group, shift=0.15 * m.UP))
-
-        self.next_slide(notes="Pause on Q&A slide.")
+        self.next_slide(
+            notes="Closing slide with thanks, and QR codes for the paper and code repository.",
+        )
+        self.wipe(self.mobjects, [end])
+        self.play(
+            m.FadeIn(qr_group, shift=0.2 * m.UP),
+        )
