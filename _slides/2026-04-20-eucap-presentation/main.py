@@ -11,7 +11,7 @@ TITLE_SIZE = 46
 HEADER_SIZE = 36
 BODY_SIZE = 25
 SMALL_SIZE = 22
-FONT_FAMILY = "TeX Gyre Termes"
+FONT_FAMILY = "Droid Sans Fallback"
 
 BG = m.ManimColor("#f7f5ef")
 TEXT = m.ManimColor("#1f1f1f")
@@ -153,7 +153,9 @@ class Main(Slide, m.MovingCameraScene):
         self.wait_time_between_slides = 0.1
 
         m.Text.set_default(color=TEXT, font=FONT_FAMILY)
-        m.MathTex.set_default(color=TEXT)
+        tex_template = m.TexFontTemplates.droid_sans
+        m.MathTex.set_default(color=TEXT, tex_template=tex_template)
+        m.Tex.set_default(color=TEXT, tex_template=tex_template)
 
         slide_tag = m.Text("1", font_size=20)
         slide_tag.to_corner(m.DR)
@@ -475,48 +477,6 @@ class Main(Slide, m.MovingCameraScene):
         )
         lim_b.next_to(lim_header, m.DOWN, buff=0.62).align_to(m.LEFT * 5.8, m.LEFT)
 
-        pipeline = m.VGroup(
-            m.RoundedRectangle(
-                width=2.8,
-                height=1.0,
-                corner_radius=0.1,
-                fill_color=RED_SOFT,
-                fill_opacity=1,
-                stroke_color=SECOND,
-            ),
-            m.RoundedRectangle(
-                width=2.8,
-                height=1.0,
-                corner_radius=0.1,
-                fill_color=ORANGE_SOFT_2,
-                fill_opacity=1,
-                stroke_color=SECOND,
-            ),
-            m.RoundedRectangle(
-                width=2.8,
-                height=1.0,
-                corner_radius=0.1,
-                fill_color=GREEN_SOFT_2,
-                fill_opacity=1,
-                stroke_color=ACCENT,
-            ),
-        ).arrange(m.RIGHT, buff=0.6)
-        ptxt = [
-            m.Text("Enumerate", font_size=24, color=TEXT),
-            m.Text("Convex Solve", font_size=24, color=TEXT),
-            m.Text("Differentiate", font_size=24, color=TEXT),
-        ]
-        for box, txt in zip(pipeline, ptxt, strict=False):
-            txt.move_to(box)
-        p_arrows = m.VGroup(
-            m.Arrow(
-                pipeline[0].get_right(), pipeline[1].get_left(), buff=0, color=MUTED
-            ),
-            m.Arrow(
-                pipeline[1].get_right(), pipeline[2].get_left(), buff=0, color=MUTED
-            ),
-        )
-
         self.next_slide(
             notes="Explain why a general formulation removes branching and mention this is where your contribution starts.",
         )
@@ -533,18 +493,7 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide(notes="Limits and approach bullet")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        self.next_slide(
-            "Our approach: a single convex optimization template for all path types, enabling efficient GPU batching and differentiable integration."
-        )
-        self.play(
-            lim_b.animate.set_opacity(0.05),
-            m.FadeIn(pipeline),
-            m.GrowArrow(p_arrows[0]),
-            m.GrowArrow(p_arrows[1]),
-            *[m.Write(t) for t in ptxt],
-        )
-
-        prev_slide_content = [lim_header, lim_b, pipeline, p_arrows, *ptxt]
+        prev_slide_content = [lim_header, lim_b]
 
         # Slide - Methodology I
         meth1_header = title_box("3. Methodology I: Problem Formulation")
