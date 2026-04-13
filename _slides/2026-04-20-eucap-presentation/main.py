@@ -683,8 +683,8 @@ class Main(Slide, m.MovingCameraScene):
                 r"Initialize $\mathbf{T}_0$ and $\mathbf{B}_0$ (typically identity).",
                 r"Solve $\mathbf{B}_k \mathbf{p}_k = -\nabla_T L(T_k)$ for the descent direction.",
                 r"Use line-search to pick step size $\alpha_k$ for $T_{k+1}=T_k+\alpha_k p_k$.",
-                r"Set $s_k=T_{k+1}-T_k$ and $y_k=\nabla L(T_{k+1})-\nabla L(T_k)$, then update $\mathbf{B}_k$ with BFGS.",
-                r"Run a fixed number of iterations $K$ on GPU to avoid warp divergence and idle threads.",
+                r"Set $s_k=T_{k+1}-T_k$ and $y_k=\nabla L(T_{k+1})-\nabla L(T_k)$,\\then update $\mathbf{B}_k$ with BFGS.",
+                r"Run a fixed number of iterations $K$ on GPU to avoid warp\\divergence and idle threads.",
             ],
             font_size=24 * 1.5,
             use_tex=True,
@@ -798,27 +798,6 @@ class Main(Slide, m.MovingCameraScene):
         out1 = m.MathTex(r"z_1 + C", color=TEXT, font_size=40).move_to((4.2, 1.75, 0))
         out2 = m.MathTex(r"z_2 + C", color=TEXT, font_size=40).move_to((4.2, -1.85, 0))
 
-        # Forward labels
-        u_lbl = m.MathTex(r"u=x^2", color=TEXT, font_size=30).move_to((-3.95, 2.25, 0))
-        v_lbl = m.MathTex(r"v=e^u", color=TEXT, font_size=30).move_to((-1.5, 2.25, 0))
-        w1_lbl = (
-            m.MathTex(r"w_1=\cos(y)", color=TEXT, font_size=30)
-            .move_to((-1.95, 0.8, 0))
-            .rotate(0.55)
-        )
-        w2_lbl = (
-            m.MathTex(r"w_2=\sin(y)", color=TEXT, font_size=30)
-            .move_to((-1.95, -1.05, 0))
-            .rotate(0.23)
-        )
-        z1_lbl = m.MathTex(r"z_1=w_1v", color=TEXT, font_size=30).move_to(
-            (1.0, 2.25, 0)
-        )
-        z2_lbl = m.MathTex(r"z_2=w_2v", color=TEXT, font_size=30).move_to(
-            (1.0, -1.35, 0)
-        )
-
-        # Reverse labels
         blue = m.ManimColor("#1d4ed8")
         f1_adj = m.MathTex(r"\bar{f}_1=1", color=blue, font_size=34).move_to(
             (5.5, 1.1, 0)
@@ -836,115 +815,256 @@ class Main(Slide, m.MovingCameraScene):
             color=blue,
             font_size=30,
         ).move_to((-5.2, -2.8, 0))
-        v_adj = m.MathTex(
-            r"\bar{v}=\bar{z}_1w_1+\bar{z}_2w_2", color=blue, font_size=30
-        ).move_to((-1.45, 1.1, 0))
-        u_adj = m.MathTex(r"\bar{u}=\bar{v}e^u", color=blue, font_size=30).move_to(
-            (-3.95, 1.1, 0)
-        )
-        w1_adj = (
-            m.MathTex(r"\bar{w}_1=\bar{z}_1v", color=blue, font_size=30)
-            .move_to((-1.15, -0.6, 0))
-            .rotate(0.55)
-        )
-        w2_adj = (
-            m.MathTex(r"\bar{w}_2=\bar{z}_2v", color=blue, font_size=30)
-            .move_to((-1.2, -2.25, 0))
-            .set_opacity(0.4)
-            .rotate(0.23)
-        )
-        z1_adj = m.MathTex(r"\bar{z}_1=\bar{f}_1", color=blue, font_size=30).move_to(
-            (1.0, 1.25, 0)
-        )
-        z2_adj = (
-            m.MathTex(r"\bar{z}_2=\bar{f}_2", color=blue, font_size=30)
-            .move_to((1.0, -2.35, 0))
-            .set_opacity(0.4)
-        )
 
-        # Forward flow arrows (black)
-        forward_edges = m.VGroup(
-            m.Arrow(
-                x_var.get_right(), sq.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
-                sq.get_right(), exp.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
-                exp.get_right(), mul1.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
-                exp.get_bottom() + 0.05 * m.DOWN,
-                mul2.get_top() + 0.03 * m.UP,
+        ARROW_BUFF = 0.05
+        ARROW_TIP_LEN = 0.15
+        ARROW_TIP_RATIO = 0.15
+        DASH_LEN = 0.08
+
+        def draw_conn(
+            start_pt: np.ndarray,
+            end_pt: np.ndarray,
+            fwd_lbl: m.Mobject | None = None,
+            bwd_lbl: m.Mobject | None = None,
+            fwd_shift: np.ndarray = m.UP * 0.35,
+            bwd_shift: np.ndarray = m.DOWN * 0.35,
+            bend_pt: np.ndarray | None = None,
+            rotate_lbl: bool = False,
+            lbl_pos_ratio: float = 0.5,
+            bidirectional: bool = True,
+            reverse_opacity: float = 1.0,
+        ) -> tuple[m.Mobject, m.Mobject, m.Mobject | None, m.Mobject | None]:
+            if bend_pt is None:
+                vec = end_pt - start_pt
+                unit = vec / np.linalg.norm(vec)
+
+                fwd_edge = m.Arrow(
+                    start_pt,
+                    end_pt,
+                    color=TEXT,
+                    buff=ARROW_BUFF,
+                    stroke_width=3,
+                    tip_length=ARROW_TIP_LEN,
+                    max_tip_length_to_length_ratio=ARROW_TIP_RATIO,
+                )
+
+                if bidirectional:
+                    bwd_edge = m.DashedLine(
+                        end_pt - unit * ARROW_BUFF,
+                        start_pt + unit * ARROW_BUFF,
+                        color=blue,
+                        dash_length=DASH_LEN,
+                        stroke_width=3,
+                    )
+                    bwd_edge.add_tip(
+                        tip_shape=m.StealthTip,
+                        tip_length=ARROW_TIP_LEN,
+                        tip_width=ARROW_TIP_LEN,
+                    )
+                    bwd_edge.set_opacity(reverse_opacity)
+                else:
+                    bwd_edge = m.Line(
+                        start_pt,
+                        start_pt,
+                        color=blue,
+                        stroke_width=0,
+                        stroke_opacity=0,
+                    )
+
+                lbl_center = start_pt + vec * lbl_pos_ratio
+                angle = np.arctan2(vec[1], vec[0]) if rotate_lbl else 0
+                perp = np.array([-unit[1], unit[0], 0])
+
+                if fwd_lbl is not None:
+                    if rotate_lbl:
+                        fwd_lbl.rotate(angle)
+                        fwd_lbl.move_to(lbl_center + perp * np.linalg.norm(fwd_shift))
+                    else:
+                        fwd_lbl.move_to(lbl_center + fwd_shift)
+
+                if bidirectional and bwd_lbl is not None:
+                    if rotate_lbl:
+                        bwd_lbl.rotate(angle)
+                        bwd_lbl.move_to(lbl_center - perp * np.linalg.norm(bwd_shift))
+                    else:
+                        bwd_lbl.move_to(lbl_center + bwd_shift)
+
+                return fwd_edge, bwd_edge, fwd_lbl, bwd_lbl
+
+            fwd_l1 = m.Line(start_pt, bend_pt, color=TEXT, stroke_width=3)
+            fwd_l2 = m.Arrow(
+                bend_pt,
+                end_pt,
                 color=TEXT,
-                buff=0.04,
+                buff=ARROW_BUFF,
                 stroke_width=3,
-            ),
-            m.Arrow(
-                y_var.get_right(), cos.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
-                y_var.get_right(), sin.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
+                tip_length=ARROW_TIP_LEN,
+                max_tip_length_to_length_ratio=ARROW_TIP_RATIO,
+            )
+            fwd_edge = m.VGroup(fwd_l1, fwd_l2)
+
+            vec1 = bend_pt - start_pt
+            unit1 = vec1 / np.linalg.norm(vec1)
+            vec2 = end_pt - bend_pt
+            unit2 = vec2 / np.linalg.norm(vec2)
+
+            if bidirectional:
+                bwd_l1 = m.DashedLine(
+                    end_pt - unit2 * ARROW_BUFF,
+                    bend_pt,
+                    color=blue,
+                    dash_length=DASH_LEN,
+                    stroke_width=3,
+                )
+                bwd_l2 = m.DashedLine(
+                    bend_pt,
+                    start_pt + unit1 * ARROW_BUFF,
+                    color=blue,
+                    dash_length=DASH_LEN,
+                    stroke_width=3,
+                )
+                bwd_l2.add_tip(
+                    tip_shape=m.StealthTip,
+                    tip_length=ARROW_TIP_LEN,
+                    tip_width=ARROW_TIP_LEN,
+                )
+                bwd_edge = m.VGroup(bwd_l1, bwd_l2).set_opacity(reverse_opacity)
+            else:
+                bwd_edge = m.Line(
+                    start_pt,
+                    start_pt,
+                    color=blue,
+                    stroke_width=0,
+                    stroke_opacity=0,
+                )
+
+            vec_lbl = end_pt - bend_pt
+            lbl_center = bend_pt + vec_lbl * lbl_pos_ratio
+            angle = np.arctan2(vec_lbl[1], vec_lbl[0]) if rotate_lbl else 0
+            unit_lbl = vec_lbl / np.linalg.norm(vec_lbl)
+            perp = np.array([-unit_lbl[1], unit_lbl[0], 0])
+
+            if fwd_lbl is not None:
+                if rotate_lbl:
+                    fwd_lbl.rotate(angle)
+                    fwd_lbl.move_to(lbl_center + perp * np.linalg.norm(fwd_shift))
+                else:
+                    fwd_lbl.move_to(lbl_center + fwd_shift)
+
+            if bidirectional and bwd_lbl is not None:
+                if rotate_lbl:
+                    bwd_lbl.rotate(angle)
+                    bwd_lbl.move_to(lbl_center - perp * np.linalg.norm(bwd_shift))
+                else:
+                    bwd_lbl.move_to(lbl_center + bwd_shift)
+
+            return fwd_edge, bwd_edge, fwd_lbl, bwd_lbl
+
+        connection_data = []
+
+        connection_data.append(
+            draw_conn(
+                x_var.get_right(),
+                sq.get_left(),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                sq.get_right(),
+                exp.get_left(),
+                fwd_lbl=m.MathTex(r"u=x^2", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{u}=\bar{v}e^u", color=blue, font_size=30),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                exp.get_right(),
+                mul1.get_left(),
+                fwd_lbl=m.MathTex(r"v=e^u", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(
+                    r"\bar{v}=\bar{z}_1w_1+\bar{z}_2w_2", color=blue, font_size=30
+                ),
+                lbl_pos_ratio=0.43,
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                y_var.get_right(),
+                cos.get_left(),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                y_var.get_right(),
+                sin.get_left(),
+            )
+        )
+        connection_data.append(
+            draw_conn(
                 cos.get_right(),
                 mul1.get_bottom() + 0.1 * m.LEFT,
-                color=TEXT,
-                buff=0.04,
-                stroke_width=3,
-            ),
-            m.Arrow(
-                sin.get_right(), mul2.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
-                mul1.get_right(), add1.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
-                mul2.get_right(), add2.get_left(), color=TEXT, buff=0.04, stroke_width=3
-            ),
-            m.Arrow(
-                cst.get_top(), add1.get_bottom(), color=TEXT, buff=0.06, stroke_width=3
-            ),
-            m.Arrow(
-                cst.get_bottom(), add2.get_top(), color=TEXT, buff=0.06, stroke_width=3
-            ),
-            m.Arrow(
-                add1.get_right(), out1.get_left(), color=TEXT, buff=0.05, stroke_width=3
-            ),
-            m.Arrow(
-                add2.get_right(), out2.get_left(), color=TEXT, buff=0.05, stroke_width=3
-            ),
-        )
-
-        # Reverse flow arrows (blue, dashed)
-        def rev_arrow(a: np.ndarray, b: np.ndarray, faded: bool = False) -> m.Mobject:
-            # ln = m.DashedLine(a, b, color=blue, dash_length=0.09, stroke_width=3)
-            # ln.add_tip(tip_shape=m.StealthTip, tip_length=0.13, tip_width=0.13)
-            ln = m.Arrow(
-                a, b, color=blue, buff=0.04, stroke_width=3, tip_shape=m.StealthTip
+                fwd_lbl=m.MathTex(r"w_1=\cos(y)", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{w}_1=\bar{z}_1v", color=blue, font_size=30),
+                bend_pt=np.array([-1.0, -0.15, 0.0]),
+                rotate_lbl=True,
+                lbl_pos_ratio=0.52,
+                fwd_shift=m.UP * 0.28,
+                bwd_shift=m.DOWN * 0.28,
             )
-            if faded:
-                ln.set_opacity(0.4)
-            return ln
-
-        reverse_edges = m.VGroup(
-            rev_arrow(out1.get_left(), add1.get_right()),
-            rev_arrow(add1.get_left(), mul1.get_right()),
-            rev_arrow(mul1.get_left(), exp.get_right()),
-            rev_arrow(mul1.get_bottom() + 0.1 * m.LEFT, cos.get_right()),
-            rev_arrow(cos.get_left(), y_var.get_right()),
-            rev_arrow(exp.get_left(), sq.get_right()),
-            rev_arrow(sq.get_left(), x_var.get_right()),
-            rev_arrow(out2.get_left(), add2.get_right(), faded=True),
-            rev_arrow(add2.get_left(), mul2.get_right(), faded=True),
-            rev_arrow(
-                mul2.get_top() + 0.03 * m.UP,
-                exp.get_bottom() + 0.05 * m.DOWN,
-                faded=True,
-            ),
-            rev_arrow(mul2.get_left(), sin.get_right(), faded=True),
-            rev_arrow(sin.get_left(), y_var.get_right(), faded=True),
         )
+        connection_data.append(
+            draw_conn(
+                sin.get_right(),
+                mul2.get_left(),
+                fwd_lbl=m.MathTex(r"w_2=\sin(y)", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{w}_2=\bar{z}_2v", color=blue, font_size=30).set_opacity(0.4),
+                rotate_lbl=True,
+                fwd_shift=m.UP * 0.3,
+                bwd_shift=m.DOWN * 0.3,
+                reverse_opacity=0.4,
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                exp.get_bottom() + 0.05 * m.DOWN,
+                mul2.get_top() + 0.03 * m.UP,
+                bend_pt=np.array([-1.0, 0.8, 0.0]),
+                reverse_opacity=0.4,
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                mul1.get_right(),
+                add1.get_left(),
+                fwd_lbl=m.MathTex(r"z_1=w_1v", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{z}_1=\bar{f}_1", color=blue, font_size=30),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                mul2.get_right(),
+                add2.get_left(),
+                fwd_lbl=m.MathTex(r"z_2=w_2v", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{z}_2=\bar{f}_2", color=blue, font_size=30).set_opacity(0.4),
+                reverse_opacity=0.4,
+            )
+        )
+        connection_data.append(draw_conn(add1.get_right(), out1.get_left()))
+        connection_data.append(
+            draw_conn(add2.get_right(), out2.get_left(), reverse_opacity=0.4)
+        )
+        connection_data.append(
+            draw_conn(cst.get_top(), add1.get_bottom(), bwd_lbl=None, bidirectional=False)
+        )
+        connection_data.append(
+            draw_conn(cst.get_bottom(), add2.get_top(), bidirectional=False)
+        )
+
+        forward_edges = m.VGroup(*[item[0] for item in connection_data])
+        reverse_edges = m.VGroup(*[item[1] for item in connection_data])
+
+        forward_edge_labels = [item[2] for item in connection_data if item[2] is not None]
+        reverse_edge_labels = [item[3] for item in connection_data if item[3] is not None]
 
         function_def = m.MathTex(
             r"f(x,y)=\begin{bmatrix}f_1(x,y)\\f_2(x,y)\end{bmatrix}=\begin{bmatrix}\cos(y)e^{x^2}+C\\\sin(y)e^{x^2}+C\end{bmatrix}",
@@ -952,18 +1072,13 @@ class Main(Slide, m.MovingCameraScene):
             font_size=36,
         ).move_to((0, 3.2, 0))
 
-        forward_labels = m.VGroup(u_lbl, v_lbl, w1_lbl, w2_lbl, z1_lbl, z2_lbl)
+        forward_labels = m.VGroup(*forward_edge_labels)
         reverse_labels = m.VGroup(
             f1_adj,
             f2_adj,
             x_adj,
             y_adj,
-            v_adj,
-            u_adj,
-            w1_adj,
-            w2_adj,
-            z1_adj,
-            z2_adj,
+            *reverse_edge_labels,
         )
 
         graph_nodes = m.VGroup(
@@ -1010,7 +1125,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             *next_meta(),
             m.LaggedStart(
-                *[m.GrowArrow(edge) for edge in forward_edges], lag_ratio=0.08
+                *[m.Create(edge) for edge in forward_edges], lag_ratio=0.08
             ),
             m.LaggedStart(*[m.FadeIn(lbl) for lbl in forward_labels], lag_ratio=0.12),
         )
@@ -1021,7 +1136,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             *next_meta(),
             m.LaggedStart(
-                *[m.GrowArrow(edge) for edge in reverse_edges], lag_ratio=0.08
+                *[m.Create(edge) for edge in reverse_edges], lag_ratio=0.08
             ),
             m.LaggedStart(*[m.FadeIn(lbl) for lbl in reverse_labels], lag_ratio=0.08),
         )
@@ -1044,7 +1159,7 @@ class Main(Slide, m.MovingCameraScene):
 
         ad_cost_card = m.RoundedRectangle(
             width=5.15,
-            height=5.75,
+            height=3.75,
             corner_radius=0.14,
             fill_color=WARNING_SOFT,
             fill_opacity=1,
@@ -1061,14 +1176,14 @@ class Main(Slide, m.MovingCameraScene):
             m.MathTex(r"\text{memory}\propto K", color=TEXT, font_size=30),
             m.MathTex(r"\text{backward time}\propto K", color=TEXT, font_size=30),
         ).arrange(m.DOWN)
-        ad_cost_eq.next_to(ad_cost_title, m.DOWN, buff=0.14)
+        ad_cost_eq.next_to(ad_cost_title, m.DOWN, buff=0.16)
 
         imp_eqs = m.MathTex(
                 r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)&=\mathbf{0}\\\frac{\partial \mathbf{T}^*}{\partial\theta}&=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L",
                 font_size=34,
                 color=TEXT,
         )
-        imp_eqs.next_to(ad_cost_eq, m.DOWN)
+        imp_eqs.next_to(ad_cost_eq, m.DOWN, buff=0.3)
 
         self.next_slide(
             notes="After reverse-mode AD, explain why unrolling iterative solvers is expensive in memory and backward-time."
@@ -1092,7 +1207,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             imp_lines.animate.set_opacity(0.05),
             m.FadeIn(ad_cost_card),
-            m.FadeIn(ad_cost_title, shift=0.08 * m.UP),
+            m.FadeIn(ad_cost_title, ad_cost_eq, shift=0.08 * m.UP),
             m.Write(imp_eqs)
         )
 
@@ -1327,7 +1442,7 @@ class Main(Slide, m.MovingCameraScene):
 
         warning = m.RoundedRectangle(
             width=11.8,
-            height=1.2,
+            height=0.8,
             corner_radius=0.12,
             fill_color=WARNING_SOFT,
             fill_opacity=1,
@@ -1338,7 +1453,7 @@ class Main(Slide, m.MovingCameraScene):
             "Better solvers exist in theory; practical open GPU implementations remain the bottleneck.",
             font_size=25,
             color=TEXT,
-        ).move_to(warning)
+        ).scale(0.9).move_to(warning)
 
         self.next_slide(
             notes="End with a balanced message: method works now, but solver ecosystem is the next frontier.",
@@ -1381,11 +1496,12 @@ class Main(Slide, m.MovingCameraScene):
         qr_right = m.Group(
             qr_github, m.Text("GitHub Implementation", font_size=24, color=TEXT)
         ).arrange(m.DOWN, buff=0.15)
-        qr_group = (
+        qr_group = m.Group(
             m.Group(qr_left, qr_right)
-            .arrange(m.RIGHT, buff=1.4)
-            .to_edge(m.DOWN, buff=1.0)
-        )
+            .arrange(m.RIGHT, buff=1.4),
+            m.Text("Presentation with Manim Slides, an open-source tool", font_size=24, color=MUTED)
+        ).arrange(m.DOWN, buff=0.3).to_edge(m.DOWN, buff=1.0)
+        
 
         self.next_slide(
             notes="Closing slide with thanks, and QR codes for the paper and code repository.",
