@@ -60,7 +60,10 @@ def title_box(text: str, underline: bool = False) -> m.VGroup:
 
 
 def bullets(
-    items: list[str], font_size: int = BODY_SIZE, width: float = 11.5, use_tex: bool = False,
+    items: list[str],
+    font_size: int = BODY_SIZE,
+    width: float = 11.5,
+    use_tex: bool = False,
 ) -> m.VGroup:
     groups = []
     for item in items:
@@ -319,9 +322,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(new_section=0),
-            self.wipe(
-                prev_slide_content, [mot_header], return_animation=True
-            ),
+            self.wipe(prev_slide_content, [mot_header], return_animation=True),
             m.FadeIn(
                 m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP
             ),
@@ -345,15 +346,15 @@ class Main(Slide, m.MovingCameraScene):
             m.GrowArrow(arrow),
             m.FadeIn(shift_box_right, new_txt, shift=0.2 * m.LEFT),
         )
-        
+
         prev_slide_content = [
-                    mot_header[0],
-                    mot_bullets,
-                    shift_box_left,
-                    shift_box_right,
-                    old_txt,
-                    new_txt,
-                    arrow,
+            mot_header[0],
+            mot_bullets,
+            shift_box_left,
+            shift_box_right,
+            old_txt,
+            new_txt,
+            arrow,
         ]
 
         # Slide - Table of contents
@@ -396,7 +397,7 @@ class Main(Slide, m.MovingCameraScene):
             )
         )
 
-        prev_slide_content =[toc, toc_header]
+        prev_slide_content = [toc, toc_header]
 
         # Slide - State of the art
         soa_header = title_box("2. State of the Art")
@@ -461,7 +462,19 @@ class Main(Slide, m.MovingCameraScene):
             m.FadeIn(l1, l2, l3, xlab, ylab),
         )
 
-        prev_slide_content = [soa_header, soa_left, comp, c1, c2, c3, l1, l2, l3, xlab, ylab]
+        prev_slide_content = [
+            soa_header,
+            soa_left,
+            comp,
+            c1,
+            c2,
+            c3,
+            l1,
+            l2,
+            l3,
+            xlab,
+            ylab,
+        ]
 
         # Slide - Limitations and our approach
         lim_header = title_box("3. Current Limitations and Our Approach")
@@ -511,9 +524,7 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT * 5.8, m.LEFT
         )
 
-        geometry = (
-            m.SVGMobject("images/geometry.svg", height=4.0)
-        )
+        geometry = m.SVGMobject("images/geometry.svg", height=4.0)
 
         eq_form = m.VGroup(
             m.MathTex(
@@ -521,16 +532,16 @@ class Main(Slide, m.MovingCameraScene):
                 font_size=38,
             ),
             m.Text(
-                    "with",
-                    font_size=30,
+                "with",
+                font_size=30,
             ),
             m.MathTex(
                 r"L(\mathbf{T};\mathbf{A},\mathbf{B})=\sum_{i} \|\Delta\mathbf{x}_{i}\|",
                 font_size=38,
             ),
             m.Text(
-                    "and",
-                    font_size=30,
+                "and",
+                font_size=30,
             ),
             m.MathTex(
                 r"\mathbf{x}_i=\mathbf{A}_i \mathbf{t}_i + \mathbf{b}_i",
@@ -714,7 +725,14 @@ class Main(Slide, m.MovingCameraScene):
             m.Write(bfgs_update),
         )
 
-        prev_slide_content = [meth2_header, meth2_lines, bfgs_card, bfgs_title, bfgs_notes, bfgs_update]
+        prev_slide_content = [
+            meth2_header,
+            meth2_lines,
+            bfgs_card,
+            bfgs_title,
+            bfgs_notes,
+            bfgs_update,
+        ]
 
         # Slide - Methodology III (Reverse-mode AD)
         ad_header = title_box("Methodology III: Reverse-Mode AD")
@@ -966,7 +984,9 @@ class Main(Slide, m.MovingCameraScene):
                 sin.get_right(),
                 mul2.get_left(),
                 fwd_lbl=m.MathTex(r"w_2=\sin(y)", color=TEXT, font_size=30),
-                bwd_lbl=m.MathTex(r"\bar{w}_2=\bar{z}_2v", color=blue, font_size=30).set_opacity(0.4),
+                bwd_lbl=m.MathTex(
+                    r"\bar{w}_2=\bar{z}_2v", color=blue, font_size=30
+                ).set_opacity(0.4),
                 rotate_lbl=True,
                 fwd_shift=m.UP * 0.3,
                 bwd_shift=m.DOWN * 0.3,
@@ -994,7 +1014,9 @@ class Main(Slide, m.MovingCameraScene):
                 mul2.get_right(),
                 add2.get_left(),
                 fwd_lbl=m.MathTex(r"z_2=w_2v", color=TEXT, font_size=30),
-                bwd_lbl=m.MathTex(r"\bar{z}_2=\bar{f}_2", color=blue, font_size=30).set_opacity(0.4),
+                bwd_lbl=m.MathTex(
+                    r"\bar{z}_2=\bar{f}_2", color=blue, font_size=30
+                ).set_opacity(0.4),
                 reverse_opacity=0.4,
             )
         )
@@ -1003,7 +1025,9 @@ class Main(Slide, m.MovingCameraScene):
             draw_conn(add2.get_right(), out2.get_left(), reverse_opacity=0.4)
         )
         connection_data.append(
-            draw_conn(cst.get_top(), add1.get_bottom(), bwd_lbl=None, bidirectional=False)
+            draw_conn(
+                cst.get_top(), add1.get_bottom(), bwd_lbl=None, bidirectional=False
+            )
         )
         connection_data.append(
             draw_conn(cst.get_bottom(), add2.get_top(), bidirectional=False)
@@ -1012,8 +1036,12 @@ class Main(Slide, m.MovingCameraScene):
         forward_edges = m.VGroup(*[item[0] for item in connection_data])
         reverse_edges = m.VGroup(*[item[1] for item in connection_data])
 
-        forward_edge_labels = [item[2] for item in connection_data if item[2] is not None]
-        reverse_edge_labels = [item[3] for item in connection_data if item[3] is not None]
+        forward_edge_labels = [
+            item[2] for item in connection_data if item[2] is not None
+        ]
+        reverse_edge_labels = [
+            item[3] for item in connection_data if item[3] is not None
+        ]
 
         function_def = m.MathTex(
             r"f(x,y)=\begin{bmatrix}f_1(x,y)\\f_2(x,y)\end{bmatrix}=\begin{bmatrix}\cos(y)e^{x^2}+C\\\sin(y)e^{x^2}+C\end{bmatrix}",
@@ -1046,14 +1074,18 @@ class Main(Slide, m.MovingCameraScene):
             out2,
         )
 
-        ad_group = m.VGroup(
-            function_def,
-            graph_nodes,
-            forward_edges,
-            reverse_edges,
-            forward_labels,
-            reverse_labels,
-        ).scale(0.85).shift(0.5 * m.DOWN)
+        ad_group = (
+            m.VGroup(
+                function_def,
+                graph_nodes,
+                forward_edges,
+                reverse_edges,
+                forward_labels,
+                reverse_labels,
+            )
+            .scale(0.85)
+            .shift(0.5 * m.DOWN)
+        )
         ad_group.next_to(ad_header, m.DOWN, buff=0.35)
 
         self.next_slide(
@@ -1073,9 +1105,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(),
-            m.LaggedStart(
-                *[m.Create(edge) for edge in forward_edges], lag_ratio=0.08
-            ),
+            m.LaggedStart(*[m.Create(edge) for edge in forward_edges], lag_ratio=0.08),
             m.LaggedStart(*[m.FadeIn(lbl) for lbl in forward_labels], lag_ratio=0.12),
         )
 
@@ -1084,9 +1114,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(),
-            m.LaggedStart(
-                *[m.Create(edge) for edge in reverse_edges], lag_ratio=0.08
-            ),
+            m.LaggedStart(*[m.Create(edge) for edge in reverse_edges], lag_ratio=0.08),
             m.LaggedStart(*[m.FadeIn(lbl) for lbl in reverse_labels], lag_ratio=0.08),
         )
 
@@ -1128,9 +1156,9 @@ class Main(Slide, m.MovingCameraScene):
         ad_cost_eq.next_to(ad_cost_title, m.DOWN, buff=0.16)
 
         imp_eqs = m.MathTex(
-                r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)&=\mathbf{0}\\\frac{\partial \mathbf{T}^*}{\partial\theta}&=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L",
-                font_size=34,
-                color=TEXT,
+            r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)&=\mathbf{0}\\\frac{\partial \mathbf{T}^*}{\partial\theta}&=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L",
+            font_size=34,
+            color=TEXT,
         )
         imp_eqs.next_to(ad_cost_eq, m.DOWN, buff=0.3)
 
@@ -1157,7 +1185,7 @@ class Main(Slide, m.MovingCameraScene):
             imp_lines.animate.set_opacity(0.05),
             m.FadeIn(ad_cost_card),
             m.FadeIn(ad_cost_title, ad_cost_eq, shift=0.08 * m.UP),
-            m.Write(imp_eqs)
+            m.Write(imp_eqs),
         )
 
         prev_slide_content = [
@@ -1362,19 +1390,19 @@ class Main(Slide, m.MovingCameraScene):
             )
 
         prev_slide_content = [
-                    res_header,
-                    refl_axis,
-                    diff_axis,
-                    refl_title,
-                    diff_title,
-                    shared_xlabel,
-                    refl_ylabel,
-                    legend,
-                    n_badge,
-                    im_marker,
-                    refl_curves,
-                    diff_curves,
-                ]
+            res_header,
+            refl_axis,
+            diff_axis,
+            refl_title,
+            diff_title,
+            shared_xlabel,
+            refl_ylabel,
+            legend,
+            n_badge,
+            im_marker,
+            refl_curves,
+            diff_curves,
+        ]
 
         # Slide - Ongoing and future research
         fut_header = title_box("5. Ongoing and Future Research")
@@ -1398,11 +1426,15 @@ class Main(Slide, m.MovingCameraScene):
             stroke_color=SECOND,
             stroke_width=2,
         ).to_edge(m.DOWN, buff=0.6)
-        warning_txt = m.Text(
-            "Better solvers exist in theory; practical open GPU implementations remain the bottleneck.",
-            font_size=25,
-            color=TEXT,
-        ).scale(0.9).move_to(warning)
+        warning_txt = (
+            m.Text(
+                "Better solvers exist in theory; practical open GPU implementations remain the bottleneck.",
+                font_size=25,
+                color=TEXT,
+            )
+            .scale(0.9)
+            .move_to(warning)
+        )
 
         self.next_slide(
             notes="End with a balanced message: method works now, but solver ecosystem is the next frontier.",
@@ -1445,12 +1477,18 @@ class Main(Slide, m.MovingCameraScene):
         qr_right = m.Group(
             qr_github, m.Text("GitHub Implementation", font_size=24, color=TEXT)
         ).arrange(m.DOWN, buff=0.15)
-        qr_group = m.Group(
-            m.Group(qr_left, qr_right)
-            .arrange(m.RIGHT, buff=1.4),
-            m.Text("Presentation with Manim Slides, an open-source tool", font_size=24, color=MUTED)
-        ).arrange(m.DOWN, buff=0.3).to_edge(m.DOWN, buff=1.0)
-        
+        qr_group = (
+            m.Group(
+                m.Group(qr_left, qr_right).arrange(m.RIGHT, buff=1.4),
+                m.Text(
+                    "Presentation with Manim Slides, an open-source tool",
+                    font_size=24,
+                    color=MUTED,
+                ),
+            )
+            .arrange(m.DOWN, buff=0.3)
+            .to_edge(m.DOWN, buff=1.0)
+        )
 
         self.next_slide(
             notes="Closing slide with thanks, and QR codes for the paper and code repository.",
