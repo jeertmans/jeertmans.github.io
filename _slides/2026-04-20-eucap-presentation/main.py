@@ -498,7 +498,7 @@ class Main(Slide, m.MovingCameraScene):
         soa_header = title_box("2. State of the Art")
         soa_left = bullets(
             [
-                "IM: exact and very fast for reflection-only paths.",
+                "Image method: exact and very fast for reflection-only paths.",
                 "Min-Path-Tracing and Fermat-based minimization methods support richer interactions.",
                 "Most RT tools use hybrid approaches and split reflection and diffraction handling.",
                 "Cost: weaker GPU batching, more branching, more memory.",
@@ -873,6 +873,7 @@ class Main(Slide, m.MovingCameraScene):
         ARROW_TIP_LEN = 0.15
         ARROW_TIP_RATIO = 1.0
         DASH_LEN = 0.08
+        BENT_FWD_TIP_SCALE = 0.58
 
         def draw_conn(
             start_pt: np.ndarray,
@@ -944,44 +945,52 @@ class Main(Slide, m.MovingCameraScene):
 
                 return fwd_edge, bwd_edge, fwd_lbl, bwd_lbl
 
-            fwd_l1 = m.Line(start_pt, bend_pt, color=TEXT, stroke_width=3)
-            fwd_l2 = m.Arrow(
-                bend_pt,
-                end_pt,
-                color=TEXT,
-                buff=ARROW_BUFF,
-                stroke_width=3,
-                tip_length=ARROW_TIP_LEN,
-                max_tip_length_to_length_ratio=ARROW_TIP_RATIO,
-            )
-            fwd_edge = m.VGroup(fwd_l1, fwd_l2)
-
             vec1 = bend_pt - start_pt
             unit1 = vec1 / np.linalg.norm(vec1)
             vec2 = end_pt - bend_pt
             unit2 = vec2 / np.linalg.norm(vec2)
 
+            fwd_edge = m.VMobject()
+            fwd_edge.set_points_as_corners([start_pt, bend_pt, end_pt])
+            fwd_edge.set_stroke(color=TEXT, width=3)
+
+            fwd_tip = m.Line(
+                end_pt - unit2 * (ARROW_TIP_LEN * 0.5),
+                end_pt,
+                color=TEXT,
+                stroke_width=3,
+            )
+            fwd_tip.add_tip(
+                tip_shape=m.StealthTip,
+                tip_length=ARROW_TIP_LEN * BENT_FWD_TIP_SCALE,
+                tip_width=ARROW_TIP_LEN * BENT_FWD_TIP_SCALE,
+            )
+            fwd_edge = m.VGroup(fwd_edge, fwd_tip)
+
             if bidirectional:
-                bwd_l1 = m.DashedLine(
-                    end_pt - unit2 * ARROW_BUFF,
-                    bend_pt,
+                bwd_path = m.VMobject()
+                bwd_path.set_points_as_corners(
+                    [end_pt - unit2 * ARROW_BUFF, bend_pt, start_pt + unit1 * ARROW_BUFF]
+                )
+                bwd_edge = m.DashedVMobject(
+                    bwd_path,
+                    num_dashes=max(8, int(np.linalg.norm(end_pt - start_pt) * 6)),
+                    dashed_ratio=0.58,
+                ).set_stroke(color=blue, width=3)
+
+                bwd_tip_end = start_pt + unit1 * ARROW_BUFF
+                bwd_tip = m.Line(
+                    bwd_tip_end + unit1 * (ARROW_TIP_LEN * 0.9),
+                    bwd_tip_end,
                     color=blue,
-                    dash_length=DASH_LEN,
                     stroke_width=3,
                 )
-                bwd_l2 = m.DashedLine(
-                    bend_pt,
-                    start_pt + unit1 * ARROW_BUFF,
-                    color=blue,
-                    dash_length=DASH_LEN,
-                    stroke_width=3,
-                )
-                bwd_l2.add_tip(
+                bwd_tip.add_tip(
                     tip_shape=m.StealthTip,
                     tip_length=ARROW_TIP_LEN,
                     tip_width=ARROW_TIP_LEN,
                 )
-                bwd_edge = m.VGroup(bwd_l1, bwd_l2).set_opacity(reverse_opacity)
+                bwd_edge = m.VGroup(bwd_edge, bwd_tip).set_opacity(reverse_opacity)
             else:
                 bwd_edge = m.Line(
                     start_pt,
