@@ -15,7 +15,6 @@ node_modules/
 uv.lock
 .python-version
 
-
 # Notebooks
 _notebooks/.ipynb_checkpoints/
 assets/notebooks/html_*/
@@ -36,3 +35,9 @@ _slides/*/*_assets/
 _slides/*/*.pptx
 _slides/*/*.pdf
 _slides/*/*.html
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log

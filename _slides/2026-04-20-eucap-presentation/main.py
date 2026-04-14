@@ -62,17 +62,17 @@ def title_box(text: str, underline: bool = False) -> m.VGroup:
 def bullets(
     items: list[str],
     font_size: int = BODY_SIZE,
-    width: float = 11.5,
+    width: float = 66,
     use_tex: bool = False,
 ) -> m.VGroup:
     groups = []
     for item in items:
         dot = m.Dot(radius=0.05, color=ACCENT)
         if not use_tex:
-            wrapped = textwrap.fill(item, width=66)
+            wrapped = textwrap.fill(item, width=width)
             txt = m.Text(wrapped, font_size=font_size, color=TEXT, line_spacing=0.9)
         else:
-            txt = m.Tex(item, font_size=font_size, color=TEXT)
+            txt = m.Tex(item, font_size=font_size, color=TEXT, tex_environment=None)
         dot.next_to(txt, m.LEFT, buff=0.28)
         dot.align_to(txt, m.UP)
         dot.shift(0.15 * m.DOWN)
@@ -148,6 +148,39 @@ def solver_legend() -> m.VGroup:
 
     return m.VGroup(*entries).arrange(m.RIGHT, buff=0.36)
 
+
+class VideoAnimation(m.Animation):
+    def __init__(self, video_mobject, **kwargs):
+        self.video_mobject = video_mobject
+        self.index = 0
+        self.dt = 1.0 / len(video_mobject)
+        super().__init__(video_mobject, **kwargs)
+
+    def interpolate_mobject(self, dt):
+        index = min(int(dt / self.dt), len(self.video_mobject) - 1)
+
+        if index != self.index:
+            self.index = index
+            self.video_mobject.pixel_array = self.video_mobject[index].pixel_array
+
+        return self
+
+
+class VideoMobject(m.ImageMobject):
+    def __init__(self, image_files, **kwargs):
+        assert len(image_files) > 0, "Cannot create empty video"
+        self.image_files = image_files
+        self.kwargs = kwargs
+        super().__init__(image_files[0], **kwargs)
+
+    def __len__(self):
+        return len(self.image_files)
+
+    def __getitem__(self, index):
+        return m.ImageMobject(self.image_files[index], **self.kwargs)
+
+    def play(self, **kwargs):
+        return VideoAnimation(self, **kwargs)
 
 class Main(Slide, m.MovingCameraScene):
     skip_reversing = True
@@ -280,25 +313,16 @@ class Main(Slide, m.MovingCameraScene):
                 "Scale target: millions of paths in parallel on GPUs.",
                 "Constraint: low branching, low divergence, low memory.",
                 "Goal: one optimization for mixed reflection-diffraction paths.",
-            ]
+            ],
+            width=40,
         )
         mot_bullets.next_to(mot_header, m.DOWN, buff=0.72).to_edge(m.LEFT, buff=0.75)
 
-        mot_img_card = m.RoundedRectangle(
-            width=4.9,
-            height=3.8,
-            corner_radius=0.14,
-            fill_opacity=1,
-            fill_color=CARD,
-            stroke_color=LINE_SOFT,
-            stroke_width=1.8,
-        )
-        mot_img = m.ImageMobject("street-canyon.png")
+        mot_img = VideoMobject(sorted(Path("images").glob("street-canyon-*.png")))
         mot_img.set(width=4.55)
-        mot_img.move_to(mot_img_card)
         mot_img_title = m.Text("Urban street-canyon example", font_size=22, color=MUTED)
-        mot_img_title.next_to(mot_img_card, m.DOWN, buff=0.14)
-        mot_visual = m.VGroup(mot_img_card, mot_img, mot_img_title)
+        mot_img_title.next_to(mot_img, m.DOWN, buff=0.24)
+        mot_visual = m.Group(mot_img, mot_img_title)
         mot_visual.next_to(mot_header, m.DOWN, buff=0.72).to_edge(m.RIGHT, buff=0.75)
 
         shift_box_left = m.RoundedRectangle(
@@ -347,7 +371,6 @@ class Main(Slide, m.MovingCameraScene):
                 m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP
             ),
         )
-        # self.remove(*prev_slide_content)
         for b in mot_bullets:
             self.next_slide(notes="Motivation bullet")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
@@ -551,7 +574,7 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT * 5.8, m.LEFT
         )
 
-        geometry = m.SVGMobject("images/geometry.svg", height=4.0)
+        geometry = m.SVGMobject("images/geometry-annotated.svg", height=4.0)
 
         eq_form = m.VGroup(
             m.MathTex(
@@ -671,7 +694,7 @@ class Main(Slide, m.MovingCameraScene):
                 r"Direction: $\mathbf{p}_k=-\mathbf{B}_k\nabla_T L(T_k)$.",
                 r"Update: $T_{k+1}=T_k+\alpha_k p_k$ (line search).",
                 r"BFGS with $s_k=T_{k+1}-T_k$, $y_k=\nabla L(T_{k+1})-\nabla L(T_k)$.",
-                r"Fixed $K$ iterations \Rightarrow uniform GPU kernels.",
+                r"Fixed $K$ iterations $\Rightarrow$ uniform GPU kernels.",
             ],
             font_size=24 * 1.5,
             use_tex=True,
@@ -1310,6 +1333,11 @@ class Main(Slide, m.MovingCameraScene):
         n_badge = m.Text("n = 1", font_size=24, color=TEXT, weight=m.BOLD).next_to(
             legend, m.DOWN, buff=0.16
         )
+        error_formula = m.MathTex(
+            r"\text{error} = \frac{1}{N}\sum_{b=1}^{N}\sum_{i=0}^{n+1}\left\|\mathbf{X}^*_{b,i}-\tilde{\mathbf{X}}^*_{b,i}\right\|",
+            font_size=22,
+            color=TEXT,
+        ).next_to(n_badge, m.DOWN, buff=0.16)
 
         def image_timing_marker(n: int) -> m.DashedLine:
             t_ms = IMAGE_METHOD_TIMINGS_MS[n]
@@ -1359,6 +1387,7 @@ class Main(Slide, m.MovingCameraScene):
                     shared_xlabel,
                     refl_ylabel,
                     n_badge,
+                    error_formula,
                 ],
                 return_animation=True,
             ),
@@ -1427,6 +1456,7 @@ class Main(Slide, m.MovingCameraScene):
             refl_ylabel,
             legend,
             n_badge,
+            error_formula,
             im_marker,
             refl_curves,
             diff_curves,
