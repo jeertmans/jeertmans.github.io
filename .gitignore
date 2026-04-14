@@ -35,6 +35,7 @@ _slides/*/*_assets/
 _slides/*/*.pptx
 _slides/*/*.pdf
 _slides/*/*.html
+_slides/2026-04-20-eucap-presentation/images/street-canyon-*.png
 
 # LaTeX
 *.aux

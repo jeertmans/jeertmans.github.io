@@ -48,6 +48,25 @@ IMAGE_METHOD_TIMINGS_MS = {
 }
 
 
+# Fix for bad kerning in the text
+TEXT_SCALE_FACTOR = 0.3
+
+
+class PatchedText(m.Text):
+    def __init__(self, *args, **kwargs):
+        scale_font = False
+        # If the font size is lower than 32, scale it up
+        if "font_size" in kwargs and kwargs["font_size"] < 32:
+            scale_font = True
+            kwargs["font_size"] /= TEXT_SCALE_FACTOR
+        super().__init__(*args, **kwargs)
+        if scale_font:
+            self.scale(TEXT_SCALE_FACTOR)
+
+
+m.Text = PatchedText
+
+
 def title_box(text: str, underline: bool = False) -> m.VGroup:
     line = m.Line(m.LEFT * 6.2, m.RIGHT * 6.2, color=ACCENT, stroke_width=6)
     title = m.Text(
@@ -63,6 +82,7 @@ def bullets(
     items: list[str],
     font_size: int = BODY_SIZE,
     width: float = 66,
+    color: m.ManimColor = TEXT,
     use_tex: bool = False,
 ) -> m.VGroup:
     groups = []
@@ -70,9 +90,9 @@ def bullets(
         dot = m.Dot(radius=0.05, color=ACCENT)
         if not use_tex:
             wrapped = textwrap.fill(item, width=width)
-            txt = m.Text(wrapped, font_size=font_size, color=TEXT, line_spacing=0.9)
+            txt = m.Text(wrapped, font_size=font_size, color=color, line_spacing=0.9)
         else:
-            txt = m.Tex(item, font_size=font_size, color=TEXT, tex_environment=None)
+            txt = m.Tex(item, font_size=font_size * 1.5, color=color, tex_environment=None)
         dot.next_to(txt, m.LEFT, buff=0.28)
         dot.align_to(txt, m.UP)
         dot.shift(0.15 * m.DOWN)
@@ -147,7 +167,6 @@ def solver_legend() -> m.VGroup:
     entries.append(m.VGroup(im_marker, im_txt).arrange(m.RIGHT, buff=0.1))
 
     return m.VGroup(*entries).arrange(m.RIGHT, buff=0.36)
-
 
 class VideoAnimation(m.Animation):
     def __init__(self, video_mobject, **kwargs):
@@ -321,15 +340,16 @@ class Main(Slide, m.MovingCameraScene):
                 "Differentiability requires end-to-end automatic differentiation (AD) (e.g., Sionna RT or DiffeRT)",
                 "GPU constraints: avoid branching (if-else), warp divergence, low memory.",
             ],
+            color=ACCENT,
             width=40,
         )
         chal_bullets.next_to(mot_header, m.DOWN, buff=0.72).to_edge(m.LEFT, buff=0.75)
 
-        mot_img = VideoMobject(sorted(Path("images").glob("street-canyon-*.png")))
-        mot_img.set(width=4.55)
-        mot_img_title = m.Text("Urban street-canyon example", font_size=22, color=MUTED)
-        mot_img_title.next_to(mot_img, m.DOWN, buff=0.24)
-        mot_visual = m.Group(mot_img, mot_img_title)
+        mot_vid = VideoMobject(sorted(Path("images").glob("street-canyon-*.png")))
+        mot_vid.set(width=4.55)
+        mot_vid_title = m.Text("Urban street-canyon example", font_size=22, color=MUTED)
+        mot_vid_title.next_to(mot_vid, m.DOWN, buff=0.24)
+        mot_visual = m.Group(mot_vid, mot_vid_title)
         mot_visual.next_to(mot_header, m.DOWN, buff=0.72).to_edge(m.RIGHT, buff=0.75)
 
         shift_box_left = m.RoundedRectangle(
@@ -387,22 +407,20 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(m.FadeIn(mot_visual, shift=0.15 * m.LEFT))
 
-        previous_center = mot_visual.get_center()
-
         self.next_slide(auto_next=True, notes="Zoom on the image")
         self.play(
             mot_bullets.animate.set_opacity(0.05),
             mot_visual.animate.scale(1.6).center())
         self.next_slide(notes="Playing video", loop=True)
-        self.play(mot_img.play(run_time=8.0))
+        self.play(mot_vid.play(run_time=8.0))
 
         # TODO: fix glitch animation where shift box right blinks before fading in
         self.next_slide(
             notes="We observe a paradigm shift: RT is becoming differentiable and GPU-friendly, unlocking new applications but also requiring new methods."
         )
         self.play(
-            mot_bullets.animate.set_opacity(0.05),
-            mot_visual.animate.set_opacity(0.05),
+            mot_vid_title.animate.set_opacity(0.05),
+            mot_vid.animate.set_opacity(0.05),
             m.FadeIn(shift_box_left, old_txt, shift=0.2 * m.RIGHT),
         )
 
@@ -414,9 +432,8 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="In practice, such applications pose some implementation challenges:")
         self.play(
-            m.FadeOut(shift_box_left, old_txt, arrow, shift_box_right, new_txt),
+            m.FadeOut(shift_box_left, old_txt, arrow, shift_box_right, new_txt, mot_visual),
             mot_bullets.animate.set_opacity(1),
-            mot_visual.animate.set_opacity(1).scale(1/1.6).move_to(previous_center),
         )
 
         for old_b, new_b in zip(mot_bullets, chal_bullets, strict=True):
@@ -427,12 +444,12 @@ class Main(Slide, m.MovingCameraScene):
             mot_header[0],
             # mot_bullets, already wiped out
             chal_bullets,
-            mot_visual,
-            shift_box_left,
-            shift_box_right,
-            old_txt,
-            new_txt,
-            arrow,
+            #mot_visual,
+            #shift_box_left,
+            #old_txt,
+            #arrow,
+            #shift_box_right,
+            #new_txt,
         ]
 
         # Slide - Table of contents
@@ -440,7 +457,7 @@ class Main(Slide, m.MovingCameraScene):
         toc_items = [
             "1. Motivation",
             "2. State of the Art",
-            "3. Contributions and Method",
+            "3. Method and Contributions",
             "4. Results",
             "5. Ongoing and Future Research",
         ]
@@ -482,12 +499,13 @@ class Main(Slide, m.MovingCameraScene):
         soa_left = bullets(
             [
                 "IM: exact and very fast for reflection-only paths.",
-                "GD, CA (GD/Newton), and L-BFGS support richer interactions.",
-                "Most pipelines split reflection and diffraction handling.",
+                "Min-Path-Tracing and Fermat-based minimization methods support richer interactions.",
+                "Most RT tools use hybrid approaches and split reflection and diffraction handling.",
                 "Cost: weaker GPU batching, more branching, more memory.",
             ],
-            font_size=27,
+            width=40,
         )
+        geometry = m.SVGMobject("images/geometry.svg", width=4.5).to_edge(m.RIGHT, buff=0.75)
         soa_left.next_to(soa_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
 
         comp = m.Axes(
@@ -497,7 +515,7 @@ class Main(Slide, m.MovingCameraScene):
             y_length=2.8,
             axis_config={"color": MUTED, "include_numbers": False},
         )
-        c1 = m.Dot(comp.c2p(0.8, 3.2), color=SECOND)
+        c1 = m.Dot(comp.c2p(1.0, 3.2), color=SECOND)
         c2 = m.Dot(comp.c2p(2.0, 1.5), color=ACCENT)
         c3 = m.Dot(comp.c2p(3.2, 0.9), color=BLUE_GRAY)
         l1 = m.Text("Image method", font_size=20, color=TEXT).next_to(
@@ -526,6 +544,9 @@ class Main(Slide, m.MovingCameraScene):
             self.wipe(prev_slide_content, [soa_header], return_animation=True),
         )
 
+        self.next_slide(notes="Geometry: problem formulation")
+        self.play(m.Write(geometry), run_time=1.0)
+
         for b in soa_left:
             self.next_slide(notes="State of the art bullet")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
@@ -534,6 +555,7 @@ class Main(Slide, m.MovingCameraScene):
             notes="Qualitative comparison of the different methods in terms of generality and speed."
         )
         self.play(
+            geometry.animate.set_opacity(0.05),
             soa_left.animate.set_opacity(0.05),
             m.Create(comp),
             m.FadeIn(c1, c2, c3),
@@ -543,6 +565,7 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [
             soa_header,
             soa_left,
+            geometry,
             comp,
             c1,
             c2,
@@ -554,55 +577,23 @@ class Main(Slide, m.MovingCameraScene):
             ylab,
         ]
 
-        # Slide - Limitations and our approach
-        lim_header = title_box("3. Main Contributions")
-        lim_b = bullets(
-            [
-                "One convex program for any reflection-diffraction sequence.",
-                "Fixed tensor shape across interaction types.",
-                "Implicit differentiation instead of unrolled AD.",
-                "Fixed-iteration BFGS for stable GPU batches.",
-                "Open-source implementation in DiffeRT.",
-            ],
-            font_size=27,
-        )
-        lim_b.next_to(lim_header, m.DOWN, buff=0.62).align_to(m.LEFT * 5.8, m.LEFT)
-
-        self.next_slide(
-            notes="Explain why a general formulation removes branching and mention this is where your contribution starts.",
-        )
-        self.play(
-            *next_meta(new_section=2),
-            self.wipe(
-                prev_slide_content,
-                [lim_header],
-                return_animation=True,
-            ),
-        )
-
-        for b in lim_b:
-            self.next_slide(notes="Limits and approach bullet")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [lim_header, lim_b]
-
         # Slide - Methodology I
         meth1_header = title_box("3. Methodology I: Problem Formulation")
         meth1_lines = bullets(
             [
-                "Fermat \u2192 convex path-length minimization.",
-                "Uniform interaction map: x_i = A_i t_i + b_i.",
+                "Restrict to planar reflectors and straight diffraction edges.",
+                r"Use uniform parametrization for interaction points $$\mathbf{x}_i = \mathbf{A}_i \mathbf{t}_i + \mathbf{b}_i,$$where $\mathbf{A}_i$ is a local basis and $\mathbf{b}_i$ a reference point,\\and $\mathbf{t}_i$ are the parameters.",
+                r"Fermat $\rightarrow$ convex path-length minimization.",
                 "Shared tensor layout for reflections and diffractions.",
                 "No interaction-specific branches in the solver.",
-                "Enables large-scale GPU batching.",
             ],
-            font_size=28,
+            use_tex=True,
         )
         meth1_lines.next_to(meth1_header, m.DOWN, buff=0.65).align_to(
             m.LEFT * 5.8, m.LEFT
         )
 
-        geometry = m.SVGMobject("images/geometry-annotated.svg", height=4.0)
+        geometry_ann = m.SVGMobject("images/geometry-annotated.svg", height=4.0)
 
         eq_form = m.VGroup(
             m.MathTex(
@@ -614,7 +605,7 @@ class Main(Slide, m.MovingCameraScene):
                 font_size=30,
             ),
             m.MathTex(
-                r"L(\mathbf{T};\mathbf{A},\mathbf{B})=\sum_{i} \|\Delta\mathbf{x}_{i}\|",
+                r"L(\mathbf{T};\mathbf{A},\mathbf{B})=\sum\limits_{i=0}^{n} \|\mathbf{x}_{i+1} - \mathbf{x}_{i}\|",
                 font_size=38,
             ),
             m.Text(
@@ -627,7 +618,7 @@ class Main(Slide, m.MovingCameraScene):
             ),
         ).arrange(m.DOWN)
 
-        m.VGroup(geometry, eq_form).arrange(m.RIGHT).scale(0.8)
+        m.VGroup(geometry_ann, eq_form).arrange(m.RIGHT).scale(0.8)
 
         self.next_slide(
             notes="First method slide: focus on the optimization problem and the unified parameterization."
@@ -650,20 +641,21 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             meth1_lines.animate.set_opacity(0.05),
-            m.Write(geometry),
+            m.Write(geometry_ann),
             m.Write(eq_form),
+            run_time=1.0,
         )
 
-        prev_slide_content = [meth1_header, meth1_lines, geometry, eq_form]
+        prev_slide_content = [meth1_header, meth1_lines, geometry_ann, eq_form]
 
         # Slide - Aside on refraction extension
         apart_header = title_box("Aside: Handling Refraction")
         apart_text = bullets(
             [
-                "Include refraction with segment weights n_i.",
-                "Convexity is preserved \u2192 same solver pipeline.",
+                r"Include refraction with segment weights $n_i$.",
+                r"Convexity is preserved $\rightarrow$ same solver pipeline.",
             ],
-            font_size=28,
+            use_tex=True,
         )
         apart_text.next_to(apart_header, m.DOWN, buff=0.65).align_to(
             m.LEFT * 5.8, m.LEFT
@@ -679,11 +671,10 @@ class Main(Slide, m.MovingCameraScene):
                 stroke_color=ACCENT,
                 stroke_width=2,
             )
-            .to_edge(m.RIGHT, buff=0.9)
-            .shift(0.45 * m.DOWN)
+            .to_edge(m.DOWN, buff=1.9)
         )
         eq_txt = m.MathTex(
-            r"\min_{\mathbf{T}}\sum_i n_i\,\|\Delta \mathbf{x}_i\|",
+            r"\min_{\mathbf{T}}\sum\limits_{i=0}^{n} n_i \|\mathbf{x}_{i+1} - \mathbf{x}_{i}\|",
             color=TEXT,
             font_size=42,
         ).move_to(eq_card)
@@ -718,13 +709,12 @@ class Main(Slide, m.MovingCameraScene):
         meth2_header = title_box("Methodology II: BFGS Solver")
         meth2_lines = bullets(
             [
-                r"Init $\mathbf{T}_0,\mathbf{B}_0$.",
-                r"Direction: $\mathbf{p}_k=-\mathbf{B}_k\nabla_T L(T_k)$.",
-                r"Update: $T_{k+1}=T_k+\alpha_k p_k$ (line search).",
-                r"BFGS with $s_k=T_{k+1}-T_k$, $y_k=\nabla L(T_{k+1})-\nabla L(T_k)$.",
-                r"Fixed $K$ iterations $\Rightarrow$ uniform GPU kernels.",
+                r"Init. $\mathbf{T}_0,\mathbf{B}_0$ (parameters \& inverse Hessian).",
+                r"Direction: $\mathbf{p}_k=-\mathbf{B}_k\nabla_\mathbf{T} L(\mathbf{T}_k)$.",
+                r"Update: $\mathbf{T}_{k+1}=\mathbf{T}_k+\alpha_k \mathbf{p}_k$ ($\alpha$ found using iterative line search).",
+                r"BFGS with $\mathbf{s}_k=\mathbf{T}_{k+1}-\mathbf{T}_k$, $y_k=\nabla_\mathbf{T} L(\mathbf{T}_{k+1})-\nabla_\mathbf{T} L(\mathbf{T}_k)$.",
+                r"Fixed $K$ iterations $\rightarrow$ uniform GPU kernels.",
             ],
-            font_size=24 * 1.5,
             use_tex=True,
         )
         meth2_lines.next_to(meth2_header, m.DOWN, buff=0.62).align_to(
@@ -733,7 +723,7 @@ class Main(Slide, m.MovingCameraScene):
 
         bfgs_card = m.RoundedRectangle(
             width=6.2,
-            height=4.15,
+            height=5.05,
             corner_radius=0.16,
             fill_color=CARD,
             fill_opacity=0.97,
@@ -748,34 +738,12 @@ class Main(Slide, m.MovingCameraScene):
             weight=m.BOLD,
         ).next_to(bfgs_card.get_top(), m.DOWN, buff=0.2)
 
-        bfgs_notes = m.VGroup(
-            m.Text(
-                "CA's Newton step is sensitive\nto ill-conditioned Hessians.",
-                font_size=22,
-                color=TEXT,
-                line_spacing=0.9,
-            ),
-            m.Text(
-                "This is common with\nzero-padded diffraction dimensions.",
-                font_size=22,
-                color=TEXT,
-                line_spacing=0.9,
-            ),
-            m.Text(
-                "BFGS avoids true-Hessian inversion\nand supports stronger line search.",
-                font_size=22,
-                color=TEXT,
-                line_spacing=0.9,
-            ),
-        ).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.2)
-        bfgs_notes.next_to(bfgs_title, m.DOWN, aligned_edge=m.LEFT, buff=0.25)
-        bfgs_notes.shift(0.14 * m.RIGHT)
-
-        bfgs_update = m.MathTex(
-            r"B_{k+1}=B_k+\frac{y_k y_k^\top}{y_k^\top s_k}-\frac{B_k s_k s_k^\top B_k^\top}{s_k^\top B_k s_k}",
-            font_size=26,
-            color=TEXT,
-        ).next_to(bfgs_card.get_bottom(), m.UP, buff=0.24)
+        bfgs_notes = bullets(
+                ["Newton method is sensitive to ill-conditioned Hessians.",
+                "This is common with zero-padded diffraction dimensions.",
+                "BFGS avoids true-Hessian inversion and supports stronger line search.",],
+                width=30,
+        ).next_to(bfgs_title, m.DOWN, aligned_edge=m.LEFT, buff=0.25)
 
         self.next_slide(
             notes="Second method slide: summarize the BFGS solver and why it is more robust than mixed Newton/GD when Hessians are ill-conditioned."
@@ -799,9 +767,12 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             meth2_lines.animate.set_opacity(0.05),
             m.FadeIn(bfgs_card),
-            m.FadeIn(bfgs_title, *bfgs_notes, shift=0.1 * m.UP),
-            m.Write(bfgs_update),
+            m.FadeIn(bfgs_title),
         )
+
+        for b in bfgs_notes:
+            self.next_slide(notes="BFGS bullet")
+            self.play(m.FadeIn(b, shift=0.1 * m.LEFT))
 
         prev_slide_content = [
             meth2_header,
@@ -809,7 +780,6 @@ class Main(Slide, m.MovingCameraScene):
             bfgs_card,
             bfgs_title,
             bfgs_notes,
-            bfgs_update,
         ]
 
         # Slide - Methodology III (Reverse-mode AD)
@@ -829,41 +799,79 @@ class Main(Slide, m.MovingCameraScene):
             return m.VGroup(box, txt).move_to(pos)
 
         # Core graph nodes
-        x_var = m.MathTex("x", color=TEXT, font_size=40).move_to((-6.1, 1.75, 0))
-        y_var = m.MathTex("y", color=TEXT, font_size=40).move_to((-6.1, -1.2, 0))
-        sq = op_node(r"\cdot^2", (-4.9, 1.75, 0))
-        exp = op_node(r"\exp(\cdot)", (-2.85, 1.75, 0))
-        cos = op_node(r"\cos(\cdot)", (-2.85, -0.15, 0))
-        sin = op_node(r"\sin(\cdot)", (-2.85, -2.0, 0))
-        mul1 = op_node(r"\times", (-0.25, 1.75, 0))
-        mul2 = op_node(r"\times", (-0.25, -1.85, 0))
-        add1 = op_node("+", (2.2, 1.75, 0))
-        add2 = op_node("+", (2.2, -1.85, 0))
-        cst = m.MathTex("C", color=TEXT, font_size=44).move_to((2.2, -0.05, 0))
-        out1 = m.MathTex(r"z_1 + C", color=TEXT, font_size=40).move_to((4.2, 1.75, 0))
-        out2 = m.MathTex(r"z_2 + C", color=TEXT, font_size=40).move_to((4.2, -1.85, 0))
+        x_col = -8.0
+        sq_col = -6.0
+        trig_col = -3.0
+        mul_col = 2.0
+        add_col = 6.0
+        out_col = 8.5
+
+        top_y = 3.0
+        mid_y = 0.5
+        bot_y = -2.5
+
+        x_var = m.MathTex("x", color=TEXT, font_size=40).move_to((x_col, top_y, 0))
+        y_var = m.MathTex("y", color=TEXT, font_size=40).move_to((x_col, -1.0, 0))
+        sq = op_node(r"\cdot^2", (sq_col, top_y, 0))
+        exp = op_node(r"\exp(\cdot)", (trig_col, top_y, 0))
+        cos = op_node(r"\cos(\cdot)", (trig_col, mid_y, 0))
+        sin = op_node(r"\sin(\cdot)", (trig_col, bot_y, 0))
+        mul1 = op_node(r"\times", (mul_col, top_y, 0))
+        mul2 = op_node(r"\times", (mul_col, bot_y, 0))
+        add1 = op_node("+", (add_col, top_y, 0))
+        add2 = op_node("+", (add_col, bot_y, 0))
+        cst = m.MathTex("C", color=TEXT, font_size=44).move_to((add_col, 0.25, 0))
+        out1 = m.MathTex(r"z_1 + C", color=TEXT, font_size=40).move_to((out_col, top_y, 0))
+        out2 = m.MathTex(r"z_2 + C", color=TEXT, font_size=40).move_to((out_col, bot_y, 0))
 
         blue = m.ManimColor("#1d4ed8")
-        f1_adj = m.MathTex(r"\bar{f}_1=1", color=blue, font_size=34).move_to(
-            (5.5, 1.1, 0)
+        f1_adj = (
+            m.MathTex(
+                r"\bar{f}_1 ",
+                r"&= \frac{\partial f_1}{\partial f_1} \\",
+                r"&= 1",
+                color=blue,
+                font_size=34,
+            )
+            .scale(0.88)
+            .next_to(out1, m.DOWN, buff=0.25)
         )
         f2_adj = (
-            m.MathTex(r"\bar{f}_2=0", color=blue, font_size=34)
-            .move_to((5.5, -2.5, 0))
+            m.MathTex(
+                r"\bar{f}_2 ",
+                r"&= \frac{\partial f_1}{\partial f_2} \\",
+                r"&= 0",
+                color=blue,
+                font_size=34,
+            )
+            .scale(0.88)
+            .next_to(out2, m.DOWN, buff=0.25)
             .set_opacity(0.4)
         )
-        x_adj = m.MathTex(r"\bar{x}=2x\bar{u}", color=blue, font_size=34).move_to(
-            (-6.0, 0.85, 0)
+        x_adj = (
+            m.MathTex(
+                r"\bar{x} ",
+                r"&= \frac{\partial f_1}{\partial x} \\",
+                r"&= 2x\bar{u}",
+                color=blue,
+                font_size=34,
+            )
+            .scale(0.88)
+            .next_to(x_var, m.DOWN, buff=0.3)
         )
         y_adj = m.MathTex(
-            r"\bar{y}=-\bar{w}_1\sin(y)+\bar{w}_2\cos(y)",
+            r"\bar{y} ",
+            r"&= \frac{\partial f_1}{\partial y} \\",
+            r"&= -\bar{w}_1\sin(y) ",
+            r"+\bar{w}_2\cos(y)",
             color=blue,
             font_size=30,
-        ).move_to((-5.2, -2.8, 0))
+        ).next_to(y_var, m.DOWN, buff=0.3)
+        y_adj[3].set_opacity(0.4)
 
         ARROW_BUFF = 0.05
         ARROW_TIP_LEN = 0.15
-        ARROW_TIP_RATIO = 0.15
+        ARROW_TIP_RATIO = 1.0
         DASH_LEN = 0.08
 
         def draw_conn(
@@ -1027,11 +1035,15 @@ class Main(Slide, m.MovingCameraScene):
                 mul1.get_left(),
                 fwd_lbl=m.MathTex(r"v=e^u", color=TEXT, font_size=30),
                 bwd_lbl=m.MathTex(
-                    r"\bar{v}=\bar{z}_1w_1+\bar{z}_2w_2", color=blue, font_size=30
+                    r"\bar{v}=\bar{z}_1w_1",
+                    r"+\bar{z}_2w_2",
+                    color=blue,
+                    font_size=30,
                 ),
                 lbl_pos_ratio=0.43,
             )
         )
+        connection_data[-1][3][1].set_opacity(0.4)
         connection_data.append(
             draw_conn(
                 y_var.get_right(),
@@ -1047,10 +1059,10 @@ class Main(Slide, m.MovingCameraScene):
         connection_data.append(
             draw_conn(
                 cos.get_right(),
-                mul1.get_bottom() + 0.1 * m.LEFT,
+                mul1.get_corner(m.DL),
                 fwd_lbl=m.MathTex(r"w_1=\cos(y)", color=TEXT, font_size=30),
                 bwd_lbl=m.MathTex(r"\bar{w}_1=\bar{z}_1v", color=blue, font_size=30),
-                bend_pt=np.array([-1.0, -0.15, 0.0]),
+                bend_pt=np.array([-0.5, mid_y, 0.0]),
                 rotate_lbl=True,
                 lbl_pos_ratio=0.52,
                 fwd_shift=m.UP * 0.28,
@@ -1073,9 +1085,9 @@ class Main(Slide, m.MovingCameraScene):
         )
         connection_data.append(
             draw_conn(
-                exp.get_bottom() + 0.05 * m.DOWN,
-                mul2.get_top() + 0.03 * m.UP,
-                bend_pt=np.array([-1.0, 0.8, 0.0]),
+                np.array([-0.5, top_y, 0.0]),
+                mul2.get_corner(m.UL),
+                bend_pt=np.array([-0.5, 0.7, 0.0]),
                 reverse_opacity=0.4,
             )
         )
@@ -1161,10 +1173,34 @@ class Main(Slide, m.MovingCameraScene):
                 forward_labels,
                 reverse_labels,
             )
-            .scale(0.85)
-            .shift(0.5 * m.DOWN)
+            .scale(0.66)
         )
-        ad_group.next_to(ad_header, m.DOWN, buff=0.35)
+        ad_group.to_edge(m.DOWN, buff=0.60)
+        function_def.shift(m.UP)
+
+        def reveal_connection(idx: int, reverse: bool = False) -> m.AnimationGroup:
+            edge = connection_data[idx][1 if reverse else 0]
+            label = connection_data[idx][3 if reverse else 2]
+            anims: list[m.Animation] = [m.Create(edge)]
+            if label is not None:
+                anims.append(m.FadeIn(label))
+            return m.AnimationGroup(*anims)
+
+        forward_stages = [
+            [0, 3, 4],
+            [1],
+            [2, 5, 6, 7],
+            [8, 9, 12, 13],
+            [10, 11],
+        ]
+
+        reverse_stages = [
+            [10, 11],
+            [8, 9],
+            [2, 5, 6, 7],
+            [1],
+            [0, 3, 4],
+        ]
 
         self.next_slide(
             notes="Introduce reverse-mode AD on this toy graph and display the two-output function definition.",
@@ -1173,28 +1209,32 @@ class Main(Slide, m.MovingCameraScene):
             *next_meta(),
             self.wipe(
                 prev_slide_content,
-                [ad_header, function_def, graph_nodes],
+                [function_def, graph_nodes, ad_header],
                 return_animation=True,
             ),
         )
 
-        self.next_slide(
-            notes="Forward pass: computation graph flows from left to right.",
-        )
-        self.play(
-            *next_meta(),
-            m.LaggedStart(*[m.Create(edge) for edge in forward_edges], lag_ratio=0.08),
-            m.LaggedStart(*[m.FadeIn(lbl) for lbl in forward_labels], lag_ratio=0.12),
-        )
+        self.next_slide(notes="Forward pass stage.")
 
-        self.next_slide(
-            notes="Reverse pass: adjoint flow propagates from right to left.",
-        )
-        self.play(
-            *next_meta(),
-            m.LaggedStart(*[m.Create(edge) for edge in reverse_edges], lag_ratio=0.08),
-            m.LaggedStart(*[m.FadeIn(lbl) for lbl in reverse_labels], lag_ratio=0.08),
-        )
+        for stage_idx, stage in enumerate(forward_stages):
+            self.play(
+                m.AnimationGroup(*[reveal_connection(i) for i in stage]),
+            )
+
+        self.next_slide(notes="Reverse pass stage.")
+        for stage_idx, stage in enumerate(reverse_stages):
+            extra_anims: list[m.Animation] = []
+            if stage_idx == 0:
+                extra_anims.extend([m.FadeIn(f1_adj), m.FadeIn(f2_adj)])
+            if stage_idx == 5:
+                extra_anims.extend([m.FadeIn(x_adj), m.FadeIn(y_adj)])
+
+            self.play(
+                m.AnimationGroup(
+                    *[reveal_connection(i, reverse=True) for i in stage],
+                    *extra_anims,
+                ),
+            )
 
         prev_slide_content = [ad_header, ad_group]
 
@@ -1203,18 +1243,18 @@ class Main(Slide, m.MovingCameraScene):
         imp_lines = bullets(
             [
                 "Reverse-mode AD stores all intermediate states.",
-                "Unrolling K iterations costs O(K) memory and O(K) backward time.",
+                r"Unrolling $K$ iterations costs $\mathcal{O}(K)$ memory and $\mathcal{O}(K)$ backward time.",
                 "In large batches, this dominates runtime.",
-                "Use IFT at the converged solution (no unroll).",
+                "Use implicit function theorem at the converged solution (no unroll).",
                 "Result: exact gradients with much lower memory.",
             ],
-            font_size=26,
+            use_tex=True,
         )
         imp_lines.next_to(imp_header, m.DOWN, buff=0.62).align_to(m.LEFT * 5.8, m.LEFT)
 
         ad_cost_card = m.RoundedRectangle(
-            width=5.15,
-            height=3.75,
+            width=6.25,
+            height=4.15,
             corner_radius=0.14,
             fill_color=WARNING_SOFT,
             fill_opacity=1,
@@ -1228,17 +1268,13 @@ class Main(Slide, m.MovingCameraScene):
             weight=m.BOLD,
         ).next_to(ad_cost_card.get_top(), m.DOWN, buff=0.16)
         ad_cost_eq = m.VGroup(
-            m.MathTex(r"\text{memory}\propto K", color=TEXT, font_size=30),
-            m.MathTex(r"\text{backward time}\propto K", color=TEXT, font_size=30),
+            m.Text("(1) assume convergence", font_size=21),
+            m.MathTex(r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)=\mathbf{0}", font_size=34),
+            m.Arrow(m.UP, 0.0 * m.DOWN, color=TEXT, stroke_width=2),
+            m.Text("(2) compute gradients from optimal solution",  font_size=21),
+            m.MathTex(r"\frac{\partial \mathbf{T}^*}{\partial\theta}&=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L", font_size=34),
         ).arrange(m.DOWN)
-        ad_cost_eq.next_to(ad_cost_title, m.DOWN, buff=0.16)
-
-        imp_eqs = m.MathTex(
-            r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)&=\mathbf{0}\\\frac{\partial \mathbf{T}^*}{\partial\theta}&=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L",
-            font_size=34,
-            color=TEXT,
-        )
-        imp_eqs.next_to(ad_cost_eq, m.DOWN, buff=0.3)
+        ad_cost_eq.next_to(ad_cost_title, m.DOWN, buff=0.20)
 
         self.next_slide(
             notes="After reverse-mode AD, explain why unrolling iterative solvers is expensive in memory and backward-time."
@@ -1262,9 +1298,16 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             imp_lines.animate.set_opacity(0.05),
             m.FadeIn(ad_cost_card),
-            m.FadeIn(ad_cost_title, ad_cost_eq, shift=0.08 * m.UP),
-            m.Write(imp_eqs),
+            m.FadeIn(ad_cost_title, shift=0.08 * m.UP),
         )
+
+        self.next_slide(
+            notes="Key equations: the optimality condition states the gradient at the solution is zero")
+        self.play(m.FadeIn(ad_cost_eq[0:2], shift=0.08 * m.DOWN))
+        self.next_slide(
+            notes="Key equations: from the optimality condition, we can derive the implicit gradient formula that only depends on the converged solution, not the entire trajectory.")
+        self.play(m.GrowArrow(ad_cost_eq[2]), run_time=0.5)
+        self.play(m.FadeIn(ad_cost_eq[3:], shift=0.08 * m.DOWN))
 
         prev_slide_content = [
             imp_header,
@@ -1272,8 +1315,38 @@ class Main(Slide, m.MovingCameraScene):
             ad_cost_card,
             ad_cost_title,
             ad_cost_eq,
-            imp_eqs,
         ]
+
+        # Slide - Limitations and our approach
+        contrib_header = title_box("3. Main Contributions")
+        contrib_b = bullets(
+            [
+                "One convex program for any reflection-diffraction sequence.",
+                "Fixed tensor shape across interaction types.",
+                "Implicit differentiation instead of unrolled AD.",
+                "Fixed-iteration BFGS for stable GPU batches.",
+                "Open-source implementation in DiffeRT.",
+            ],
+        )
+        contrib_b.next_to(contrib_header, m.DOWN, buff=0.62).align_to(m.LEFT * 5.8, m.LEFT)
+
+        self.next_slide(
+            notes="Explain why a general formulation removes branching and mention this is where your contribution starts.",
+        )
+        self.play(
+            *next_meta(new_section=2),
+            self.wipe(
+                prev_slide_content,
+                [contrib_header],
+                return_animation=True,
+            ),
+        )
+
+        for b in contrib_b:
+            self.next_slide(notes="Contributions bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [contrib_header, contrib_b]
 
         # Slide - Results setup
         res_setup_header = title_box("4. Results: Benchmark Setup")
@@ -1282,10 +1355,9 @@ class Main(Slide, m.MovingCameraScene):
                 "1000 paths in parallel on RTX 3070 (FP32).",
                 "Interactions: n = 1..5 (1D diffraction, 2D reflection).",
                 "Baselines: IM, GD, CA, L-BFGS.",
-                "Methods shown: ours and ours-64.",
+                "Methods shown: ours and ours-64 (1 and 64 line search iterations, resp.).",
                 "Metrics: runtime and average error on interaction points.",
             ],
-            font_size=28,
         )
         res_setup_bullets.next_to(res_setup_header, m.DOWN, buff=0.65).align_to(
             m.LEFT * 5.8, m.LEFT
@@ -1342,10 +1414,10 @@ class Main(Slide, m.MovingCameraScene):
             .next_to(res_header, m.DOWN, buff=0.82)
         ).scale(0.8)
 
-        refl_title = m.Text("Reflection-only", font_size=24, color=TEXT).next_to(
+        refl_title = m.Text("Reflection-only", font_size=24).next_to(
             refl_axis, m.UP, buff=0.12
         )
-        diff_title = m.Text("Diffraction-only", font_size=24, color=TEXT).next_to(
+        diff_title = m.Text("Diffraction-only", font_size=24).next_to(
             diff_axis, m.UP, buff=0.12
         )
         shared_xlabel = m.Text(
@@ -1358,7 +1430,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         legend = solver_legend().next_to(shared_xlabel, m.DOWN, buff=0.16)
-        n_badge = m.Text("n = 1", font_size=24, color=TEXT, weight=m.BOLD).next_to(
+        n_badge = m.Text("n = 1", font_size=24).next_to(
             legend, m.DOWN, buff=0.16
         )
         error_formula = m.MathTex(
@@ -1499,7 +1571,6 @@ class Main(Slide, m.MovingCameraScene):
                 "Expand open high-performance GPU solver backends.",
                 "Improve initialization and line-search policies.",
             ],
-            font_size=27,
         )
         fut_items.next_to(fut_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
 
@@ -1511,7 +1582,7 @@ class Main(Slide, m.MovingCameraScene):
             fill_opacity=1,
             stroke_color=SECOND,
             stroke_width=2,
-        ).to_edge(m.DOWN, buff=0.6)
+        ).to_edge(m.DOWN, buff=1.6)
         warning_txt = (
             m.Text(
                 "Theory is ahead of practice: open GPU solvers are still the bottleneck.",
@@ -1543,7 +1614,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             m.FadeIn(warning),
-            m.Write(warning_txt),
+            m.FadeIn(warning_txt),
         )
 
         prev_slide_content = [fut_header, fut_items, warning, warning_txt]
@@ -1567,7 +1638,7 @@ class Main(Slide, m.MovingCameraScene):
             m.Group(
                 m.Group(qr_left, qr_right).arrange(m.RIGHT, buff=1.4),
                 m.Text(
-                    "Built with Manim Slides (open source)", font_size=24, color=MUTED
+                    "Made with Manim Slides (open-source tool)", font_size=24, color=MUTED
                 ),
             )
             .arrange(m.DOWN, buff=0.3)
