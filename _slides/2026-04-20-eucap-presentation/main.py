@@ -308,15 +308,22 @@ class Main(Slide, m.MovingCameraScene):
         mot_header = title_box("1. Motivation", underline=True)
         mot_bullets = bullets(
             [
-                "Fermat: paths are extrema of optical length.",
+                "Fermat's principle: paths are extrema of optical length.",
                 "Differentiable RT enables inverse problems (localization, calibration, design).",
                 "Scale target: millions of paths in parallel on GPUs.",
-                "Constraint: low branching, low divergence, low memory.",
-                "Goal: one optimization for mixed reflection-diffraction paths.",
             ],
             width=40,
         )
         mot_bullets.next_to(mot_header, m.DOWN, buff=0.72).to_edge(m.LEFT, buff=0.75)
+        chal_bullets = bullets(
+            [
+                "Speed: many paths candidates require efficient algorithms.",
+                "Differentiability requires end-to-end automatic differentiation (AD) (e.g., Sionna RT or DiffeRT)",
+                "GPU constraints: avoid branching (if-else), warp divergence, low memory.",
+            ],
+            width=40,
+        )
+        chal_bullets.next_to(mot_header, m.DOWN, buff=0.72).to_edge(m.LEFT, buff=0.75)
 
         mot_img = VideoMobject(sorted(Path("images").glob("street-canyon-*.png")))
         mot_img.set(width=4.55)
@@ -380,13 +387,22 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(m.FadeIn(mot_visual, shift=0.15 * m.LEFT))
 
+        previous_center = mot_visual.get_center()
+
+        self.next_slide(auto_next=True, notes="Zoom on the image")
+        self.play(
+            mot_bullets.animate.set_opacity(0.05),
+            mot_visual.animate.scale(1.6).center())
+        self.next_slide(notes="Playing video", loop=True)
+        self.play(mot_img.play(run_time=8.0))
+
         # TODO: fix glitch animation where shift box right blinks before fading in
         self.next_slide(
             notes="We observe a paradigm shift: RT is becoming differentiable and GPU-friendly, unlocking new applications but also requiring new methods."
         )
         self.play(
             mot_bullets.animate.set_opacity(0.05),
-            mot_visual.animate.set_opacity(0.0),
+            mot_visual.animate.set_opacity(0.05),
             m.FadeIn(shift_box_left, old_txt, shift=0.2 * m.RIGHT),
         )
 
@@ -396,9 +412,21 @@ class Main(Slide, m.MovingCameraScene):
             m.FadeIn(shift_box_right, new_txt, shift=0.2 * m.LEFT),
         )
 
+        self.next_slide(notes="In practice, such applications pose some implementation challenges:")
+        self.play(
+            m.FadeOut(shift_box_left, old_txt, arrow, shift_box_right, new_txt),
+            mot_bullets.animate.set_opacity(1),
+            mot_visual.animate.set_opacity(1).scale(1/1.6).move_to(previous_center),
+        )
+
+        for old_b, new_b in zip(mot_bullets, chal_bullets, strict=True):
+            self.next_slide(notes="Challenge bullet")
+            self.wipe([old_b], [new_b])
+
         prev_slide_content = [
             mot_header[0],
-            mot_bullets,
+            # mot_bullets, already wiped out
+            chal_bullets,
             mot_visual,
             shift_box_left,
             shift_box_right,
@@ -1334,7 +1362,7 @@ class Main(Slide, m.MovingCameraScene):
             legend, m.DOWN, buff=0.16
         )
         error_formula = m.MathTex(
-            r"\text{error} = \frac{1}{N}\sum_{b=1}^{N}\sum_{i=0}^{n+1}\left\|\mathbf{X}^*_{b,i}-\tilde{\mathbf{X}}^*_{b,i}\right\|",
+            r"\text{error} = \frac{1}{N}\sum_{b=1}^{N}\sum_{i=0}^{n+1}\left\|\mathbf{x}^*_{b,i}-\tilde{\mathbf{x}}^*_{b,i}\right\|",
             font_size=22,
             color=TEXT,
         ).next_to(n_badge, m.DOWN, buff=0.16)

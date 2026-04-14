@@ -46,38 +46,6 @@ mesh_kwargs = dict(
 )
 
 
-def compute_path_metrics(paths: sionna.rt.Paths):
-    a_cir, tau_cir = paths.cir(normalize_delays=False, out_type="numpy")
-    a = a_cir[0, 0, 0, 0, :, 0]
-    tau = tau_cir[0, 0, 0, 0, :]
-    amplitude = np.abs(a)
-    power_linear = np.abs(a) ** 2
-    power_db = 10 * np.log10(np.maximum(power_linear, np.finfo(float).tiny))
-    return tau, amplitude, power_linear, power_db
-
-
-def save_path_metrics_csv(path_type: str, paths: sionna.rt.Paths):
-    tau, amplitude, power_linear, power_db = compute_path_metrics(paths)
-    output = np.column_stack(
-        (
-            np.arange(len(amplitude), dtype=int),
-            tau / 1e-9,
-            amplitude,
-            power_linear,
-            power_db,
-        )
-    )
-    output_path = f"data/{path_type}-path-metrics.txt"
-    np.savetxt(
-        output_path,
-        output,
-        delimiter=",",
-        header="path_index,delay_ns,amplitude,power_linear,power_db",
-        comments="",
-    )
-    print(f"Saved {len(amplitude)} {path_type} path metrics to {output_path}")
-
-
 def draw_tx_rx_on_plotly_fig(fig: go.Figure, tx: np.ndarray, rx: np.ndarray):
     fig.add_trace(
         go.Scatter3d(
@@ -224,7 +192,7 @@ def draw_sionna_paths_on_plotly_fig(
 
 
 def save_fig(
-    fig: go.Figure, filename: str, azim: 45, elev: float = 90, dist: float = 1
+    fig: go.Figure, filename: str, azim: 45, elev: float = 90, dist: float = 1., crop: bool = False
 ):
     fig.update_scenes(xaxis_visible=False, yaxis_visible=False, zaxis_visible=False)
     azim_rad = np.deg2rad(azim)
@@ -247,14 +215,15 @@ def save_fig(
     buf = io.BytesIO(fig_bytes)
     img = Image.open(buf)
     width, height = img.size
-    img_array = np.asarray(img)
-    y, x = img_array[:, :, 3].nonzero()  # get the nonzero alpha coordinates
-    minx = np.min(x)
-    miny = np.min(y)
-    maxx = np.max(x)
-    maxy = np.max(y)
-    cropped_img_array = img_array[miny:maxy, minx:maxx]
-    img = Image.fromarray(cropped_img_array)
+    if crop:
+        img_array = np.asarray(img)
+        y, x = img_array[:, :, 3].nonzero()  # get the nonzero alpha coordinates
+        minx = np.min(x)
+        miny = np.min(y)
+        maxx = np.max(x)
+        maxy = np.max(y)
+        cropped_img_array = img_array[miny:maxy, minx:maxx]
+        img = Image.fromarray(cropped_img_array)
     img = img.resize((width // 4, height // 4), resample=Image.LANCZOS)
     img.save(filename)
 
@@ -315,8 +284,8 @@ draw_image = draw_image(
     power_db, x, y, z0=z[0], figure=fig, showlegend=False, showscale=False
 )
 
-for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=72, endpoint=False))):
+for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=36*4, endpoint=False))):
     azim = np.rad2deg(np.pi + theta)
     elev = 55 + 10.0 * np.cos(theta)
 
-    save_fig(fig, f"street-canyon-{i:03d}.png", azim=azim, elev=elev, dist=3.03)
+    save_fig(fig, f"images/street-canyon-{i:03d}.png", azim=azim, elev=elev, dist=3.03)
