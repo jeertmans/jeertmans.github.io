@@ -398,14 +398,14 @@ class Main(Slide, m.MovingCameraScene):
                 m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP
             ),
         )
-        for b in mot_bullets:
-            self.next_slide(notes="Motivation bullet")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
         self.next_slide(
             notes="Illustrate the motivation on an urban street-canyon scenario where many paths are needed in parallel."
         )
         self.play(m.FadeIn(mot_visual, shift=0.15 * m.LEFT))
+
+        for b in mot_bullets:
+            self.next_slide(notes="Motivation bullet")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         self.next_slide(auto_next=True, notes="Zoom on the image")
         self.play(
@@ -1577,7 +1577,7 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "(Ongoing) SOCP formulations for better robustness and convergence.",
                 "(Ongoing) Port high-precision CPU conic solvers to practical GPU kernels.",
-                "Expand open high-performance GPU solver backends.",
+                "Try closed-source GPU solver backends.",
                 "Improve initialization and line-search policies.",
             ],
         )
