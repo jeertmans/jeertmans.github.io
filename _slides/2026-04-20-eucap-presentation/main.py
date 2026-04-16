@@ -310,7 +310,7 @@ class Main(Slide, m.MovingCameraScene):
         title_group.move_to(top_band.get_center())
 
         self.next_slide(
-            notes="Welcome and one-sentence summary: unified GPU-ready differentiable path tracing for reflection and diffraction sequences.",
+            notes="Welcome everyone! Today I will present our work on unified GPU-ready differentiable path tracing for reflection and diffraction sequences.",
         )
         self.play(
             m.FadeIn(top_band, shift=0.2 * m.UP),
@@ -329,7 +329,7 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "Fermat's principle: paths are extrema of optical length.",
                 "Differentiable RT enables inverse problems (localization, calibration, design).",
-                "Scale target: millions of paths in parallel on GPUs.",
+                "GPU parallelism: thousands to millions of paths computed in parallel.",
             ],
             width=40,
         )
@@ -389,7 +389,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(
-            notes="Motivate the paradigm shift and stress why differentiability matters for inverse localization and material calibration demos.",
+            notes="In recent years, we have observed a number of exciting improvements in radio propagation modeling.",
         )
         self.play(
             *next_meta(new_section=0),
@@ -399,24 +399,27 @@ class Main(Slide, m.MovingCameraScene):
             ),
         )
         self.next_slide(
-            notes="Illustrate the motivation on an urban street-canyon scenario where many paths are needed in parallel."
+            notes="Today, we will focus on the ray tracing techniques."
         )
         self.play(m.FadeIn(mot_visual, shift=0.15 * m.LEFT))
 
-        for b in mot_bullets:
-            self.next_slide(notes="Motivation bullet")
+        for b, notes in zip(mot_bullets, ["RT uses path tracing methods based on Fermat's principle to determine the coordinates of each ray path.", "Recently, we have differentiable RT has emerged as a powerfull tool for optimization or solving inverse problems, by allowing us to compute the gradient of any output with respect to the input parameters.", "In parallel, the use of GPU accelerators is becoming increasingly common."], strict=True):
+            self.next_slide(notes=notes)
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        self.next_slide(auto_next=True, notes="Zoom on the image")
+        self.next_slide(auto_next=True)
         self.play(
             mot_bullets.animate.set_opacity(0.05),
             mot_visual.animate.scale(1.6).center())
-        self.next_slide(notes="Playing video", loop=True)
+        self.next_slide(loop=True, notes="""
+        Even in small scenes, one must trace thousands of paths to capture all the revelant interactions (e.g., reflections, diffractions) that contribute to the received signal. In coverage scenarios, this scale to the number of receiver locations.
+                        
+        Using differentiable RT, we could optimize the transmistting antenna location, or perform material calibration. This motivates the need for fast algorithms and GPU acceleration.
+        """)
         self.play(mot_vid.play(run_time=8.0))
 
-        # TODO: fix glitch animation where shift box right blinks before fading in
         self.next_slide(
-            notes="We observe a paradigm shift: RT is becoming differentiable and GPU-friendly, unlocking new applications but also requiring new methods."
+            notes="So far, we have thus observed a paradigm shift: from..."
         )
         self.play(
             mot_vid_title.animate.set_opacity(0.05),
@@ -537,14 +540,14 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(
-            notes="Recall prior work from the paper and highlight Fermat-based path formulation as the unifying physical principle.",
+            notes="We will now briefly review the main approaches using find ray paths.",
         )
         self.play(
             *next_meta(new_section=1),
             self.wipe(prev_slide_content, [soa_header], return_animation=True),
         )
 
-        self.next_slide(notes="Geometry: problem formulation")
+        self.next_slide(notes="Specifically, we are interested in methods that can find a ray path from a given TX--RX pair, and a number of predefined interactions.")
         self.play(m.Write(geometry), run_time=1.0)
 
         for b in soa_left:
@@ -552,7 +555,7 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         self.next_slide(
-            notes="Qualitative comparison of the different methods in terms of generality and speed."
+            notes="Qualitative comparison of the different methods in terms of generality and speed: can we have a single method that is fast, accurate, and supports all interactions?"
         )
         self.play(
             geometry.animate.set_opacity(0.05),
@@ -621,7 +624,7 @@ class Main(Slide, m.MovingCameraScene):
         m.VGroup(geometry_ann, eq_form).arrange(m.RIGHT).scale(0.8)
 
         self.next_slide(
-            notes="First method slide: focus on the optimization problem and the unified parameterization."
+            notes="Let's dive into the methodology and problem formulation."
         )
         self.play(
             *next_meta(),
@@ -637,7 +640,7 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         self.next_slide(
-            notes="Key equation: path as the solution of a convex optimization problem. Emphasize the unified formulation and how it enables batching."
+            notes="Going back to our example geometry, the goal is to find the vector of parameters T that minimizes the path length. Each interaction point is parameterized using the unified formulation, using two base vectors and one reference point. For diffraction, one of the two base vectors is set to zero."
         )
         self.play(
             meth1_lines.animate.set_opacity(0.05),
@@ -680,7 +683,7 @@ class Main(Slide, m.MovingCameraScene):
         ).move_to(eq_card)
 
         self.next_slide(
-            notes="Short parenthesis: mention this extension as a strong direction without overloading details.",
+            notes="Short parenthesis: we didn't include this in the paper, but our formulation can be easily extended to handle refraction as well,.",
         )
         self.play(
             *next_meta(),
@@ -696,7 +699,7 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         self.next_slide(
-            notes="Equations: the same formulation holds with a weighted sum of segment lengths, where weights are the refractive indices."
+            notes="The min. path length problem becomes..."
         )
         self.play(
             m.FadeIn(eq_card),
@@ -746,7 +749,7 @@ class Main(Slide, m.MovingCameraScene):
         ).next_to(bfgs_title, m.DOWN, aligned_edge=m.LEFT, buff=0.25)
 
         self.next_slide(
-            notes="Second method slide: summarize the BFGS solver and why it is more robust than mixed Newton/GD when Hessians are ill-conditioned."
+            notes="As for most optimization problems, we use an iterative method. Here, we use BFGS, which is a quasi-Newton method that approximates the Hessian using only gradient information, and is known for its robustness and efficiency on a wide range of problems. It works as follows: ..."
         )
         self.play(
             *next_meta(),
@@ -762,7 +765,7 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         self.next_slide(
-            notes="Right panel: explain CA sensitivity to ill-conditioning from zero padding, and emphasize BFGS avoids Hessian inversion while enabling better line-search."
+            notes="Why not simply  use a Newton method or gradient descent, as done by G. Carluccio and M. Albani?"
         )
         self.play(
             meth2_lines.animate.set_opacity(0.05),
@@ -1212,7 +1215,7 @@ class Main(Slide, m.MovingCameraScene):
         ]
 
         self.next_slide(
-            notes="Introduce reverse-mode AD on this toy graph and display the two-output function definition.",
+            notes="To introduce the final component of our approach, it is first important to recall how reverse-mode AD works. Here, we illustrate it on a simple example function with two inputs and two outputs., where each operation is represented as a node in the computational graph.",
         )
         self.play(
             *next_meta(),
@@ -1223,19 +1226,19 @@ class Main(Slide, m.MovingCameraScene):
             ),
         )
 
-        self.next_slide(notes="Forward pass stage.")
+        self.next_slide(notes="The compute the gradients, AD first performs a forward pass to compute the function values. Each intermediate variable is stored for later use in the backward pass.")
 
         for stage_idx, stage in enumerate(forward_stages):
             self.play(
                 m.AnimationGroup(*[reveal_connection(i) for i in stage]),
             )
 
-        self.next_slide(notes="Reverse pass stage.")
+        self.next_slide(notes="To actually compute the gradients, AD then performs a backward pass, starting from the output gradients and applying the chain rule to compute the gradients for each intermediate variable.")
         for stage_idx, stage in enumerate(reverse_stages):
             extra_anims: list[m.Animation] = []
             if stage_idx == 0:
                 extra_anims.extend([m.FadeIn(f1_adj), m.FadeIn(f2_adj)])
-            if stage_idx == 5:
+            if stage_idx == 4:
                 extra_anims.extend([m.FadeIn(x_adj), m.FadeIn(y_adj)])
 
             self.play(
@@ -1253,9 +1256,9 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "Reverse-mode AD stores all intermediate states.",
                 r"Unrolling $K$ iterations costs $\mathcal{O}(K)$ memory and $\mathcal{O}(K)$ backward time.",
-                "In large batches, this dominates runtime.",
+                "In large batches, this dominates runtime (and possible memory).",
                 "Use implicit function theorem at the converged solution (no unroll).",
-                "Result: exact gradients with much lower memory.",
+                r"Result: same (exact) gradients, without intermediate storage\\and reverse iterations.",
             ],
             use_tex=True,
         )
@@ -1286,7 +1289,7 @@ class Main(Slide, m.MovingCameraScene):
         ad_cost_eq.next_to(ad_cost_title, m.DOWN, buff=0.20)
 
         self.next_slide(
-            notes="After reverse-mode AD, explain why unrolling iterative solvers is expensive in memory and backward-time."
+            notes="so... (don't say anything, just continue with bullet points)"
         )
         self.play(
             *next_meta(),
@@ -1340,7 +1343,7 @@ class Main(Slide, m.MovingCameraScene):
         contrib_b.next_to(contrib_header, m.DOWN, buff=0.62).align_to(m.LEFT * 5.8, m.LEFT)
 
         self.next_slide(
-            notes="Explain why a general formulation removes branching and mention this is where your contribution starts.",
+            notes="Let's summarize our main contributions.",
         )
         self.play(
             *next_meta(new_section=2),
@@ -1373,7 +1376,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(
-            notes="Results setup slide to make the benchmark conditions explicit before the plots."
+            notes="We will now presents the benchmark setup we used in the results."
         )
         self.play(
             *next_meta(new_section=3),
@@ -1481,7 +1484,13 @@ class Main(Slide, m.MovingCameraScene):
             )
 
         self.next_slide(
-            notes="Main benchmark figure, split into two panels: reflection-only on the left and diffraction-only on the right.",
+            notes="""
+        Main benchmark figure, split into two panels: reflection-only on the left and diffraction-only on the right.
+        
+        The error formula at the bottom quantifies the average error across all paths and interaction points, comparing our method's predicted interaction points to the ground truth. The number of reflecitions/diffractions (n) is indicated in the badge below, and we will update it from 1 to 5 in subsequent slides to show how performance evolves with more interactions.
+
+        The dashed vertical line indicates the runtime of the image-based method, which is exact and provides a reference for the best possible execution time.
+        """,
         )
         self.play(
             *next_meta(),
@@ -1603,7 +1612,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(
-            notes="End with a balanced message: method works now, but solver ecosystem is the next frontier.",
+            notes="So far, we have shown promising results in terms of speed and improvements regarding a unified path tracing method. However, we have also seen that the accuracy of the methods, especially in the reflection-only case, is still not satisfactory. We are thus actively working on improving the solver formulation and implementation to further close the gap with the image-based method, and we have several ongoing and future research directions in this regard.",
         )
         self.play(
             *next_meta(new_section=4),
@@ -1655,7 +1664,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(
-            notes="Closing slide with thanks, and QR codes for the paper and code repository.",
+            notes="Closing slide with thanks, and QR codes.",
         )
         self.wipe(self.mobjects, [end])
         self.play(
