@@ -92,7 +92,9 @@ def bullets(
             wrapped = textwrap.fill(item, width=width)
             txt = m.Text(wrapped, font_size=font_size, color=color, line_spacing=0.9)
         else:
-            txt = m.Tex(item, font_size=font_size * 1.5, color=color, tex_environment=None)
+            txt = m.Tex(
+                item, font_size=font_size * 1.5, color=color, tex_environment=None
+            )
         dot.next_to(txt, m.LEFT, buff=0.28)
         dot.align_to(txt, m.UP)
         dot.shift(0.15 * m.DOWN)
@@ -168,6 +170,7 @@ def solver_legend() -> m.VGroup:
 
     return m.VGroup(*entries).arrange(m.RIGHT, buff=0.36)
 
+
 class VideoAnimation(m.Animation):
     def __init__(self, video_mobject, **kwargs):
         self.video_mobject = video_mobject
@@ -201,6 +204,7 @@ class VideoMobject(m.ImageMobject):
     def play(self, **kwargs):
         return VideoAnimation(self, **kwargs)
 
+
 class Main(Slide, m.MovingCameraScene):
     skip_reversing = True
 
@@ -210,8 +214,11 @@ class Main(Slide, m.MovingCameraScene):
         self.camera.background_color = BG
         self.wait_time_between_slides = 0.1
 
+        tex_template = m.TexFontTemplates.droid_sans.add_to_preamble(
+            r"\DeclareMathOperator*{\argmin}{arg\,min}"
+        )
+
         m.Text.set_default(color=TEXT, font=FONT_FAMILY)
-        tex_template = m.TexFontTemplates.droid_sans
         m.MathTex.set_default(color=TEXT, tex_template=tex_template)
         m.Tex.set_default(color=TEXT, tex_template=tex_template)
 
@@ -398,29 +405,37 @@ class Main(Slide, m.MovingCameraScene):
                 m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP
             ),
         )
-        self.next_slide(
-            notes="Today, we will focus on the ray tracing techniques."
-        )
+        self.next_slide(notes="Today, we will focus on the ray tracing techniques.")
         self.play(m.FadeIn(mot_visual, shift=0.15 * m.LEFT))
 
-        for b, notes in zip(mot_bullets, ["RT uses path tracing methods based on Fermat's principle to determine the coordinates of each ray path.", "Recently, we have differentiable RT has emerged as a powerfull tool for optimization or solving inverse problems, by allowing us to compute the gradient of any output with respect to the input parameters.", "In parallel, the use of GPU accelerators is becoming increasingly common."], strict=True):
+        for b, notes in zip(
+            mot_bullets,
+            [
+                "RT uses path tracing methods based on Fermat's principle to determine the coordinates of each ray path.",
+                "Recently, we have differentiable RT has emerged as a powerfull tool for optimization or solving inverse problems, by allowing us to compute the gradient of any output with respect to the input parameters.",
+                "In parallel, the use of GPU accelerators is becoming increasingly common.",
+            ],
+            strict=True,
+        ):
             self.next_slide(notes=notes)
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         self.next_slide(auto_next=True)
         self.play(
             mot_bullets.animate.set_opacity(0.05),
-            mot_visual.animate.scale(1.6).center())
-        self.next_slide(loop=True, notes="""
+            mot_visual.animate.scale(1.6).center(),
+        )
+        self.next_slide(
+            loop=True,
+            notes="""
         Even in small scenes, one must trace thousands of paths to capture all the revelant interactions (e.g., reflections, diffractions) that contribute to the received signal. In coverage scenarios, this scale to the number of receiver locations.
-                        
+
         Using differentiable RT, we could optimize the transmistting antenna location, or perform material calibration. This motivates the need for fast algorithms and GPU acceleration.
-        """)
+        """,
+        )
         self.play(mot_vid.play(run_time=8.0))
 
-        self.next_slide(
-            notes="So far, we have thus observed a paradigm shift: from..."
-        )
+        self.next_slide(notes="So far, we have thus observed a paradigm shift: from...")
         self.play(
             mot_vid_title.animate.set_opacity(0.05),
             mot_vid.animate.set_opacity(0.05),
@@ -433,9 +448,13 @@ class Main(Slide, m.MovingCameraScene):
             m.FadeIn(shift_box_right, new_txt, shift=0.2 * m.LEFT),
         )
 
-        self.next_slide(notes="In practice, such applications pose some implementation challenges:")
+        self.next_slide(
+            notes="In practice, such applications pose some implementation challenges:"
+        )
         self.play(
-            m.FadeOut(shift_box_left, old_txt, arrow, shift_box_right, new_txt, mot_visual),
+            m.FadeOut(
+                shift_box_left, old_txt, arrow, shift_box_right, new_txt, mot_visual
+            ),
             mot_bullets.animate.set_opacity(1),
         )
 
@@ -447,12 +466,12 @@ class Main(Slide, m.MovingCameraScene):
             mot_header[0],
             # mot_bullets, already wiped out
             chal_bullets,
-            #mot_visual,
-            #shift_box_left,
-            #old_txt,
-            #arrow,
-            #shift_box_right,
-            #new_txt,
+            # mot_visual,
+            # shift_box_left,
+            # old_txt,
+            # arrow,
+            # shift_box_right,
+            # new_txt,
         ]
 
         # Slide - Table of contents
@@ -508,7 +527,9 @@ class Main(Slide, m.MovingCameraScene):
             ],
             width=40,
         )
-        geometry = m.SVGMobject("images/geometry.svg", width=4.5).to_edge(m.RIGHT, buff=0.75)
+        geometry = m.SVGMobject("images/geometry.svg", width=4.5).to_edge(
+            m.RIGHT, buff=0.75
+        )
         soa_left.next_to(soa_header, m.DOWN, buff=0.65).align_to(m.LEFT * 5.8, m.LEFT)
 
         comp = m.Axes(
@@ -547,7 +568,9 @@ class Main(Slide, m.MovingCameraScene):
             self.wipe(prev_slide_content, [soa_header], return_animation=True),
         )
 
-        self.next_slide(notes="Specifically, we are interested in methods that can find a ray path from a given TX--RX pair, and a number of predefined interactions.")
+        self.next_slide(
+            notes="Specifically, we are interested in methods that can find a ray path from a given TX--RX pair, and a number of predefined interactions."
+        )
         self.play(m.Write(geometry), run_time=1.0)
 
         for b in soa_left:
@@ -585,7 +608,7 @@ class Main(Slide, m.MovingCameraScene):
         meth1_lines = bullets(
             [
                 "Restrict to planar reflectors and straight diffraction edges.",
-                r"Use uniform parametrization for interaction points $$\mathbf{x}_i = \mathbf{A}_i \mathbf{t}_i + \mathbf{b}_i,$$where $\mathbf{A}_i$ is a local basis and $\mathbf{b}_i$ a reference point,\\and $\mathbf{t}_i$ are the parameters.",
+                r"Use uniform parametrization for interaction points $$\mathbf{x}_i = \mathbf{A}_i \mathbf{t}_i + \mathbf{b}_i,$$where $\mathbf{t}_i$ are the local coordinates on the $i$-th object in a basis $\mathbf{A}_i$\\from a reference point $\mathbf{b}_i$.",
                 r"Fermat $\rightarrow$ convex path-length minimization.",
                 "Shared tensor layout for reflections and diffractions.",
                 "No interaction-specific branches in the solver.",
@@ -600,7 +623,7 @@ class Main(Slide, m.MovingCameraScene):
 
         eq_form = m.VGroup(
             m.MathTex(
-                r"\mathbf{T}^*=\arg\min_{\mathbf{T}} L(\mathbf{T};\mathbf{A},\mathbf{B})",
+                r"\mathbf{T}^*=\argmin_{\mathbf{T}=(\mathbf{t}_0,\ldots,\mathbf{t}_{n+1})} L(\mathbf{T};\mathbf{A},\mathbf{B})",
                 font_size=38,
             ),
             m.Text(
@@ -664,18 +687,15 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT * 5.8, m.LEFT
         )
 
-        eq_card = (
-            m.RoundedRectangle(
-                width=5.9,
-                height=2.0,
-                corner_radius=0.16,
-                fill_color=CARD,
-                fill_opacity=0.95,
-                stroke_color=ACCENT,
-                stroke_width=2,
-            )
-            .to_edge(m.DOWN, buff=1.9)
-        )
+        eq_card = m.RoundedRectangle(
+            width=5.9,
+            height=2.0,
+            corner_radius=0.16,
+            fill_color=CARD,
+            fill_opacity=0.95,
+            stroke_color=ACCENT,
+            stroke_width=2,
+        ).to_edge(m.DOWN, buff=1.9)
         eq_txt = m.MathTex(
             r"\min_{\mathbf{T}}\sum\limits_{i=0}^{n} n_i \|\mathbf{x}_{i+1} - \mathbf{x}_{i}\|",
             color=TEXT,
@@ -698,9 +718,7 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide(notes="Apart bullet")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        self.next_slide(
-            notes="The min. path length problem becomes..."
-        )
+        self.next_slide(notes="The min. path length problem becomes...")
         self.play(
             m.FadeIn(eq_card),
             m.Write(eq_txt),
@@ -742,10 +760,12 @@ class Main(Slide, m.MovingCameraScene):
         ).next_to(bfgs_card.get_top(), m.DOWN, buff=0.2)
 
         bfgs_notes = bullets(
-                ["Newton method is sensitive to ill-conditioned Hessians.",
+            [
+                "Newton method is sensitive to ill-conditioned Hessians.",
                 "This is common with zero-padded diffraction dimensions.",
-                "BFGS avoids true-Hessian inversion and supports stronger line search.",],
-                width=30,
+                "BFGS avoids true-Hessian inversion and supports stronger line search.",
+            ],
+            width=30,
         ).next_to(bfgs_title, m.DOWN, aligned_edge=m.LEFT, buff=0.25)
 
         self.next_slide(
@@ -824,8 +844,12 @@ class Main(Slide, m.MovingCameraScene):
         add1 = op_node("+", (add_col, top_y, 0))
         add2 = op_node("+", (add_col, bot_y, 0))
         cst = m.MathTex("C", color=TEXT, font_size=44).move_to((add_col, 0.25, 0))
-        out1 = m.MathTex(r"z_1 + C", color=TEXT, font_size=40).move_to((out_col, top_y, 0))
-        out2 = m.MathTex(r"z_2 + C", color=TEXT, font_size=40).move_to((out_col, bot_y, 0))
+        out1 = m.MathTex(r"z_1 + C", color=TEXT, font_size=40).move_to(
+            (out_col, top_y, 0)
+        )
+        out2 = m.MathTex(r"z_2 + C", color=TEXT, font_size=40).move_to(
+            (out_col, bot_y, 0)
+        )
 
         blue = m.ManimColor("#1d4ed8")
         f1_adj = (
@@ -973,7 +997,11 @@ class Main(Slide, m.MovingCameraScene):
             if bidirectional:
                 bwd_path = m.VMobject()
                 bwd_path.set_points_as_corners(
-                    [end_pt - unit2 * ARROW_BUFF, bend_pt, start_pt + unit1 * ARROW_BUFF]
+                    [
+                        end_pt - unit2 * ARROW_BUFF,
+                        bend_pt,
+                        start_pt + unit1 * ARROW_BUFF,
+                    ]
                 )
                 bwd_edge = m.DashedVMobject(
                     bwd_path,
@@ -1176,17 +1204,14 @@ class Main(Slide, m.MovingCameraScene):
             out2,
         )
 
-        ad_group = (
-            m.VGroup(
-                function_def,
-                graph_nodes,
-                forward_edges,
-                reverse_edges,
-                forward_labels,
-                reverse_labels,
-            )
-            .scale(0.66)
-        )
+        ad_group = m.VGroup(
+            function_def,
+            graph_nodes,
+            forward_edges,
+            reverse_edges,
+            forward_labels,
+            reverse_labels,
+        ).scale(0.66)
         ad_group.to_edge(m.DOWN, buff=0.60)
         function_def.shift(m.UP)
 
@@ -1226,27 +1251,36 @@ class Main(Slide, m.MovingCameraScene):
             ),
         )
 
-        self.next_slide(notes="The compute the gradients, AD first performs a forward pass to compute the function values. Each intermediate variable is stored for later use in the backward pass.")
+        self.next_slide(
+            notes="The compute the gradients, AD first performs a forward pass to compute the function values. Each intermediate variable is stored for later use in the backward pass."
+        )
 
-        for stage_idx, stage in enumerate(forward_stages):
+        for stage in forward_stages:
             self.play(
                 m.AnimationGroup(*[reveal_connection(i) for i in stage]),
+                run_time=0.5,
             )
 
-        self.next_slide(notes="To actually compute the gradients, AD then performs a backward pass, starting from the output gradients and applying the chain rule to compute the gradients for each intermediate variable.")
-        for stage_idx, stage in enumerate(reverse_stages):
-            extra_anims: list[m.Animation] = []
-            if stage_idx == 0:
-                extra_anims.extend([m.FadeIn(f1_adj), m.FadeIn(f2_adj)])
-            if stage_idx == 4:
-                extra_anims.extend([m.FadeIn(x_adj), m.FadeIn(y_adj)])
-
+        self.next_slide(
+            notes="To actually compute the gradients, AD then performs a backward pass, starting from the output gradients and applying the chain rule to compute the gradients for each intermediate variable."
+        )
+        self.play(
+            m.FadeIn(f1_adj),
+            m.FadeIn(f2_adj),
+            run_time=0.5,
+        )
+        for stage in reverse_stages:
             self.play(
                 m.AnimationGroup(
                     *[reveal_connection(i, reverse=True) for i in stage],
-                    *extra_anims,
                 ),
+                run_time=0.5,
             )
+        self.play(
+            m.FadeIn(x_adj),
+            m.FadeIn(y_adj),
+            run_time=0.5,
+        )
 
         prev_slide_content = [ad_header, ad_group]
 
@@ -1281,10 +1315,15 @@ class Main(Slide, m.MovingCameraScene):
         ).next_to(ad_cost_card.get_top(), m.DOWN, buff=0.16)
         ad_cost_eq = m.VGroup(
             m.Text("(1) assume convergence", font_size=21),
-            m.MathTex(r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)=\mathbf{0}", font_size=34),
+            m.MathTex(
+                r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)=\mathbf{0}", font_size=34
+            ),
             m.Arrow(m.UP, 0.0 * m.DOWN, color=TEXT, stroke_width=2),
-            m.Text("(2) compute gradients from optimal solution",  font_size=21),
-            m.MathTex(r"\frac{\partial \mathbf{T}^*}{\partial\theta}&=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L", font_size=34),
+            m.Text("(2) compute gradients from optimal solution", font_size=21),
+            m.MathTex(
+                r"\frac{\partial \mathbf{T}^*}{\partial\theta}&=-H^{-1}\,\frac{\partial}{\partial\theta}\nabla_{\mathbf{T}}L",
+                font_size=34,
+            ),
         ).arrange(m.DOWN)
         ad_cost_eq.next_to(ad_cost_title, m.DOWN, buff=0.20)
 
@@ -1314,10 +1353,12 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(
-            notes="Key equations: the optimality condition states the gradient at the solution is zero")
+            notes="Key equations: the optimality condition states the gradient at the solution is zero"
+        )
         self.play(m.FadeIn(ad_cost_eq[0:2], shift=0.08 * m.DOWN))
         self.next_slide(
-            notes="Key equations: from the optimality condition, we can derive the implicit gradient formula that only depends on the converged solution, not the entire trajectory.")
+            notes="Key equations: from the optimality condition, we can derive the implicit gradient formula that only depends on the converged solution, not the entire trajectory."
+        )
         self.play(m.GrowArrow(ad_cost_eq[2]), run_time=0.5)
         self.play(m.FadeIn(ad_cost_eq[3:], shift=0.08 * m.DOWN))
 
@@ -1340,7 +1381,9 @@ class Main(Slide, m.MovingCameraScene):
                 "Open-source implementation in DiffeRT.",
             ],
         )
-        contrib_b.next_to(contrib_header, m.DOWN, buff=0.62).align_to(m.LEFT * 5.8, m.LEFT)
+        contrib_b.next_to(contrib_header, m.DOWN, buff=0.62).align_to(
+            m.LEFT * 5.8, m.LEFT
+        )
 
         self.next_slide(
             notes="Let's summarize our main contributions.",
@@ -1380,12 +1423,12 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(new_section=3),
-            self.wipe(prev_slide_content, [res_setup_header], return_animation=True),
+            self.wipe(
+                prev_slide_content,
+                [res_setup_header, res_setup_bullets],
+                return_animation=True,
+            ),
         )
-
-        for b in res_setup_bullets:
-            self.next_slide(notes="Setup bullet")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [res_setup_header, res_setup_bullets]
 
@@ -1442,9 +1485,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         legend = solver_legend().next_to(shared_xlabel, m.DOWN, buff=0.16)
-        n_badge = m.Text("n = 1", font_size=24).next_to(
-            legend, m.DOWN, buff=0.16
-        )
+        n_badge = m.Text("n = 1", font_size=24).next_to(legend, m.DOWN, buff=0.16)
         error_formula = m.MathTex(
             r"\text{error} = \frac{1}{N}\sum_{b=1}^{N}\sum_{i=0}^{n+1}\left\|\mathbf{x}^*_{b,i}-\tilde{\mathbf{x}}^*_{b,i}\right\|",
             font_size=22,
@@ -1486,7 +1527,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(
             notes="""
         Main benchmark figure, split into two panels: reflection-only on the left and diffraction-only on the right.
-        
+
         The error formula at the bottom quantifies the average error across all paths and interaction points, comparing our method's predicted interaction points to the ground truth. The number of reflecitions/diffractions (n) is indicated in the badge below, and we will update it from 1 to 5 in subsequent slides to show how performance evolves with more interactions.
 
         The dashed vertical line indicates the runtime of the image-based method, which is exact and provides a reference for the best possible execution time.
@@ -1656,7 +1697,9 @@ class Main(Slide, m.MovingCameraScene):
             m.Group(
                 m.Group(qr_left, qr_right).arrange(m.RIGHT, buff=1.4),
                 m.Text(
-                    "Made with Manim Slides (open-source tool)", font_size=24, color=MUTED
+                    "Made with Manim Slides (open-source tool)",
+                    font_size=24,
+                    color=MUTED,
                 ),
             )
             .arrange(m.DOWN, buff=0.3)
