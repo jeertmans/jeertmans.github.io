@@ -1,0 +1,9 @@
+[project]
+dependencies = [
+  "manim>=0.20.1",
+  "manim-slides[manim,pyside6]==5.6.0",
+]
+description = "Add your description here"
+name = "2026-05-05-private-defense"
+requires-python = ">=3.11"
+version = "0.1.0"
