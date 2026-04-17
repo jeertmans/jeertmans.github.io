@@ -284,7 +284,7 @@ draw_image = draw_image(
     power_db, x, y, z0=z[0], figure=fig, showlegend=False, showscale=False
 )
 
-for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=36*4, endpoint=False))):
+for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=36*8, endpoint=False))):
     azim = np.rad2deg(np.pi + theta)
     elev = 55 + 10.0 * np.cos(theta)
 
