@@ -1,5 +1,6 @@
 [project]
 dependencies = [
+  "manim>=0.20.1",
   "manim-slides[manim,pyside6]==5.5.4",
 ]
 description = "Add your description here"
