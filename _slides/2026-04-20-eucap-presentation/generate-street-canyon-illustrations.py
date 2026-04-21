@@ -192,7 +192,12 @@ def draw_sionna_paths_on_plotly_fig(
 
 
 def save_fig(
-    fig: go.Figure, filename: str, azim: 45, elev: float = 90, dist: float = 1., crop: bool = False
+    fig: go.Figure,
+    filename: str,
+    azim: 45,
+    elev: float = 90,
+    dist: float = 1.0,
+    crop: bool = False,
 ):
     fig.update_scenes(xaxis_visible=False, yaxis_visible=False, zaxis_visible=False)
     azim_rad = np.deg2rad(azim)
@@ -284,7 +289,7 @@ draw_image = draw_image(
     power_db, x, y, z0=z[0], figure=fig, showlegend=False, showscale=False
 )
 
-for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=36*8, endpoint=False))):
+for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=36 * 8, endpoint=False))):
     azim = np.rad2deg(np.pi + theta)
     elev = 55 + 10.0 * np.cos(theta)
 
