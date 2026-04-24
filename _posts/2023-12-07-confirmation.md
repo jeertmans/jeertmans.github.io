@@ -24,8 +24,7 @@ As part of my PhD, I had to pass a confirmation test which consists
 in a relatively long oral presentation of my work and technical questions
 from my thesis committee.
 
-Below are my slides. Most slides contain notes,
-which you can read by pressing <kbd>S</kbd>.
+Below are my slides. Most slides contain notes, which you can read by pressing <kbd>S</kbd>.
 
 ## Slides
 
