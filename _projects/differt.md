@@ -3,11 +3,8 @@ title: DiffeRT
 github: jeertmans/DiffeRT
 website: https://eertmans.be/DiffeRT
 date: 2024-01-29
+description: Differentiable Ray Tracing Toolbox for Radio Propagation Simulations.
 ---
-
-Differentiable Ray Tracing Toolbox for Radio Propagation Simulations.
-
-<!--more-->
 
 DiffeRT is a radio propagation and performance oriented Ray Tracing module for Python.
 It uses the [JAX](https://github.com/jax-ml/jax) ecosystem to provide automatically

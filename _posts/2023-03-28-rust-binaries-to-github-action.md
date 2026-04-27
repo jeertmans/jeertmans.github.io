@@ -11,12 +11,8 @@ tags:
 image:
   path: /assets/images/misc/github_workflow.png
   alt: "Testing a GitHub action... with a GitHub action!"
+description: How to automatically generate a GitHub action that executes your Rust application, with Docker.
 ---
-
-How to automatically generate a GitHub action that executes your Rust
-application, with Docker.
-
-<!--more-->
 
 Among all the benefits you have by hosting open source code on GitHub,
 running GitHub actions for free is my favorite feature!

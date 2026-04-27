@@ -14,11 +14,8 @@ image:
   path: /assets/images/misc/her_with_jax.jpg
   alt: HER paper cover with JAX and Jupyter logos
 permalink: /posts/her-with-jax/
+description: Implementation of the Hindsight Experience Replay (HER) method in JAX.
 ---
-
-Implementation of the *Hindsight Experience Replay* (HER) method in JAX.
-
-<!--more-->
 
 I recently discovered the *Hindsight Experience Replay* (HER) paper and noticed that the official implementation is based on PyTorch and is not very well-structured. I also couldn't find a non-PyTorch implementation. Since I primarily work with **JAX**, I decided to reimplement the classic bit-flipping experiment to better understand HER.
 

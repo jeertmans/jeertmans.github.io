@@ -2,11 +2,8 @@
 title: FilesFinder
 github: jeertmans/filesfinder
 date: 2023-03-21
+description: Find files matching patterns while respecting .gitignore.
 ---
-
-Find files matching patterns while respecting `.gitignore`.
-
-<!--more-->
 
 [FilesFinder](https://github.com/jeertmans/filesfinder) (FF) is faster
 alternative to `find` for searching files based on patterns (globs or regexes)

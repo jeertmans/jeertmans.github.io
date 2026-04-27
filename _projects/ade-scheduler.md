@@ -3,11 +3,8 @@ title: ADE Scheduler
 github: ADE-Scheduler/ADE-Scheduler
 website: https://ade-scheduler.info.ucl.ac.be/
 date: 2023-03-25
+description: A webapp for UCLouvain's ADE scheduling tool.
 ---
-
-A webapp for UCLouvain's ADE scheduling tool.
-
-<!--more-->
 
 [ADE Scheduler](https://github.com/ADE-Scheduler/ADE-Scheduler) is an open source
 project created by three former UCLouvain students, two friends and I,

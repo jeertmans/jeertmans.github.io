@@ -17,11 +17,8 @@ image:
   alt: "Helsinki Cathedral, Helsinki, Finland - Tapio Haaja, Unsplash"
 permalink: /posts/cost-interact-june-2024-differt2d/
 redirect_from: /posts/cost-interact-june-2024-differt2d-presentation/
+description: Presentation of the DiffeRT2d toolbox at the COST INTERACT meeting in Helsinki, Finland.
 ---
-
-Presentation of the DiffeRT2d toolbox to the COST INTERACT community.
-
-<!--more-->
 
 In the preparation of our submission to the
 [Journal of Open Source Software](https://joss.theoj.org/),

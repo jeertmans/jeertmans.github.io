@@ -17,11 +17,8 @@ image:
   path: /assets/images/misc/helsinki_bis.jpg
   alt: "Image by Veikko Venemies on Unsplash"
 permalink: /posts/cost-interact-june-2024-mlxrt/
+description: Presentation of the in-progress work between UCLouvain and UniBo at the COST INTERACT meeting in Helsinki, Finland.
 ---
-
-Presentation of the in-progress work between UCLouvain and UniBo.
-
-<!--more-->
 
 During a short-term scientific mission in Cesena where I visited Professors Vittorio Degli-Esposti and Enrico Maria Vitucci's laboratory, we started a collaboration on the topic of Machine Learning applied to Ray Tracing, with the aim to accelerate it.
 

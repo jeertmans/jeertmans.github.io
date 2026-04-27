@@ -3,11 +3,8 @@ title: Delaunay Triangulation
 github: jeertmans/DelaunayTriangulation
 website: https://youtube.com/playlist?list=PLK2PsMuicSN8PIRBZCy7sXEtvngdwV6UH
 date: 2021-12-21
+description: Divide and conquer Delaunay triangulation in C.
 ---
-
-Divide and conquer Delaunay triangulation in C.
-
-<!--more-->
 
 The following code provides a fast implementation of the 2D Delaunay
 Triangulation using the divide and conquer approach.

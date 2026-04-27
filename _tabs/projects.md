@@ -1,6 +1,7 @@
 ---
-layout: projects
+layout: page
 icon: fas fa-laptop-code
+title: Projects
 ---
 
 ![Jérome's GitHub stats](https://raw.githubusercontent.com/jeertmans/jeertmans/refs/heads/main/profile/stats.svg){: .shadow .right }
@@ -15,10 +16,12 @@ You can find a comprehensive list of my contributions to (external) open source 
 
 - Implementing the missing `jax.scipy.special.fresnel` function [jax#22843](https://github.com/google/jax/pull/22843);
 - Adding support for all modes in `numpy.correlate` for Numba's JIT [numba#7543](https://github.com/numba/numba/pull/7543);
-- Working on removing dependency to FFMPEG in Manim [manim#3501](https://github.com/ManimCommunity/manim/pull/3501);
+- Working on removing dependency to FFmpeg in Manim [manim#3501](https://github.com/ManimCommunity/manim/pull/3501);
 
 I strive to make my work accessible, leveraging code quality tools, linters,
 formatters, documenting my code, and so on.
 
 You can find a few of my projects below, but feel free to go through my
 [GitHub profile](https://github.com/jeertmans) for more content!
+
+{% include projects.html %}

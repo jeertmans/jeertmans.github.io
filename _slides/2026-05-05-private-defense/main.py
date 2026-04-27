@@ -402,14 +402,11 @@ class Main(Slide, m.MovingCameraScene):
                 "calibration, beamforming.",
                 "End-to-end optimization through the full RT pipeline "
                 "using automatic differentiation (AD).",
-                "Naturally integrates with machine learning frameworks "
-                "(JAX, PyTorch).",
+                "Naturally integrates with machine learning frameworks (JAX, PyTorch).",
             ],
             width=42,
         )
-        diff_bullets.next_to(diff_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        diff_bullets.next_to(diff_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         # Paradigm shift boxes (reused pattern from EuCAP 2026)
         shift_box_left = m.RoundedRectangle(
@@ -496,8 +493,7 @@ class Main(Slide, m.MovingCameraScene):
 
         chal_bullets = bullets(
             [
-                "Speed: tracing thousands to millions of path candidates "
-                "in real time.",
+                "Speed: tracing thousands to millions of path candidates in real time.",
                 "Mixed interactions: handling reflection and diffraction "
                 "in a unified framework.",
                 "GPU constraints: avoiding branching, warp divergence, "
@@ -508,9 +504,7 @@ class Main(Slide, m.MovingCameraScene):
             width=42,
             color=ACCENT,
         )
-        chal_bullets.next_to(chal_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        chal_bullets.next_to(chal_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         thesis_card = m.RoundedRectangle(
             width=11.6,
@@ -781,9 +775,7 @@ class Main(Slide, m.MovingCameraScene):
             fill_color=ORANGE_SOFT_2,
             stroke_color=SECOND,
         )
-        origin_card.next_to(mpt_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
+        origin_card.next_to(mpt_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
             notes="The Min-Path-Tracing method is the foundation of my "
@@ -844,9 +836,7 @@ class Main(Slide, m.MovingCameraScene):
             color=MUTED,
         ).move_to(smooth_visual)
         smooth_vis = m.VGroup(smooth_visual, smooth_label)
-        smooth_vis.next_to(smooth_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
+        smooth_vis.next_to(smooth_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
             notes="The core challenge for differentiable RT is that "
@@ -875,17 +865,14 @@ class Main(Slide, m.MovingCameraScene):
         sres_bullets = bullets(
             [
                 "Presented at EuCAP 2024 in Glasgow.",
-                "Enables end-to-end gradient computation through the "
-                "full RT pipeline.",
+                "Enables end-to-end gradient computation through the full RT pipeline.",
                 "Successfully applied to antenna placement optimization "
                 "and material calibration.",
                 "Implemented in DiffeRT2d (open-source 2D RT library).",
             ],
             width=42,
         )
-        sres_bullets.next_to(sres_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        sres_bullets.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         # Placeholder for result figure
         sres_placeholder = m.RoundedRectangle(
@@ -933,10 +920,8 @@ class Main(Slide, m.MovingCameraScene):
                 "Most cited publication of my PhD work.",
                 "Adopted by other research groups for differentiable "
                 "propagation studies.",
-                "Foundation for DiffeRT2d — a pedagogical 2D RT library "
-                "in Python/JAX.",
-                "Key enabler of the subsequent ML-based path tracing "
-                "contribution.",
+                "Foundation for DiffeRT2d — a pedagogical 2D RT library in Python/JAX.",
+                "Key enabler of the subsequent ML-based path tracing contribution.",
             ],
             width=42,
         )
@@ -983,7 +968,9 @@ class Main(Slide, m.MovingCameraScene):
         # ══════════════════════════════════════════════════════════════════
 
         # ── Slide 11: Motivation for ML approach ─────────────────────────
-        ml_mot_header = title_box("Why Machine Learning for Path Tracing?", underline=True)
+        ml_mot_header = title_box(
+            "Why Machine Learning for Path Tracing?", underline=True
+        )
 
         ml_mot_bullets = bullets(
             [
@@ -993,8 +980,7 @@ class Main(Slide, m.MovingCameraScene):
                 "geometry, skipping iterations.",
                 "Generative model: given TX, RX, and scene → predict "
                 "path interaction points.",
-                "Potential for real-time inference on GPU with learned "
-                "weights.",
+                "Potential for real-time inference on GPU with learned weights.",
             ],
             width=42,
         )
@@ -1027,8 +1013,7 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "COST Action CA20120 (INTERACT): European network for "
                 "radio channel modeling.",
-                "April 2024: Short-term stay in Cesena, Italy — "
-                "start of ML project.",
+                "April 2024: Short-term stay in Cesena, Italy — start of ML project.",
                 "Sept–Dec 2024: Long stay in Bologna, Italy — "
                 "developing the generative model.",
                 "Collaboration with Enrico Maria Vitucci and "
@@ -1057,9 +1042,7 @@ class Main(Slide, m.MovingCameraScene):
             color=MUTED,
         ).move_to(collab_visual)
         collab_vis = m.VGroup(collab_visual, collab_label)
-        collab_vis.next_to(collab_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
+        collab_vis.next_to(collab_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
             notes="This contribution was born from a collaboration "
@@ -1149,7 +1132,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         for i, box in enumerate(arch_boxes):
-            self.next_slide(notes=f"Architecture block {i+1}.")
+            self.next_slide(notes=f"Architecture block {i + 1}.")
             self.play(m.FadeIn(box, shift=0.15 * m.UP))
             if i < len(arch_arrows):
                 self.play(m.GrowArrow(arch_arrows[i]))
@@ -1170,14 +1153,11 @@ class Main(Slide, m.MovingCameraScene):
 
         train_bullets = bullets(
             [
-                "Training data: large-scale RT simulations on canonical "
-                "urban scenes.",
+                "Training data: large-scale RT simulations on canonical urban scenes.",
                 "Each sample: (scene, TX, RX, interaction type sequence) "
                 "→ ground-truth path coordinates.",
-                "Loss function: mean squared error on interaction point "
-                "positions.",
-                "Augmentation: random TX/RX placement, varying scene "
-                "configurations.",
+                "Loss function: mean squared error on interaction point positions.",
+                "Augmentation: random TX/RX placement, varying scene configurations.",
             ],
             width=42,
         )
@@ -1232,8 +1212,7 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "Significant speedup over iterative methods for large "
                 "numbers of path candidates.",
-                "Accuracy comparable to conventional RT in tested "
-                "urban scenarios.",
+                "Accuracy comparable to conventional RT in tested urban scenarios.",
                 "Generalizes to unseen scene configurations "
                 "(within the same scene class).",
                 "Presented at ICMLCN 2025 in Barcelona.",
@@ -1288,12 +1267,9 @@ class Main(Slide, m.MovingCameraScene):
 
         journal_bullets = bullets(
             [
-                "Extended version submitted to npj Wireless Technology "
-                "(March 2026).",
-                "Expanded results with more scene types and ablation "
-                "studies.",
-                "Most comprehensive and recent contribution of the "
-                "thesis.",
+                "Extended version submitted to npj Wireless Technology (March 2026).",
+                "Expanded results with more scene types and ablation studies.",
+                "Most comprehensive and recent contribution of the thesis.",
                 "Demonstrates potential of ML-assisted path tracing "
                 "for next-gen networks.",
             ],
@@ -1348,9 +1324,7 @@ class Main(Slide, m.MovingCameraScene):
         # ══════════════════════════════════════════════════════════════════
 
         # ── Slide 17: FPT Problem Setup ──────────────────────────────────
-        fpt_header = title_box(
-            "Fermat Path Tracing: Problem Setup", underline=True
-        )
+        fpt_header = title_box("Fermat Path Tracing: Problem Setup", underline=True)
 
         fpt_bullets = bullets(
             [
@@ -1360,15 +1334,12 @@ class Main(Slide, m.MovingCameraScene):
                 "Reflections: 2D parameter (surface coordinates).",
                 "Diffractions: 1D parameter (edge coordinate, one "
                 "column of A set to zero).",
-                "Same tensor shape for all interaction types "
-                "→ no branching on GPU.",
+                "Same tensor shape for all interaction types → no branching on GPU.",
             ],
             width=42,
             use_tex=True,
         )
-        fpt_bullets.next_to(fpt_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        fpt_bullets.next_to(fpt_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         # ANIMATION SUGGESTION: Reuse or reference the annotated geometry
         # SVG from EuCAP 2026 (images/geometry-annotated.svg).
@@ -1434,15 +1405,12 @@ class Main(Slide, m.MovingCameraScene):
                 r"\alpha_k \mathbf{p}_k$.",
                 "Fixed K iterations → uniform GPU kernel execution "
                 "(no early stopping).",
-                "More robust than Newton method for mixed "
-                "reflection/diffraction.",
+                "More robust than Newton method for mixed reflection/diffraction.",
             ],
             width=42,
             use_tex=True,
         )
-        bfgs_bullets.next_to(bfgs_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        bfgs_bullets.next_to(bfgs_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         # Why BFGS card
         bfgs_card = m.RoundedRectangle(
@@ -1507,20 +1475,15 @@ class Main(Slide, m.MovingCameraScene):
 
         imp_bullets = bullets(
             [
-                "Reverse-mode AD stores all intermediate states "
-                "→ O(K) memory.",
-                "Unrolling K iterations is expensive in memory and "
-                "backward time.",
+                "Reverse-mode AD stores all intermediate states → O(K) memory.",
+                "Unrolling K iterations is expensive in memory and backward time.",
                 "Implicit function theorem: use optimality condition "
                 "at the converged solution.",
-                "Result: exact gradients without storing intermediate "
-                "iterations.",
+                "Result: exact gradients without storing intermediate iterations.",
             ],
             width=42,
         )
-        imp_bullets.next_to(imp_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        imp_bullets.next_to(imp_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         imp_eq_card = m.RoundedRectangle(
             width=6.0,
@@ -1551,9 +1514,7 @@ class Main(Slide, m.MovingCameraScene):
                 font_size=34,
             ),
         ).arrange(m.DOWN, buff=0.15)
-        imp_eq_group = m.VGroup(imp_eq_title, imp_eq_content).arrange(
-            m.DOWN, buff=0.2
-        )
+        imp_eq_group = m.VGroup(imp_eq_title, imp_eq_content).arrange(m.DOWN, buff=0.2)
         imp_eq_group.move_to(imp_eq_card)
 
         self.next_slide(
@@ -1597,8 +1558,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Interactions: n = 1..5 (reflection and diffraction).",
                 "Our BFGS solver approaches image-method speed while "
                 "supporting diffractions.",
-                "Accuracy improves with more line-search iterations "
-                "(ours-64 variant).",
+                "Accuracy improves with more line-search iterations (ours-64 variant).",
             ],
             width=42,
         )
@@ -1651,19 +1611,15 @@ class Main(Slide, m.MovingCameraScene):
 
         oss_bullets = bullets(
             [
-                "DiffeRT: 3D differentiable ray tracing library in "
-                "Python/JAX.",
-                "DiffeRT2d: lightweight 2D version for prototyping "
-                "and teaching.",
+                "DiffeRT: 3D differentiable ray tracing library in Python/JAX.",
+                "DiffeRT2d: lightweight 2D version for prototyping and teaching.",
                 "Both freely available on GitHub under MIT license.",
                 "Designed for reproducibility and research extensibility.",
                 "Used by multiple research groups worldwide.",
             ],
             width=42,
         )
-        oss_bullets.next_to(oss_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        oss_bullets.next_to(oss_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         # Software boxes
         sw_left = info_card(
@@ -1676,9 +1632,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         sw_right = info_card(
             "DiffeRT2d (2D)",
-            "Lightweight 2D library.\n"
-            "Great for teaching and\n"
-            "rapid prototyping.",
+            "Lightweight 2D library.\nGreat for teaching and\nrapid prototyping.",
             fill_color=ORANGE_SOFT_2,
             stroke_color=SECOND,
         )
@@ -1716,12 +1670,24 @@ class Main(Slide, m.MovingCameraScene):
         summary_header = title_box("Summary of Contributions", underline=True)
 
         summary_items = [
-            ("① Smoothing Technique", GREEN_SOFT, ACCENT,
-             "Continuous relaxation of hard visibility → fully differentiable RT."),
-            ("② ML Generative Path Tracing", PURPLE_SOFT, m.ManimColor("#7c3aed"),
-             "Learned model predicts paths directly → real-time inference potential."),
-            ("③ Fermat Path Tracing (FPT)", ORANGE_SOFT, SECOND,
-             "Unified BFGS solver for refl. + diffr. with implicit differentiation."),
+            (
+                "① Smoothing Technique",
+                GREEN_SOFT,
+                ACCENT,
+                "Continuous relaxation of hard visibility → fully differentiable RT.",
+            ),
+            (
+                "② ML Generative Path Tracing",
+                PURPLE_SOFT,
+                m.ManimColor("#7c3aed"),
+                "Learned model predicts paths directly → real-time inference potential.",
+            ),
+            (
+                "③ Fermat Path Tracing (FPT)",
+                ORANGE_SOFT,
+                SECOND,
+                "Unified BFGS solver for refl. + diffr. with implicit differentiation.",
+            ),
         ]
 
         summary_cards = m.VGroup()
@@ -1794,8 +1760,7 @@ class Main(Slide, m.MovingCameraScene):
                 "(Italy, Dublin, Lille, ...).",
                 "Created Manim Slides — an open-source tool for "
                 "animated presentations (used right now!).",
-                "Contributed a chapter to the COST INTERACT book "
-                "(Lille, 2025).",
+                "Contributed a chapter to the COST INTERACT book (Lille, 2025).",
                 "Bridging communities: radio propagation, optimization, "
                 "and machine learning.",
             ],
@@ -1828,10 +1793,8 @@ class Main(Slide, m.MovingCameraScene):
 
         future_bullets = bullets(
             [
-                "SOCP formulations for stronger convergence guarantees "
-                "in FPT.",
-                "Port high-precision conic solvers to practical GPU "
-                "kernels.",
+                "SOCP formulations for stronger convergence guarantees in FPT.",
+                "Port high-precision conic solvers to practical GPU kernels.",
                 "Combine ML and optimization: use ML predictions as "
                 "warm start for FPT.",
                 "Extend to scattering and more complex interaction types.",

@@ -2,9 +2,8 @@
 title: SelSearch
 github: jeertmans/selsearch
 date: 2022-02-21
+description: Grab text selected in any application and open a web browser to search for.
 ---
-
-Grab text selected in any application and open a web browser to search for.
 
 <!--more-->
 

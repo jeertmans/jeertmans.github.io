@@ -3,16 +3,11 @@
 # Import the theme
 theme: jekyll-theme-chirpy
 
-# Change the following value to '/PROJECT_NAME' ONLY IF your site type is GitHub Pages Project sites
-# and doesn't have a custom domain.
-baseurl: ''
-
 # The language of the webpage › http://www.lingoes.net/en/translator/langcode.htm
 # If it has the same name as one of the files in folder `_data/locales`, the layout language will also be changed,
 # otherwise, the layout language will use the default value of 'en'.
 lang: en
 
-# Change to your timezone › http://www.timezoneconverter.com/cgi-bin/findzone/findzone
 timezone: Europe/Brussels
 
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
@@ -25,41 +20,52 @@ tagline: PhD student in Differentiable Ray Tracing for Radio Propagation.<br>Loo
 description: >-
   Jérome Eertmans' personal blog.
 
-# fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: https://eertmans.be
 
 github:
-  username: jeertmans # change to your github username
+  username: jeertmans
 
 repository: jeertmans/jeertmans.github.io
 
-twitter:
-  username: # change to your twitter username
-
 social:
-  # Change to your full name.
-  # It will be displayed as the default author of the posts and the copyright owner in the Footer
   name: Jérome Eertmans
   email: jeertmans@icloud.com # change to your email address
   links:
-    # The first element serves as the copyright owner's link
-    # - https://twitter.com/username # change to your twitter homepage
-  - https://github.com/jeertmans   # change to your github homepage
-    # Uncomment below to add more social links
-    # - https://www.facebook.com/username
+  - https://github.com/jeertmans
   - https://www.linkedin.com/in/jérome-eertmans
 
-google_site_verification: # fill in to your verification string
+# Site Verification Settings
+webmaster_verifications:
+  google: # fill in your Google verification code
+  bing: # fill in your Bing verification code
+  alexa: # fill in your Alexa verification code
+  yandex: # fill in your Yandex verification code
+  baidu: # fill in your Baidu verification code
+  facebook: # fill in your Facebook verification code
 
 # ↑ --------------------------
 # The end of `jekyll-seo-tag` settings
 
-google_analytics:
-  id: # fill in your Google Analytics ID
-  # Google Analytics pageviews report settings
-  pv:
-    proxy_endpoint: # fill in the Google Analytics superProxy endpoint of Google App Engine
-    cache_path: # the local PV cache data, friendly to visitors from GFW region
+# Web Analytics Settings
+analytics:
+  google:
+    id: # fill in your Google Analytics ID
+  goatcounter:
+    id: # fill in your GoatCounter ID
+  umami:
+    id: # fill in your Umami ID
+    domain: # fill in your Umami domain
+  matomo:
+    id: # fill in your Matomo ID
+    domain: # fill in your Matomo domain
+  cloudflare:
+    id: # fill in your Cloudflare Web Analytics token
+  fathom:
+    id: # fill in your Fathom Site ID
+
+# Page views settings
+pageviews:
+  provider: # now only supports 'goatcounter'
 
 # Prefer color scheme setting.
 #
@@ -74,21 +80,25 @@ google_analytics:
 #
 theme_mode: # [light|dark]
 
-# The CDN endpoint for images.
+# The CDN endpoint for media resources.
 # Notice that once it is assigned, the CDN url
-# will be added to all image (site avatar & posts' images) paths starting with '/'
+# will be added to all media resources (site avatar, posts' images, audio and video files) paths starting with '/'
 #
 # e.g. 'https://cdn.com'
-img_cdn:
+cdn:
 
 # the avatar on sidebar, support local or CORS resources
 avatar: assets/images/profile.png
+
+# The URL of the site-wide social preview image used in SEO `og:image` meta tag.
+# It can be overridden by a customized `page.image` in front matter.
+social_preview_image: # string, local or CORS resources
 
 # boolean type, the global switch for TOC in posts.
 toc: true
 
 comments:
-  active: utterances
+  provider: utterances
   utterances:
     repo: jeertmans/jeertmans.github.io
     issue_term: pathname
@@ -102,13 +112,24 @@ assets:
     env: # [development|production]
 
 pwa:
-  enabled: true # the option for PWA feature
+  enabled: true # The option for PWA feature (installable)
+  cache:
+    enabled: true # The option for PWA offline cache
+    # Paths defined here will be excluded from the PWA cache.
+    # Usually its value is the `baseurl` of another website that
+    # shares the same domain name as the current website.
+    deny_paths:
+      # - "/example"  # URLs match `<SITE_URL>/example/*` will not be cached by the PWA
 
 paginate: 10
+
+# The base URL of your site
+baseurl: ''
 
 # ------------ The following options are not recommended to be modified ------------------
 
 kramdown:
+  footnote_backlink: '&#8617;&#xfe0e;'
   syntax_highlighter: rouge
   syntax_highlighter_opts: # Rouge Options › https://github.com/jneen/rouge#full-options
     css_class: highlight
@@ -198,17 +219,12 @@ compress_html:
 exclude:
 - '*.gem'
 - '*.gemspec'
-- tools
+- docs
 - README.md
-- CHANGELOG.md
-- LICENSE
-- rollup.config.js
-- node_modules
+- LICENSE.md
+- purgecss.js
+- '*.config.js'
 - package*.json
-- vendor/bundle/
-- vendor/cache/
-- vendor/gems/
-- vendor/ruby/
 
 jekyll-archives:
   enabled: [categories, tags]

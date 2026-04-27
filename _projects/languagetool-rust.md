@@ -2,11 +2,8 @@
 title: LanguageTool-Rust
 github: jeertmans/languagetool-rust
 date: 2023-03-25
+description: LanguageTool API in Rust.
 ---
-
-LanguageTool API in Rust.
-
-<!--more-->
 
 In 2022, I developed a strong *love* towards the Rust programming language.
 As I was looking for a first Rust project, and I realized that [LanguageTool](https://languagetool.org/)[^1]

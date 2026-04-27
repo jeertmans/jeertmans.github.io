@@ -3,11 +3,8 @@ title: DiffeRT2d
 github: jeertmans/DiffeRT2d
 website: https://eertmans.be/DiffeRT2d
 date: 2024-01-29
+description: 2D Toolbox for Differentiable Ray Tracing.
 ---
-
-2D Toolbox for Differentiable Ray Tracing.
-
-<!--more-->
 
 DiffeRT2d is a Python proof-of-concept module developed for the scientific paper
 *Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization*,
