@@ -20,9 +20,6 @@ On May 5th, 2026, I defended my PhD thesis
 *Differentiable Ray Tracing for Radio Propagation*
 at UCLouvain, in front of my jury members.
 
-Below are my slides. Most slides contain notes,
-which you can read by pressing <kbd>S</kbd>.
-
 ## Slides
 
 {% include slides.html url="/assets/slides/2026-05-05-private-defense.html" %}

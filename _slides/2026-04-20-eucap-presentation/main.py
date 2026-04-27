@@ -650,7 +650,7 @@ class Main(Slide, m.MovingCameraScene):
             notes="Let's dive into the methodology and problem formulation."
         )
         self.play(
-            *next_meta(),
+            *next_meta(new_section=2),
             self.wipe(
                 prev_slide_content,
                 [meth1_header],
@@ -1389,7 +1389,7 @@ class Main(Slide, m.MovingCameraScene):
             notes="Let's summarize our main contributions.",
         )
         self.play(
-            *next_meta(new_section=2),
+            *next_meta(),
             self.wipe(
                 prev_slide_content,
                 [contrib_header],
