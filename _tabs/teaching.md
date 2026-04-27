@@ -4,7 +4,7 @@ icon: fas fa-chalkboard-user
 title: Teaching
 ---
 
-Prior to starting my PhD, I had the opportunity to deliver practical sessions
+Prior to starting my Ph.D., I had the opportunity to deliver practical sessions
 during my third year of my Bachelor's degree and my Master's degree.
 It was a student job, and I was a *Junior Teaching Assistant* (JTA).
 A JTA is essentially a TA, but with fewer responsibilities.

@@ -1,0 +1,241 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
+cv:
+  name: Jérome Eertmans
+  headline: Ph.D. student in Differentiable Ray Tracing for Telecommunications
+  location: Belgium
+  email: jeertmans@icloud.com
+  website: https://www.eertmans.com/
+  photo: ../assets/images/profile.png
+  social_networks:
+    - network: LinkedIn
+      username: jérome-eertmans
+    - network: GitHub
+      username: jeertmans
+    - network: ORCID
+      username: 0000-0002-5579-5360
+    - network: Google Scholar
+      username: bVbwyxAAAAAJ
+  sections:
+    Education:
+      - institution: Université catholique de Louvain
+        area: Electrical engineering
+        degree: Ph.D.
+        start_date: 2021-09
+        end_date: 2026-06
+        summary: "Thesis title: Differentiable Ray Tracing for Telecommunications"
+      - institution: Université catholique de Louvain
+        area: Electro-mechanical engineering
+        degree: M.Sc.
+        start_date: 2019-09
+        end_date: 2021-06
+        summary: Majored in mechatronics.
+        highlights:
+          - "I undertook a variety of course topics: telecommunications, open source software, numerical simulations, digital design of ICs, machine learning, mining pattern in data, etc., for a total of 112% workload."
+          - Graduated Magna Cum Laude.
+
+    Experience:
+      - company: Université catholique de Louvain
+        position: Teaching Assistant
+        start_date: 2021-09
+        end_date: present
+        location: Louvain-la-Neuve, Belgium
+        highlights:
+          - "Teaching duties (practical sessions, evaluation, ...): see list [here](https://eertmans.be/teaching/)"
+          - Research on my Ph.D. subject, under the supervision of Profs. Claude Oestges and Laurent Jacques.
+      - company: University of Bologna
+        position: Visiting Researcher
+        start_date: 2024-09
+        end_date: 2024-12
+        location: Bologna, Italy
+        summary: Visiting Prof. Vittorio Degli-Esposti's lab and pursuing research on Machine Learning applied to Ray Tracing for Radio Propagation.
+      - company: see my [LinkedIn profile](https://linkedin.com/in/jérome-eertmans).
+        position: For additional experiences
+
+    Languages:
+      - label: French
+        details: Native
+      - label: English
+        details: B2+/C1
+      - label: Dutch
+        details: B1
+      - label: Italian
+        details: A2
+
+    Projects:
+      - name: "[DiffeRT](https://github.com/jeertmans/DiffeRT)"
+        summary: Python package with backend written in Rust.
+        highlights:
+          - Built on top of [JAX](https://github.com/jax-ml/jax) for high-performance and differentiable code
+          - Thoroughly tested and well documented
+          - Fully open access, along with its 2D variant [DiffeRT2D](https://github.com/jeertmans/DiffeRT2D)
+      - name: "[Manim Slides](https://github.com/jeertmans/manim-slides)"
+        summary: Presentation tool I developed to produce higher-quality presentations at conferences.
+        highlights:
+          - Most of my presentations are created using this tool and can be viewed on [my personal website](https://eertmans.be/)
+          - Used by other researchers to disseminate their research, with examples available in the [documentation](https://manim-slides.eertmans.be/latest/gallery.html)
+      - name: More projects
+        summary: You may find an extended list of my projects and contributions on my [GitHub profile](https://github.com/jeertmans) or on the [projects page](https://eertmans.be/projects/) of my website.
+
+    Publications:
+      - title: Transform-Invariant Generative Ray Path Sampling for Efficient Radio Propagation Modeling
+        authors:
+          - "**Jérome Eertmans**"
+          - Nicola Di Cicco
+          - Claude Oestges
+          - Laurent Jacques
+          - Enrico Maria Vitucci
+          - Vittorio Degli-Esposti
+        journal: arXiv preprint, submitted to npj Wireless Technology
+        url: https://arxiv.org/abs/2603.01655
+        date: "2026-03-02"
+      - title: Fast, Differentiable, GPU-Accelerated Ray Tracing for Multiple Diffraction and Reflection Paths
+        authors:
+          - "**Jérome Eertmans**"
+          - Sophie Lequeu
+          - Benoît Legat
+          - Laurent Jacques
+          - Claude Oestges
+        journal: arXiv preprint, accepted at EuCAP 2026
+        url: https://arxiv.org/abs/2410.14535
+        date: "2025-10-17"
+      - title: Towards Generative Ray Path Sampling for Faster Point-to-Point Ray Tracing
+        authors:
+          - "**Jérome Eertmans**"
+          - Nicola Di Cicco
+          - Claude Oestges
+          - Laurent Jacques
+          - Enrico Maria Vitucci
+          - Vittorio Degli-Esposti
+        journal: 2025 IEEE International Conference on Machine Learning for Communication and Networking (ICMLCN)
+        doi: 10.1109/ICMLCN64995.2025.11140249
+        date: "2024-10-31"
+      - title: Comparing Differentiable and Dynamic Ray Tracing - Introducing the Multipath Lifetime Map
+        authors:
+          - "**Jérome Eertmans**"
+          - Enrico Maria Vitucci
+          - Vittorio Degli-Esposti
+          - Laurent Jacques
+          - Claude Oestges
+        journal: 2025 19th European Conference on Antennas and Propagation (EuCAP)
+        doi: 10.23919/EuCAP63536.2025.10999736
+        date: "2024-10-18"
+      - title: Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization
+        authors:
+          - "**Jérome Eertmans**"
+          - Laurent Jacques
+          - Claude Oestges
+        journal: 2024 18th European Conference on Antennas and Propagation (EuCAP)
+        doi: 10.23919/EuCAP60739.2024.10501570
+        date: "2024-03-18"
+      - title: DiffeRT2d - A Differentiable Ray Tracing Python Framework for Radio Propagation
+        authors:
+          - "**Jérome Eertmans**"
+          - Claude Oestges
+          - Laurent Jacques
+        journal: Journal of Open Source Software
+        doi: 10.21105/joss.06915
+        url: https://doi.org/10.21105/joss.06915
+        date: "2024-06-30"
+      - title: Min-Path-Tracing - A Diffraction Aware Alternative to Image Method in Ray Tracing
+        authors:
+          - "**Jérome Eertmans**"
+          - Claude Oestges
+          - Laurent Jacques
+        journal: 2023 17th European Conference on Antennas and Propagation (EuCAP)
+        doi: 10.23919/EuCAP57121.2023.10132934
+        date: "2023-03-27"
+      - title: Manim Slides - A Python package for presenting Manim content anywhere
+        authors:
+          - "**Jérome Eertmans**"
+        journal: Journal of Open Source Education
+        doi: 10.21105/jose.00206
+        url: https://doi.org/10.21105/jose.00206
+        date: "2023-08-08"
+
+    Grants and Awards:
+      - name: Best Propagation Paper Award
+        location: Dublin, IE
+        date: 2026-04-24
+        summary: EurAAP - EuCAP 2026.
+      - name: TICRA-EurAAP Travel Grant
+        location: Dublin, IE
+        date: 2026-04
+        summary: EuCAP 2026 travel grant.
+      - name: Long-term Scientific Stay in Pr. Vittorio Degli-Esposti's team (FNRS)
+        location: Brussels, BE
+        start_date: 2024-09
+        end_date: 2024-12
+        summary: FRS FNRS *Accomplishment of a stay abroad*.
+      - name: Long-term Scientific Stay in Pr. Vittorio Degli-Esposti's team (WBI)
+        location: Brussels, BE
+        start_date: 2024-09
+        end_date: 2024-12
+        summary: WBI *Bourses d'Excellence WORLD*.
+      - name: STSM CA20120 - Visit to Pr. Vittorio Degli-Esposti
+        location: Brussels, BE
+        date: 2024-04
+        summary: Cost Action Short-term Scientific Missions.
+      - name: Participation in EuCAP 2024
+        location: Brussels, BE
+        date: 2023-03
+        summary: FRS FNRS *Participation in a scientific meeting*.
+
+    Personal Achievements:
+      - label: ADE Scheduler
+        details: An open source alternative to UCLouvain's scheduling tool, that became the official university tool in Sep. 2024.
+      - label: Manim Slides
+        details: An open source presentation tool, used by many for teaching, conference presentations, or thesis defenses.
+      - label: Scouts
+        details: 6 years as a scout (Les Scouts) leader.
+
+    Reviews:
+      - label: EuCAP
+        details: EuCAP 2026 (5 reviews)
+      - label: IEEE
+        details: Access (5 reviews), Transactions on Vehicular Technology (6 reviews), Antennas and Wireless Propagation Letters (1 review), and Open Journal of the Communications Society (1 review)
+      - label: Journal of Open Source Software
+        details: 1 review (see [#9384](https://github.com/openjournals/joss-reviews/issues/9384))
+      - label: "Nature Partner Journals: Wireless Technology"
+        details: 1 review
+
+    Referees:
+      - label: Prof. Claude Oestges, Université catholique de Louvain
+        details: claude.oestges@uclouvain.be
+      - label: Prof. Laurent Jacques, Université catholique de Louvain
+        details: laurent.jacques@uclouvain.be
+      - label: Prof. Vittorio Degli-Esposti, University of Bologna
+        details: v.degliesposti@unibo.it
+
+design:
+  theme: engineeringclassic
+  header:
+    connections:
+      show_icons: true
+  colors:
+    body: rgb(0, 0, 0)
+    name: rgb(69, 8, 8)
+    headline: rgb(69, 8, 8)
+    connections: rgb(143, 13, 13)
+    section_titles: rgb(143, 13, 13)
+    links: rgb(143, 13, 13)
+    footer: rgb(128, 128, 128)
+    top_note: rgb(128, 128, 128)
+  typography:
+    font_family:
+      body: Raleway
+      name: Raleway
+      headline: Raleway
+      connections: Raleway
+      section_titles: Raleway
+    bold:
+      name: false
+      headline: true
+      connections: false
+      section_titles: true
+
+locale:
+  language: english
+
+settings:
+  current_date: today
+  pdf_title: Jérome Eertmans - CV

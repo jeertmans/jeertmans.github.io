@@ -3,7 +3,7 @@ title: Manim Tutorial
 github: jeertmans/manim-tutorial
 website: https://eertmans.be/manim-tutorial
 date: 2022-10-18
-description: Manim tutorial presented to PhD and Master student at UCLouvain.
+description: Manim tutorial presented to Ph.D. and Master student at UCLouvain.
 ---
 
 On October 18th, I presented for the UCLouvain IEEE Student Branch a tutorial about Manim and its tools.

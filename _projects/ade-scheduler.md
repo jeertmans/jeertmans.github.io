@@ -14,7 +14,7 @@ to offer a user-friendly and more convenient experience to every student
 # Story
 
 At UCLouvain,
-where I studied engineering and where I'm currently pursuing my PhD,
+where I studied engineering and where I'm currently pursuing my Ph.D.,
 we use a calendar web planner that we call *"ADE"*.
 
 Its name comes from the company that provides the service, Adesoft.

@@ -15,8 +15,8 @@ Briefly introduce that this presentation will present the genesis of my results.
 Chronological order:
 - 2020/07: student job for Christophe Craeye for a company on wind turbine placement and communications, using basic two-ray reflection models, elevation and terrain (land cover) data from NASA for modeling;
 - 2020/08: student job for Claude Oestges, porting MATLAB code to Python. This is where I first (without actually knowing it) created the Min-Path-Tracing method.
-- 2020/12: PhD proposal
-- 2021/09: start of PhD
+- 2020/12: Ph.D. proposal
+- 2021/09: start of Ph.D.
 - 2022/05-06: first presentation of my work at SITB and COST meeting in Lyon + doctoral school
 - 2023/03: EuCAP in Florence (Min-Path-Tracing (MPT));
 - 2023/07: visit of Siegen (presentation of my MPT work);
