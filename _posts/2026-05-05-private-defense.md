@@ -1,5 +1,5 @@
 ---
-title: "Differentiable Ray Tracing for Radio Propagation: Private PhD Defense"
+title: "Private PhD Defense - Differentiable Ray Tracing for Radio Propagation"
 categories:
   - Research
 tags:
