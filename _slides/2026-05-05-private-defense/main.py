@@ -3,16 +3,12 @@ import textwrap
 import manim as m
 from manim_slides import Slide
 
-# ─── Typography ───────────────────────────────────────────────────────────────
-
 TITLE_SIZE = 46
 HEADER_SIZE = 36
 BODY_SIZE = 25
 SMALL_SIZE = 22
 TINY_SIZE = 18
 FONT_FAMILY = "Droid Sans Fallback"
-
-# ─── Colour palette (same as EuCAP 2026) ─────────────────────────────────────
 
 BG = m.ManimColor("#f7f5ef")
 TEXT = m.ManimColor("#1f1f1f")
@@ -40,8 +36,6 @@ SECTIONS = [
     "Conclusion",
 ]
 
-# ─── PatchedText (fix for bad kerning at small sizes) ─────────────────────────
-
 TEXT_SCALE_FACTOR = 0.3
 
 
@@ -59,9 +53,6 @@ class PatchedText(m.Text):
 m.Text = PatchedText
 
 
-# ─── Helper functions ─────────────────────────────────────────────────────────
-
-
 def title_box(text: str, underline: bool = False) -> m.VGroup:
     """Create a slide header, optionally with an accent underline."""
     line = m.Line(m.LEFT * 6.2, m.RIGHT * 6.2, color=ACCENT, stroke_width=6)
@@ -73,6 +64,7 @@ def title_box(text: str, underline: bool = False) -> m.VGroup:
         return title.to_edge(m.UP, buff=0.45)
     return m.VGroup(title, line).to_edge(m.UP, buff=0.45)
 
+TEXT_TO_TEX_FACTOR = 1.5
 
 def bullets(
     items: list[str],
@@ -90,7 +82,7 @@ def bullets(
             txt = m.Text(wrapped, font_size=font_size, color=color, line_spacing=0.9)
         else:
             txt = m.Tex(
-                item, font_size=font_size * 1.5, color=color, tex_environment=None
+                item, font_size=font_size * TEXT_TO_TEX_FACTOR, color=color, tex_environment=None
             )
         dot.next_to(txt, m.LEFT, buff=0.28)
         dot.align_to(txt, m.UP)
@@ -123,9 +115,6 @@ def info_card(
     return m.VGroup(card, content)
 
 
-# ─── Timeline milestone helper ───────────────────────────────────────────────
-
-
 def timeline_dot(
     label: str,
     year: str,
@@ -153,7 +142,6 @@ class Main(Slide, m.MovingCameraScene):
     skip_reversing = True
 
     def construct(self):
-        # ── Global config ─────────────────────────────────────────────────
         self.camera.background_color = BG
         self.wait_time_between_slides = 0.1
 
@@ -165,11 +153,9 @@ class Main(Slide, m.MovingCameraScene):
         m.MathTex.set_default(color=TEXT, tex_template=tex_template)
         m.Tex.set_default(color=TEXT, tex_template=tex_template)
 
-        # ── Slide counter (bottom-right) ──────────────────────────────────
         slide_tag = m.Text("1", font_size=20)
         slide_tag.to_corner(m.DR)
 
-        # ── Section navigation bar (bottom) ──────────────────────────────
         section_boxes = m.VGroup()
         for idx, name in enumerate(SECTIONS):
             box = m.RoundedRectangle(
@@ -219,12 +205,8 @@ class Main(Slide, m.MovingCameraScene):
                     anims.append(grp[1].animate.set_color(target_text))
             return anims
 
-        # ── UCLouvain logo ────────────────────────────────────────────────
-        # NOTE: Make sure images/uclouvain.svg exists in the defense folder.
-        # You can copy it from the EuCAP 2026 slides:
-        #   cp ../2026-04-20-eucap-presentation/images/uclouvain.svg images/
         title_logo = (
-            m.SVGMobject("images/uclouvain.svg", height=0.85)
+            m.SVGMobject("images/uclouvain.svg", height=0.65)
             .to_corner(m.UL)
             .shift(0.25 * m.RIGHT + 0.15 * m.DOWN)
         )
@@ -233,16 +215,16 @@ class Main(Slide, m.MovingCameraScene):
         # SLIDE 0 — Title
         # ══════════════════════════════════════════════════════════════════
 
-        title = m.Text(
-            "Differentiable Ray Tracing\nfor Radio Propagation",
-            font_size=TITLE_SIZE,
-            weight=m.BOLD,
-            line_spacing=0.9,
+        title = m.Tex(
+            r"\bfseries Differentiable Ray Tracing\\for Radio Propagation",
+            font_size=TITLE_SIZE * TEXT_TO_TEX_FACTOR,
+            color=TEXT,
+            tex_environment=None,
         )
-        title.set(width=12.0)
+        # title.set(width=12.0)
 
         subtitle = m.Text(
-            "Private PhD Defense",
+            "Private Ph.D. Defense",
             font_size=BODY_SIZE,
             color=ACCENT,
             weight=m.BOLD,
@@ -259,17 +241,17 @@ class Main(Slide, m.MovingCameraScene):
             color=MUTED,
         )
 
-        jury = m.Text(
-            "Jury: C. Craeye (Chairperson), C. De Vleeschouwer (Secretary),\n"
-            "P. De Doncker (ULB), E. M. Vitucci (UniBo), J. Hoydis (NVIDIA)",
-            font_size=TINY_SIZE,
+        jury = m.Tex(
+            r"Jury: Christophe Craeye (Chairperson), Christophe De Vleeschouwer (Secretary),\\"
+            "Philippe De Doncker (ULB), Enrico Maria Vitucci (UniBo), Jakob Hoydis (NVIDIA)",
+            font_size=TINY_SIZE * TEXT_TO_TEX_FACTOR,
             color=MUTED,
-            line_spacing=0.85,
+            tex_environment=None,
         )
 
-        date_text = m.Text(
-            "ICTEAM, Université catholique de Louvain — May 5, 2026",
-            font_size=TINY_SIZE,
+        date_text = m.Tex(
+            r"ICTEAM, Université catholique de Louvain --- May 5, 2026",
+            font_size=TINY_SIZE * TEXT_TO_TEX_FACTOR,
             color=MUTED,
         )
 
@@ -315,7 +297,9 @@ class Main(Slide, m.MovingCameraScene):
         # ══════════════════════════════════════════════════════════════════
 
         # ── Slide 1: What is Ray Tracing for Radio? ───────────────────────
-        ctx_header = title_box("1. What is Ray Tracing for Radio?", underline=True)
+        ctx_header = title_box(
+            "1. What is Ray Tracing for Radio Propagation?", underline=True
+        )
 
         ctx_bullets = bullets(
             [
@@ -555,42 +539,222 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT * 6.0, m.RIGHT * 6.0, color=LINE_SOFT, stroke_width=3
         ).shift(0.3 * m.UP)
 
-        # Key milestones — positioned along the timeline
+        # Full milestone list from contents.md (month-level chronology)
         milestones_data = [
-            ("Student\njobs", "2020", -5.5, False),
-            ("PhD\nstart", "2021", -4.0, False),
-            ("SITB\n& COST", "2022", -2.8, False),
-            ("EuCAP\n(MPT)", "2023", -1.6, False),
-            ("EuCAP\n(Smooth.)", "2024", -0.2, True),
-            ("COST\nCesena", "2024", 1.0, False),
-            ("Bologna\nstay", "2024", 2.2, True),
-            ("EuCAP\n(MLM)", "2025", 3.4, False),
-            ("ICMLCN\n(ML)", "2025", 4.5, True),
-            ("EuCAP\n(FPT)", "2026", 5.6, True),
+            (
+                "2020/07",
+                "Student job (Craeye)",
+                "Wind turbine placement and communications project using two-ray reflection and NASA elevation/terrain data.",
+                False,
+            ),
+            (
+                "2020/08",
+                "Student job (Oestges)",
+                "Ported MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was novel.",
+                False,
+            ),
+            (
+                "2020/12",
+                "Ph.D. proposal",
+                "Formalized the Ph.D. research direction in differentiable radio ray tracing.",
+                False,
+            ),
+            (
+                "2021/09",
+                "Ph.D. start",
+                "Official start of the Ph.D. at UCLouvain.",
+                False,
+            ),
+            (
+                "2022/05-06",
+                "SITB + COST Lyon + Doctoral school",
+                "First presentations of early research results at SITB, COST meeting in Lyon, and doctoral school.",
+                False,
+            ),
+            (
+                "2023/03",
+                "EuCAP Florence (MPT)",
+                "First formal presentation of Min-Path-Tracing at EuCAP 2023.",
+                False,
+            ),
+            (
+                "2023/07",
+                "Visit Siegen",
+                "Research visit and talk further disseminating MPT results.",
+                False,
+            ),
+            (
+                "2023/12",
+                "Confirmation",
+                "Key Ph.D. checkpoint validating the research trajectory.",
+                False,
+            ),
+            (
+                "2024/03",
+                "EuCAP Glasgow (Smoothing)",
+                "Presented the smoothing technique, now the most cited contribution.",
+                True,
+            ),
+            (
+                "2024/04",
+                "COST stay Cesena",
+                "Short-term COST visit launching the ML-based path tracing collaboration.",
+                False,
+            ),
+            (
+                "2024/06",
+                "COST Helsinki + DiffeRT2d",
+                "Presented ML progress and introduced DiffeRT2d in the COST meeting in Helsinki.",
+                False,
+            ),
+            (
+                "2024/09-12",
+                "Long stay Bologna",
+                "Long research stay on ML generative path tracing and Multipath Lifetime Map developments.",
+                False,
+            ),
+            (
+                "2025/01",
+                "COST Dublin (ML)",
+                "Presented ongoing ML path tracing work at the COST meeting in Dublin.",
+                False,
+            ),
+            (
+                "2025/04",
+                "EuCAP Stockholm (MLM)",
+                "Presented Multipath Lifetime Map contribution at EuCAP 2025.",
+                False,
+            ),
+            (
+                "2025/05",
+                "ICMLCN Barcelona (ML)",
+                "Presented ML-based generative path tracing at ICMLCN 2025.",
+                True,
+            ),
+            (
+                "2025/09",
+                "COST Lille",
+                "Contributed a chapter to the COST book during the Lille meeting.",
+                False,
+            ),
+            (
+                "2026/03",
+                "Submission to npj",
+                "Submitted the journal paper on ML-based generative path tracing to npj Wireless Technology.",
+                False,
+            ),
+            (
+                "2026/04",
+                "EuCAP Dublin (FPT)",
+                "Presented Fermat Path Tracing at EuCAP 2026.",
+                True,
+            ),
         ]
 
-        tl_dots_top = m.VGroup()
-        tl_dots_bot = m.VGroup()
-        for i, (label, year, x_pos, highlight) in enumerate(milestones_data):
+        def milestone_date_to_decimal(date: str) -> float:
+            year_str, month_part = date.split("/", maxsplit=1)
+            month_str = month_part.split("-", maxsplit=1)[0]
+            year = int(year_str)
+            month = int(month_str)
+            return year + (month - 1) / 12
+
+        start_dec = milestone_date_to_decimal(milestones_data[0][0])
+        end_dec = milestone_date_to_decimal(milestones_data[-1][0])
+        x_left, x_right = -5.6, 5.6
+
+        # First pass: create all milestones with basic alternating placement
+        milestone_data_with_positions = []
+        for idx, (date, label, _context, highlight) in enumerate(milestones_data):
+            t = (milestone_date_to_decimal(date) - start_dec) / (end_dec - start_dec)
+            x_pos = x_left + t * (x_right - x_left)
             pos = m.RIGHT * x_pos + 0.3 * m.UP
             color = ACCENT if highlight else MUTED
-            dot = m.Dot(point=pos, radius=0.07, color=color)
-            yr = m.Text(year, font_size=12, color=color, weight=m.BOLD)
-            lbl = m.Text(
-                label,
-                font_size=11,
-                color=TEXT if highlight else MUTED,
-                line_spacing=0.8,
+
+            dot = m.Dot(point=pos, radius=0.06, color=color)
+
+            # Create a rounded text box with centered content
+            text_box = m.RoundedRectangle(
+                width=1.8,
+                height=0.75,
+                corner_radius=0.08,
+                fill_color=CARD,
+                fill_opacity=0.95,
+                stroke_color=color,
+                stroke_width=1.2,
             )
-            # Alternate labels above/below to avoid overlap
-            if i % 2 == 0:
-                yr.next_to(dot, m.UP, buff=0.12)
-                lbl.next_to(yr, m.UP, buff=0.08)
-                tl_dots_top.add(m.VGroup(dot, yr, lbl))
+
+            date_txt = m.Text(date, font_size=9, color=color, weight=m.BOLD)
+            label_txt = m.Tex(
+                r"\\".join(textwrap.wrap(label, width=11)),
+                font_size=8 * TEXT_TO_TEX_FACTOR,
+                color=TEXT if highlight else MUTED,
+            )
+
+            # Center content within the box
+            text_content = m.VGroup(date_txt, label_txt).arrange(m.DOWN, buff=0.04)
+            text_content.move_to(text_box)
+
+            text_group = m.VGroup(text_box, text_content)
+
+            # Basic alternating placement (above/below timeline)
+            is_above = idx % 2 == 0
+            if is_above:
+                text_group.next_to(dot, m.UP, buff=0.5)
             else:
-                yr.next_to(dot, m.DOWN, buff=0.12)
-                lbl.next_to(yr, m.DOWN, buff=0.08)
-                tl_dots_bot.add(m.VGroup(dot, yr, lbl))
+                text_group.next_to(dot, m.DOWN, buff=0.5)
+
+            milestone_data_with_positions.append({
+                "idx": idx,
+                "date": date,
+                "label": label,
+                "color": color,
+                "dot": dot,
+                "text_box": text_box,
+                "text_group": text_group,
+                "is_above": is_above,
+                "x_pos": x_pos,
+            })
+
+        # Second pass: detect overlaps and shift
+        box_width = 1.8
+        box_height = 0.75
+        shift_amount = 1.2
+
+        for i in range(len(milestone_data_with_positions) - 1):
+            curr = milestone_data_with_positions[i]
+            next_m = milestone_data_with_positions[i + 1]
+
+            # Check if boxes on same side would overlap horizontally
+            if curr["is_above"] == next_m["is_above"]:
+                x_dist = abs(next_m["x_pos"] - curr["x_pos"])
+                if x_dist < box_width:  # Boxes would overlap in x
+                    # Shift the next box vertically away
+                    next_m["text_group"].shift(shift_amount * (m.UP if curr["is_above"] else m.DOWN))
+                    next_m["is_above"] = not next_m["is_above"]
+
+        # Third pass: create timeline elements with connectors
+        timeline_milestones = m.VGroup()
+        timeline_connectors = m.VGroup()
+
+        for data in milestone_data_with_positions:
+            text_group = data["text_group"]
+            text_box = data["text_box"]
+            dot = data["dot"]
+            color = data["color"]
+            is_above = data["is_above"]
+
+            # Connect box to dot: attach to bottom if above, top if below
+            connector_end = text_box.get_edge_center(m.DOWN if is_above else m.UP)
+            connector = m.Line(
+                dot.get_center(),
+                connector_end,
+                color=color,
+                stroke_width=1.0,
+                fill_opacity=0.6,
+            )
+
+            timeline_milestones.add(m.VGroup(dot, text_group))
+            timeline_connectors.add(connector)
 
         # Highlight boxes for the 3 contributions
         contrib_labels = m.VGroup(
@@ -614,13 +778,50 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="The timeline of my PhD journey.")
         self.play(m.Create(tl_line))
-        self.play(
-            m.LaggedStart(
-                *[m.FadeIn(d, shift=0.1 * m.UP) for d in tl_dots_top],
-                *[m.FadeIn(d, shift=0.1 * m.DOWN) for d in tl_dots_bot],
-                lag_ratio=0.08,
+
+        for idx, (date, label, context, _highlight) in enumerate(milestones_data):
+            milestone = timeline_milestones[idx]
+            connector = timeline_connectors[idx]
+
+            context_card = m.RoundedRectangle(
+                width=11.4,
+                height=1.25,
+                corner_radius=0.12,
+                fill_color=CARD,
+                fill_opacity=0.97,
+                stroke_color=LINE_SOFT,
+                stroke_width=2,
+            ).to_edge(m.DOWN, buff=1.35)
+            context_title = m.Text(
+                f"{date} — {label}",
+                font_size=17,
+                color=TEXT,
+                weight=m.BOLD,
             )
-        )
+            context_body = m.Text(
+                textwrap.fill(context, width=92),
+                font_size=14,
+                color=MUTED,
+                line_spacing=0.85,
+            )
+            context_content = m.VGroup(context_title, context_body).arrange(
+                m.DOWN, buff=0.08
+            )
+            context_content.move_to(context_card)
+            context_box = m.VGroup(context_card, context_content)
+
+            self.next_slide(notes=f"Milestone {idx + 1}: {date} — {label}.")
+            self.play(
+                m.FadeIn(milestone, shift=0.08 * m.UP),
+                m.FadeIn(connector, shift=0.08 * m.UP),
+            )
+            self.play(m.FadeIn(context_box, shift=0.06 * m.UP))
+            if idx < len(milestones_data) - 1:
+                self.next_slide(notes="Hide context before the next milestone.")
+                self.play(m.FadeOut(context_box))
+            else:
+                self.next_slide(notes="Hide final context before contribution focus.")
+                self.play(m.FadeOut(context_box))
 
         self.next_slide(
             notes="I will focus on three main contributions, highlighted "
@@ -637,8 +838,8 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [
             tl_header,
             tl_line,
-            tl_dots_top,
-            tl_dots_bot,
+            timeline_milestones,
+            timeline_connectors,
             contrib_labels,
         ]
 
@@ -1850,60 +2051,6 @@ class Main(Slide, m.MovingCameraScene):
             warning_txt,
         ]
 
-        # ── Slide 25: Thank You / Closing ────────────────────────────────
-        end = m.VGroup(
-            m.Text("Thank you!", font_size=68, color=TEXT, weight=m.BOLD),
-            m.Text("Happy to take your questions.", font_size=42, color=ACCENT),
-        ).arrange(m.DOWN, buff=0.3)
-        end.to_edge(m.UP, buff=1.0)
-
-        # NOTE: Add QR code images if available. Copy from EuCAP 2026:
-        #   cp ../2026-04-20-eucap-presentation/images/differt.png images/
-        #   cp ../2026-04-20-eucap-presentation/images/github.png images/
-        # Uncomment the following block when images are available:
-        #
-        # qr_differt = m.ImageMobject("images/differt.png").set(width=2.45)
-        # qr_github = m.ImageMobject("images/github.png").set(width=2.45)
-        # qr_left = m.Group(
-        #     qr_differt, m.Text("DiffeRT", font_size=24, color=TEXT)
-        # ).arrange(m.DOWN, buff=0.15)
-        # qr_right = m.Group(
-        #     qr_github, m.Text("GitHub", font_size=24, color=TEXT)
-        # ).arrange(m.DOWN, buff=0.15)
-        # qr_group = m.Group(
-        #     m.Group(qr_left, qr_right).arrange(m.RIGHT, buff=1.4),
-        #     m.Text(
-        #         "Made with Manim Slides (open-source tool)",
-        #         font_size=24,
-        #         color=MUTED,
-        #     ),
-        # ).arrange(m.DOWN, buff=0.3).to_edge(m.DOWN, buff=1.0)
-
-        # Placeholder links (text-only, no QR images)
-        links = m.VGroup(
-            m.Text("github.com/jeertmans/DiffeRT", font_size=22, color=ACCENT),
-            m.Text("github.com/jeertmans/DiffeRT2d", font_size=22, color=ACCENT),
-            m.Text("jeertmans.github.io", font_size=22, color=ACCENT),
-        ).arrange(m.DOWN, buff=0.2)
-        links.to_edge(m.DOWN, buff=1.8)
-
-        manim_credit = m.Text(
-            "Made with Manim Slides (open-source tool)",
-            font_size=22,
-            color=MUTED,
-        ).next_to(links, m.DOWN, buff=0.35)
-
-        self.next_slide(
-            notes="Thank you all for your attention. I am happy to take "
-            "your questions. The code, slides, and all related materials "
-            "are available on GitHub.",
-        )
-        self.wipe(prev_slide_content, [end])
-        self.play(
-            m.FadeIn(links, shift=0.2 * m.UP),
-            m.FadeIn(manim_credit, shift=0.2 * m.UP),
-        )
-
         # ══════════════════════════════════════════════════════════════════
         # BONUS / BACKUP SLIDES
         # ══════════════════════════════════════════════════════════════════
@@ -1917,7 +2064,6 @@ class Main(Slide, m.MovingCameraScene):
                 "dynamic scene multipath structure (EuCAP 2025).",
                 "DiffeRT2d: 2D differentiable RT library for pedagogical "
                 "and prototyping use.",
-                "COST INTERACT book chapter (Lille, 2025).",
                 "Multiple conference presentations: EuCAP (×4), ICMLCN, "
                 "SITB, COST meetings.",
                 "Supervision and mentorship of master students.",
@@ -1943,22 +2089,24 @@ class Main(Slide, m.MovingCameraScene):
         # ── Backup Slide B: Publications List ────────────────────────────
         pub_header = title_box("Publications")
 
-        # TODO: Update with your full publication list.
         pub_items = [
             "[C1] EuCAP 2023 — Min-Path-Tracing (Florence)",
             "[C2] EuCAP 2024 — Smoothing technique (Glasgow)",
             "[C3] EuCAP 2025 — Multipath Lifetime Map (Stockholm)",
             "[C4] ICMLCN 2025 — ML-based path tracing (Barcelona)",
-            "[C5] EuCAP 2026 — Fermat Path Tracing (Dublin)",
-            "[J1] npj Wireless Technology 2026 — ML-assisted RT (submitted)",
-            "[B1] COST INTERACT book chapter (2025)",
+            "[C5] EuCAP 2026 — Fermat Path Tracing (Dublin) (Best Propagation Paper Award)",
+            "[B1] COST INTERACT book (2025) — ML-assisted propagation modeling section (2025)",
+            "[J1] npj Wireless Technology (2026) — ML-assisted RT (submitted)",
+            "[J*] JOSE (2023) — Manim Slides",
+            "[J*] JOSS (2023) — DiffeRT2d",
+            "[C*] ICMCLCN (2023) — DiffeRT",
         ]
 
         pub_cards = m.VGroup()
         for item in pub_items:
             card = m.RoundedRectangle(
                 width=11.6,
-                height=0.6,
+                height=0.45,
                 corner_radius=0.1,
                 fill_color=CARD,
                 fill_opacity=0.95,
@@ -1979,3 +2127,15 @@ class Main(Slide, m.MovingCameraScene):
                 lag_ratio=0.06,
             )
         )
+        prev_slide_content = [pub_header, pub_cards]
+
+        # Thank You / Closing
+        end = m.VGroup(
+            m.Text("Thank you!", font_size=68, color=TEXT, weight=m.BOLD),
+            m.Text("Happy to take your questions.", font_size=42, color=ACCENT),
+        ).arrange(m.DOWN, buff=0.3)
+
+        self.next_slide(
+            notes="Thank you all for your attention. I am happy to take your questions.",
+        )
+        self.wipe(prev_slide_content, [end])

@@ -42,3 +42,6 @@ _slides/2026-04-20-eucap-presentation/images/street-canyon-*.png
 *.fdb_latexmk
 *.fls
 *.log
+
+# RenderCV
+_data/rendercv_output/*
