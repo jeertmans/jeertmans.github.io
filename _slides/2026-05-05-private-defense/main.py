@@ -31,7 +31,7 @@ SECTIONS = [
     "Context",
     "Timeline",
     "Smoothing",
-    "ML Path Tracing",
+    "ML Path Sampling",
     "FPT",
     "Conclusion",
 ]
@@ -64,7 +64,9 @@ def title_box(text: str, underline: bool = False) -> m.VGroup:
         return title.to_edge(m.UP, buff=0.45)
     return m.VGroup(title, line).to_edge(m.UP, buff=0.45)
 
+
 TEXT_TO_TEX_FACTOR = 1.5
+
 
 def bullets(
     items: list[str],
@@ -82,7 +84,10 @@ def bullets(
             txt = m.Text(wrapped, font_size=font_size, color=color, line_spacing=0.9)
         else:
             txt = m.Tex(
-                item, font_size=font_size * TEXT_TO_TEX_FACTOR, color=color, tex_environment=None
+                item,
+                font_size=font_size * TEXT_TO_TEX_FACTOR,
+                color=color,
+                tex_environment=None,
             )
         dot.next_to(txt, m.LEFT, buff=0.28)
         dot.align_to(txt, m.UP)
@@ -206,7 +211,7 @@ class Main(Slide, m.MovingCameraScene):
             return anims
 
         title_logo = (
-            m.SVGMobject("images/uclouvain.svg", height=0.65)
+            m.SVGMobject("images/uclouvain.svg", height=0.35)
             .to_corner(m.UL)
             .shift(0.25 * m.RIGHT + 0.15 * m.DOWN)
         )
@@ -219,7 +224,6 @@ class Main(Slide, m.MovingCameraScene):
             r"\bfseries Differentiable Ray Tracing\\for Radio Propagation",
             font_size=TITLE_SIZE * TEXT_TO_TEX_FACTOR,
             color=TEXT,
-            tex_environment=None,
         )
         # title.set(width=12.0)
 
@@ -246,7 +250,6 @@ class Main(Slide, m.MovingCameraScene):
             "Philippe De Doncker (ULB), Enrico Maria Vitucci (UniBo), Jakob Hoydis (NVIDIA)",
             font_size=TINY_SIZE * TEXT_TO_TEX_FACTOR,
             color=MUTED,
-            tex_environment=None,
         )
 
         date_text = m.Tex(
@@ -273,7 +276,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(
             notes="Welcome everyone, and thank you for being here today. "
-            "My name is Jérome Eertmans, and I will present my PhD work "
+            "My name is Jérome Eertmans, and I will present my Ph.D. work "
             "on differentiable ray tracing for radio propagation modeling.",
         )
         self.play(
@@ -531,8 +534,8 @@ class Main(Slide, m.MovingCameraScene):
         # SECTION 2 — Timeline / TOC
         # ══════════════════════════════════════════════════════════════════
 
-        # ── Slide 4: PhD Timeline ─────────────────────────────────────────
-        tl_header = title_box("PhD Journey: A Timeline")
+        # ── Slide 4: Ph.D. Timeline ─────────────────────────────────────────
+        tl_header = title_box("Ph.D. Journey: A Timeline")
 
         # Timeline axis
         tl_line = m.Line(
@@ -544,7 +547,8 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2020/07",
                 "Student job (Craeye)",
-                "Wind turbine placement and communications project using two-ray reflection and NASA elevation/terrain data.",
+                "Wind turbine placement and communications project using two-ray model and NASA elevation/terrain data.",
+                False,
                 False,
             ),
             (
@@ -552,17 +556,20 @@ class Main(Slide, m.MovingCameraScene):
                 "Student job (Oestges)",
                 "Ported MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was novel.",
                 False,
+                False,
             ),
             (
                 "2020/12",
                 "Ph.D. proposal",
                 "Formalized the Ph.D. research direction in differentiable radio ray tracing.",
                 False,
+                True,  # Offset to avoid overlap with Crayeye's student job
             ),
             (
                 "2021/09",
                 "Ph.D. start",
                 "Official start of the Ph.D. at UCLouvain.",
+                False,
                 False,
             ),
             (
@@ -570,11 +577,13 @@ class Main(Slide, m.MovingCameraScene):
                 "SITB + COST Lyon + Doctoral school",
                 "First presentations of early research results at SITB, COST meeting in Lyon, and doctoral school.",
                 False,
+                False,
             ),
             (
                 "2023/03",
                 "EuCAP Florence (MPT)",
                 "First formal presentation of Min-Path-Tracing at EuCAP 2023.",
+                False,
                 False,
             ),
             (
@@ -582,23 +591,27 @@ class Main(Slide, m.MovingCameraScene):
                 "Visit Siegen",
                 "Research visit and talk further disseminating MPT results.",
                 False,
+                False,
             ),
             (
                 "2023/12",
                 "Confirmation",
                 "Key Ph.D. checkpoint validating the research trajectory.",
                 False,
+                True,  # Offset to avoid overlap with EuCap 2023
             ),
             (
                 "2024/03",
                 "EuCAP Glasgow (Smoothing)",
                 "Presented the smoothing technique, now the most cited contribution.",
                 True,
+                True,  # Offset to avoid overlap with Siegens visit
             ),
             (
                 "2024/04",
                 "COST stay Cesena",
                 "Short-term COST visit launching the ML-based path tracing collaboration.",
+                False,
                 False,
             ),
             (
@@ -606,23 +619,27 @@ class Main(Slide, m.MovingCameraScene):
                 "COST Helsinki + DiffeRT2d",
                 "Presented ML progress and introduced DiffeRT2d in the COST meeting in Helsinki.",
                 False,
+                False,
             ),
             (
                 "2024/09-12",
                 "Long stay Bologna",
                 "Long research stay on ML generative path tracing and Multipath Lifetime Map developments.",
                 False,
+                True,  # Offset to avoid overlap with stay in Cesena
             ),
             (
                 "2025/01",
                 "COST Dublin (ML)",
                 "Presented ongoing ML path tracing work at the COST meeting in Dublin.",
                 False,
+                True,  # Offset to avoid overlap with COST meeting in Helsinki
             ),
             (
                 "2025/04",
                 "EuCAP Stockholm (MLM)",
                 "Presented Multipath Lifetime Map contribution at EuCAP 2025.",
+                False,
                 False,
             ),
             (
@@ -630,17 +647,20 @@ class Main(Slide, m.MovingCameraScene):
                 "ICMLCN Barcelona (ML)",
                 "Presented ML-based generative path tracing at ICMLCN 2025.",
                 True,
+                False,
             ),
             (
                 "2025/09",
                 "COST Lille",
-                "Contributed a chapter to the COST book during the Lille meeting.",
+                "Contributed a chapter section to the COST book during the Lille meeting.",
                 False,
+                True,  # Offset to avoid overlap with EuCAP 2025
             ),
             (
                 "2026/03",
                 "Submission to npj",
                 "Submitted the journal paper on ML-based generative path tracing to npj Wireless Technology.",
+                False,
                 False,
             ),
             (
@@ -648,6 +668,7 @@ class Main(Slide, m.MovingCameraScene):
                 "EuCAP Dublin (FPT)",
                 "Presented Fermat Path Tracing at EuCAP 2026.",
                 True,
+                False,
             ),
         ]
 
@@ -664,7 +685,9 @@ class Main(Slide, m.MovingCameraScene):
 
         # First pass: create all milestones with basic alternating placement
         milestone_data_with_positions = []
-        for idx, (date, label, _context, highlight) in enumerate(milestones_data):
+        for idx, (date, label, _context, highlight, offset) in enumerate(
+            milestones_data
+        ):
             t = (milestone_date_to_decimal(date) - start_dec) / (end_dec - start_dec)
             x_pos = x_left + t * (x_right - x_left)
             pos = m.RIGHT * x_pos + 0.3 * m.UP
@@ -674,7 +697,7 @@ class Main(Slide, m.MovingCameraScene):
 
             # Create a rounded text box with centered content
             text_box = m.RoundedRectangle(
-                width=1.8,
+                width=0.85,
                 height=0.75,
                 corner_radius=0.08,
                 fill_color=CARD,
@@ -685,7 +708,7 @@ class Main(Slide, m.MovingCameraScene):
 
             date_txt = m.Text(date, font_size=9, color=color, weight=m.BOLD)
             label_txt = m.Tex(
-                r"\\".join(textwrap.wrap(label, width=11)),
+                r"\\".join(textwrap.wrap(label, width=12)),
                 font_size=8 * TEXT_TO_TEX_FACTOR,
                 color=TEXT if highlight else MUTED,
             )
@@ -697,40 +720,26 @@ class Main(Slide, m.MovingCameraScene):
             text_group = m.VGroup(text_box, text_content)
 
             # Basic alternating placement (above/below timeline)
+            buff = 1.2 if offset else 0.2
             is_above = idx % 2 == 0
             if is_above:
-                text_group.next_to(dot, m.UP, buff=0.5)
+                text_group.next_to(dot, m.UP, buff=buff)
             else:
-                text_group.next_to(dot, m.DOWN, buff=0.5)
+                text_group.next_to(dot, m.DOWN, buff=buff)
 
-            milestone_data_with_positions.append({
-                "idx": idx,
-                "date": date,
-                "label": label,
-                "color": color,
-                "dot": dot,
-                "text_box": text_box,
-                "text_group": text_group,
-                "is_above": is_above,
-                "x_pos": x_pos,
-            })
-
-        # Second pass: detect overlaps and shift
-        box_width = 1.8
-        box_height = 0.75
-        shift_amount = 1.2
-
-        for i in range(len(milestone_data_with_positions) - 1):
-            curr = milestone_data_with_positions[i]
-            next_m = milestone_data_with_positions[i + 1]
-
-            # Check if boxes on same side would overlap horizontally
-            if curr["is_above"] == next_m["is_above"]:
-                x_dist = abs(next_m["x_pos"] - curr["x_pos"])
-                if x_dist < box_width:  # Boxes would overlap in x
-                    # Shift the next box vertically away
-                    next_m["text_group"].shift(shift_amount * (m.UP if curr["is_above"] else m.DOWN))
-                    next_m["is_above"] = not next_m["is_above"]
+            milestone_data_with_positions.append(
+                {
+                    "idx": idx,
+                    "date": date,
+                    "label": label,
+                    "color": color,
+                    "dot": dot,
+                    "text_box": text_box,
+                    "text_group": text_group,
+                    "is_above": is_above,
+                    "x_pos": x_pos,
+                }
+            )
 
         # Third pass: create timeline elements with connectors
         timeline_milestones = m.VGroup()
@@ -759,16 +768,16 @@ class Main(Slide, m.MovingCameraScene):
         # Highlight boxes for the 3 contributions
         contrib_labels = m.VGroup(
             m.Text("① Smoothing", font_size=18, color=ACCENT, weight=m.BOLD),
-            m.Text("② ML Path Tracing", font_size=18, color=ACCENT, weight=m.BOLD),
-            m.Text("③ Fermat PT", font_size=18, color=ACCENT, weight=m.BOLD),
+            m.Text("② ML Path Sampling", font_size=18, color=ACCENT, weight=m.BOLD),
+            m.Text("③ Fermat Path Tracing", font_size=18, color=ACCENT, weight=m.BOLD),
         ).arrange(m.RIGHT, buff=1.2)
         contrib_labels.to_edge(m.DOWN, buff=1.5)
 
         self.next_slide(
             notes="Before diving into the contributions, let me give you "
-            "an overview of my PhD journey. This timeline highlights the "
+            "an overview of my Ph.D. journey. This timeline highlights the "
             "key milestones, from my student jobs in 2020 through the "
-            "start of my PhD in 2021, several conferences and research "
+            "start of my Ph.D. in 2021, several conferences and research "
             "stays, up to EuCAP 2026 just a few weeks ago.",
         )
         self.play(
@@ -776,10 +785,14 @@ class Main(Slide, m.MovingCameraScene):
             self.wipe(prev_slide_content, [tl_header], return_animation=True),
         )
 
-        self.next_slide(notes="The timeline of my PhD journey.")
+        self.next_slide(notes="The timeline of my Ph.D. journey.")
         self.play(m.Create(tl_line))
 
-        for idx, (date, label, context, _highlight) in enumerate(milestones_data):
+        prev_context_box = None
+
+        for idx, (date, label, context, _highlight, _offset) in enumerate(
+            milestones_data
+        ):
             milestone = timeline_milestones[idx]
             connector = timeline_connectors[idx]
 
@@ -791,7 +804,7 @@ class Main(Slide, m.MovingCameraScene):
                 fill_opacity=0.97,
                 stroke_color=LINE_SOFT,
                 stroke_width=2,
-            ).to_edge(m.DOWN, buff=1.35)
+            ).to_edge(m.DOWN, buff=0.70)
             context_title = m.Text(
                 f"{date} — {label}",
                 font_size=17,
@@ -810,18 +823,26 @@ class Main(Slide, m.MovingCameraScene):
             context_content.move_to(context_card)
             context_box = m.VGroup(context_card, context_content)
 
+            dot, (text_box, text_content) = milestone
+
             self.next_slide(notes=f"Milestone {idx + 1}: {date} — {label}.")
             self.play(
-                m.FadeIn(milestone, shift=0.08 * m.UP),
-                m.FadeIn(connector, shift=0.08 * m.UP),
+                self.wipe([prev_context_box], [context_box], return_animation=True)
+                if prev_context_box is not None
+                else m.FadeIn(context_box, shift=0.06 * m.UP),
+                m.LaggedStart(
+                    m.GrowFromCenter(dot),
+                    m.Create(connector),
+                    m.DrawBorderThenFill(text_box),
+                    m.FadeIn(text_content, shift=0.06 * m.UP),
+                    lag_ratio=0.25,
+                ),
+                run_time=1.0,
             )
-            self.play(m.FadeIn(context_box, shift=0.06 * m.UP))
-            if idx < len(milestones_data) - 1:
-                self.next_slide(notes="Hide context before the next milestone.")
-                self.play(m.FadeOut(context_box))
-            else:
-                self.next_slide(notes="Hide final context before contribution focus.")
-                self.play(m.FadeOut(context_box))
+            prev_context_box = context_box
+
+        self.next_slide(notes="Hide final context before contribution focus.")
+        self.play(m.FadeOut(prev_context_box))
 
         self.next_slide(
             notes="I will focus on three main contributions, highlighted "
@@ -970,7 +991,7 @@ class Main(Slide, m.MovingCameraScene):
         origin_card = info_card(
             "Genesis of MPT",
             "Created during a student job\n"
-            "before the PhD even started —\n"
+            "before the Ph.D. even started —\n"
             "without knowing the method\n"
             "was novel!",
             fill_color=ORANGE_SOFT_2,
@@ -981,7 +1002,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(
             notes="The Min-Path-Tracing method is the foundation of my "
             "thesis work. Interestingly, I first created this method "
-            "during a student job in 2020, before my PhD even started, "
+            "during a student job in 2020, before my Ph.D. even started, "
             "without knowing it was a novel approach.",
         )
         self.play(
@@ -1118,7 +1139,7 @@ class Main(Slide, m.MovingCameraScene):
 
         impact_bullets = bullets(
             [
-                "Most cited publication of my PhD work.",
+                "Most cited publication of my Ph.D. work.",
                 "Adopted by other research groups for differentiable "
                 "propagation studies.",
                 "Foundation for DiffeRT2d — a pedagogical 2D RT library in Python/JAX.",
@@ -1407,7 +1428,7 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [train_header, train_bullets, train_vis_grp]
 
         # ── Slide 15: ML Results ─────────────────────────────────────────
-        ml_res_header = title_box("ML Path Tracing: Results")
+        ml_res_header = title_box("ML Path Sampling: Results")
 
         ml_res_bullets = bullets(
             [
@@ -1961,7 +1982,7 @@ class Main(Slide, m.MovingCameraScene):
                 "(Italy, Dublin, Lille, ...).",
                 "Created Manim Slides — an open-source tool for "
                 "animated presentations (used right now!).",
-                "Contributed a chapter to the COST INTERACT book (Lille, 2025).",
+                "Contributed a chapter section to the COST INTERACT book (Lille, 2025).",
                 "Bridging communities: radio propagation, optimization, "
                 "and machine learning.",
             ],
@@ -2118,7 +2139,7 @@ class Main(Slide, m.MovingCameraScene):
         pub_cards.arrange(m.DOWN, buff=0.12).next_to(pub_header, m.DOWN, buff=0.5)
 
         self.next_slide(
-            notes="Backup slide: full list of publications during the PhD.",
+            notes="Backup slide: full list of publications during the Ph.D.",
         )
         self.wipe(prev_slide_content, [pub_header])
         self.play(
