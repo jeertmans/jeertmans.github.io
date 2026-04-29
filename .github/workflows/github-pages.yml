@@ -92,6 +92,10 @@ jobs:
         name: notebooks-assets
         path: assets/notebooks
 
+    - uses: taiki-e/install-action@v2
+      with:
+        tool: files-finder@0.5.1
+
     - name: Optimize PDFs
       run: |
         tmp=$(mktemp --suffix .pdf)
