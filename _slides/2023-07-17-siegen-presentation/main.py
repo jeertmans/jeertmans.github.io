@@ -240,7 +240,7 @@ class Main(Slide):
 
         self.play(FadeOut(title), self.update_slide_number())
 
-        about = about_title, profile, interests, claude, laurent = VGroup(
+        about = about_title, _profile, _interests, claude, laurent = VGroup(
             Tex("About the author").to_corner(UL),
             Tex(
                 r"""Profile:
@@ -351,7 +351,7 @@ class Main(Slide):
             Tex(r"\si{\dbw}", tex_template=tex_template),
         )
 
-        _, delay, ns = delay_label = VGroup(
+        _, delay, _ns = delay_label = VGroup(
             MathTex(r"\tau = "),
             DecimalNumber(
                 delay_ns(arrow.get_length()),

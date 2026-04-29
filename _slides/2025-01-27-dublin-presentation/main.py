@@ -473,7 +473,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.FadeIn(all_pc), run_time=1)
 
         mat = [["W_{" + str(i) + "}"] for i in range(N_FACES)]
-        mat = mat[:3] + [[r"\vdots"]] + mat[-3:]
+        mat = [*mat[:3], [r"\vdots"], *mat[-3:]]
         mat_all_pc_1 = m.Matrix(mat).move_to(all_pc)
 
         self.next_slide()
@@ -486,7 +486,7 @@ class Main(Slide, m.MovingCameraScene):
             for j in range(N_FACES)
             if i != j
         ]
-        mat = mat[:3] + [[r"\vdots", r"\vdots"]] + mat[-3:]
+        mat = [*mat[:3], [r"\vdots", r"\vdots"], *mat[-3:]]
         mat_all_pc_2 = m.Matrix(mat).move_to(all_pc)
 
         self.next_slide()
@@ -499,7 +499,7 @@ class Main(Slide, m.MovingCameraScene):
             for k in range(N_FACES)
             if i != j and j != k
         ]
-        mat = mat[:3] + [[r"\vdots", r"\vdots", r"\vdots"]] + mat[-3:]
+        mat = [*mat[:3], [r"\vdots", r"\vdots", r"\vdots"], *mat[-3:]]
         mat_all_pc_3 = m.Matrix(mat).move_to(all_pc)
 
         self.next_slide()

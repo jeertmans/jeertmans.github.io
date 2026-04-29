@@ -837,7 +837,7 @@ class Main(Slide, m.MovingCameraScene):
                     m.FadeIn(text_content, shift=0.06 * m.UP),
                     lag_ratio=0.25,
                 ),
-                run_time=1.0,
+                run_time=2.0,
             )
             prev_context_box = context_box
 
@@ -1572,7 +1572,7 @@ class Main(Slide, m.MovingCameraScene):
             font_size=38,
         )
         fpt_eq_label = m.Text("Convex optimization problem", font_size=18, color=MUTED)
-        fpt_eq_grp = m.VGroup(fpt_eq, fpt_eq_label).arrange(m.DOWN, buff=0.2)
+        m.VGroup(fpt_eq, fpt_eq_label).arrange(m.DOWN, buff=0.2)
 
         # SUGGESTION: Replace this placeholder with the annotated geometry
         # SVG if available:
@@ -2126,7 +2126,7 @@ class Main(Slide, m.MovingCameraScene):
         pub_cards = m.VGroup()
         for item in pub_items:
             card = m.RoundedRectangle(
-                width=11.6,
+                width=10.2,
                 height=0.45,
                 corner_radius=0.1,
                 fill_color=CARD,
