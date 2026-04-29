@@ -111,7 +111,7 @@ jobs:
           fi
           saved=$(expr $orgsize - $optsize)
           percent=$(expr $optsize '*' 100 / $orgsize)
-          echo "Saved $saved bytes (now ${percent}% of old) - Original: $orgsize bytes, Optimized: $optsize bytes"
+          echo "Saved $saved bytes (now ${percent}% of old) on ${f} - Original: $orgsize bytes, Optimized: $optsize bytes"
           mv "$tmp" "$f"
         done
 
