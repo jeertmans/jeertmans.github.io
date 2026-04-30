@@ -214,7 +214,10 @@ def save_fig(
         miny = np.min(y)
         maxx = np.max(x)
         maxy = np.max(y)
-        cropped_img_array = img_array[max(miny-3,0):min(maxy+3, height), max(minx-3,0):min(maxx+3, width)]
+        cropped_img_array = img_array[
+            max(miny - 3, 0) : min(maxy + 3, height),
+            max(minx - 3, 0) : min(maxx + 3, width),
+        ]
         img = Image.fromarray(cropped_img_array)
     img = img.resize((width // 4, height // 4), resample=Image.LANCZOS)
     img.save(filename)

@@ -75,6 +75,7 @@ class VideoAnimation(m.Animation):
 
 class VideoMobject:
     """Wrapper around image sequences for frame-by-frame playback."""
+
     def __init__(self, image_files, **kwargs):
         assert len(image_files) > 0, "Cannot create empty video"
         self.image_files = image_files
@@ -90,15 +91,15 @@ class VideoMobject:
 
     def play(self, **kwargs):
         return VideoAnimation(self, **kwargs)
-    
+
     def set_height(self, height):
         self._image_mob.set_height(height)
         return self
-    
+
     def set(self, **kwargs):
         self._image_mob.set(**kwargs)
         return self
-    
+
     def next_to(self, *args, **kwargs):
         self._image_mob.next_to(*args, **kwargs)
         return self
@@ -122,7 +123,7 @@ TEXT_TO_TEX_FACTOR = 1.5
 def bullets(
     items: list[str],
     font_size: int = BODY_SIZE,
-    width: float = 66,
+    width: float = 75,
     color: m.ManimColor = TEXT,
     use_tex: bool = False,
 ) -> m.VGroup:
@@ -346,7 +347,7 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "Radio waves propagate through complex environments "
                 "(cities, indoors, tunnels).",
-                "Ray Tracing (RT) simulates individual ray paths between "
+                "Ray tracing (RT) simulates individual ray paths between "
                 "transmitter and receiver.",
                 "Each path undergoes interactions: reflection, diffraction, "
                 "scattering.",
@@ -390,6 +391,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(m.FadeIn(ctx_visual, shift=0.15 * m.LEFT))
 
         self.next_slide(
+            loop=True,
             notes="Here is a street-canyon example showing ray paths evolving frame by frame."
         )
         self.play(ctx_video.play(run_time=6.0))
@@ -444,9 +446,7 @@ class Main(Slide, m.MovingCameraScene):
             stroke_color=SECOND,
             stroke_width=2,
         )
-        m.VGroup(shift_box_left, shift_box_right).arrange(m.RIGHT, buff=0.8).next_to(
-            diff_header, m.DOWN, buff=2.5
-        )
+        m.VGroup(shift_box_left, shift_box_right).arrange(m.RIGHT, buff=0.8)
 
         old_txt = m.Text(
             "Traditional RT\nCPU-oriented\nNon-differentiable", font_size=23
@@ -555,7 +555,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2020/08",
                 "Student job (Oestges)",
-                "Ported RT tool from MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was ``novel''.",
+                "Ported RT tool from MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was \"novel\".",
                 False,
                 False,
             ),
@@ -564,7 +564,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Ph.D. proposal",
                 "Formalized the Ph.D. research direction in differentiable radio ray tracing.",
                 False,
-                True,  # Offset to avoid overlap with Crayeye's student job
+                True,  # Offset to avoid overlap with Craeye's student job
             ),
             (
                 "2021/09",
@@ -625,7 +625,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2024/09-12",
                 "Long stay Bologna",
-                "Long research stay on ML generative path tracing and Multipath Lifetime Map developments.",
+                "Long research stay on ML generative path sampling and Multipath Lifetime Map developments.",
                 False,
                 True,  # Offset to avoid overlap with stay in Cesena
             ),
@@ -646,7 +646,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2025/05",
                 "ICMLCN Barcelona (ML)",
-                "Presented ML-based generative path tracing at ICMLCN 2025.",
+                "Presented ML-based generative path sampling at ICMLCN 2025.",
                 True,
                 False,
             ),
@@ -660,7 +660,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2026/03",
                 "Submission to npj",
-                "Submitted the journal paper on ML-based generative path tracing to npj Wireless Technology.",
+                "Submitted the journal paper on ML-based generative path sampling to npj Wireless Technology.",
                 False,
                 False,
             ),
@@ -807,7 +807,7 @@ class Main(Slide, m.MovingCameraScene):
                 stroke_width=2,
             ).to_edge(m.DOWN, buff=0.85)
             context_title = m.Text(
-                f"{date} — {label}",
+                f"{date} - {label}",
                 font_size=17,
                 color=TEXT,
                 weight=m.BOLD,
@@ -826,7 +826,7 @@ class Main(Slide, m.MovingCameraScene):
 
             dot, (text_box, text_content) = milestone
 
-            self.next_slide(notes=f"Milestone {idx + 1}: {date} — {label}.")
+            self.next_slide(notes=f"Milestone {idx + 1}: {date} - {label}.")
             self.play(
                 self.wipe([prev_context_box], [context_box], return_animation=True)
                 if prev_context_box is not None
@@ -907,7 +907,7 @@ class Main(Slide, m.MovingCameraScene):
         toc_items = [
             "1. Context & Motivation",
             "2. Smoothing Technique (EuCAP 2024)",
-            "3. ML-Based Generative Path Tracing (ICMLCN 2025)",
+            "3. ML-Based Generative Path Sampling (ICMLCN 2025)",
             "4. Fermat Path Tracing (EuCAP 2026)",
             "5. Contributions & Conclusion",
         ]
@@ -940,6 +940,7 @@ class Main(Slide, m.MovingCameraScene):
             *next_meta(),
             self.wipe(prev_slide_content, [toc_header], return_animation=True),
         )
+        self.next_slide(notes="The talk roadmap with highlighted contributions.")
         self.play(
             m.LaggedStart(
                 *[m.FadeIn(item, shift=0.1 * m.UP) for item in toc], lag_ratio=0.08
@@ -980,13 +981,13 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(
             notes="The core challenge for differentiable RT is that "
-            "visibility tests — checking whether a path is blocked — "
+            "visibility tests - checking whether a path is blocked - "
             "involve hard if-else conditions that break gradient flow. "
             "Our smoothing technique replaces these with continuous "
             "approximations.",
         )
         self.play(
-            *next_meta(),
+            *next_meta(new_section=2),
             self.wipe(prev_slide_content, [smooth_header], return_animation=True),
         )
 
@@ -1011,7 +1012,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Enables end-to-end gradient computation through the full RT pipeline.",
                 "Successfully applied to antenna placement optimization "
                 "and material calibration.",
-                "Implemented in DiffeRT2d (open-source 2D RT library).",
+                "Implemented in DiffeRT2d (open-source 2D RT library) and then in DiffeRT (3D RT library).",
             ],
             width=42,
         )
@@ -1063,7 +1064,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Most cited publication of my Ph.D. work.",
                 "Adopted by other research groups for differentiable "
                 "propagation studies.",
-                "Foundation for DiffeRT2d — a pedagogical 2D RT library in Python/JAX.",
+                "Foundation for DiffeRT2d - a pedagogical 2D RT library in Python/JAX.",
                 "Key enabler of the subsequent ML-based path tracing contribution.",
             ],
             width=42,
@@ -1107,12 +1108,12 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [impact_header, impact_bullets, differt2d_card]
 
         # Slide: Motivation for ML approach
-        ml_mot_header = title_box("Why Machine Learning for Path Tracing?")
+        ml_mot_header = title_box("Why Machine Learning for Path Sampling?")
 
         ml_mot_bullets = bullets(
             [
                 "Optimization-based methods (MPT, FPT) iterate per path "
-                "candidate — can be slow.",
+                "candidate - can be slow.",
                 "Idea: learn to predict valid paths directly from scene "
                 "geometry, skipping iterations.",
                 "Generative model: given TX, RX, and scene → predict "
@@ -1368,7 +1369,7 @@ class Main(Slide, m.MovingCameraScene):
             stroke_width=2,
         ).to_edge(m.DOWN, buff=1.3)
         journal_txt = m.Text(
-            "Under review — the most important and comprehensive "
+            "Under review - the most important and comprehensive "
             "contribution of this thesis.",
             font_size=22,
             color=TEXT,
@@ -1416,35 +1417,23 @@ class Main(Slide, m.MovingCameraScene):
         )
         fpt_bullets.next_to(fpt_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # ANIMATION SUGGESTION: Reuse or reference the annotated geometry
-        # SVG from EuCAP 2026 (images/geometry-annotated.svg).
-        # For now, show the optimization equation.
+        # Use the annotated geometry SVG from the `images` folder.
+        geometry_ann = m.SVGMobject("images/geometry-annotated.svg")
+        geometry_ann.set_height(3.5)
+
         fpt_eq = m.MathTex(
             r"\mathbf{T}^*=\argmin_{\mathbf{T}}"
             r"\sum_{i=0}^{n}\|\mathbf{x}_{i+1}-\mathbf{x}_i\|",
             font_size=38,
         )
-        fpt_eq_label = m.Text("Convex optimization problem", font_size=18, color=MUTED)
-        m.VGroup(fpt_eq, fpt_eq_label).arrange(m.DOWN, buff=0.2)
-
-        # SUGGESTION: Replace this placeholder with the annotated geometry
-        # SVG if available:
-        #   geometry_ann = m.SVGMobject("images/geometry-annotated.svg", height=3.5)
-        fpt_visual = m.RoundedRectangle(
-            width=4.5,
-            height=3.0,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        fpt_visual_label = m.Text(
-            "[SVG: annotated geometry\nwith parametrization]",
-            font_size=16,
+        fpt_eq_label = m.Text(
+            "Convex optimization problem",
+            font_size=18,
             color=MUTED,
-        ).move_to(fpt_visual)
-        fpt_vis = m.VGroup(fpt_visual, fpt_visual_label)
+        )
+        fpt_eq_group = m.VGroup(fpt_eq, fpt_eq_label).arrange(m.DOWN, buff=0.2)
+
+        fpt_vis = m.VGroup(geometry_ann, fpt_eq_group).arrange(m.RIGHT, buff=0.55)
         fpt_vis.next_to(fpt_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
@@ -1681,7 +1670,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [fpt_res_header, fpt_res_bullets, fpt_res_vis_grp]
 
-        # Slide: Open Source — DiffeRT
+        # Slide: Open Source - DiffeRT
         oss_header = title_box("Open Source: DiffeRT")
 
         oss_bullets = bullets(
@@ -1738,7 +1727,7 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [oss_header, oss_bullets, sw_group]
 
         # ══════════════════════════════════════════════════════════════════
-        # SECTION 6 — Conclusion
+        # SECTION 6 - Conclusion
         # ══════════════════════════════════════════════════════════════════
 
         # ── Slide 22: Summary of Contributions ──────────────────────────
@@ -1752,7 +1741,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Continuous relaxation of hard visibility → fully differentiable RT.",
             ),
             (
-                "② ML Generative Path Tracing",
+                "② ML-Based Generative Path Sampling",
                 PURPLE_SOFT,
                 m.ManimColor("#7c3aed"),
                 "Learned model predicts paths directly → real-time inference potential.",
@@ -1806,7 +1795,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(
             notes="Let me now summarize the three main contributions: "
             "the smoothing technique, the ML-based generative path "
-            "tracing, and the Fermat Path Tracing method.",
+            "sampling, and the Fermat Path Tracing method.",
         )
         self.play(
             *next_meta(new_section=5),
@@ -1829,11 +1818,11 @@ class Main(Slide, m.MovingCameraScene):
 
         proud_bullets = bullets(
             [
-                "Built DiffeRT from scratch — a full 3D differentiable "
+                "Built DiffeRT from scratch - a full 3D differentiable "
                 "RT library used by the community.",
                 "International collaborations through COST INTERACT "
                 "(Italy, Dublin, Lille, ...).",
-                "Created Manim Slides — an open-source tool for "
+                "Created Manim Slides - an open-source tool for "
                 "animated presentations (used right now!).",
                 "Contributed a chapter section to the COST INTERACT book (Lille, 2025).",
                 "Bridging communities: radio propagation, optimization, "
@@ -1929,16 +1918,16 @@ class Main(Slide, m.MovingCameraScene):
         pub_header = title_box("Publications")
 
         pub_items = [
-            "[C1] EuCAP 2023 — Min-Path-Tracing (Florence)",
-            "[C2] EuCAP 2024 — Smoothing technique (Glasgow)",
-            "[C3] EuCAP 2025 — Multipath Lifetime Map (Stockholm)",
-            "[C4] ICMLCN 2025 — ML-based path tracing (Barcelona)",
-            "[C5] EuCAP 2026 — Fermat Path Tracing (Dublin) (Best Propagation Paper Award)",
-            "[B1] COST INTERACT book (2025) — ML-assisted propagation modeling section (2025)",
-            "[J1] npj Wireless Technology (2026) — ML-assisted RT (submitted)",
-            "[J*] JOSE (2023) — Manim Slides",
-            "[J*] JOSS (2023) — DiffeRT2d",
-            "[C*] ICMCLCN (2023) — DiffeRT",
+            "[C1] EuCAP 2023 - Min-Path-Tracing (Florence)",
+            "[C2] EuCAP 2024 - Smoothing technique (Glasgow)",
+            "[C3] EuCAP 2025 - Multipath Lifetime Map (Stockholm)",
+            "[C4] ICMLCN 2025 - ML-based path tracing (Barcelona)",
+            "[C5] EuCAP 2026 - Fermat Path Tracing (Dublin) (Best Propagation Paper Award)",
+            "[B1] COST INTERACT book (2025) - ML-assisted propagation modeling section (2025)",
+            "[J1] npj Wireless Technology (2026) - ML-assisted RT (submitted)",
+            "[J*] JOSE (2023) - Manim Slides",
+            "[J*] JOSS (2023) - DiffeRT2d",
+            "[C*] ICMCLCN (2023) - DiffeRT",
         ]
 
         pub_cards = m.VGroup()

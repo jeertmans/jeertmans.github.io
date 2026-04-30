@@ -1,4 +1,3 @@
-# ruff: noqa: F722
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
@@ -9,12 +8,12 @@
 #     "optax>=0.2.8",
 # ]
 # ///
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 import jax
 import jax.numpy as jnp
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import optax
 from differt2d.geometry import Point
@@ -37,7 +36,17 @@ plt.rcParams.update(
     },
 )
 
-plt.rc('text.latex', preamble="\n".join([r"\usepackage[english]{babel}", r"\usepackage[T1]{fontenc}", r"\usepackage[default]{droidsans}", r"\usepackage[LGRgreek]{mathastext}"]))
+plt.rc(
+    "text.latex",
+    preamble="\n".join(
+        [
+            r"\usepackage[english]{babel}",
+            r"\usepackage[T1]{fontenc}",
+            r"\usepackage[default]{droidsans}",
+            r"\usepackage[LGRgreek]{mathastext}",
+        ]
+    ),
+)
 
 
 def objective_function(
@@ -105,7 +114,9 @@ for frame, alpha in enumerate(alphas):
     print(f"Frame {frame + 1}/{steps}, alpha={alpha:.2f}")
     local_scene = scene.with_transmitters(TX=Point(xy=tx_coords))
 
-    fig, ax = plt.subplots(tight_layout=True)
+    fig, ax = plt.subplots(tight_layout=True, facecolor="none")
+    fig.patch.set_alpha(0)
+    ax.set_facecolor("none")
     fig.set_figwidth(3.0 / 2.54)
     factor = 1.5
 
@@ -155,7 +166,14 @@ for frame, alpha in enumerate(alphas):
     folder = Path(__file__).parent / "images/smoothing/"
     folder.mkdir(exist_ok=True)
 
-    fig.savefig(folder / f"{frame:03d}.png", dpi=500, bbox_inches="tight")
+    fig.savefig(
+        folder / f"{frame:03d}.png",
+        dpi=500,
+        bbox_inches="tight",
+        transparent=True,
+        facecolor="none",
+        edgecolor="none",
+    )
     plt.close()
 
     loss, grads = f_and_df(
