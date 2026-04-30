@@ -33,11 +33,8 @@ At UCLouvain, Ph.D. defenses are in two parts. The first part is private, in whi
 
 {% include slides.html url="/assets/slides/2026-05-05-private-defense.html" %}
 
-If you prefer,
-<a href="/assets/slides/2026-05-05-private-defense.pptx">PowerPoint <i class="far fa-file-powerpoint fa-fw"></i></a>
-and
-<a href="/assets/slides/2026-05-05-private-defense.pdf">PDF <i class="far fa-file-pdf fa-fw"></i></a>
-versions are also available.
+If you prefer, a <a href="/assets/slides/2026-05-05-private-defense.pdf">PDF <i class="far fa-file-pdf fa-fw"></i></a>
+versions is also available. No PowerPoint version is available as it would be too large for GitHub.
 
 ## References
 
