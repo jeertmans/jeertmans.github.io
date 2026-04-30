@@ -8,7 +8,7 @@ tags:
   - ray-tracing
   - video
 image:
-  path: /assets/images/misc/icteam.png
+  path: /assets/img/posts/icteam.png
   alt: ICTEAM institute - From UCLouvain's website
 permalink: /posts/icteam-video-capsule/
 description: Short video capsule presenting my thesis to my research institute.

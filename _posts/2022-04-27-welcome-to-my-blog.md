@@ -5,7 +5,7 @@ categories:
 tags:
   - miscellaneous
 image:
-  path: /assets/images/misc/code.png
+  path: /assets/img/posts/code.png
   alt: "Staring at lines of code - Generated with Fooocus"
 pin: true
 ---

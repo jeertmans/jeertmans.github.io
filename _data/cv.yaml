@@ -5,7 +5,7 @@ cv:
   location: Belgium
   email: jeertmans@icloud.com
   website: https://www.eertmans.com/
-  photo: ../assets/images/profile.png
+  photo: ../assets/img/profile.png
   social_networks:
   - network: LinkedIn
     username: jérome-eertmans

@@ -8,7 +8,7 @@ tags:
   - opinion
 tagline: "A Python implementation"
 header:
-    overlay_image: /assets/images/misc/McNamara_UTD_book_cover.png
+    overlay_image: /assets/img/posts/McNamara_UTD_book_cover.png
     caption: "Introduction to The Uniform Geometrical Theory of Diffraction - book cover"
 published: false
 

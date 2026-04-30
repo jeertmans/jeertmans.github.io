@@ -11,7 +11,7 @@ github: jeertmans/DiffeRT
 website: https://colab.research.google.com/github/jeertmans/HER-with-JAX/blob/main/bit_flipping.ipynb
 github: jeertmans/HER-with-JAX
 image:
-  path: /assets/images/misc/her_with_jax.jpg
+  path: /assets/img/posts/her_with_jax.jpg
   alt: HER paper cover with JAX and Jupyter logos
 permalink: /posts/her-with-jax/
 description: Implementation of the Hindsight Experience Replay (HER) method in JAX.

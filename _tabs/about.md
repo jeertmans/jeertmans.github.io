@@ -3,7 +3,7 @@
 icon: fas fa-info-circle
 ---
 
-![Staring at lines of code - Generated with Fooocus](/assets/images/misc/code.png){: .shadow }
+![Staring at lines of code - Generated with Fooocus](/assets/img/posts/code.png){: .shadow }
 _Staring at lines of code - Generated with Fooocus_
 
 Hello, I am Jérome, or @jeertmans, and welcome to my personal blog!

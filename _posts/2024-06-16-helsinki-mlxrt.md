@@ -14,7 +14,7 @@ tags:
 website: /r/cost20120-helsinki
 github: jeertmans/DiffeRT2d
 image:
-  path: /assets/images/misc/helsinki_bis.jpg
+  path: /assets/img/posts/helsinki_bis.jpg
   alt: "Image by Veikko Venemies on Unsplash"
 permalink: /posts/cost-interact-june-2024-mlxrt/
 description: Presentation of the in-progress work between UCLouvain and UniBo at the COST INTERACT meeting in Helsinki, Finland.
