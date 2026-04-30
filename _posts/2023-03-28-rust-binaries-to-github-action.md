@@ -9,7 +9,7 @@ tags:
   - programming
   - rust
 image:
-  path: /assets/img/posts/github_workflow.png
+  path: /assets/img/posts/github-workflow.webp
   alt: "Testing a GitHub action... with a GitHub action!"
 description: How to automatically generate a GitHub action that executes your Rust application, with Docker.
 ---

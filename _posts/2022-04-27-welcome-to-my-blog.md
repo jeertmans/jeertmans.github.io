@@ -5,8 +5,8 @@ categories:
 tags:
   - miscellaneous
 image:
-  path: /assets/img/posts/code.png
-  alt: "Staring at lines of code - Generated with Fooocus"
+  path: /assets/img/posts/code.webp
+  alt: "Staring at lines of code - Generated with Fooocus, improved by ChatGPT"
 pin: true
 ---
 
