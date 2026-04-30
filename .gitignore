@@ -36,6 +36,8 @@ _slides/*/*.pptx
 _slides/*/*.pdf
 _slides/*/*.html
 _slides/2026-04-20-eucap-presentation/images/street-canyon-*.png
+_slides/2026-05-05-private-defense/images/smoothing/*.png
+_slides/2026-05-05-private-defense/images/street-canyon/*.png
 
 # LaTeX
 *.aux

@@ -1,6 +1,8 @@
 import textwrap
+from pathlib import Path
 
 import manim as m
+import numpy as np
 from manim_slides import Slide
 
 TITLE_SIZE = 46
@@ -51,6 +53,55 @@ class PatchedText(m.Text):
 
 
 m.Text = PatchedText
+
+
+class VideoAnimation(m.Animation):
+    def __init__(self, video_mobject, **kwargs):
+        self.video_mobject = video_mobject
+        self.index = 0
+        self.dt = 1.0 / len(video_mobject)
+        super().__init__(video_mobject._image_mob, **kwargs)
+
+    def interpolate_mobject(self, dt):
+        index = min(int(dt / self.dt), len(self.video_mobject) - 1)
+
+        if index != self.index:
+            self.index = index
+            new_img = self.video_mobject[index]
+            self.video_mobject._image_mob.pixel_array = new_img.pixel_array
+
+        return self
+
+
+class VideoMobject:
+    """Wrapper around image sequences for frame-by-frame playback."""
+    def __init__(self, image_files, **kwargs):
+        assert len(image_files) > 0, "Cannot create empty video"
+        self.image_files = image_files
+        self.kwargs = kwargs
+        # Create the initial ImageMobject
+        self._image_mob = m.ImageMobject(image_files[0], **kwargs)
+
+    def __len__(self):
+        return len(self.image_files)
+
+    def __getitem__(self, index):
+        return m.ImageMobject(self.image_files[index], **self.kwargs)
+
+    def play(self, **kwargs):
+        return VideoAnimation(self, **kwargs)
+    
+    def set_height(self, height):
+        self._image_mob.set_height(height)
+        return self
+    
+    def set(self, **kwargs):
+        self._image_mob.set(**kwargs)
+        return self
+    
+    def next_to(self, *args, **kwargs):
+        self._image_mob.next_to(*args, **kwargs)
+        return self
 
 
 def title_box(text: str, underline: bool = False) -> m.VGroup:
@@ -138,11 +189,6 @@ def timeline_dot(
     return m.VGroup(dot, yr, lbl)
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# MAIN PRESENTATION
-# ═══════════════════════════════════════════════════════════════════════════════
-
-
 class Main(Slide, m.MovingCameraScene):
     skip_reversing = True
 
@@ -216,16 +262,12 @@ class Main(Slide, m.MovingCameraScene):
             .shift(0.25 * m.RIGHT + 0.15 * m.DOWN)
         )
 
-        # ══════════════════════════════════════════════════════════════════
-        # SLIDE 0 — Title
-        # ══════════════════════════════════════════════════════════════════
-
+        # SLIDE: Title
         title = m.Tex(
             r"\bfseries Differentiable Ray Tracing\\for Radio Propagation",
             font_size=TITLE_SIZE * TEXT_TO_TEX_FACTOR,
             color=TEXT,
         )
-        # title.set(width=12.0)
 
         subtitle = m.Text(
             "Private Ph.D. Defense",
@@ -246,10 +288,10 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         jury = m.Tex(
-            r"Jury: Christophe Craeye (Chairperson), Christophe De Vleeschouwer (Secretary),\\"
-            "Philippe De Doncker (ULB), Enrico Maria Vitucci (UniBo), Jakob Hoydis (NVIDIA)",
-            font_size=TINY_SIZE * TEXT_TO_TEX_FACTOR,
+            r"\shortstack[c]{\mbox{Jury: Christophe Craeye (Chairperson), Christophe De Vleeschouwer (Secretary),}\\\mbox{Philippe De Doncker (ULB), Enrico Maria Vitucci (UniBo), Jakob Hoydis (NVIDIA)}}",
+            font_size=15 * TEXT_TO_TEX_FACTOR,
             color=MUTED,
+            tex_environment=None,
         )
 
         date_text = m.Tex(
@@ -295,11 +337,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [top_band, title_group, title_logo]
 
-        # ══════════════════════════════════════════════════════════════════
-        # SECTION 1 — Context
-        # ══════════════════════════════════════════════════════════════════
-
-        # ── Slide 1: What is Ray Tracing for Radio? ───────────────────────
+        # Slide: What is Ray Tracing for Radio Propagation?
         ctx_header = title_box(
             "1. What is Ray Tracing for Radio Propagation?", underline=True
         )
@@ -319,26 +357,14 @@ class Main(Slide, m.MovingCameraScene):
         )
         ctx_bullets.next_to(ctx_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # ANIMATION SUGGESTION: Add an animated 2D scene (TX on the left,
-        # RX on the right, walls in between, rays bouncing).
-        # Could reuse SVG assets from the confirmation slides or create
-        # a simple Manim diagram of TX → wall reflection → RX.
-        # For now, we use a placeholder text box on the right side.
-        ctx_visual_placeholder = m.RoundedRectangle(
-            width=4.5,
-            height=3.5,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        ctx_visual_label = m.Text(
-            "[Illustration: 2D RT scene\nTX → reflections → RX]",
-            font_size=16,
+        ctx_video = VideoMobject(sorted(Path("images/street-canyon").glob("*.png")))
+        ctx_video.set_height(3.5)
+        ctx_video_title = m.Text(
+            "Street-canyon ray tracing",
+            font_size=17,
             color=MUTED,
-        ).move_to(ctx_visual_placeholder)
-        ctx_visual = m.VGroup(ctx_visual_placeholder, ctx_visual_label)
+        ).next_to(ctx_video._image_mob, m.DOWN, buff=0.16)
+        ctx_visual = m.Group(ctx_video._image_mob, ctx_video_title)
         ctx_visual.next_to(ctx_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
@@ -363,6 +389,11 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(m.FadeIn(ctx_visual, shift=0.15 * m.LEFT))
 
+        self.next_slide(
+            notes="Here is a street-canyon example showing ray paths evolving frame by frame."
+        )
+        self.play(ctx_video.play(run_time=6.0))
+
         for b, note in zip(
             ctx_bullets,
             [
@@ -376,22 +407,21 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide(notes=note)
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [ctx_header, ctx_bullets, ctx_visual]
+        prev_slide_content = [ctx_header[0], ctx_bullets, ctx_visual]
 
-        # ── Slide 2: Why Differentiable? ──────────────────────────────────
-        diff_header = title_box("Why Differentiable Ray Tracing?", underline=True)
+        # Slide: What is Differentiable Ray Tracing?
+        diff_header = title_box("What is Differentiable Ray Tracing?")
 
         diff_bullets = bullets(
             [
                 "Differentiable RT allows computing gradients of any output "
                 "w.r.t. any input parameter.",
                 "Enables inverse problems: antenna placement, material "
-                "calibration, beamforming.",
+                "calibration, localization.",
                 "End-to-end optimization through the full RT pipeline "
                 "using automatic differentiation (AD).",
-                "Naturally integrates with machine learning frameworks (JAX, PyTorch).",
+                "Naturally integrates with machine learning frameworks.",
             ],
-            width=42,
         )
         diff_bullets.next_to(diff_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
@@ -475,39 +505,20 @@ class Main(Slide, m.MovingCameraScene):
             new_txt,
         ]
 
-        # ── Slide 3: Challenges ───────────────────────────────────────────
-        chal_header = title_box("Key Challenges", underline=True)
+        # Slide: Challenges
+        chal_header = title_box("Key Challenges")
 
         chal_bullets = bullets(
             [
-                "Speed: tracing thousands to millions of path candidates in real time.",
-                "Mixed interactions: handling reflection and diffraction "
-                "in a unified framework.",
+                "Speed: tracing thousands to millions of ray path candidates.",
+                "Mixed interactions: handling reflection, diffraction, refraction, etc.",
                 "GPU constraints: avoiding branching, warp divergence, "
                 "and excessive memory.",
-                "Differentiability: maintaining end-to-end gradient flow "
-                "through iterative solvers.",
+                "Differentiability: AD frameworks impose implementation constraints.",
             ],
-            width=42,
             color=ACCENT,
         )
         chal_bullets.next_to(chal_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        thesis_card = m.RoundedRectangle(
-            width=11.6,
-            height=1.1,
-            corner_radius=0.12,
-            fill_color=GREEN_SOFT,
-            fill_opacity=1,
-            stroke_color=ACCENT,
-            stroke_width=2,
-        ).to_edge(m.DOWN, buff=1.2)
-        thesis_txt = m.Text(
-            "This thesis addresses these challenges through three main contributions.",
-            font_size=22,
-            color=TEXT,
-            weight=m.BOLD,
-        ).move_to(thesis_card)
 
         self.next_slide(
             notes="These motivations come with several practical challenges, "
@@ -522,19 +533,9 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide(notes="Challenge bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        self.next_slide(
-            notes="My thesis addresses these challenges through three main "
-            "contributions, which I will now present in chronological order."
-        )
-        self.play(m.FadeIn(thesis_card), m.FadeIn(thesis_txt))
+        prev_slide_content = [chal_header, chal_bullets]
 
-        prev_slide_content = [chal_header, chal_bullets, thesis_card, thesis_txt]
-
-        # ══════════════════════════════════════════════════════════════════
-        # SECTION 2 — Timeline / TOC
-        # ══════════════════════════════════════════════════════════════════
-
-        # ── Slide 4: Ph.D. Timeline ─────────────────────────────────────────
+        # Slide: Ph.D. Timeline
         tl_header = title_box("Ph.D. Journey: A Timeline")
 
         # Timeline axis
@@ -554,7 +555,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2020/08",
                 "Student job (Oestges)",
-                "Ported MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was novel.",
+                "Ported RT tool from MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was ``novel''.",
                 False,
                 False,
             ),
@@ -804,7 +805,7 @@ class Main(Slide, m.MovingCameraScene):
                 fill_opacity=0.97,
                 stroke_color=LINE_SOFT,
                 stroke_width=2,
-            ).to_edge(m.DOWN, buff=0.70)
+            ).to_edge(m.DOWN, buff=0.85)
             context_title = m.Text(
                 f"{date} — {label}",
                 font_size=17,
@@ -837,7 +838,7 @@ class Main(Slide, m.MovingCameraScene):
                     m.FadeIn(text_content, shift=0.06 * m.UP),
                     lag_ratio=0.25,
                 ),
-                run_time=2.0,
+                run_time=1.25,
             )
             prev_context_box = context_box
 
@@ -856,22 +857,59 @@ class Main(Slide, m.MovingCameraScene):
             )
         )
 
+        # Typical RT pipeline, shown after the timeline and contributions.
+        geometry_svg = m.SVGMobject("images/geometry.svg", height=3.6)
+        pipeline_svg = m.SVGMobject("images/pipeline.svg", height=3.6)
+        svg_group = (
+            m.VGroup(geometry_svg, pipeline_svg).arrange(m.RIGHT, buff=0.5).scale(0.7)
+        )
+        # Move the combined group more to the right of the slide
+        svg_group.to_edge(m.LEFT).shift(1.2 * m.RIGHT)
+
+        # Fade timeline and reveal the svg diagrams
+        self.next_slide(notes="Show the typical ray tracing pipeline.")
+        self.play(
+            tl_line.animate.set_opacity(0.05),
+            timeline_milestones.animate.set_opacity(0.05),
+            timeline_connectors.animate.set_opacity(0.05),
+            m.FadeIn(svg_group, shift=0.1 * m.UP),
+            run_time=1.0,
+        )
+
+        # Place the contribution labels relative to the pipeline SVG (right element of the group).
+        svg_ur = pipeline_svg.get_corner(m.UR)
+        svg_dr = pipeline_svg.get_corner(m.DR)
+
+        def get_pos(alpha: float) -> np.ndarray:
+            return svg_dr + alpha * (svg_ur - svg_dr)
+
+        self.next_slide(notes="Map contributions onto the pipeline blocks.")
+        # Place: ① Smoothing near the bottom-left of the pipeline (left of post-processing),
+        # ② ML Path Sampling to the right of the pipeline (upper-right area),
+        # ③ Fermat Path Tracing to the right-middle of the pipeline.
+        self.play(
+            contrib_labels[1].animate.next_to(get_pos(0.895348837)),
+            contrib_labels[2].animate.next_to(get_pos(0.581395349)),
+            contrib_labels[0].animate.next_to(get_pos(0.255813953)),
+        )
+
         prev_slide_content = [
             tl_header,
             tl_line,
             timeline_milestones,
             timeline_connectors,
             contrib_labels,
+            svg_group,
         ]
 
-        # ── Slide 5: Talk Roadmap ─────────────────────────────────────────
+        # Slide: Talk Roadmap
         toc_header = title_box("Talk Roadmap")
         toc_items = [
             "1. Context & Motivation",
             "2. Smoothing Technique (EuCAP 2024)",
             "3. ML-Based Generative Path Tracing (ICMLCN 2025)",
             "4. Fermat Path Tracing (EuCAP 2026)",
-            "5. Conclusion & Future Directions",
+            "5. Contributions & Conclusion",
         ]
         toc = m.VGroup()
         for idx, item in enumerate(toc_items):
@@ -910,117 +948,8 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [toc, toc_header]
 
-        # ══════════════════════════════════════════════════════════════════
-        # SECTION 3 — Smoothing Technique
-        # ══════════════════════════════════════════════════════════════════
-
-        # ── Slide 6: The Path Tracing Problem ─────────────────────────────
-        pt_header = title_box("The Path Tracing Problem", underline=True)
-
-        pt_bullets = bullets(
-            [
-                "Goal: find the path from TX to RX via n interactions "
-                "that satisfies Fermat's principle.",
-                r"Fermat's principle: rays follow paths of stationary "
-                r"(extremal) optical length.",
-                "Each interaction point lies on a surface (reflection) "
-                "or edge (diffraction).",
-                "Unified parametrization: x_i = A_i t_i + b_i "
-                "(same tensor layout for all types).",
-            ],
-            width=42,
-        )
-        pt_bullets.next_to(pt_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        # Equation card
-        eq_card = m.RoundedRectangle(
-            width=5.6,
-            height=1.8,
-            corner_radius=0.14,
-            fill_color=CARD,
-            fill_opacity=0.97,
-            stroke_color=ACCENT,
-            stroke_width=2,
-        )
-        eq_tex = m.MathTex(
-            r"\mathbf{T}^*=\argmin_{\mathbf{T}} \sum_{i=0}^{n}"
-            r"\|\mathbf{x}_{i+1} - \mathbf{x}_i\|",
-            font_size=36,
-        ).move_to(eq_card)
-        eq_group = m.VGroup(eq_card, eq_tex)
-        eq_group.next_to(pt_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        self.next_slide(
-            notes="Let me now present the first contribution. It all starts "
-            "with the path tracing problem: given a TX and RX and a "
-            "sequence of interactions, we want to find the path that "
-            "minimizes the total optical length, following Fermat's principle.",
-        )
-        self.play(
-            *next_meta(new_section=2),
-            self.wipe(prev_slide_content, [pt_header], return_animation=True),
-        )
-
-        self.next_slide(notes="The min. path length formulation.")
-        self.play(m.FadeIn(eq_group, shift=0.15 * m.LEFT))
-
-        for b in pt_bullets:
-            self.next_slide(notes="Path tracing bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [pt_header, pt_bullets, eq_group]
-
-        # ── Slide 7: Min-Path-Tracing (MPT) ──────────────────────────────
-        mpt_header = title_box("Min-Path-Tracing (MPT)")
-
-        mpt_bullets = bullets(
-            [
-                "Origin: student job in 2020 — porting MATLAB code to "
-                "Python for Claude Oestges.",
-                "Key idea: optimize path coordinates via gradient "
-                "descent on path length.",
-                "First formalized and presented at EuCAP 2023 (Florence).",
-                "Supports mixed reflection/diffraction sequences.",
-                "Foundation for all subsequent contributions.",
-            ],
-            width=42,
-        )
-        mpt_bullets.next_to(mpt_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        # Origin story card
-        origin_card = info_card(
-            "Genesis of MPT",
-            "Created during a student job\n"
-            "before the Ph.D. even started —\n"
-            "without knowing the method\n"
-            "was novel!",
-            fill_color=ORANGE_SOFT_2,
-            stroke_color=SECOND,
-        )
-        origin_card.next_to(mpt_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        self.next_slide(
-            notes="The Min-Path-Tracing method is the foundation of my "
-            "thesis work. Interestingly, I first created this method "
-            "during a student job in 2020, before my Ph.D. even started, "
-            "without knowing it was a novel approach.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [mpt_header], return_animation=True),
-        )
-
-        self.next_slide(notes="The origin story.")
-        self.play(m.FadeIn(origin_card, shift=0.15 * m.LEFT))
-
-        for b in mpt_bullets:
-            self.next_slide(notes="MPT bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [mpt_header, mpt_bullets, origin_card]
-
-        # ── Slide 8: The Smoothing Idea ───────────────────────────────────
-        smooth_header = title_box("Smoothing for Differentiable RT", underline=True)
+        # Slide: The Smoothing Idea
+        smooth_header = title_box("Smoothing for Differentiable RT")
 
         smooth_bullets = bullets(
             [
@@ -1039,25 +968,14 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT, buff=0.75
         )
 
-        # ANIMATION SUGGESTION: Show a step function (hard visibility 0/1)
-        # morphing into a smooth sigmoid curve using a ValueTracker
-        # that interpolates the "sharpness" parameter.
-        # For now, we show a placeholder diagram.
-        smooth_visual = m.RoundedRectangle(
-            width=4.5,
-            height=3.0,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        smooth_label = m.Text(
-            "[Animation: step function\n→ smooth sigmoid]",
-            font_size=16,
+        smooth_video = VideoMobject(sorted(Path("images/smoothing").glob("*.png")))
+        smooth_video.set_height(3.0)
+        smooth_video_title = m.Text(
+            "Optimization with smoothing",
+            font_size=17,
             color=MUTED,
-        ).move_to(smooth_visual)
-        smooth_vis = m.VGroup(smooth_visual, smooth_label)
+        ).next_to(smooth_video._image_mob, m.DOWN, buff=0.16)
+        smooth_vis = m.Group(smooth_video._image_mob, smooth_video_title)
         smooth_vis.next_to(smooth_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
@@ -1075,13 +993,16 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(notes="Hard → smooth transition.")
         self.play(m.FadeIn(smooth_vis, shift=0.15 * m.LEFT))
 
+        self.next_slide(notes="Smoothing optimization animation.")
+        self.play(smooth_video.play(run_time=7.0))
+
         for b in smooth_bullets:
             self.next_slide(notes="Smoothing bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [smooth_header, smooth_bullets, smooth_vis]
 
-        # ── Slide 9: Smoothing Results ────────────────────────────────────
+        # Slide: Smoothing Results
         sres_header = title_box("Smoothing: Key Results")
 
         sres_bullets = bullets(
@@ -1134,7 +1055,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [sres_header, sres_bullets, sres_vis]
 
-        # ── Slide 10: Impact ──────────────────────────────────────────────
+        # Slide: Impact
         impact_header = title_box("Smoothing: Impact & Legacy")
 
         impact_bullets = bullets(
@@ -1185,14 +1106,8 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [impact_header, impact_bullets, differt2d_card]
 
-        # ══════════════════════════════════════════════════════════════════
-        # SECTION 4 — ML-Based Generative Path Tracing
-        # ══════════════════════════════════════════════════════════════════
-
-        # ── Slide 11: Motivation for ML approach ─────────────────────────
-        ml_mot_header = title_box(
-            "Why Machine Learning for Path Tracing?", underline=True
-        )
+        # Slide: Motivation for ML approach
+        ml_mot_header = title_box("Why Machine Learning for Path Tracing?")
 
         ml_mot_bullets = bullets(
             [
@@ -1228,65 +1143,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [ml_mot_header, ml_mot_bullets]
 
-        # ── Slide 12: COST Collaboration ─────────────────────────────────
-        collab_header = title_box("Research Collaboration: COST INTERACT")
-
-        collab_bullets = bullets(
-            [
-                "COST Action CA20120 (INTERACT): European network for "
-                "radio channel modeling.",
-                "April 2024: Short-term stay in Cesena, Italy — start of ML project.",
-                "Sept–Dec 2024: Long stay in Bologna, Italy — "
-                "developing the generative model.",
-                "Collaboration with Enrico Maria Vitucci and "
-                "Vittorio Degli-Esposti (University of Bologna).",
-            ],
-            width=42,
-        )
-        collab_bullets.next_to(collab_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # ANIMATION SUGGESTION: Could show a map of Europe with
-        # lines connecting Louvain-la-Neuve ↔ Cesena ↔ Bologna.
-        collab_visual = m.RoundedRectangle(
-            width=4.5,
-            height=3.0,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        collab_label = m.Text(
-            "[Map: Louvain ↔ Cesena\n↔ Bologna collaboration]",
-            font_size=16,
-            color=MUTED,
-        ).move_to(collab_visual)
-        collab_vis = m.VGroup(collab_visual, collab_label)
-        collab_vis.next_to(collab_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        self.next_slide(
-            notes="This contribution was born from a collaboration "
-            "through the COST INTERACT action. I first visited Cesena "
-            "in April 2024, and then spent four months in Bologna "
-            "working with Prof. Vitucci and Prof. Degli-Esposti.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [collab_header], return_animation=True),
-        )
-
-        self.next_slide(notes="Collaboration map placeholder.")
-        self.play(m.FadeIn(collab_vis, shift=0.15 * m.LEFT))
-
-        for b in collab_bullets:
-            self.next_slide(notes="Collaboration bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [collab_header, collab_bullets, collab_vis]
-
-        # ── Slide 13: Architecture Overview ──────────────────────────────
+        # Slide: Architecture Overview
         arch_header = title_box("ML Architecture Overview")
 
         # ANIMATION SUGGESTION: Schematic flow diagram:
@@ -1370,7 +1227,7 @@ class Main(Slide, m.MovingCameraScene):
             arch_description,
         ]
 
-        # ── Slide 14: Training and Data ──────────────────────────────────
+        # Slide: Training and Data
         train_header = title_box("Training Strategy")
 
         train_bullets = bullets(
@@ -1427,7 +1284,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [train_header, train_bullets, train_vis_grp]
 
-        # ── Slide 15: ML Results ─────────────────────────────────────────
+        # Slide: ML Results
         ml_res_header = title_box("ML Path Sampling: Results")
 
         ml_res_bullets = bullets(
@@ -1484,7 +1341,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [ml_res_header, ml_res_bullets, ml_res_vis_grp]
 
-        # ── Slide 16: Journal Submission ─────────────────────────────────
+        # Slide: Journal Submission
         journal_header = title_box("Journal Paper: npj Wireless Technology")
 
         journal_bullets = bullets(
@@ -1541,12 +1398,8 @@ class Main(Slide, m.MovingCameraScene):
             journal_txt,
         ]
 
-        # ══════════════════════════════════════════════════════════════════
-        # SECTION 5 — Fermat Path Tracing (FPT)
-        # ══════════════════════════════════════════════════════════════════
-
-        # ── Slide 17: FPT Problem Setup ──────────────────────────────────
-        fpt_header = title_box("Fermat Path Tracing: Problem Setup", underline=True)
+        # Slide: FPT Problem Setup
+        fpt_header = title_box("Fermat Path Tracing: Problem Setup")
 
         fpt_bullets = bullets(
             [
@@ -1614,7 +1467,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [fpt_header, fpt_bullets, fpt_vis]
 
-        # ── Slide 18: BFGS Solver ────────────────────────────────────────
+        # Slide 18: BFGS Solver
         bfgs_header = title_box("BFGS Solver for GPU")
 
         bfgs_bullets = bullets(
@@ -1692,8 +1545,8 @@ class Main(Slide, m.MovingCameraScene):
             bfgs_card_content,
         ]
 
-        # ── Slide 19: Implicit Differentiation ───────────────────────────
-        imp_header = title_box("Implicit Differentiation", underline=True)
+        # Slide 19: Implicit Differentiation
+        imp_header = title_box("Implicit Differentiation")
 
         imp_bullets = bullets(
             [
@@ -1771,7 +1624,7 @@ class Main(Slide, m.MovingCameraScene):
             imp_eq_group,
         ]
 
-        # ── Slide 20: FPT Results ────────────────────────────────────────
+        # Slide: FPT Results
         fpt_res_header = title_box("FPT: Benchmark Results")
 
         fpt_res_bullets = bullets(
@@ -1828,7 +1681,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [fpt_res_header, fpt_res_bullets, fpt_res_vis_grp]
 
-        # ── Slide 21: Open Source — DiffeRT ──────────────────────────────
+        # Slide: Open Source — DiffeRT
         oss_header = title_box("Open Source: DiffeRT")
 
         oss_bullets = bullets(
@@ -1889,7 +1742,7 @@ class Main(Slide, m.MovingCameraScene):
         # ══════════════════════════════════════════════════════════════════
 
         # ── Slide 22: Summary of Contributions ──────────────────────────
-        summary_header = title_box("Summary of Contributions", underline=True)
+        summary_header = title_box("Summary of Contributions")
 
         summary_items = [
             (
@@ -1971,7 +1824,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [summary_header, summary_cards, cross_grp]
 
-        # ── Slide 23: Most Proud Achievements ────────────────────────────
+        # Slide: Most Proud Achievements
         proud_header = title_box("Most Proud Achievements")
 
         proud_bullets = bullets(
@@ -2010,7 +1863,7 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [proud_header, proud_bullets]
 
-        # ── Slide 24: Future Research Directions ─────────────────────────
+        # Slide 24: Future Research Directions
         future_header = title_box("Future Research Directions")
 
         future_bullets = bullets(
@@ -2072,42 +1925,7 @@ class Main(Slide, m.MovingCameraScene):
             warning_txt,
         ]
 
-        # ══════════════════════════════════════════════════════════════════
-        # BONUS / BACKUP SLIDES
-        # ══════════════════════════════════════════════════════════════════
-
-        # ── Backup Slide A: Other Contributions ──────────────────────────
-        other_header = title_box("Other Contributions")
-
-        other_bullets = bullets(
-            [
-                "Multipath Lifetime Map (MLM): visual tool for analyzing "
-                "dynamic scene multipath structure (EuCAP 2025).",
-                "DiffeRT2d: 2D differentiable RT library for pedagogical "
-                "and prototyping use.",
-                "Multiple conference presentations: EuCAP (×4), ICMLCN, "
-                "SITB, COST meetings.",
-                "Supervision and mentorship of master students.",
-            ],
-            width=50,
-        )
-        other_bullets.next_to(other_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        self.next_slide(
-            notes="Backup slide: other contributions not covered in "
-            "the main presentation.",
-        )
-        self.wipe(self.mobjects, [other_header])
-
-        for b in other_bullets:
-            self.next_slide(notes="Other contribution bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [other_header, other_bullets]
-
-        # ── Backup Slide B: Publications List ────────────────────────────
+        # Slide: Publications List
         pub_header = title_box("Publications")
 
         pub_items = [
@@ -2139,9 +1957,10 @@ class Main(Slide, m.MovingCameraScene):
         pub_cards.arrange(m.DOWN, buff=0.12).next_to(pub_header, m.DOWN, buff=0.5)
 
         self.next_slide(
-            notes="Backup slide: full list of publications during the Ph.D.",
+            notes="Full list of publications during the Ph.D.",
         )
         self.wipe(prev_slide_content, [pub_header])
+        self.next_slide(notes="Publications card, comments about each publication.")
         self.play(
             m.LaggedStart(
                 *[m.FadeIn(c, shift=0.1 * m.UP) for c in pub_cards],
@@ -2159,4 +1978,4 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(
             notes="Thank you all for your attention. I am happy to take your questions.",
         )
-        self.wipe(prev_slide_content, [end])
+        self.wipe(self.mobjects, [end])
