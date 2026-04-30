@@ -392,7 +392,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(
             loop=True,
-            notes="Here is a street-canyon example showing ray paths evolving frame by frame."
+            notes="Here is a street-canyon example showing ray paths evolving frame by frame.",
         )
         self.play(ctx_video.play(run_time=6.0))
 
@@ -555,7 +555,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2020/08",
                 "Student job (Oestges)",
-                "Ported RT tool from MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was \"novel\".",
+                'Ported RT tool from MATLAB to Python; this is where Min-Path-Tracing was first created without knowing it was "novel".',
                 False,
                 False,
             ),
@@ -884,9 +884,6 @@ class Main(Slide, m.MovingCameraScene):
             return svg_dr + alpha * (svg_ur - svg_dr)
 
         self.next_slide(notes="Map contributions onto the pipeline blocks.")
-        # Place: ① Smoothing near the bottom-left of the pipeline (left of post-processing),
-        # ② ML Path Sampling to the right of the pipeline (upper-right area),
-        # ③ Fermat Path Tracing to the right-middle of the pipeline.
         self.play(
             contrib_labels[1].animate.next_to(get_pos(0.895348837)),
             contrib_labels[2].animate.next_to(get_pos(0.581395349)),
@@ -949,19 +946,15 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [toc, toc_header]
 
-        # Slide: The Smoothing Idea
-        smooth_header = title_box("Smoothing for Differentiable RT")
+        # Slide: The Smoothing Idea (EuCAP 2024 motivation)
+        smooth_header = title_box("Discontinuity Smoothing")
 
         smooth_bullets = bullets(
             [
-                "Problem: visibility tests use hard if-else conditions "
-                "→ non-differentiable.",
-                "Solution: replace hard visibility with smooth "
-                "approximations (e.g., sigmoid).",
-                "Smooth union of path candidates: soft selection enables "
-                "gradient flow.",
-                "Trade-off: smoothing parameter controls accuracy vs. "
-                "differentiability.",
+                "Disabling diffraction removes many valid propagation paths.",
+                "Reducing the maximum reflection depth creates sharp coverage holes.",
+                "These hard transitions produce discontinuities in received power.",
+                "Gradient-based optimization becomes unstable near these boundaries.",
             ],
             width=42,
         )
@@ -969,92 +962,250 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT, buff=0.75
         )
 
-        smooth_video = VideoMobject(sorted(Path("images/smoothing").glob("*.png")))
-        smooth_video.set_height(3.0)
-        smooth_video_title = m.Text(
-            "Optimization with smoothing",
-            font_size=17,
+        discont_paths = [
+            "images/discontinuity/depth3_diffraction.png",
+            "images/discontinuity/depth3_nodiffraction.png",
+            "images/discontinuity/depth2_nodiffraction.png",
+            "images/discontinuity/depth1_nodiffraction.png",
+        ]
+        discont_labels = [
+            "Depth = 3, diffraction ON",
+            "Depth = 3, diffraction OFF",
+            "Depth = 2, diffraction OFF",
+            "Depth = 1, diffraction OFF",
+        ]
+        discont_labels_tex = [
+            r"\text{Depth}=3,\ \text{diffraction ON}",
+            r"\text{Depth}=3,\ \text{diffraction OFF}",
+            r"\text{Depth}=2,\ \text{diffraction OFF}",
+            r"\text{Depth}=1,\ \text{diffraction OFF}",
+        ]
+
+        discont_img = m.ImageMobject(discont_paths[0]).set_height(3.0)
+        discont_caption = m.Tex(
+            discont_labels_tex[0],
+            font_size=17 * TEXT_TO_TEX_FACTOR,
             color=MUTED,
-        ).next_to(smooth_video._image_mob, m.DOWN, buff=0.16)
-        smooth_vis = m.Group(smooth_video._image_mob, smooth_video_title)
-        smooth_vis.next_to(smooth_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        ).next_to(discont_img, m.DOWN, buff=0.16)
+        discont_vis = m.Group(discont_img, discont_caption)
+        discont_vis.next_to(smooth_header, m.DOWN, buff=0.65).to_edge(
+            m.RIGHT, buff=0.75
+        )
 
         self.next_slide(
-            notes="The core challenge for differentiable RT is that "
-            "visibility tests - checking whether a path is blocked - "
-            "involve hard if-else conditions that break gradient flow. "
-            "Our smoothing technique replaces these with continuous "
-            "approximations.",
+            notes="To motivate smoothing, let us inspect discontinuities in a street-canyon "
+            "example by progressively removing interactions.",
         )
         self.play(
             *next_meta(new_section=2),
             self.wipe(prev_slide_content, [smooth_header], return_animation=True),
         )
 
-        self.next_slide(notes="Hard → smooth transition.")
-        self.play(m.FadeIn(smooth_vis, shift=0.15 * m.LEFT))
+        self.next_slide(notes="Start with depth 3 and diffraction enabled.")
+        self.play(m.FadeIn(discont_vis, shift=0.15 * m.LEFT))
 
-        self.next_slide(notes="Smoothing optimization animation.")
-        self.play(smooth_video.play(run_time=7.0))
+        for path, label, label_tex in zip(
+            discont_paths[1:], discont_labels[1:], discont_labels_tex[1:], strict=True
+        ):
+            next_img = m.ImageMobject(path).set_height(3.0).move_to(discont_img)
+            next_caption = m.Tex(
+                label_tex,
+                font_size=17 * TEXT_TO_TEX_FACTOR,
+                color=MUTED,
+            ).move_to(discont_caption)
+            self.next_slide(notes=label)
+            self.play(
+                m.FadeOut(discont_img),
+                m.FadeIn(next_img),
+                m.TransformMatchingTex(discont_caption, next_caption),
+            )
+            discont_caption = next_caption
+            discont_img = next_img
 
         for b in smooth_bullets:
-            self.next_slide(notes="Smoothing bullet.")
+            self.next_slide(notes="Discontinuity motivation bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [smooth_header, smooth_bullets, smooth_vis]
+        prev_slide_content = [
+            smooth_header,
+            smooth_bullets,
+            discont_img,
+            discont_caption,
+        ]
 
-        # Slide: Smoothing Results
+        # Slide: Zero-gradient illustration
+        zg_header = title_box("Zero-Gradient Illustration")
+        zg_bullets = bullets(
+            [
+                "Simple 1D visibility already exhibits the same issue.",
+                "The hard step function has zero gradient almost everywhere.",
+                "This prevents meaningful gradient updates in optimization.",
+            ],
+            width=42,
+        )
+        zg_bullets.next_to(zg_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        zg_img = m.ImageMobject("images/zero_gradient.png")
+        zg_img.set_height(3.2)
+        zg_eq = m.MathTex(
+            r"\theta(x)=\begin{cases}1,&x>0\\0,&\text{otherwise}\end{cases}",
+            font_size=32,
+        ).next_to(zg_img, m.DOWN, buff=0.2)
+        zg_vis = m.Group(zg_img, zg_eq)
+        zg_vis.next_to(zg_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        self.next_slide(
+            notes="The same discontinuity issue appears in a minimal setup through a hard "
+            "Heaviside visibility model.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [zg_header], return_animation=True),
+        )
+        self.next_slide(notes="Zero-gradient image from EuCAP 2024.")
+        self.play(m.FadeIn(zg_vis, shift=0.15 * m.LEFT))
+        for b in zg_bullets:
+            self.next_slide(notes="Zero-gradient bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [zg_header, zg_bullets, zg_vis]
+
+        # Slide: Math intro to smoothing
+        smath_header = title_box("Smoothing Formulation")
+
+        smath_bullets = bullets(
+            [
+                r"Approximate hard visibility $\theta(x)$ with a smooth $s(x;\alpha)$.",
+                r"As $\alpha\to\infty$, recover the original hard model.",
+                r"Finite $\alpha$ gives non-zero gradients around discontinuities.",
+            ],
+            width=42,
+            use_tex=True,
+        )
+        smath_bullets.next_to(smath_header, m.DOWN, buff=0.65).to_edge(
+            m.LEFT, buff=0.75
+        )
+
+        smath_eqs = m.VGroup(
+            m.MathTex(
+                r"\lim_{\alpha\to\infty}s(x;\alpha)=\theta(x)",
+                font_size=34,
+            ),
+            m.MathTex(
+                r"s(x;\alpha)=\frac{1}{1+e^{-\alpha x}}",
+                font_size=34,
+            ),
+            m.MathTex(
+                r"\text{hard-sigmoid}(x;\alpha)=\frac{\operatorname{relu6}(\alpha x+3)}{6}",
+                font_size=34,
+            ),
+        ).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.35)
+        smath_eqs.next_to(smath_header, m.DOWN, buff=0.75).to_edge(m.RIGHT, buff=0.65)
+
+        self.next_slide(notes="Introduce the smoothing formulation.")
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [smath_header], return_animation=True),
+        )
+        self.next_slide(notes="Smoothing equations.")
+        self.play(m.FadeIn(smath_eqs, shift=0.15 * m.LEFT))
+        for b in smath_bullets:
+            self.next_slide(notes="Smoothing formulation bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [smath_header, smath_bullets, smath_eqs]
+
+        # Slide: Smoothing Results (power map + optimization video)
         sres_header = title_box("Smoothing: Key Results")
 
         sres_bullets = bullets(
             [
                 "Presented at EuCAP 2024 in Glasgow.",
-                "Enables end-to-end gradient computation through the full RT pipeline.",
-                "Successfully applied to antenna placement optimization "
-                "and material calibration.",
-                "Implemented in DiffeRT2d (open-source 2D RT library) and then in DiffeRT (3D RT library).",
+                "Smoothing reduces discontinuity artifacts in the power map.",
+                "Optimization with smoothing converges more reliably in practice.",
+                "Implemented in DiffeRT2d and then extended to DiffeRT.",
             ],
             width=42,
         )
         sres_bullets.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # Placeholder for result figure
-        sres_placeholder = m.RoundedRectangle(
-            width=4.5,
-            height=3.0,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        sres_label = m.Text(
-            "[Figure: optimization\nconvergence plot]",
-            font_size=16,
+        power_map = m.ImageMobject("images/power_map_with_smoothing.png")
+        power_map.set_height(2.45)
+        power_map_title = m.Text(
+            "Power map with smoothing",
+            font_size=17,
             color=MUTED,
-        ).move_to(sres_placeholder)
-        sres_vis = m.VGroup(sres_placeholder, sres_label)
-        sres_vis.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        ).next_to(power_map, m.DOWN, buff=0.12)
+        power_map_group = m.Group(power_map, power_map_title)
+
+        smooth_video = VideoMobject(sorted(Path("images/smoothing").glob("*.png")))
+        smooth_video.set_height(2.45)
+        smooth_video_title = m.Text(
+            "Optimization with smoothing",
+            font_size=17,
+            color=MUTED,
+        ).next_to(smooth_video._image_mob, m.DOWN, buff=0.12)
+        smooth_video_group = m.Group(smooth_video._image_mob, smooth_video_title)
+
+        sres_right = m.Group(power_map_group, smooth_video_group).arrange(
+            m.DOWN, buff=0.35
+        )
+        sres_right.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
-            notes="The smoothing technique was presented at EuCAP 2024 "
-            "and has become my most cited work. It enables fully "
-            "differentiable ray tracing, which we applied to antenna "
-            "placement and material calibration.",
+            notes="Now let us move to EuCAP 2024 results: power maps and optimization behavior.",
         )
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [sres_header], return_animation=True),
         )
 
-        self.next_slide(notes="Result figure placeholder.")
-        self.play(m.FadeIn(sres_vis, shift=0.15 * m.LEFT))
+        self.next_slide(notes="Power map and optimization visuals.")
+        self.play(m.FadeIn(sres_right, shift=0.15 * m.LEFT))
+
+        self.next_slide(notes="Optimization video on the results slide.", loop=True)
+        self.play(smooth_video.play(run_time=7.0))
 
         for b in sres_bullets:
             self.next_slide(notes="Smoothing result bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [sres_header, sres_bullets, sres_vis]
+        prev_slide_content = [sres_header, sres_bullets, sres_right]
+
+        # Slide: Example objective function
+        obj_header = title_box("Smoothing: Example Objective")
+        obj_bullets = bullets(
+            [
+                r"Example objective: maximize power over a target area.",
+                r"One formulation is to optimize a worst-user criterion.",
+                r"Smoothing makes gradients usable for this optimization problem.",
+            ],
+            width=42,
+            use_tex=True,
+        )
+        obj_bullets.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        obj_eq = m.MathTex(
+            r"\mathcal{F}(x,y)=\min\left(P_{\mathrm{RX}_0}(x,y),P_{\mathrm{RX}_1}(x,y)\right)",
+            font_size=34,
+        )
+        obj_img = m.ImageMobject("images/opti_problem.png")
+        obj_img.set_height(2.4)
+        obj_vis = m.Group(obj_eq, obj_img).arrange(m.DOWN, buff=0.25)
+        obj_vis.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        self.next_slide(notes="Introduce a concrete optimization objective and setup.")
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [obj_header], return_animation=True),
+        )
+        self.next_slide(notes="Objective equation and optimization setup image.")
+        self.play(m.FadeIn(obj_vis, shift=0.15 * m.LEFT))
+        for b in obj_bullets:
+            self.next_slide(notes="Objective-function bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [obj_header, obj_bullets, obj_vis]
 
         # Slide: Impact
         impact_header = title_box("Smoothing: Impact & Legacy")

@@ -285,9 +285,7 @@ power_db = 10 * np.log10(rm.transmitter_radio_map("path_gain", 0).numpy())
 draw_tx_rx_on_plotly_fig(fig, tx, rx)
 draw_sionna_paths_on_plotly_fig(fig, paths, color="red", opacity=0.5)
 x, y, z = np.unstack(rm.cell_centers.numpy(), axis=-1)
-draw_image = draw_image(
-    power_db, x, y, z0=z[0], figure=fig, showlegend=False, showscale=False
-)
+fig = draw_image(power_db, x, y, z0=z[0], figure=fig, showlegend=False, showscale=False)
 
 for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=36 * 8, endpoint=False))):
     azim = np.rad2deg(np.pi + theta)

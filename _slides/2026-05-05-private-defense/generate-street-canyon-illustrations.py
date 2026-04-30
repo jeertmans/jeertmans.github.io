@@ -275,9 +275,7 @@ power_db = 10 * np.log10(rm.transmitter_radio_map("path_gain", 0).numpy())
 draw_tx_rx_on_plotly_fig(fig, tx, rx)
 draw_sionna_paths_on_plotly_fig(fig, paths, color="red", opacity=0.5)
 x, y, z = np.unstack(rm.cell_centers.numpy(), axis=-1)
-draw_image = draw_image(
-    power_db, x, y, z0=z[0], figure=fig, showlegend=False, showscale=False
-)
+fig = draw_image(power_db, x, y, z0=z[0], figure=fig, showlegend=False, showscale=False)
 
 folder = Path(__file__).parent / "images/street-canyon/"
 folder.mkdir(exist_ok=True)
