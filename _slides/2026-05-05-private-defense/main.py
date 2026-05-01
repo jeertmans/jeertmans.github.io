@@ -123,7 +123,7 @@ TEXT_TO_TEX_FACTOR = 1.5
 def bullets(
     items: list[str],
     font_size: int = BODY_SIZE,
-    width: float = 75,
+    width: float = 70,
     color: m.ManimColor = TEXT,
     use_tex: bool = False,
 ) -> m.VGroup:
@@ -1079,7 +1079,7 @@ class Main(Slide, m.MovingCameraScene):
                 r"As $\alpha\to\infty$, recover the original hard model.",
                 r"Finite $\alpha$ gives non-zero gradients around discontinuities.",
             ],
-            width=42,
+            width=34,
             use_tex=True,
         )
         smath_bullets.next_to(smath_header, m.DOWN, buff=0.65).to_edge(
@@ -1100,7 +1100,7 @@ class Main(Slide, m.MovingCameraScene):
                 font_size=34,
             ),
         ).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.35)
-        smath_eqs.next_to(smath_header, m.DOWN, buff=0.75).to_edge(m.RIGHT, buff=0.65)
+        smath_eqs.next_to(smath_header, m.DOWN, buff=0.75).to_edge(m.RIGHT, buff=0.8)
 
         self.next_slide(notes="Introduce the smoothing formulation.")
         self.play(
@@ -1115,6 +1115,52 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [smath_header, smath_bullets, smath_eqs]
 
+        # Slide: Example objective function
+        obj_header = title_box("Smoothing: Example Objective")
+        obj_bullets = bullets(
+            [
+                r"Example objective: maximize power over a target area.",
+                r"One formulation is to optimize a worst-user criterion.",
+                r"Smoothing makes gradients usable for this optimization problem.",
+            ],
+            width=34,
+            use_tex=True,
+        )
+        obj_bullets.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        obj_eq = m.MathTex(
+            r"\mathcal{F}(x,y)=\min\left(P_{\mathrm{RX}_0}(x,y),P_{\mathrm{RX}_1}(x,y)\right)",
+            font_size=34,
+        )
+        # The original single image was split into three pieces; load them
+        img_paths = [
+            "images/opti_problem_no_smoothing.png",
+            "images/opti_problem_small_smoothing.png",
+            "images/opti_problem_large_smoothing.png",
+        ]
+        # stack images vertically; put the large-smoothing image at the bottom
+        img_mobs = [
+            m.ImageMobject(img_paths[0]).set_height(1.6),
+            m.ImageMobject(img_paths[1]).set_height(1.6),
+            m.ImageMobject(img_paths[2]).set_height(2.4),
+        ]
+        imgs_group = m.Group(*img_mobs).arrange(m.DOWN, buff=0.12)
+        obj_vis = m.Group(obj_eq, imgs_group).arrange(m.DOWN, buff=0.25)
+        obj_vis.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        self.next_slide(notes="Introduce a concrete optimization objective and setup.")
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [obj_header], return_animation=True),
+        )
+        self.next_slide(notes="Objective equation and optimization setup image.")
+        self.play(m.FadeIn(obj_vis, shift=0.15 * m.LEFT))
+        for b in obj_bullets:
+            self.next_slide(notes="Objective-function bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [obj_header, obj_bullets, obj_vis]
+
         # Slide: Smoothing Results (power map + optimization video)
         sres_header = title_box("Smoothing: Key Results")
 
@@ -1125,7 +1171,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Optimization with smoothing converges more reliably in practice.",
                 "Implemented in DiffeRT2d and then extended to DiffeRT.",
             ],
-            width=42,
+            width=34,
         )
         sres_bullets.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
@@ -1189,9 +1235,15 @@ class Main(Slide, m.MovingCameraScene):
             r"\mathcal{F}(x,y)=\min\left(P_{\mathrm{RX}_0}(x,y),P_{\mathrm{RX}_1}(x,y)\right)",
             font_size=34,
         )
-        obj_img = m.ImageMobject("images/opti_problem.png")
-        obj_img.set_height(2.4)
-        obj_vis = m.Group(obj_eq, obj_img).arrange(m.DOWN, buff=0.25)
+        # The original single image was split into three pieces; load them
+        img_paths = [
+            "images/opti_problem_no_smoothing.png",
+            "images/opti_problem_small_smoothing.png",
+            "images/opti_problem_large_smoothing.png",
+        ]
+        img_mobs = [m.ImageMobject(p).set_height(1.8) for p in img_paths]
+        imgs_group = m.Group(*img_mobs).arrange(m.RIGHT, buff=0.12)
+        obj_vis = m.Group(obj_eq, imgs_group).arrange(m.DOWN, buff=0.25)
         obj_vis.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(notes="Introduce a concrete optimization objective and setup.")
@@ -1257,6 +1309,50 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [impact_header, impact_bullets, differt2d_card]
+
+        # Slide: Smoothing applied to 3D objects (discussion)
+        smooth3d_header = title_box("Smoothing: 3D Application & Discussion")
+
+        smooth3d_bullets = bullets(
+            [
+                "Can extend smoothing to 3D geometry intersection tests (Möller–Trumbore).",
+                "Pros: provides smooth gradients for surface intersection, helps optimization.",
+                "Cons: increased cost per intersection; may blur sharp geometric features.",
+                "Design choices: where to smooth, per-triangle vs. per-mesh, and alpha scheduling.",
+            ],
+            width=34,
+        )
+        smooth3d_bullets.next_to(smooth3d_header, m.DOWN, buff=0.65).to_edge(
+            m.LEFT, buff=0.75
+        )
+
+        # SVG showing a smoothed Möller–Trumbore visualization
+        try:
+            mt_svg = m.SVGMobject("images/moller-trumbore-smoothed.svg")
+        except Exception:
+            mt_svg = m.ImageMobject("images/moller-trumbore-smoothed.svg")
+        mt_svg.set_height(3.2)
+        mt_caption = m.Text(
+            "Möller–Trumbore: smoothed intersection",
+            font_size=16,
+            color=MUTED,
+        ).next_to(mt_svg, m.DOWN, buff=0.12)
+        mt_group = m.Group(mt_svg, mt_caption)
+        mt_group.next_to(smooth3d_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        self.next_slide(notes="Discuss applying smoothing to 3D intersections and trade-offs.")
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [smooth3d_header], return_animation=True),
+        )
+
+        self.next_slide(notes="Show Möller–Trumbore smoothed visualization and discuss pros/cons.")
+        self.play(m.FadeIn(mt_group, shift=0.15 * m.LEFT))
+        for b in smooth3d_bullets:
+            self.next_slide(notes="Smoothing 3D discussion bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [smooth3d_header, smooth3d_bullets, mt_group]
 
         # Slide: Motivation for ML approach
         ml_mot_header = title_box("Why Machine Learning for Path Sampling?")

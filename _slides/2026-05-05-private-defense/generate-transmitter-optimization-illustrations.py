@@ -122,7 +122,7 @@ for frame, alpha in enumerate(alphas):
 
     local_scene.plot(
         ax,
-        objects_kwargs=dict(color="red"),
+        objects_kwargs=dict(color="blue"),
         transmitters_kwargs=transmitter_kwargs,
         receivers=False,
     )
