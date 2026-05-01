@@ -1340,13 +1340,17 @@ class Main(Slide, m.MovingCameraScene):
         mt_group = m.Group(mt_svg, mt_caption)
         mt_group.next_to(smooth3d_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        self.next_slide(notes="Discuss applying smoothing to 3D intersections and trade-offs.")
+        self.next_slide(
+            notes="Discuss applying smoothing to 3D intersections and trade-offs."
+        )
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [smooth3d_header], return_animation=True),
         )
 
-        self.next_slide(notes="Show Möller–Trumbore smoothed visualization and discuss pros/cons.")
+        self.next_slide(
+            notes="Show Möller–Trumbore smoothed visualization and discuss pros/cons."
+        )
         self.play(m.FadeIn(mt_group, shift=0.15 * m.LEFT))
         for b in smooth3d_bullets:
             self.next_slide(notes="Smoothing 3D discussion bullet.")
