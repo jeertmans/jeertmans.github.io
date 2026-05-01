@@ -358,14 +358,14 @@ class Main(Slide, m.MovingCameraScene):
         )
         ctx_bullets.next_to(ctx_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        ctx_video = VideoMobject(sorted(Path("images/street-canyon").glob("*.png")))
-        ctx_video.set_height(3.5)
-        ctx_video_title = m.Text(
+        ctx_image = m.ImageMobject("images/street-canyon.png")
+        ctx_image.set(height=3.5)
+        ctx_image_title = m.Text(
             "Street-canyon ray tracing",
             font_size=17,
             color=MUTED,
-        ).next_to(ctx_video._image_mob, m.DOWN, buff=0.16)
-        ctx_visual = m.Group(ctx_video._image_mob, ctx_video_title)
+        ).next_to(ctx_image, m.DOWN, buff=0.16)
+        ctx_visual = m.Group(ctx_image, ctx_image_title)
         ctx_visual.next_to(ctx_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
@@ -389,12 +389,6 @@ class Main(Slide, m.MovingCameraScene):
             "scattering from rough surfaces."
         )
         self.play(m.FadeIn(ctx_visual, shift=0.15 * m.LEFT))
-
-        self.next_slide(
-            loop=True,
-            notes="Here is a street-canyon example showing ray paths evolving frame by frame.",
-        )
-        self.play(ctx_video.play(run_time=6.0))
 
         for b, note in zip(
             ctx_bullets,
@@ -583,7 +577,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2023/03",
                 "EuCAP Florence (MPT)",
-                "First formal presentation of Min-Path-Tracing at EuCAP 2023.",
+                "Presented Min-Path-Tracing method.",
                 False,
                 False,
             ),
@@ -604,7 +598,7 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2024/03",
                 "EuCAP Glasgow (Smoothing)",
-                "Presented the smoothing technique, now the most cited contribution.",
+                "Presented the smoothing technique.",
                 True,
                 True,  # Offset to avoid overlap with Siegens visit
             ),
@@ -632,22 +626,22 @@ class Main(Slide, m.MovingCameraScene):
             (
                 "2025/01",
                 "COST Dublin (ML)",
-                "Presented ongoing ML path tracing work at the COST meeting in Dublin.",
+                "Presented ongoing ML path tracing work.",
                 False,
                 True,  # Offset to avoid overlap with COST meeting in Helsinki
             ),
             (
                 "2025/04",
                 "EuCAP Stockholm (MLM)",
-                "Presented Multipath Lifetime Map contribution at EuCAP 2025.",
+                "Presented Multipath Lifetime Map contribution.",
                 False,
                 False,
             ),
             (
                 "2025/05",
                 "ICMLCN Barcelona (ML)",
-                "Presented ML-based generative path sampling at ICMLCN 2025.",
-                True,
+                "Presented ML-based generative path sampling.",
+                False,
                 False,
             ),
             (
@@ -661,13 +655,13 @@ class Main(Slide, m.MovingCameraScene):
                 "2026/03",
                 "Submission to npj",
                 "Submitted the journal paper on ML-based generative path sampling to npj Wireless Technology.",
-                False,
+                True,
                 False,
             ),
             (
                 "2026/04",
                 "EuCAP Dublin (FPT)",
-                "Presented Fermat Path Tracing at EuCAP 2026.",
+                "Presented Fermat Path Tracing work.",
                 True,
                 False,
             ),
@@ -899,55 +893,8 @@ class Main(Slide, m.MovingCameraScene):
             svg_group,
         ]
 
-        # Slide: Talk Roadmap
-        toc_header = title_box("Talk Roadmap")
-        toc_items = [
-            "1. Context & Motivation",
-            "2. Smoothing Technique (EuCAP 2024)",
-            "3. ML-Based Generative Path Sampling (ICMLCN 2025)",
-            "4. Fermat Path Tracing (EuCAP 2026)",
-            "5. Contributions & Conclusion",
-        ]
-        toc = m.VGroup()
-        for idx, item in enumerate(toc_items):
-            # Highlight the 3 contribution sections (indices 1, 2, 3)
-            is_contrib = idx in (1, 2, 3)
-            card = m.RoundedRectangle(
-                width=11.6,
-                height=0.85,
-                corner_radius=0.12,
-                fill_color=GREEN_SOFT if is_contrib else CARD,
-                fill_opacity=0.95,
-                stroke_color=ACCENT if is_contrib else LINE_SOFT,
-                stroke_width=2,
-            )
-            txt = m.Text(
-                item, font_size=26, color=TEXT if is_contrib else MUTED
-            ).move_to(card)
-            toc.add(m.VGroup(card, txt))
-        toc.arrange(m.DOWN, buff=0.22).next_to(toc_header, m.DOWN, buff=0.55)
-
-        self.next_slide(
-            notes="Here is the roadmap for this presentation. After the "
-            "context we just covered, I will present each of my three "
-            "main contributions in chronological order, followed by a "
-            "conclusion with future directions.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [toc_header], return_animation=True),
-        )
-        self.next_slide(notes="The talk roadmap with highlighted contributions.")
-        self.play(
-            m.LaggedStart(
-                *[m.FadeIn(item, shift=0.1 * m.UP) for item in toc], lag_ratio=0.08
-            )
-        )
-
-        prev_slide_content = [toc, toc_header]
-
         # Slide: The Smoothing Idea (EuCAP 2024 motivation)
-        smooth_header = title_box("Discontinuity Smoothing")
+        smooth_header = title_box("Discontinuity Smoothing: Motivation")
 
         smooth_bullets = bullets(
             [
@@ -1037,8 +984,8 @@ class Main(Slide, m.MovingCameraScene):
         zg_header = title_box("Zero-Gradient Illustration")
         zg_bullets = bullets(
             [
-                "Simple 1D visibility already exhibits the same issue.",
-                "The hard step function has zero gradient almost everywhere.",
+                "Hard step function creates discontinuities.",
+                "Many zero-gradient regions exist.",
                 "This prevents meaningful gradient updates in optimization.",
             ],
             width=42,
@@ -1075,48 +1022,66 @@ class Main(Slide, m.MovingCameraScene):
 
         smath_bullets = bullets(
             [
-                r"Approximate hard visibility $\theta(x)$ with a smooth $s(x;\alpha)$.",
-                r"As $\alpha\to\infty$, recover the original hard model.",
-                r"Finite $\alpha$ gives non-zero gradients around discontinuities.",
+                r"Approximate hard visibility $\theta(x)$ with a smooth $s(x;\alpha)$, e.g.,\\$$\frac{1}{1+e^{-\alpha x}}\quad\text{(sigmoid)}\quad\text{or}\quad\frac{\operatorname{relu6}(\alpha x+3)}{6}\quad\text{(hard sigmoid)}.$$",
+                r"As $\alpha\to\infty$, recover the original ``hard'' model\\$$\lim_{\alpha\to\infty}s(x;\alpha)=\theta(x).$$",
+                r"Finite smoothing gives non-zero gradients around discontinuities.",
             ],
-            width=34,
             use_tex=True,
         )
         smath_bullets.next_to(smath_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
         )
 
-        smath_eqs = m.VGroup(
-            m.MathTex(
-                r"\lim_{\alpha\to\infty}s(x;\alpha)=\theta(x)",
-                font_size=34,
-            ),
-            m.MathTex(
-                r"s(x;\alpha)=\frac{1}{1+e^{-\alpha x}}",
-                font_size=34,
-            ),
-            m.MathTex(
-                r"\text{hard-sigmoid}(x;\alpha)=\frac{\operatorname{relu6}(\alpha x+3)}{6}",
-                font_size=34,
-            ),
-        ).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.35)
-        smath_eqs.next_to(smath_header, m.DOWN, buff=0.75).to_edge(m.RIGHT, buff=0.8)
-
         self.next_slide(notes="Introduce the smoothing formulation.")
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [smath_header], return_animation=True),
         )
-        self.next_slide(notes="Smoothing equations.")
-        self.play(m.FadeIn(smath_eqs, shift=0.15 * m.LEFT))
         for b in smath_bullets:
             self.next_slide(notes="Smoothing formulation bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [smath_header, smath_bullets, smath_eqs]
+        prev_slide_content = [smath_header, smath_bullets]
+
+        # Slide: Effect on power map (no smoothing vs smoothing)
+        effect_header = title_box("Effect On Power Map")
+
+        pm_no = m.ImageMobject("images/power_map_no_smoothing.png")
+        pm_no.set(height=3.45)
+        pm_no_title = m.Text(
+            "Power map without smoothing",
+            font_size=17,
+            color=MUTED,
+        ).next_to(pm_no, m.DOWN, buff=0.12)
+
+        pm_with = m.ImageMobject("images/power_map_with_smoothing.png")
+        pm_with.set(height=3.45)
+        pm_with_title = m.Text(
+            "Power map with smoothing",
+            font_size=17,
+            color=MUTED,
+        ).next_to(pm_with, m.DOWN, buff=0.12)
+
+        pm_group = m.Group(
+            m.Group(pm_no, pm_no_title), m.Group(pm_with, pm_with_title)
+        ).arrange(m.RIGHT, buff=0.6)
+        pm_group.next_to(effect_header, m.DOWN, buff=0.65)
+
+        self.next_slide(
+            notes="Compare power maps: without smoothing (left) vs with smoothing (right)."
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [effect_header], return_animation=True),
+        )
+
+        self.next_slide(notes="Effect of smoothing on the power map.")
+        self.play(m.FadeIn(pm_group, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [effect_header, pm_group]
 
         # Slide: Example objective function
-        obj_header = title_box("Smoothing: Example Objective")
+        obj_header = title_box("Example Objective")
         obj_bullets = bullets(
             [
                 r"Example objective: maximize power over a target area.",
@@ -1135,57 +1100,48 @@ class Main(Slide, m.MovingCameraScene):
         # The original single image was split into three pieces; load them
         img_paths = [
             "images/opti_problem_no_smoothing.png",
-            "images/opti_problem_small_smoothing.png",
             "images/opti_problem_large_smoothing.png",
+            "images/opti_problem_small_smoothing.png",
         ]
         # stack images vertically; put the large-smoothing image at the bottom
         img_mobs = [
-            m.ImageMobject(img_paths[0]).set_height(1.6),
-            m.ImageMobject(img_paths[1]).set_height(1.6),
-            m.ImageMobject(img_paths[2]).set_height(2.4),
+            m.ImageMobject(img_paths[0]).set(height=2.0),
+            m.ImageMobject(img_paths[1]).set(height=2.0),
+            m.ImageMobject(img_paths[2]).set(height=2.0),
         ]
-        imgs_group = m.Group(*img_mobs).arrange(m.DOWN, buff=0.12)
+        imgs_group = m.Group(*img_mobs).arrange(m.RIGHT, buff=0.12)
         obj_vis = m.Group(obj_eq, imgs_group).arrange(m.DOWN, buff=0.25)
-        obj_vis.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        obj_vis.next_to(obj_bullets, m.DOWN, buff=0.65)
 
         self.next_slide(notes="Introduce a concrete optimization objective and setup.")
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [obj_header], return_animation=True),
         )
-        self.next_slide(notes="Objective equation and optimization setup image.")
-        self.play(m.FadeIn(obj_vis, shift=0.15 * m.LEFT))
         for b in obj_bullets:
             self.next_slide(notes="Objective-function bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
+        self.next_slide(notes="Objective equation and optimization setup image.")
+        self.play(m.FadeIn(obj_vis, shift=0.15 * m.LEFT))
+
         prev_slide_content = [obj_header, obj_bullets, obj_vis]
 
         # Slide: Smoothing Results (power map + optimization video)
-        sres_header = title_box("Smoothing: Key Results")
+        sres_header = title_box("Results")
 
         sres_bullets = bullets(
             [
-                "Presented at EuCAP 2024 in Glasgow.",
                 "Smoothing reduces discontinuity artifacts in the power map.",
-                "Optimization with smoothing converges more reliably in practice.",
-                "Implemented in DiffeRT2d and then extended to DiffeRT.",
+                "Optimization with smoothing converges more reliably in practice (x1.5 to x2 success rate).",
+                "Implemented in DiffeRT2d and then extended to DiffeRT (3D).",
             ],
             width=34,
         )
         sres_bullets.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        power_map = m.ImageMobject("images/power_map_with_smoothing.png")
-        power_map.set_height(2.45)
-        power_map_title = m.Text(
-            "Power map with smoothing",
-            font_size=17,
-            color=MUTED,
-        ).next_to(power_map, m.DOWN, buff=0.12)
-        power_map_group = m.Group(power_map, power_map_title)
-
         smooth_video = VideoMobject(sorted(Path("images/smoothing").glob("*.png")))
-        smooth_video.set_height(2.45)
+        smooth_video.set_height(3.45)
         smooth_video_title = m.Text(
             "Optimization with smoothing",
             font_size=17,
@@ -1193,9 +1149,8 @@ class Main(Slide, m.MovingCameraScene):
         ).next_to(smooth_video._image_mob, m.DOWN, buff=0.12)
         smooth_video_group = m.Group(smooth_video._image_mob, smooth_video_title)
 
-        sres_right = m.Group(power_map_group, smooth_video_group).arrange(
-            m.DOWN, buff=0.35
-        )
+        sres_right = m.Group(smooth_video_group)
+        sres_right.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
         sres_right.next_to(sres_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         self.next_slide(
@@ -1211,6 +1166,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="Optimization video on the results slide.", loop=True)
         self.play(smooth_video.play(run_time=7.0))
+        self.wait(2)
 
         for b in sres_bullets:
             self.next_slide(notes="Smoothing result bullet.")
@@ -1218,135 +1174,37 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [sres_header, sres_bullets, sres_right]
 
-        # Slide: Example objective function
-        obj_header = title_box("Smoothing: Example Objective")
-        obj_bullets = bullets(
-            [
-                r"Example objective: maximize power over a target area.",
-                r"One formulation is to optimize a worst-user criterion.",
-                r"Smoothing makes gradients usable for this optimization problem.",
-            ],
-            width=42,
-            use_tex=True,
-        )
-        obj_bullets.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        obj_eq = m.MathTex(
-            r"\mathcal{F}(x,y)=\min\left(P_{\mathrm{RX}_0}(x,y),P_{\mathrm{RX}_1}(x,y)\right)",
-            font_size=34,
-        )
-        # The original single image was split into three pieces; load them
-        img_paths = [
-            "images/opti_problem_no_smoothing.png",
-            "images/opti_problem_small_smoothing.png",
-            "images/opti_problem_large_smoothing.png",
-        ]
-        img_mobs = [m.ImageMobject(p).set_height(1.8) for p in img_paths]
-        imgs_group = m.Group(*img_mobs).arrange(m.RIGHT, buff=0.12)
-        obj_vis = m.Group(obj_eq, imgs_group).arrange(m.DOWN, buff=0.25)
-        obj_vis.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        self.next_slide(notes="Introduce a concrete optimization objective and setup.")
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [obj_header], return_animation=True),
-        )
-        self.next_slide(notes="Objective equation and optimization setup image.")
-        self.play(m.FadeIn(obj_vis, shift=0.15 * m.LEFT))
-        for b in obj_bullets:
-            self.next_slide(notes="Objective-function bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [obj_header, obj_bullets, obj_vis]
-
-        # Slide: Impact
-        impact_header = title_box("Smoothing: Impact & Legacy")
-
-        impact_bullets = bullets(
-            [
-                "Most cited publication of my Ph.D. work.",
-                "Adopted by other research groups for differentiable "
-                "propagation studies.",
-                "Foundation for DiffeRT2d - a pedagogical 2D RT library in Python/JAX.",
-                "Key enabler of the subsequent ML-based path tracing contribution.",
-            ],
-            width=42,
-        )
-        impact_bullets.next_to(impact_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # DiffeRT2d card
-        differt2d_card = info_card(
-            "DiffeRT2d",
-            "Open-source 2D ray tracing\n"
-            "library built in Python/JAX.\n"
-            "Used for teaching and\n"
-            "rapid prototyping.",
-            fill_color=GREEN_SOFT_2,
-            stroke_color=ACCENT,
-        )
-        differt2d_card.next_to(impact_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
-
-        self.next_slide(
-            notes="The smoothing technique has had a lasting impact: it "
-            "is my most cited work and has been adopted by other groups. "
-            "It also led to DiffeRT2d, an open-source library I built "
-            "for teaching and rapid prototyping of differentiable RT.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [impact_header], return_animation=True),
-        )
-
-        self.next_slide(notes="DiffeRT2d card.")
-        self.play(m.FadeIn(differt2d_card, shift=0.15 * m.LEFT))
-
-        for b in impact_bullets:
-            self.next_slide(notes="Impact bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [impact_header, impact_bullets, differt2d_card]
-
         # Slide: Smoothing applied to 3D objects (discussion)
-        smooth3d_header = title_box("Smoothing: 3D Application & Discussion")
-
-        smooth3d_bullets = bullets(
-            [
-                "Can extend smoothing to 3D geometry intersection tests (Möller–Trumbore).",
-                "Pros: provides smooth gradients for surface intersection, helps optimization.",
-                "Cons: increased cost per intersection; may blur sharp geometric features.",
-                "Design choices: where to smooth, per-triangle vs. per-mesh, and alpha scheduling.",
-            ],
-            width=34,
-        )
-        smooth3d_bullets.next_to(smooth3d_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # SVG showing a smoothed Möller–Trumbore visualization
-        try:
-            mt_svg = m.SVGMobject("images/moller-trumbore-smoothed.svg")
-        except Exception:
-            mt_svg = m.ImageMobject("images/moller-trumbore-smoothed.svg")
-        mt_svg.set_height(3.2)
+        smooth3d_header = title_box("3D Application & Discussion")
+        mt_svg = m.SVGMobject("images/moller-trumbore-smoothed.svg", height=2.0)
         mt_caption = m.Text(
-            "Möller–Trumbore: smoothed intersection",
+            "Möller-Trumbore: smoothed intersection test",
             font_size=16,
             color=MUTED,
         ).next_to(mt_svg, m.DOWN, buff=0.12)
         mt_group = m.Group(mt_svg, mt_caption)
-        mt_group.next_to(smooth3d_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        mt_group.next_to(smooth3d_header, m.DOWN, buff=0.65)
+        smooth3d_bullets = bullets(
+            [
+                "Can extend smoothing to 3D geometry intersection tests.",
+                "Pros: provides smooth gradients for surface intersection.",
+                "Cons: increased cost per intersection.",
+                "Issue: leakage of non-physical paths due to smoothing.",
+            ],
+        )
+        smooth3d_bullets.next_to(mt_group, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        self.next_slide(notes="Discuss applying smoothing to 3D intersections and trade-offs.")
+        self.next_slide(
+            notes="Discuss applying smoothing to 3D intersections and trade-offs."
+        )
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [smooth3d_header], return_animation=True),
         )
 
-        self.next_slide(notes="Show Möller–Trumbore smoothed visualization and discuss pros/cons.")
+        self.next_slide(
+            notes="Show Möller-Trumbore smoothed visualization and discuss pros/cons."
+        )
         self.play(m.FadeIn(mt_group, shift=0.15 * m.LEFT))
         for b in smooth3d_bullets:
             self.next_slide(notes="Smoothing 3D discussion bullet.")
@@ -1354,186 +1212,212 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [smooth3d_header, smooth3d_bullets, mt_group]
 
-        # Slide: Motivation for ML approach
-        ml_mot_header = title_box("Why Machine Learning for Path Sampling?")
+        # Slide: Valid vs Invalid Paths (curse of dimensionality)
+        valid_header = title_box("The Valid vs Invalid Paths Problem")
 
-        ml_mot_bullets = bullets(
+        valid_bullets = bullets(
             [
-                "Optimization-based methods (MPT, FPT) iterate per path "
-                "candidate - can be slow.",
-                "Idea: learn to predict valid paths directly from scene "
-                "geometry, skipping iterations.",
-                "Generative model: given TX, RX, and scene → predict "
-                "path interaction points.",
-                "Potential for real-time inference on GPU with learned weights.",
+                "Most path candidates are invalid (blocked or non-physical).",
+                "Few candidates lead to valid rays reaching the receiver.",
+                "Exponentially many candidates to check (order N).",
+                "This is the curse of dimensionality in ray tracing.",
             ],
-            width=42,
+            width=34,
         )
-        ml_mot_bullets.next_to(ml_mot_header, m.DOWN, buff=0.65).to_edge(
+        valid_bullets.next_to(valid_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
         )
 
-        self.next_slide(
-            notes="The second main contribution is about using machine "
-            "learning for path tracing. While the optimization-based "
-            "methods work well, they still require iterating for each "
-            "path candidate. The idea here is to learn a model that "
-            "directly predicts valid paths.",
-        )
-        self.play(
-            *next_meta(new_section=3),
-            self.wipe(prev_slide_content, [ml_mot_header], return_animation=True),
-        )
+        # Load the three valid-vs-invalid order images
+        order_images = []
+        for order in [1, 2, 3]:
+            img = m.ImageMobject(f"images/valid-vs-invalid-{order}.png").set_height(1.8)
+            order_images.append(img)
 
-        for b in ml_mot_bullets:
-            self.next_slide(notes="ML motivation bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [ml_mot_header, ml_mot_bullets]
-
-        # Slide: Architecture Overview
-        arch_header = title_box("ML Architecture Overview")
-
-        # ANIMATION SUGGESTION: Schematic flow diagram:
-        # Scene geometry → Encoder → Latent space → Decoder → Predicted paths
-        # Each block appears sequentially with connecting arrows.
-        # For now, we use a simplified text-based schematic.
-
-        arch_steps = [
-            ("Scene\nGeometry", GREEN_SOFT, ACCENT),
-            ("Encoder", CARD, LINE_SOFT),
-            ("Latent\nSpace", PURPLE_SOFT, m.ManimColor("#7c3aed")),
-            ("Decoder", CARD, LINE_SOFT),
-            ("Predicted\nPaths", ORANGE_SOFT, SECOND),
-        ]
-
-        arch_boxes = m.VGroup()
-        arch_arrows = m.VGroup()
-        for i, (label, fill, stroke) in enumerate(arch_steps):
-            box = m.RoundedRectangle(
-                width=2.0,
-                height=1.2,
-                corner_radius=0.12,
-                fill_color=fill,
-                fill_opacity=0.95,
-                stroke_color=stroke,
-                stroke_width=2,
-            )
-            txt = m.Text(label, font_size=18, color=TEXT).move_to(box)
-            arch_boxes.add(m.VGroup(box, txt))
-
-        arch_boxes.arrange(m.RIGHT, buff=0.6).next_to(arch_header, m.DOWN, buff=1.2)
-
-        for i in range(len(arch_steps) - 1):
-            arrow = m.Arrow(
-                arch_boxes[i].get_right(),
-                arch_boxes[i + 1].get_left(),
-                color=TEXT,
-                stroke_width=3,
-                buff=0.05,
-            )
-            arch_arrows.add(arrow)
-
-        arch_description = bullets(
-            [
-                "Input: TX/RX positions + scene geometry description.",
-                "Output: predicted interaction points for each path candidate.",
-                "Training data: generated from conventional RT simulations.",
-            ],
-            width=55,
-            font_size=SMALL_SIZE,
-        )
-        arch_description.next_to(arch_boxes, m.DOWN, buff=0.6).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        self.next_slide(
-            notes="The ML architecture is a generative model: given the "
-            "scene geometry and TX/RX positions, it predicts the "
-            "interaction points for each path candidate. The model "
-            "is trained on data generated from conventional RT.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [arch_header], return_animation=True),
-        )
-
-        for i, box in enumerate(arch_boxes):
-            self.next_slide(notes=f"Architecture block {i + 1}.")
-            self.play(m.FadeIn(box, shift=0.15 * m.UP))
-            if i < len(arch_arrows):
-                self.play(m.GrowArrow(arch_arrows[i]))
-
-        for b in arch_description:
-            self.next_slide(notes="Architecture description bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [
-            arch_header,
-            arch_boxes,
-            arch_arrows,
-            arch_description,
-        ]
-
-        # Slide: Training and Data
-        train_header = title_box("Training Strategy")
-
-        train_bullets = bullets(
-            [
-                "Training data: large-scale RT simulations on canonical urban scenes.",
-                "Each sample: (scene, TX, RX, interaction type sequence) "
-                "→ ground-truth path coordinates.",
-                "Loss function: mean squared error on interaction point positions.",
-                "Augmentation: random TX/RX placement, varying scene configurations.",
-            ],
-            width=42,
-        )
-        train_bullets.next_to(train_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # Placeholder for training curves
-        train_vis = m.RoundedRectangle(
-            width=4.5,
-            height=3.0,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        train_label = m.Text(
-            "[Figure: training/validation\nloss curves]",
-            font_size=16,
-            color=MUTED,
-        ).move_to(train_vis)
-        train_vis_grp = m.VGroup(train_vis, train_label)
-        train_vis_grp.next_to(train_header, m.DOWN, buff=0.65).to_edge(
+        images_group = m.Group(*order_images).arrange(m.DOWN, buff=0.15)
+        images_group.next_to(valid_header, m.DOWN, buff=0.65).to_edge(
             m.RIGHT, buff=0.75
         )
 
         self.next_slide(
-            notes="The model is trained on large-scale simulations. "
-            "Each training sample consists of a scene configuration, "
-            "TX/RX positions, and the ground-truth path coordinates "
-            "computed by conventional RT.",
+            notes="The second main contribution addresses a key challenge: "
+            "most path candidates are invalid, yet we must check exponentially many. "
+            "Here we show valid paths (red) and invalid paths (gray dashed) for orders 1 to 3.",
+        )
+        self.play(
+            *next_meta(new_section=3),
+            self.wipe(prev_slide_content, [valid_header], return_animation=True),
+        )
+
+        self.next_slide(notes="Valid vs invalid paths visualization.")
+        self.play(m.FadeIn(images_group, shift=0.15 * m.LEFT))
+        for b in valid_bullets:
+            self.next_slide(notes="Valid-vs-invalid motivation bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [valid_header, valid_bullets, images_group]
+
+        # Slide: Ray Tracing Pipeline
+        pipeline_header = title_box("Ray Tracing Pipeline")
+
+        pipeline_steps = [
+            ("Scene\n(TX, RX, Objects)", GREEN_SOFT, ACCENT),
+            ("Path\nCandidates", ORANGE_SOFT, SECOND),
+            ("Path\nTracing", CARD, LINE_SOFT),
+            ("Post-\nProcessing", CARD, LINE_SOFT),
+            ("Valid\nPaths", GREEN_SOFT_2, ACCENT),
+        ]
+
+        pipe_boxes = m.VGroup()
+        pipe_arrows = m.VGroup()
+        for label, fill, stroke in pipeline_steps:
+            box = m.RoundedRectangle(
+                width=1.8,
+                height=1.0,
+                corner_radius=0.1,
+                fill_color=fill,
+                fill_opacity=0.95,
+                stroke_color=stroke,
+                stroke_width=1.8,
+            )
+            txt = m.Text(label, font_size=16, color=TEXT).move_to(box)
+            pipe_boxes.add(m.VGroup(box, txt))
+
+        pipe_boxes.arrange(m.RIGHT, buff=0.4).next_to(pipeline_header, m.DOWN, buff=1.0)
+
+        for i in range(len(pipeline_steps) - 1):
+            arrow = m.Arrow(
+                pipe_boxes[i].get_right(),
+                pipe_boxes[i + 1].get_left(),
+                color=TEXT,
+                stroke_width=2.5,
+                buff=0.05,
+            )
+            pipe_arrows.add(arrow)
+
+        problem_box = m.RoundedRectangle(
+            width=4.5,
+            height=1.2,
+            corner_radius=0.1,
+            fill_color=RED_SOFT,
+            fill_opacity=0.8,
+            stroke_color=SECOND,
+            stroke_width=2,
+        )
+        problem_txt = m.Text(
+            "Bottleneck: most candidates\nare invalid!",
+            font_size=17,
+            color=TEXT,
+            weight=m.BOLD,
+        ).move_to(problem_box)
+        problem_group = m.VGroup(problem_box, problem_txt)
+        problem_group.next_to(pipe_boxes[1], m.DOWN, buff=0.5)
+
+        self.next_slide(
+            notes="The ray tracing pipeline takes a scene, generates path candidates, "
+            "traces each one, and post-processes to extract valid paths. "
+            "The key bottleneck is that most candidates are invalid.",
         )
         self.play(
             *next_meta(),
-            self.wipe(prev_slide_content, [train_header], return_animation=True),
+            self.wipe(prev_slide_content, [pipeline_header], return_animation=True),
         )
 
-        self.next_slide(notes="Training/validation curves placeholder.")
-        self.play(m.FadeIn(train_vis_grp, shift=0.15 * m.LEFT))
+        self.next_slide(notes="Show the pipeline flow.")
+        for i, box in enumerate(pipe_boxes):
+            self.play(m.FadeIn(box, shift=0.15 * m.UP))
+            if i < len(pipe_arrows):
+                self.play(m.GrowArrow(pipe_arrows[i]))
 
-        for b in train_bullets:
-            self.next_slide(notes="Training bullet.")
+        self.next_slide(notes="Highlight the bottleneck in path candidates.")
+        self.play(m.FadeIn(problem_group, shift=0.1 * m.DOWN))
+
+        prev_slide_content = [pipeline_header, pipe_boxes, pipe_arrows, problem_group]
+        del prev_slide_content  # not used here
+
+        # Slide: Generative Path Sampler Solution
+        gen_header = title_box("Generative Path Sampler")
+        gps = m.VGroup(
+            m.RoundedRectangle(
+                width=1.8,
+                height=1.0,
+                corner_radius=0.1,
+                fill_color=m.ManimColor("#fbbf24"),
+                fill_opacity=0.95,
+                stroke_color=m.ManimColor("#f59e0b"),
+                stroke_width=1.8,
+            ),
+            m.Text("Generative\nPath Sampler", font_size=15, color=TEXT),
+        ).move_to(pipe_boxes[1])
+
+        gen_bullets = bullets(
+            [
+                "Replace brute-force path enumeration with a learned model.",
+                "Model learns to generate only promising candidates (high validity probability).",
+                "Given scene, TX/RX → directly predict likely path interaction sequences.",
+                "Significant speedup when many candidates are possible.",
+            ],
+        )
+        gen_bullets.next_to(pipe_boxes, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        self.next_slide(
+            notes="The solution is a generative model that learns to predict "
+            "valid path candidates directly, bypassing brute-force enumeration.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(
+                [pipeline_header, problem_group], [gen_header], return_animation=True
+            ),
+            m.FadeOut(pipe_boxes[1], shift=1.5 * m.DOWN),
+            m.FadeIn(gps, shift=1.5 * m.DOWN),
+        )
+
+        for b in gen_bullets:
+            self.next_slide(notes="Generative sampler solution bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [train_header, train_bullets, train_vis_grp]
+        prev_slide_content = [
+            gen_header,
+            gen_bullets,
+            pipe_boxes[0:1],
+            gps,
+            pipe_boxes[2:],
+            pipe_arrows,
+        ]
+
+        # Slide: ML Model Architecture
+        ml_arch_header = title_box("Model Architecture")
+
+        img_model = m.ImageMobject("images/ml-model.png").scale(3)
+
+        self.next_slide(
+            notes="Let us briefly see the ML model",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [ml_arch_header, img_model], return_animation=True),
+        )
+
+        prev_slide_content = [ml_arch_header, img_model]
+
+        # Slide: ML training
+        ml_train_header = title_box("Training Procedure")
+
+        img_train = m.ImageMobject("images/ml-training-procedure.png").scale(3)
+
+        self.next_slide(
+            notes="Let us briefly discuss the training procedure",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [ml_train_header, img_train], return_animation=True),
+        )
+
+        prev_slide_content = [ml_train_header, img_train]
 
         # Slide: ML Results
-        ml_res_header = title_box("ML Path Sampling: Results")
+        ml_res_header = title_box("Results")
 
         ml_res_bullets = bullets(
             [
@@ -1542,30 +1426,15 @@ class Main(Slide, m.MovingCameraScene):
                 "Accuracy comparable to conventional RT in tested urban scenarios.",
                 "Generalizes to unseen scene configurations "
                 "(within the same scene class).",
-                "Presented at ICMLCN 2025 in Barcelona.",
+                "Does not depend on EM properties.",
             ],
-            width=42,
+            width=34,
         )
         ml_res_bullets.next_to(ml_res_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
         )
 
-        # Placeholder for comparison table/figure
-        ml_res_vis = m.RoundedRectangle(
-            width=4.5,
-            height=3.0,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        ml_res_label = m.Text(
-            "[Figure: accuracy vs.\nruntime comparison]",
-            font_size=16,
-            color=MUTED,
-        ).move_to(ml_res_vis)
-        ml_res_vis_grp = m.VGroup(ml_res_vis, ml_res_label)
+        ml_res_vis_grp = m.ImageMobject("images/ml-results.png").scale(1.5)
         ml_res_vis_grp.next_to(ml_res_header, m.DOWN, buff=0.65).to_edge(
             m.RIGHT, buff=0.75
         )
@@ -1589,63 +1458,6 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [ml_res_header, ml_res_bullets, ml_res_vis_grp]
 
-        # Slide: Journal Submission
-        journal_header = title_box("Journal Paper: npj Wireless Technology")
-
-        journal_bullets = bullets(
-            [
-                "Extended version submitted to npj Wireless Technology (March 2026).",
-                "Expanded results with more scene types and ablation studies.",
-                "Most comprehensive and recent contribution of the thesis.",
-                "Demonstrates potential of ML-assisted path tracing "
-                "for next-gen networks.",
-            ],
-            width=42,
-        )
-        journal_bullets.next_to(journal_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        journal_card = m.RoundedRectangle(
-            width=11.6,
-            height=1.0,
-            corner_radius=0.12,
-            fill_color=WARNING_SOFT,
-            fill_opacity=1,
-            stroke_color=SECOND,
-            stroke_width=2,
-        ).to_edge(m.DOWN, buff=1.3)
-        journal_txt = m.Text(
-            "Under review - the most important and comprehensive "
-            "contribution of this thesis.",
-            font_size=22,
-            color=TEXT,
-        ).move_to(journal_card)
-
-        self.next_slide(
-            notes="The full journal version of this work was submitted "
-            "to npj Wireless Technology in March 2026. It is the most "
-            "comprehensive contribution of my thesis.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [journal_header], return_animation=True),
-        )
-
-        for b in journal_bullets:
-            self.next_slide(notes="Journal bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        self.next_slide(notes="Key note about journal status.")
-        self.play(m.FadeIn(journal_card), m.FadeIn(journal_txt))
-
-        prev_slide_content = [
-            journal_header,
-            journal_bullets,
-            journal_card,
-            journal_txt,
-        ]
-
         # Slide: FPT Problem Setup
         fpt_header = title_box("Fermat Path Tracing: Problem Setup")
 
@@ -1658,8 +1470,8 @@ class Main(Slide, m.MovingCameraScene):
                 "Diffractions: 1D parameter (edge coordinate, one "
                 "column of A set to zero).",
                 "Same tensor shape for all interaction types → no branching on GPU.",
+                "Works with refraction too: problem remains convex.",
             ],
-            width=42,
             use_tex=True,
         )
         fpt_bullets.next_to(fpt_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
@@ -1668,11 +1480,28 @@ class Main(Slide, m.MovingCameraScene):
         geometry_ann = m.SVGMobject("images/geometry-annotated.svg")
         geometry_ann.set_height(3.5)
 
-        fpt_eq = m.MathTex(
-            r"\mathbf{T}^*=\argmin_{\mathbf{T}}"
-            r"\sum_{i=0}^{n}\|\mathbf{x}_{i+1}-\mathbf{x}_i\|",
-            font_size=38,
-        )
+        fpt_eq = m.VGroup(
+            m.MathTex(
+                r"\mathbf{T}^*=\argmin_{\mathbf{T}=(\mathbf{t}_0,\ldots,\mathbf{t}_{n+1})} L(\mathbf{T};\mathbf{A},\mathbf{B})",
+                font_size=38,
+            ),
+            m.Text(
+                "with",
+                font_size=30,
+            ),
+            m.MathTex(
+                r"L(\mathbf{T};\mathbf{A},\mathbf{B})=\sum\limits_{i=0}^{n} \|\mathbf{x}_{i+1} - \mathbf{x}_{i}\|",
+                font_size=38,
+            ),
+            m.Text(
+                "and",
+                font_size=30,
+            ),
+            m.MathTex(
+                r"\mathbf{x}_i=\mathbf{A}_i \mathbf{t}_i + \mathbf{b}_i",
+                font_size=38,
+            ),
+        ).arrange(m.DOWN)
         fpt_eq_label = m.Text(
             "Convex optimization problem",
             font_size=18,
@@ -1681,7 +1510,7 @@ class Main(Slide, m.MovingCameraScene):
         fpt_eq_group = m.VGroup(fpt_eq, fpt_eq_label).arrange(m.DOWN, buff=0.2)
 
         fpt_vis = m.VGroup(geometry_ann, fpt_eq_group).arrange(m.RIGHT, buff=0.55)
-        fpt_vis.next_to(fpt_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        fpt_vis.next_to(fpt_header, m.DOWN, buff=0.65)
 
         self.next_slide(
             notes="The third and final contribution is the Fermat Path "
@@ -1697,8 +1526,10 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(notes="Annotated geometry / equation.")
         self.play(m.FadeIn(fpt_vis, shift=0.15 * m.LEFT))
 
-        for b in fpt_bullets:
+        for i, b in enumerate(fpt_bullets):
             self.next_slide(notes="FPT setup bullet.")
+            if i == 0:
+                self.play(fpt_vis.animate.set_opacity(0.05))
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [fpt_header, fpt_bullets, fpt_vis]
@@ -1709,7 +1540,7 @@ class Main(Slide, m.MovingCameraScene):
         bfgs_bullets = bullets(
             [
                 r"Quasi-Newton method: approximates Hessian using only "
-                r"gradient information.",
+                r"gradient\\information.",
                 r"Direction: $\mathbf{p}_k = -\mathbf{B}_k"
                 r"\nabla L(\mathbf{T}_k)$.",
                 r"Update: $\mathbf{T}_{k+1} = \mathbf{T}_k + "
@@ -1726,7 +1557,7 @@ class Main(Slide, m.MovingCameraScene):
         # Why BFGS card
         bfgs_card = m.RoundedRectangle(
             width=5.5,
-            height=2.5,
+            height=4.5,
             corner_radius=0.14,
             fill_color=CARD,
             fill_opacity=0.97,
@@ -1781,23 +1612,502 @@ class Main(Slide, m.MovingCameraScene):
             bfgs_card_content,
         ]
 
-        # Slide 19: Implicit Differentiation
+        # Slide: Reverse-mode AD
+        ad_header = title_box("Reverse-Mode AD")
+
+        def op_node(label: str, pos: tuple[float, float, float]) -> m.VGroup:
+            box = m.RoundedRectangle(
+                width=1.25,
+                height=0.75,
+                corner_radius=0.13,
+                fill_color=m.ManimColor("#cfcfcf"),
+                fill_opacity=1,
+                stroke_color=TEXT,
+                stroke_width=2,
+            )
+            txt = m.MathTex(label, color=TEXT, font_size=34)
+            return m.VGroup(box, txt).move_to(pos)
+
+        # Core graph nodes
+        x_col = -8.0
+        sq_col = -6.0
+        trig_col = -3.0
+        mul_col = 2.0
+        add_col = 6.0
+        out_col = 8.5
+
+        top_y = 3.0
+        mid_y = 0.5
+        bot_y = -2.5
+
+        x_var = m.MathTex("x", color=TEXT, font_size=40).move_to((x_col, top_y, 0))
+        y_var = m.MathTex("y", color=TEXT, font_size=40).move_to((x_col, -1.0, 0))
+        sq = op_node(r"\cdot^2", (sq_col, top_y, 0))
+        exp = op_node(r"\exp(\cdot)", (trig_col, top_y, 0))
+        cos = op_node(r"\cos(\cdot)", (trig_col, mid_y, 0))
+        sin = op_node(r"\sin(\cdot)", (trig_col, bot_y, 0))
+        mul1 = op_node(r"\times", (mul_col, top_y, 0))
+        mul2 = op_node(r"\times", (mul_col, bot_y, 0))
+        add1 = op_node("+", (add_col, top_y, 0))
+        add2 = op_node("+", (add_col, bot_y, 0))
+        cst = m.MathTex("C", color=TEXT, font_size=44).move_to((add_col, 0.25, 0))
+        out1 = m.MathTex(r"z_1 + C", color=TEXT, font_size=40).move_to(
+            (out_col, top_y, 0)
+        )
+        out2 = m.MathTex(r"z_2 + C", color=TEXT, font_size=40).move_to(
+            (out_col, bot_y, 0)
+        )
+
+        blue = m.ManimColor("#1d4ed8")
+        f1_adj = (
+            m.MathTex(
+                r"\bar{f}_1 ",
+                r"&= \frac{\partial f_1}{\partial f_1} \\",
+                r"&= 1",
+                color=blue,
+                font_size=34,
+            )
+            .scale(0.88)
+            .next_to(out1, m.DOWN, buff=0.25)
+        )
+        f2_adj = (
+            m.MathTex(
+                r"\bar{f}_2 ",
+                r"&= \frac{\partial f_1}{\partial f_2} \\",
+                r"&= 0",
+                color=blue,
+                font_size=34,
+            )
+            .scale(0.88)
+            .next_to(out2, m.DOWN, buff=0.25)
+            .set_opacity(0.4)
+        )
+        x_adj = (
+            m.MathTex(
+                r"\bar{x} ",
+                r"&= \frac{\partial f_1}{\partial x} \\",
+                r"&= 2x\bar{u}",
+                color=blue,
+                font_size=34,
+            )
+            .scale(0.88)
+            .next_to(x_var, m.DOWN, buff=0.3)
+        )
+        y_adj = m.MathTex(
+            r"\bar{y} ",
+            r"&= \frac{\partial f_1}{\partial y} \\",
+            r"&= -\bar{w}_1\sin(y) ",
+            r"+\bar{w}_2\cos(y)",
+            color=blue,
+            font_size=30,
+        ).next_to(y_var, m.DOWN, buff=0.3)
+        y_adj[3].set_opacity(0.4)
+
+        ARROW_BUFF = 0.05
+        ARROW_TIP_LEN = 0.15
+        ARROW_TIP_RATIO = 1.0
+        DASH_LEN = 0.08
+        BENT_FWD_TIP_SCALE = 0.58
+
+        def draw_conn(
+            start_pt: np.ndarray,
+            end_pt: np.ndarray,
+            fwd_lbl: m.Mobject | None = None,
+            bwd_lbl: m.Mobject | None = None,
+            fwd_shift: np.ndarray = m.UP * 0.35,
+            bwd_shift: np.ndarray = m.DOWN * 0.35,
+            bend_pt: np.ndarray | None = None,
+            rotate_lbl: bool = False,
+            lbl_pos_ratio: float = 0.5,
+            bidirectional: bool = True,
+            reverse_opacity: float = 1.0,
+        ) -> tuple[m.Mobject, m.Mobject, m.Mobject | None, m.Mobject | None]:
+            if bend_pt is None:
+                vec = end_pt - start_pt
+                unit = vec / np.linalg.norm(vec)
+
+                fwd_edge = m.Arrow(
+                    start_pt,
+                    end_pt,
+                    color=TEXT,
+                    buff=ARROW_BUFF,
+                    stroke_width=3,
+                    tip_length=ARROW_TIP_LEN,
+                    max_tip_length_to_length_ratio=ARROW_TIP_RATIO,
+                )
+
+                if bidirectional:
+                    bwd_edge = m.DashedLine(
+                        end_pt - unit * ARROW_BUFF,
+                        start_pt + unit * ARROW_BUFF,
+                        color=blue,
+                        dash_length=DASH_LEN,
+                        stroke_width=3,
+                    )
+                    bwd_edge.add_tip(
+                        tip_shape=m.StealthTip,
+                        tip_length=ARROW_TIP_LEN,
+                        tip_width=ARROW_TIP_LEN,
+                    )
+                    bwd_edge.set_opacity(reverse_opacity)
+                else:
+                    bwd_edge = m.Line(
+                        start_pt,
+                        start_pt,
+                        color=blue,
+                        stroke_width=0,
+                        stroke_opacity=0,
+                    )
+
+                lbl_center = start_pt + vec * lbl_pos_ratio
+                angle = np.arctan2(vec[1], vec[0]) if rotate_lbl else 0
+                perp = np.array([-unit[1], unit[0], 0])
+
+                if fwd_lbl is not None:
+                    if rotate_lbl:
+                        fwd_lbl.rotate(angle)
+                        fwd_lbl.move_to(lbl_center + perp * np.linalg.norm(fwd_shift))
+                    else:
+                        fwd_lbl.move_to(lbl_center + fwd_shift)
+
+                if bidirectional and bwd_lbl is not None:
+                    if rotate_lbl:
+                        bwd_lbl.rotate(angle)
+                        bwd_lbl.move_to(lbl_center - perp * np.linalg.norm(bwd_shift))
+                    else:
+                        bwd_lbl.move_to(lbl_center + bwd_shift)
+
+                return fwd_edge, bwd_edge, fwd_lbl, bwd_lbl
+
+            vec1 = bend_pt - start_pt
+            unit1 = vec1 / np.linalg.norm(vec1)
+            vec2 = end_pt - bend_pt
+            unit2 = vec2 / np.linalg.norm(vec2)
+
+            fwd_edge = m.VMobject()
+            fwd_edge.set_points_as_corners([start_pt, bend_pt, end_pt])
+            fwd_edge.set_stroke(color=TEXT, width=3)
+
+            fwd_tip = m.Line(
+                end_pt - unit2 * (ARROW_TIP_LEN * 0.5),
+                end_pt,
+                color=TEXT,
+                stroke_width=3,
+            )
+            fwd_tip.add_tip(
+                tip_shape=m.StealthTip,
+                tip_length=ARROW_TIP_LEN * BENT_FWD_TIP_SCALE,
+                tip_width=ARROW_TIP_LEN * BENT_FWD_TIP_SCALE,
+            )
+            fwd_edge = m.VGroup(fwd_edge, fwd_tip)
+
+            if bidirectional:
+                bwd_path = m.VMobject()
+                bwd_path.set_points_as_corners(
+                    [
+                        end_pt - unit2 * ARROW_BUFF,
+                        bend_pt,
+                        start_pt + unit1 * ARROW_BUFF,
+                    ]
+                )
+                bwd_edge = m.DashedVMobject(
+                    bwd_path,
+                    num_dashes=max(8, int(np.linalg.norm(end_pt - start_pt) * 6)),
+                    dashed_ratio=0.58,
+                ).set_stroke(color=blue, width=3)
+
+                bwd_tip_end = start_pt + unit1 * ARROW_BUFF
+                bwd_tip = m.Line(
+                    bwd_tip_end + unit1 * (ARROW_TIP_LEN * 0.9),
+                    bwd_tip_end,
+                    color=blue,
+                    stroke_width=3,
+                )
+                bwd_tip.add_tip(
+                    tip_shape=m.StealthTip,
+                    tip_length=ARROW_TIP_LEN,
+                    tip_width=ARROW_TIP_LEN,
+                )
+                bwd_edge = m.VGroup(bwd_edge, bwd_tip).set_opacity(reverse_opacity)
+            else:
+                bwd_edge = m.Line(
+                    start_pt,
+                    start_pt,
+                    color=blue,
+                    stroke_width=0,
+                    stroke_opacity=0,
+                )
+
+            vec_lbl = end_pt - bend_pt
+            lbl_center = bend_pt + vec_lbl * lbl_pos_ratio
+            angle = np.arctan2(vec_lbl[1], vec_lbl[0]) if rotate_lbl else 0
+            unit_lbl = vec_lbl / np.linalg.norm(vec_lbl)
+            perp = np.array([-unit_lbl[1], unit_lbl[0], 0])
+
+            if fwd_lbl is not None:
+                if rotate_lbl:
+                    fwd_lbl.rotate(angle)
+                    fwd_lbl.move_to(lbl_center + perp * np.linalg.norm(fwd_shift))
+                else:
+                    fwd_lbl.move_to(lbl_center + fwd_shift)
+
+            if bidirectional and bwd_lbl is not None:
+                if rotate_lbl:
+                    bwd_lbl.rotate(angle)
+                    bwd_lbl.move_to(lbl_center - perp * np.linalg.norm(bwd_shift))
+                else:
+                    bwd_lbl.move_to(lbl_center + bwd_shift)
+
+            return fwd_edge, bwd_edge, fwd_lbl, bwd_lbl
+
+        connection_data = []
+
+        connection_data.append(
+            draw_conn(
+                x_var.get_right(),
+                sq.get_left(),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                sq.get_right(),
+                exp.get_left(),
+                fwd_lbl=m.MathTex(r"u=x^2", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{u}=\bar{v}e^u", color=blue, font_size=30),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                exp.get_right(),
+                mul1.get_left(),
+                fwd_lbl=m.MathTex(r"v=e^u", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(
+                    r"\bar{v}=\bar{z}_1w_1",
+                    r"+\bar{z}_2w_2",
+                    color=blue,
+                    font_size=30,
+                ),
+                lbl_pos_ratio=0.43,
+            )
+        )
+        connection_data[-1][3][1].set_opacity(0.4)
+        connection_data.append(
+            draw_conn(
+                y_var.get_right(),
+                cos.get_left(),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                y_var.get_right(),
+                sin.get_left(),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                cos.get_right(),
+                mul1.get_corner(m.DL),
+                fwd_lbl=m.MathTex(r"w_1=\cos(y)", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{w}_1=\bar{z}_1v", color=blue, font_size=30),
+                bend_pt=np.array([-0.5, mid_y, 0.0]),
+                rotate_lbl=True,
+                lbl_pos_ratio=0.52,
+                fwd_shift=m.UP * 0.28,
+                bwd_shift=m.DOWN * 0.28,
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                sin.get_right(),
+                mul2.get_left(),
+                fwd_lbl=m.MathTex(r"w_2=\sin(y)", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(
+                    r"\bar{w}_2=\bar{z}_2v", color=blue, font_size=30
+                ).set_opacity(0.4),
+                rotate_lbl=True,
+                fwd_shift=m.UP * 0.3,
+                bwd_shift=m.DOWN * 0.3,
+                reverse_opacity=0.4,
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                np.array([-0.5, top_y, 0.0]),
+                mul2.get_corner(m.UL),
+                bend_pt=np.array([-0.5, 0.7, 0.0]),
+                reverse_opacity=0.4,
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                mul1.get_right(),
+                add1.get_left(),
+                fwd_lbl=m.MathTex(r"z_1=w_1v", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(r"\bar{z}_1=\bar{f}_1", color=blue, font_size=30),
+            )
+        )
+        connection_data.append(
+            draw_conn(
+                mul2.get_right(),
+                add2.get_left(),
+                fwd_lbl=m.MathTex(r"z_2=w_2v", color=TEXT, font_size=30),
+                bwd_lbl=m.MathTex(
+                    r"\bar{z}_2=\bar{f}_2", color=blue, font_size=30
+                ).set_opacity(0.4),
+                reverse_opacity=0.4,
+            )
+        )
+        connection_data.append(draw_conn(add1.get_right(), out1.get_left()))
+        connection_data.append(
+            draw_conn(add2.get_right(), out2.get_left(), reverse_opacity=0.4)
+        )
+        connection_data.append(
+            draw_conn(
+                cst.get_top(), add1.get_bottom(), bwd_lbl=None, bidirectional=False
+            )
+        )
+        connection_data.append(
+            draw_conn(cst.get_bottom(), add2.get_top(), bidirectional=False)
+        )
+
+        forward_edges = m.VGroup(*[item[0] for item in connection_data])
+        reverse_edges = m.VGroup(*[item[1] for item in connection_data])
+
+        forward_edge_labels = [
+            item[2] for item in connection_data if item[2] is not None
+        ]
+        reverse_edge_labels = [
+            item[3] for item in connection_data if item[3] is not None
+        ]
+
+        function_def = m.MathTex(
+            r"f(x,y)=\begin{bmatrix}f_1(x,y)\\f_2(x,y)\end{bmatrix}=\begin{bmatrix}\cos(y)e^{x^2}+C\\\sin(y)e^{x^2}+C\end{bmatrix}",
+            color=TEXT,
+            font_size=36,
+        ).move_to((0, 3.2, 0))
+
+        forward_labels = m.VGroup(*forward_edge_labels)
+        reverse_labels = m.VGroup(
+            f1_adj,
+            f2_adj,
+            x_adj,
+            y_adj,
+            *reverse_edge_labels,
+        )
+
+        graph_nodes = m.VGroup(
+            x_var,
+            y_var,
+            sq,
+            exp,
+            cos,
+            sin,
+            mul1,
+            mul2,
+            add1,
+            add2,
+            cst,
+            out1,
+            out2,
+        )
+
+        ad_group = m.VGroup(
+            function_def,
+            graph_nodes,
+            forward_edges,
+            reverse_edges,
+            forward_labels,
+            reverse_labels,
+        ).scale(0.66)
+        ad_group.to_edge(m.DOWN, buff=0.60)
+        function_def.shift(m.UP)
+
+        def reveal_connection(idx: int, reverse: bool = False) -> m.AnimationGroup:
+            edge = connection_data[idx][1 if reverse else 0]
+            label = connection_data[idx][3 if reverse else 2]
+            anims: list[m.Animation] = [m.Create(edge)]
+            if label is not None:
+                anims.append(m.FadeIn(label))
+            return m.AnimationGroup(*anims)
+
+        forward_stages = [
+            [0, 3, 4],
+            [1],
+            [2, 5, 6, 7],
+            [8, 9, 12, 13],
+            [10, 11],
+        ]
+
+        reverse_stages = [
+            [10, 11],
+            [8, 9],
+            [2, 5, 6, 7],
+            [1],
+            [0, 3, 4],
+        ]
+
+        self.next_slide(
+            notes="To introduce the final component of our approach, it is first important to recall how reverse-mode AD works. Here, we illustrate it on a simple example function with two inputs and two outputs., where each operation is represented as a node in the computational graph.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(
+                prev_slide_content,
+                [function_def, graph_nodes, ad_header],
+                return_animation=True,
+            ),
+        )
+
+        self.next_slide(
+            notes="The compute the gradients, AD first performs a forward pass to compute the function values. Each intermediate variable is stored for later use in the backward pass."
+        )
+
+        for stage in forward_stages:
+            self.play(
+                m.AnimationGroup(*[reveal_connection(i) for i in stage]),
+                run_time=0.5,
+            )
+
+        self.next_slide(
+            notes="To actually compute the gradients, AD then performs a backward pass, starting from the output gradients and applying the chain rule to compute the gradients for each intermediate variable."
+        )
+        self.play(
+            m.FadeIn(f1_adj),
+            m.FadeIn(f2_adj),
+            run_time=0.5,
+        )
+        for stage in reverse_stages:
+            self.play(
+                m.AnimationGroup(
+                    *[reveal_connection(i, reverse=True) for i in stage],
+                ),
+                run_time=0.5,
+            )
+        self.play(
+            m.FadeIn(x_adj),
+            m.FadeIn(y_adj),
+            run_time=0.5,
+        )
+
+        prev_slide_content = [ad_header, ad_group]
+
+        # Slide: Implicit Differentiation
         imp_header = title_box("Implicit Differentiation")
 
         imp_bullets = bullets(
             [
-                "Reverse-mode AD stores all intermediate states → O(K) memory.",
-                "Unrolling K iterations is expensive in memory and backward time.",
-                "Implicit function theorem: use optimality condition "
+                r"Reverse-mode AD stores all intermediate states $\rightarrow$ $\mathcal{O}(K)$ memory.",
+                "Unrolling $K$ iterations is expensive in memory and backward time.",
+                r"Implicit function theorem:\\use optimality condition "
                 "at the converged solution.",
                 "Result: exact gradients without storing intermediate iterations.",
             ],
-            width=42,
+            use_tex=True,
         )
         imp_bullets.next_to(imp_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         imp_eq_card = m.RoundedRectangle(
-            width=6.0,
+            width=5.0,
             height=3.5,
             corner_radius=0.14,
             fill_color=WARNING_SOFT,
@@ -1861,40 +2171,21 @@ class Main(Slide, m.MovingCameraScene):
         ]
 
         # Slide: FPT Results
-        fpt_res_header = title_box("FPT: Benchmark Results")
+        fpt_res_header = title_box("Benchmark Results")
 
         fpt_res_bullets = bullets(
             [
-                "Benchmarked on RTX 3070 with 1000 paths in parallel.",
+                "Benchmarked on 32-bit GPU with 1000 paths in parallel.",
                 "Interactions: n = 1..5 (reflection and diffraction).",
-                "Our BFGS solver approaches image-method speed while "
-                "supporting diffractions.",
-                "Accuracy improves with more line-search iterations (ours-64 variant).",
+                "Implicit differentation is 10x faster than AD.",
+                "Very good diffraction-only performance",
+                "Our specialized BFGS is up to 10x faster than vanilla BFGS solver.",
+                "Reflection-only convergence is good (< 10x image method)...",
+                "... but never reach machine epsilon.",
             ],
-            width=42,
         )
         fpt_res_bullets.next_to(fpt_res_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
-        )
-
-        # Placeholder for benchmark figure (could reuse data from EuCAP 2026)
-        fpt_res_vis = m.RoundedRectangle(
-            width=4.5,
-            height=3.0,
-            corner_radius=0.15,
-            fill_color=SLATE_SOFT,
-            fill_opacity=0.3,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        fpt_res_label = m.Text(
-            "[Figure: accuracy vs.\nruntime benchmark plot\n(from EuCAP 2026)]",
-            font_size=16,
-            color=MUTED,
-        ).move_to(fpt_res_vis)
-        fpt_res_vis_grp = m.VGroup(fpt_res_vis, fpt_res_label)
-        fpt_res_vis_grp.next_to(fpt_res_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
         )
 
         self.next_slide(
@@ -1908,211 +2199,21 @@ class Main(Slide, m.MovingCameraScene):
             self.wipe(prev_slide_content, [fpt_res_header], return_animation=True),
         )
 
-        self.next_slide(notes="Benchmark figure placeholder.")
-        self.play(m.FadeIn(fpt_res_vis_grp, shift=0.15 * m.LEFT))
-
         for b in fpt_res_bullets:
             self.next_slide(notes="FPT result bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [fpt_res_header, fpt_res_bullets, fpt_res_vis_grp]
+        prev_slide_content = [fpt_res_header, fpt_res_bullets]
 
-        # Slide: Open Source - DiffeRT
-        oss_header = title_box("Open Source: DiffeRT")
-
-        oss_bullets = bullets(
-            [
-                "DiffeRT: 3D differentiable ray tracing library in Python/JAX.",
-                "DiffeRT2d: lightweight 2D version for prototyping and teaching.",
-                "Both freely available on GitHub under MIT license.",
-                "Designed for reproducibility and research extensibility.",
-                "Used by multiple research groups worldwide.",
-            ],
-            width=42,
-        )
-        oss_bullets.next_to(oss_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        # Software boxes
-        sw_left = info_card(
-            "DiffeRT (3D)",
-            "Full 3D ray tracing with\n"
-            "JAX + equinox.\n"
-            "GPU-accelerated, differentiable.",
-            fill_color=GREEN_SOFT,
-            stroke_color=ACCENT,
-        )
-        sw_right = info_card(
-            "DiffeRT2d (2D)",
-            "Lightweight 2D library.\nGreat for teaching and\nrapid prototyping.",
-            fill_color=ORANGE_SOFT_2,
-            stroke_color=SECOND,
-        )
-        sw_group = m.VGroup(sw_left, sw_right).arrange(m.RIGHT, buff=0.5)
-        sw_group.next_to(oss_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.5)
-
-        self.next_slide(
-            notes="All of these contributions are implemented in "
-            "open-source software. DiffeRT is the full 3D library, "
-            "while DiffeRT2d is a lightweight 2D version I created "
-            "for prototyping and teaching.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [oss_header], return_animation=True),
-        )
-
-        self.next_slide(notes="Software cards.")
-        self.play(
-            m.FadeIn(sw_left, shift=0.15 * m.RIGHT),
-            m.FadeIn(sw_right, shift=0.15 * m.LEFT),
-        )
-
-        for b in oss_bullets:
-            self.next_slide(notes="Open source bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [oss_header, oss_bullets, sw_group]
-
-        # ══════════════════════════════════════════════════════════════════
-        # SECTION 6 - Conclusion
-        # ══════════════════════════════════════════════════════════════════
-
-        # ── Slide 22: Summary of Contributions ──────────────────────────
-        summary_header = title_box("Summary of Contributions")
-
-        summary_items = [
-            (
-                "① Smoothing Technique",
-                GREEN_SOFT,
-                ACCENT,
-                "Continuous relaxation of hard visibility → fully differentiable RT.",
-            ),
-            (
-                "② ML-Based Generative Path Sampling",
-                PURPLE_SOFT,
-                m.ManimColor("#7c3aed"),
-                "Learned model predicts paths directly → real-time inference potential.",
-            ),
-            (
-                "③ Fermat Path Tracing (FPT)",
-                ORANGE_SOFT,
-                SECOND,
-                "Unified BFGS solver for refl. + diffr. with implicit differentiation.",
-            ),
-        ]
-
-        summary_cards = m.VGroup()
-        for title_txt, fill, stroke, desc in summary_items:
-            card = m.RoundedRectangle(
-                width=11.6,
-                height=1.3,
-                corner_radius=0.12,
-                fill_color=fill,
-                fill_opacity=0.95,
-                stroke_color=stroke,
-                stroke_width=2,
-            )
-            t = m.Text(title_txt, font_size=24, color=TEXT, weight=m.BOLD)
-            d = m.Text(desc, font_size=18, color=MUTED)
-            content = m.VGroup(t, d).arrange(m.DOWN, buff=0.1).move_to(card)
-            summary_cards.add(m.VGroup(card, content))
-        summary_cards.arrange(m.DOWN, buff=0.25).next_to(
-            summary_header, m.DOWN, buff=0.55
-        )
-
-        # Cross-cutting card
-        cross_card = m.RoundedRectangle(
-            width=11.6,
-            height=0.8,
-            corner_radius=0.12,
-            fill_color=CARD,
-            fill_opacity=0.95,
-            stroke_color=LINE_SOFT,
-            stroke_width=2,
-        )
-        cross_txt = m.Text(
-            "Cross-cutting: open-source tools (DiffeRT, DiffeRT2d) and "
-            "COST INTERACT contributions.",
-            font_size=19,
-            color=TEXT,
-        ).move_to(cross_card)
-        cross_grp = m.VGroup(cross_card, cross_txt)
-        cross_grp.next_to(summary_cards, m.DOWN, buff=0.25)
-
-        self.next_slide(
-            notes="Let me now summarize the three main contributions: "
-            "the smoothing technique, the ML-based generative path "
-            "sampling, and the Fermat Path Tracing method.",
-        )
-        self.play(
-            *next_meta(new_section=5),
-            self.wipe(prev_slide_content, [summary_header], return_animation=True),
-        )
-        self.play(
-            m.LaggedStart(
-                *[m.FadeIn(c, shift=0.1 * m.UP) for c in summary_cards],
-                lag_ratio=0.15,
-            )
-        )
-
-        self.next_slide(notes="Plus cross-cutting contributions.")
-        self.play(m.FadeIn(cross_grp, shift=0.1 * m.UP))
-
-        prev_slide_content = [summary_header, summary_cards, cross_grp]
-
-        # Slide: Most Proud Achievements
-        proud_header = title_box("Most Proud Achievements")
-
-        proud_bullets = bullets(
-            [
-                "Built DiffeRT from scratch - a full 3D differentiable "
-                "RT library used by the community.",
-                "International collaborations through COST INTERACT "
-                "(Italy, Dublin, Lille, ...).",
-                "Created Manim Slides - an open-source tool for "
-                "animated presentations (used right now!).",
-                "Contributed a chapter section to the COST INTERACT book (Lille, 2025).",
-                "Bridging communities: radio propagation, optimization, "
-                "and machine learning.",
-            ],
-            width=50,
-        )
-        proud_bullets.next_to(proud_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        self.next_slide(
-            notes="Beyond the scientific contributions, I am particularly "
-            "proud of several achievements: building DiffeRT, the "
-            "international collaborations, creating Manim Slides "
-            "(which I am actually using right now to present these slides!), "
-            "and contributing to the COST book.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [proud_header], return_animation=True),
-        )
-
-        for b in proud_bullets:
-            self.next_slide(notes="Proud achievement bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [proud_header, proud_bullets]
-
-        # Slide 24: Future Research Directions
-        future_header = title_box("Future Research Directions")
+        # Slide: Future Research Directions
+        future_header = title_box("Future work")
 
         future_bullets = bullets(
             [
                 "SOCP formulations for stronger convergence guarantees in FPT.",
                 "Port high-precision conic solvers to practical GPU kernels.",
-                "Combine ML and optimization: use ML predictions as "
-                "warm start for FPT.",
-                "Extend to scattering and more complex interaction types.",
-                "Integration with digital twin platforms for real-time "
-                "network optimization.",
+                "Compare with closed-source solvers (e.g., MOREAU).",
             ],
-            width=50,
         )
         future_bullets.next_to(future_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
@@ -2129,7 +2230,7 @@ class Main(Slide, m.MovingCameraScene):
         ).to_edge(m.DOWN, buff=1.3)
         warning_txt = (
             m.Text(
-                "Key bottleneck: open GPU solvers are still lagging behind theory.",
+                "Key bottleneck: open differentiable GPU solvers are still lagging behind theory.",
                 font_size=23,
                 color=TEXT,
             )
@@ -2160,6 +2261,96 @@ class Main(Slide, m.MovingCameraScene):
             warning_card,
             warning_txt,
         ]
+
+        # Slide: Most Proud Achievements
+        proud_header = title_box("Most Proud Achievements")
+
+        proud_bullets = bullets(
+            [
+                "Every publication is accompanied with open-source reproducide code"
+                "Built DiffeRT from scratch - a full 3D differentiable "
+                "RT library (used for all my publications since 2024).",
+                "International collaborations through COST INTERACT "
+                "(Italy, Dublin, Lille, ...).",
+                "Created Manim Slides - an open-source tool for "
+                "animated presentations (used right now!).",
+                "Contributed a chapter section to the COST INTERACT book (Lille, 2025).",
+            ],
+        )
+        proud_bullets.next_to(proud_header, m.DOWN, buff=0.65).to_edge(
+            m.LEFT, buff=0.75
+        )
+
+        self.next_slide(
+            notes="Beyond the scientific contributions, I am particularly "
+            "proud of several achievements: building DiffeRT, the "
+            "international collaborations, creating Manim Slides "
+            "(which I am actually using right now to present these slides!), "
+            "and contributing to the COST book.",
+        )
+        self.play(
+            *next_meta(new_section=5),
+            self.wipe(prev_slide_content, [proud_header], return_animation=True),
+        )
+
+        for b in proud_bullets:
+            self.next_slide(notes="Proud achievement bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [proud_header, proud_bullets]
+
+        # Slide: Open Source Software
+        oss_header = title_box("Open Source Sofware")
+
+        # Software boxes
+        sw_left = info_card(
+            "DiffeRT2d (2D)",
+            "Lightweight 2D library. Great for teaching and rapid prototyping.",
+            fill_color=ORANGE_SOFT_2,
+            stroke_color=SECOND,
+        )
+        sw_right = info_card(
+            "DiffeRT (3D)",
+            "Full 3D ray tracing, fast visualization and efficient methods.",
+            fill_color=GREEN_SOFT,
+            stroke_color=ACCENT,
+        )
+        sw_group = m.VGroup(sw_left, sw_right).arrange(m.RIGHT, buff=0.5)
+        sw_group.next_to(oss_header, m.DOWN, buff=0.65)
+
+        oss_bullets = bullets(
+            [
+                "Two differentiable ray tracing Python libraries.",
+                "DiffeRT2d: object-oriented 2D version for prototyping and teaching.",
+                "DiffeRT: 3D ray tracing library for large scale scenes.",
+                "Both freely available on GitHub under MIT license.",
+                "Designed for reproducibility and research extensibility.",
+            ],
+        )
+        oss_bullets.next_to(sw_group, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        self.next_slide(
+            notes="All of these contributions are implemented in "
+            "open-source software. DiffeRT is the full 3D library, "
+            "while DiffeRT2d is a lightweight 2D version I created "
+            "for prototyping and teaching.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [oss_header], return_animation=True),
+        )
+
+        self.next_slide(notes="Software cards.")
+        self.play(
+            m.FadeIn(sw_left, shift=0.15 * m.RIGHT),
+            m.FadeIn(sw_right, shift=0.15 * m.LEFT),
+        )
+
+        for b in oss_bullets:
+            self.next_slide(notes="Open source bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [oss_header, oss_bullets, sw_group]
 
         # Slide: Publications List
         pub_header = title_box("Publications")

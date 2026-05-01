@@ -59,6 +59,7 @@ def objective_function(
 annotate_kwargs = {
     "color": "black",
     "fontsize": 8,
+    "fontweight": "bold",
     "ha": "center",
 }
 point_kwargs = {

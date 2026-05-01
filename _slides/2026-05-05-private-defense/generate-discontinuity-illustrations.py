@@ -290,4 +290,4 @@ for max_depth, diffraction in [
 
     name = f"depth{max_depth}_{'no' if not diffraction else ''}diffraction"
 
-    save_fig(fig, folder / f"{name}.png", azim=70, elev=60, dist=3.03, crop=True)
+    save_fig(fig, folder / f"{name}.png", azim=70, elev=45, dist=3.03, crop=True)

@@ -77,6 +77,7 @@ f_and_df = jax.value_and_grad(loss)
 annotate_kwargs = {
     "color": "black",
     "fontsize": 8,
+    "fontweight": "bold",
     "ha": "center",
 }
 point_kwargs = {
