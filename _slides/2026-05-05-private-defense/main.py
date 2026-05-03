@@ -483,7 +483,7 @@ class Main(Slide, m.MovingCameraScene):
             m.FadeIn(shift_box_left, old_txt, shift=0.2 * m.RIGHT),
         )
 
-        self.next_slide(notes="To differentiable, GPU-enabled ray tracing.")
+        self.next_slide(notes="Transition to GPU-enabled, differentiable ray tracing.")
         self.play(
             m.GrowArrow(arrow_shift),
             m.FadeIn(shift_box_right, new_txt, shift=0.2 * m.LEFT),
@@ -1133,7 +1133,7 @@ class Main(Slide, m.MovingCameraScene):
         sres_bullets = bullets(
             [
                 "Smoothing reduces discontinuity artifacts in the power map.",
-                "Optimization with smoothing converges more reliably in practice (x1.5 to x2 success rate).",
+                "Optimization with smoothing converges more reliably in practice (about 1.5× to 2× higher success rate).",
                 "Implemented in DiffeRT2d and then extended to DiffeRT (3D).",
             ],
             width=34,
@@ -1391,9 +1391,7 @@ class Main(Slide, m.MovingCameraScene):
 
         img_model = m.ImageMobject("images/ml-model.png").scale(3)
 
-        self.next_slide(
-            notes="Let us briefly see the ML model",
-        )
+        self.next_slide(notes="Let us briefly look at the ML model.")
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [ml_arch_header, img_model], return_animation=True),
@@ -1406,9 +1404,7 @@ class Main(Slide, m.MovingCameraScene):
 
         img_train = m.ImageMobject("images/ml-training-procedure.png").scale(3)
 
-        self.next_slide(
-            notes="Let us briefly discuss the training procedure",
-        )
+        self.next_slide(notes="Let us briefly look at the training procedure.")
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [ml_train_header, img_train], return_animation=True),
@@ -1423,10 +1419,10 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "Significant speedup over iterative methods for large "
                 "numbers of path candidates.",
-                "Accuracy comparable to conventional RT in tested urban scenarios.",
                 "Generalizes to unseen scene configurations "
                 "(within the same scene class).",
                 "Does not depend on EM properties.",
+                "Blind spots may suggest future work on hyperparameter fine-tuning."
             ],
             width=34,
         )
@@ -2127,7 +2123,6 @@ class Main(Slide, m.MovingCameraScene):
                 r"\nabla_{\mathbf{T}}L(\mathbf{T}^*;\theta)=\mathbf{0}",
                 font_size=34,
             ),
-            m.Arrow(m.UP * 0.3, m.DOWN * 0.3, color=TEXT, stroke_width=2),
             m.Text("(2) Implicit gradient:", font_size=18),
             m.MathTex(
                 r"\frac{\partial \mathbf{T}^*}{\partial\theta}"
@@ -2177,11 +2172,11 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "Benchmarked on 32-bit GPU with 1000 paths in parallel.",
                 "Interactions: n = 1..5 (reflection and diffraction).",
-                "Implicit differentation is 10x faster than AD.",
-                "Very good diffraction-only performance",
-                "Our specialized BFGS is up to 10x faster than vanilla BFGS solver.",
-                "Reflection-only convergence is good (< 10x image method)...",
-                "... but never reach machine epsilon.",
+                "Implicit differentiation is 10x faster than AD.",
+                "Very good performance in diffraction-only scenarios.",
+                "Our specialized BFGS is up to 10x faster than the vanilla BFGS solver.",
+                "Reflection-only convergence is good (less than 10x the image method)...",
+                "... but it never reaches machine epsilon.",
             ],
         )
         fpt_res_bullets.next_to(fpt_res_header, m.DOWN, buff=0.65).to_edge(
@@ -2267,7 +2262,7 @@ class Main(Slide, m.MovingCameraScene):
 
         proud_bullets = bullets(
             [
-                "Every publication is accompanied with open-source reproducide code"
+                "Every publication is accompanied with open-source reproducible code",
                 "Built DiffeRT from scratch - a full 3D differentiable "
                 "RT library (used for all my publications since 2024).",
                 "International collaborations through COST INTERACT "
@@ -2300,7 +2295,7 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [proud_header, proud_bullets]
 
         # Slide: Open Source Software
-        oss_header = title_box("Open Source Sofware")
+        oss_header = title_box("Open Source Software")
 
         # Software boxes
         sw_left = info_card(
@@ -2365,7 +2360,7 @@ class Main(Slide, m.MovingCameraScene):
             "[J1] npj Wireless Technology (2026) - ML-assisted RT (submitted)",
             "[J*] JOSE (2023) - Manim Slides",
             "[J*] JOSS (2023) - DiffeRT2d",
-            "[C*] ICMCLCN (2023) - DiffeRT",
+            "[C*] ICMLCN (2023) - DiffeRT",
         ]
 
         pub_cards = m.VGroup()
