@@ -1389,7 +1389,7 @@ class Main(Slide, m.MovingCameraScene):
         # Slide: ML Model Architecture
         ml_arch_header = title_box("Model Architecture")
 
-        img_model = m.ImageMobject("images/ml-model.png").scale(3)
+        img_model = m.ImageMobject("images/ml-model.png").scale(1)
 
         self.next_slide(notes="Let us briefly look at the ML model.")
         self.play(
@@ -1402,7 +1402,7 @@ class Main(Slide, m.MovingCameraScene):
         # Slide: ML training
         ml_train_header = title_box("Training Procedure")
 
-        img_train = m.ImageMobject("images/ml-training-procedure.png").scale(3)
+        img_train = m.ImageMobject("images/ml-training-procedure.png").scale(1)
 
         self.next_slide(notes="Let us briefly look at the training procedure.")
         self.play(
@@ -1430,7 +1430,7 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT, buff=0.75
         )
 
-        ml_res_vis_grp = m.ImageMobject("images/ml-results.png").scale(1.5)
+        ml_res_vis_grp = m.ImageMobject("images/ml-results.png").scale(0.5)
         ml_res_vis_grp.next_to(ml_res_header, m.DOWN, buff=0.65).to_edge(
             m.RIGHT, buff=0.75
         )
