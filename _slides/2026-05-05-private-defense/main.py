@@ -1289,9 +1289,7 @@ class Main(Slide, m.MovingCameraScene):
         )
         self.play(
             *next_meta(),
-            self.wipe(
-                [pipeline_header], [gen_header], return_animation=True
-            ),
+            self.wipe([pipeline_header], [gen_header], return_animation=True),
             m.FadeOut(pipe_boxes[1], shift=1.5 * m.DOWN),
             m.FadeIn(gps, shift=1.5 * m.DOWN),
         )
@@ -1460,36 +1458,6 @@ class Main(Slide, m.MovingCameraScene):
         )
         bfgs_bullets.next_to(bfgs_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # Why BFGS card
-        bfgs_card = m.RoundedRectangle(
-            width=5.5,
-            height=4.5,
-            corner_radius=0.14,
-            fill_color=CARD,
-            fill_opacity=0.97,
-            stroke_color=ACCENT,
-            stroke_width=2,
-        )
-        bfgs_card_title = m.Text(
-            "Why BFGS over Newton/GD?",
-            font_size=20,
-            color=TEXT,
-            weight=m.BOLD,
-        )
-        bfgs_card_notes = bullets(
-            [
-                "Newton: ill-conditioned Hessian\nwith zero-padded diffraction.",
-                "GD: slow convergence, no\ncurvature information.",
-                "BFGS: robust, no true Hessian\ninversion needed.",
-            ],
-            width=28,
-            font_size=SMALL_SIZE,
-        )
-        bfgs_card_content = m.VGroup(bfgs_card_title, bfgs_card_notes).arrange(
-            m.DOWN, buff=0.15
-        )
-        bfgs_card_content.move_to(bfgs_card)
-
         self.next_slide(
             notes="We use a BFGS quasi-Newton solver, which is well-suited "
             "for GPU execution because we fix the number of iterations "
@@ -1504,18 +1472,9 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide(notes="BFGS bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        self.next_slide(notes="Why BFGS?")
-        self.play(
-            bfgs_bullets.animate.set_opacity(0.05),
-            m.FadeIn(bfgs_card),
-            m.FadeIn(bfgs_card_content),
-        )
-
         prev_slide_content = [
             bfgs_header,
             bfgs_bullets,
-            bfgs_card,
-            bfgs_card_content,
         ]
 
         # Slide: Reverse-mode AD
@@ -2167,38 +2126,8 @@ class Main(Slide, m.MovingCameraScene):
             warning_txt,
         ]
 
-        # Slide: Most Proud Achievements
-        proud_header = title_box("Most Proud Achievements...")
-
-        proud_bullets = bullets(
-            [
-                "Every publication is accompanied with open-source reproducible code",
-                "International collaborations through COST INTERACT."
-                "Created Manim Slides - an open-source tool for "
-                "animated presentations (used right now!).",
-            ],
-        )
-        proud_bullets.next_to(proud_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        self.next_slide(
-            notes="Beyond the scientific contributions, I am particularly "
-            "proud of several achievements: ...",
-        )
-        self.play(
-            *next_meta(new_section=5),
-            self.wipe(prev_slide_content, [proud_header], return_animation=True),
-        )
-
-        for b in proud_bullets:
-            self.next_slide(notes="Proud achievement bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [proud_header, proud_bullets]
-
         # Slide: Open Source Software
-        oss_header = title_box("... Open Source Software")
+        oss_header = title_box("Open Source Software")
 
         # Software boxes
         sw_left = info_card(
@@ -2234,7 +2163,7 @@ class Main(Slide, m.MovingCameraScene):
             "for prototyping and teaching.",
         )
         self.play(
-            *next_meta(),
+            *next_meta(new_section=5),
             self.wipe(prev_slide_content, [oss_header], return_animation=True),
         )
 
@@ -2249,6 +2178,35 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [oss_header, oss_bullets, sw_group]
+
+        # Slide: Most Proud Achievements
+        proud_header = title_box("... But Also")
+
+        proud_bullets = bullets(
+            [
+                "Every publication is accompanied with documented, open-source reproducible code",
+                "Created Manim Slides - an open-source tool for "
+                "animated presentations (used right now!).",
+            ],
+        )
+        proud_bullets.next_to(proud_header, m.DOWN, buff=0.65).to_edge(
+            m.LEFT, buff=0.75
+        )
+
+        self.next_slide(
+            notes="Beyond the scientific contributions, I am particularly "
+            "proud of several achievements: ...",
+        )
+        self.play(
+            *next_meta(new_section=5),
+            self.wipe(prev_slide_content, [proud_header], return_animation=True),
+        )
+
+        for b in proud_bullets:
+            self.next_slide(notes="Proud achievement bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [proud_header, proud_bullets]
 
         # Slide: Publications List
         pub_header = title_box("Publications")
@@ -2308,7 +2266,9 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [end]
 
         # Slide: Smoothing applied to 3D objects (discussion)
-        smooth3d_header = title_box("Smoothing: 3D Application & Discussion", underline=True)
+        smooth3d_header = title_box(
+            "Smoothing: 3D Application & Discussion", underline=True
+        )
         mt_svg = m.SVGMobject("images/moller-trumbore-smoothed.svg", height=2.0)
         mt_caption = m.Text(
             "Möller-Trumbore: smoothed intersection test",
@@ -2343,7 +2303,6 @@ class Main(Slide, m.MovingCameraScene):
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [smooth3d_header[0], smooth3d_bullets, mt_group]
-
 
         # Slide: ML training
         ml_train_header = title_box("ML Sampling: Training Procedure")
