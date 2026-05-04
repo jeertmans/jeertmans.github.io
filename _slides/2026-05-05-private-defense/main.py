@@ -1158,44 +1158,6 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [sres_header, sres_bullets, sres_right]
 
-        # Slide: Smoothing applied to 3D objects (discussion)
-        smooth3d_header = title_box("3D Application & Discussion")
-        mt_svg = m.SVGMobject("images/moller-trumbore-smoothed.svg", height=2.0)
-        mt_caption = m.Text(
-            "Möller-Trumbore: smoothed intersection test",
-            font_size=16,
-            color=MUTED,
-        ).next_to(mt_svg, m.DOWN, buff=0.12)
-        mt_group = m.Group(mt_svg, mt_caption)
-        mt_group.next_to(smooth3d_header, m.DOWN, buff=0.65)
-        smooth3d_bullets = bullets(
-            [
-                "Can extend smoothing to 3D geometry intersection tests.",
-                "Pros: provides smooth gradients for surface intersection.",
-                "Cons: increased cost per intersection.",
-                "Issue: leakage of non-physical paths due to smoothing.",
-            ],
-        )
-        smooth3d_bullets.next_to(mt_group, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        self.next_slide(
-            notes="Discuss applying smoothing to 3D intersections and trade-offs."
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [smooth3d_header], return_animation=True),
-        )
-
-        self.next_slide(
-            notes="Show Möller-Trumbore smoothed visualization and discuss pros/cons."
-        )
-        self.play(m.FadeIn(mt_group, shift=0.15 * m.LEFT))
-        for b in smooth3d_bullets:
-            self.next_slide(notes="Smoothing 3D discussion bullet.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [smooth3d_header, smooth3d_bullets, mt_group]
-
         # Slide: Valid vs Invalid Paths (curse of dimensionality)
         valid_header = title_box("The Valid vs Invalid Paths Problem")
 
@@ -1204,7 +1166,6 @@ class Main(Slide, m.MovingCameraScene):
                 r"Most path candidates are invalid\\(blocked or non-physical).",
                 r"Few candidates lead to valid rays\\reaching the receiver.",
                 r"Exponentially many candidates to check\\(grows as $\mathcal{O}(N^K)$).",
-                "This is the curse of dimensionality in ray tracing.",
             ],
             use_tex=True,
         )
@@ -1279,24 +1240,6 @@ class Main(Slide, m.MovingCameraScene):
             )
             pipe_arrows.add(arrow)
 
-        problem_box = m.RoundedRectangle(
-            width=4.5,
-            height=1.2,
-            corner_radius=0.1,
-            fill_color=RED_SOFT,
-            fill_opacity=0.8,
-            stroke_color=SECOND,
-            stroke_width=2,
-        )
-        problem_txt = m.Text(
-            "Bottleneck: most candidates\nare invalid!",
-            font_size=17,
-            color=TEXT,
-            weight=m.BOLD,
-        ).move_to(problem_box)
-        problem_group = m.VGroup(problem_box, problem_txt)
-        problem_group.next_to(pipe_boxes[1], m.DOWN, buff=0.5)
-
         self.next_slide(
             notes="The ray tracing pipeline takes a scene, generates path candidates, "
             "traces each one, and post-processes to extract valid paths. "
@@ -1308,15 +1251,11 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(notes="Show the pipeline flow.")
-        for i, box in enumerate(pipe_boxes):
-            self.play(m.FadeIn(box, shift=0.15 * m.UP))
-            if i < len(pipe_arrows):
-                self.play(m.GrowArrow(pipe_arrows[i]))
+        self.play(
+            m.FadeIn(pipe_boxes, pipe_arrows, shift=0.15 * m.UP),
+        )
 
-        self.next_slide(notes="Highlight the bottleneck in path candidates.")
-        self.play(m.FadeIn(problem_group, shift=0.1 * m.DOWN))
-
-        prev_slide_content = [pipeline_header, pipe_boxes, pipe_arrows, problem_group]
+        prev_slide_content = [pipeline_header, pipe_boxes, pipe_arrows]
         del prev_slide_content  # not used here
 
         # Slide: Generative Path Sampler Solution
@@ -1351,7 +1290,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             *next_meta(),
             self.wipe(
-                [pipeline_header, problem_group], [gen_header], return_animation=True
+                [pipeline_header], [gen_header], return_animation=True
             ),
             m.FadeOut(pipe_boxes[1], shift=1.5 * m.DOWN),
             m.FadeIn(gps, shift=1.5 * m.DOWN),
@@ -1384,21 +1323,6 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         prev_slide_content = [ml_arch_header, img_model]
-
-        # Slide: ML training
-        ml_train_header = title_box("Training Procedure")
-
-        img_train = m.ImageMobject("images/ml-training-procedure.png").scale(0.5)
-
-        self.next_slide(notes="Let us briefly look at the training procedure.")
-        self.play(
-            *next_meta(),
-            self.wipe(
-                prev_slide_content, [ml_train_header, img_train], return_animation=True
-            ),
-        )
-
-        prev_slide_content = [ml_train_header, img_train]
 
         # Slide: ML Results
         ml_res_header = title_box("Results")
@@ -2244,13 +2168,12 @@ class Main(Slide, m.MovingCameraScene):
         ]
 
         # Slide: Most Proud Achievements
-        proud_header = title_box("Most Proud Achievements")
+        proud_header = title_box("Most Proud Achievements...")
 
         proud_bullets = bullets(
             [
                 "Every publication is accompanied with open-source reproducible code",
-                "International collaborations through COST INTERACT "
-                "(Italy, Dublin, Lille, ...).",
+                "International collaborations through COST INTERACT."
                 "Created Manim Slides - an open-source tool for "
                 "animated presentations (used right now!).",
             ],
@@ -2275,7 +2198,7 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [proud_header, proud_bullets]
 
         # Slide: Open Source Software
-        oss_header = title_box("Open Source Software")
+        oss_header = title_box("... Open Source Software")
 
         # Software boxes
         sw_left = info_card(
@@ -2381,3 +2304,57 @@ class Main(Slide, m.MovingCameraScene):
             notes="Thank you all for your attention. I am happy to take your questions.",
         )
         self.wipe(self.mobjects, [end])
+
+        prev_slide_content = [end]
+
+        # Slide: Smoothing applied to 3D objects (discussion)
+        smooth3d_header = title_box("Smoothing: 3D Application & Discussion", underline=True)
+        mt_svg = m.SVGMobject("images/moller-trumbore-smoothed.svg", height=2.0)
+        mt_caption = m.Text(
+            "Möller-Trumbore: smoothed intersection test",
+            font_size=16,
+            color=MUTED,
+        ).next_to(mt_svg, m.DOWN, buff=0.12)
+        mt_group = m.Group(mt_svg, mt_caption)
+        mt_group.next_to(smooth3d_header, m.DOWN, buff=0.65)
+        smooth3d_bullets = bullets(
+            [
+                "Can extend smoothing to 3D geometry intersection tests.",
+                "Pros: provides smooth gradients for surface intersection.",
+                "Cons: increased cost per intersection.",
+                "Issue: leakage of non-physical paths due to smoothing.",
+            ],
+        )
+        smooth3d_bullets.next_to(mt_group, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        self.next_slide(
+            notes="Discuss applying smoothing to 3D intersections and trade-offs."
+        )
+        self.play(
+            self.wipe(prev_slide_content, [smooth3d_header], return_animation=True),
+        )
+
+        self.next_slide(
+            notes="Show Möller-Trumbore smoothed visualization and discuss pros/cons."
+        )
+        self.play(m.FadeIn(mt_group, shift=0.15 * m.LEFT))
+        for b in smooth3d_bullets:
+            self.next_slide(notes="Smoothing 3D discussion bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [smooth3d_header[0], smooth3d_bullets, mt_group]
+
+
+        # Slide: ML training
+        ml_train_header = title_box("ML Sampling: Training Procedure")
+
+        img_train = m.ImageMobject("images/ml-training-procedure.png").scale(0.5)
+
+        self.next_slide(notes="Let us briefly look at the training procedure.")
+        self.play(
+            self.wipe(
+                prev_slide_content, [ml_train_header, img_train], return_animation=True
+            ),
+        )
+
+        prev_slide_content = [ml_train_header, img_train]
