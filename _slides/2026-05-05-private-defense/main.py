@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 import textwrap
 from pathlib import Path
 
@@ -554,16 +555,9 @@ class Main(Slide, m.MovingCameraScene):
                 False,
             ),
             (
-                "2020/12",
-                "Ph.D. proposal",
-                "Formalized the Ph.D. research direction in differentiable radio ray tracing.",
-                False,
-                True,  # Offset to avoid overlap with Craeye's student job
-            ),
-            (
                 "2021/09",
                 "Ph.D. start",
-                "Official start of the Ph.D. at UCLouvain.",
+                "Start of the Ph.D. at UCLouvain.",
                 False,
                 False,
             ),
@@ -582,16 +576,9 @@ class Main(Slide, m.MovingCameraScene):
                 False,
             ),
             (
-                "2023/07",
-                "Visit Siegen",
-                "Research visit and talk further disseminating MPT results.",
-                False,
-                False,
-            ),
-            (
                 "2023/12",
                 "Confirmation",
-                "Key Ph.D. checkpoint validating the research trajectory.",
+                "Ph.D. checkpoint validating the research trajectory.",
                 False,
                 True,  # Offset to avoid overlap with EuCap 2023
             ),
@@ -1084,11 +1071,9 @@ class Main(Slide, m.MovingCameraScene):
         obj_header = title_box("Example Objective")
         obj_bullets = bullets(
             [
-                r"Example objective: maximize power over a target area.",
-                r"One formulation is to optimize a worst-user criterion.",
+                r"Example objective: maximize worst-user power.",
                 r"Smoothing makes gradients usable for this optimization problem.",
             ],
-            width=34,
             use_tex=True,
         )
         obj_bullets.next_to(obj_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
@@ -1134,7 +1119,6 @@ class Main(Slide, m.MovingCameraScene):
             [
                 "Smoothing reduces discontinuity artifacts in the power map.",
                 "Optimization with smoothing converges more reliably in practice (about 1.5× to 2× higher success rate).",
-                "Implemented in DiffeRT2d and then extended to DiffeRT (3D).",
             ],
             width=34,
         )
@@ -1217,12 +1201,12 @@ class Main(Slide, m.MovingCameraScene):
 
         valid_bullets = bullets(
             [
-                "Most path candidates are invalid (blocked or non-physical).",
-                "Few candidates lead to valid rays reaching the receiver.",
-                "Exponentially many candidates to check (order N).",
+                r"Most path candidates are invalid\\(blocked or non-physical).",
+                r"Few candidates lead to valid rays\\reaching the receiver.",
+                r"Exponentially many candidates to check\\(grows as $\mathcal{O}(N^K)$).",
                 "This is the curse of dimensionality in ray tracing.",
             ],
-            width=34,
+            use_tex=True,
         )
         valid_bullets.next_to(valid_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
@@ -1389,12 +1373,14 @@ class Main(Slide, m.MovingCameraScene):
         # Slide: ML Model Architecture
         ml_arch_header = title_box("Model Architecture")
 
-        img_model = m.ImageMobject("images/ml-model.png").scale(1)
+        img_model = m.ImageMobject("images/ml-model.png").scale(0.5)
 
         self.next_slide(notes="Let us briefly look at the ML model.")
         self.play(
             *next_meta(),
-            self.wipe(prev_slide_content, [ml_arch_header, img_model], return_animation=True),
+            self.wipe(
+                prev_slide_content, [ml_arch_header, img_model], return_animation=True
+            ),
         )
 
         prev_slide_content = [ml_arch_header, img_model]
@@ -1402,12 +1388,14 @@ class Main(Slide, m.MovingCameraScene):
         # Slide: ML training
         ml_train_header = title_box("Training Procedure")
 
-        img_train = m.ImageMobject("images/ml-training-procedure.png").scale(1)
+        img_train = m.ImageMobject("images/ml-training-procedure.png").scale(0.5)
 
         self.next_slide(notes="Let us briefly look at the training procedure.")
         self.play(
             *next_meta(),
-            self.wipe(prev_slide_content, [ml_train_header, img_train], return_animation=True),
+            self.wipe(
+                prev_slide_content, [ml_train_header, img_train], return_animation=True
+            ),
         )
 
         prev_slide_content = [ml_train_header, img_train]
@@ -1422,7 +1410,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Generalizes to unseen scene configurations "
                 "(within the same scene class).",
                 "Does not depend on EM properties.",
-                "Blind spots may suggest future work on hyperparameter fine-tuning."
+                "Blind spots may suggest future work on hyperparameter fine-tuning.",
             ],
             width=34,
         )
@@ -1430,7 +1418,7 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT, buff=0.75
         )
 
-        ml_res_vis_grp = m.ImageMobject("images/ml-results.png").scale(0.5)
+        ml_res_vis_grp = m.ImageMobject("images/ml-results.png").scale(0.25)
         ml_res_vis_grp.next_to(ml_res_header, m.DOWN, buff=0.65).to_edge(
             m.RIGHT, buff=0.75
         )
@@ -1541,11 +1529,9 @@ class Main(Slide, m.MovingCameraScene):
                 r"\nabla L(\mathbf{T}_k)$.",
                 r"Update: $\mathbf{T}_{k+1} = \mathbf{T}_k + "
                 r"\alpha_k \mathbf{p}_k$.",
-                "Fixed K iterations → uniform GPU kernel execution "
+                r"Fixed K iterations $\rightarrow$ uniform GPU kernel execution "
                 "(no early stopping).",
-                "More robust than Newton method for mixed reflection/diffraction.",
             ],
-            width=42,
             use_tex=True,
         )
         bfgs_bullets.next_to(bfgs_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
@@ -2263,13 +2249,10 @@ class Main(Slide, m.MovingCameraScene):
         proud_bullets = bullets(
             [
                 "Every publication is accompanied with open-source reproducible code",
-                "Built DiffeRT from scratch - a full 3D differentiable "
-                "RT library (used for all my publications since 2024).",
                 "International collaborations through COST INTERACT "
                 "(Italy, Dublin, Lille, ...).",
                 "Created Manim Slides - an open-source tool for "
                 "animated presentations (used right now!).",
-                "Contributed a chapter section to the COST INTERACT book (Lille, 2025).",
             ],
         )
         proud_bullets.next_to(proud_header, m.DOWN, buff=0.65).to_edge(
@@ -2278,10 +2261,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(
             notes="Beyond the scientific contributions, I am particularly "
-            "proud of several achievements: building DiffeRT, the "
-            "international collaborations, creating Manim Slides "
-            "(which I am actually using right now to present these slides!), "
-            "and contributing to the COST book.",
+            "proud of several achievements: ...",
         )
         self.play(
             *next_meta(new_section=5),
