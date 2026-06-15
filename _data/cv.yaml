@@ -5,7 +5,7 @@ cv:
   location: Belgium
   email: jeertmans@icloud.com
   website: https://www.eertmans.com/
-  photo: ../assets/img/profile.png
+  photo: ../assets/img/profile.jpg
   social_networks:
   - network: LinkedIn
     username: jérome-eertmans
@@ -21,8 +21,8 @@ cv:
       area: Electrical engineering
       degree: Ph.D.
       start_date: 2021-09
-      end_date: 2026-06
-      summary: 'Thesis title: Differentiable Ray Tracing for Telecommunications'
+      end_date: 2026-07
+      summary: 'Thesis title: Differentiable Ray Tracing for Radio Propagation Modeling'
     - institution: Université catholique de Louvain
       area: Electro-mechanical engineering
       degree: M.Sc.
@@ -194,7 +194,7 @@ cv:
     - label: EuCAP
       details: EuCAP 2026 (5 reviews)
     - label: IEEE
-      details: Access (5 reviews), Transactions on Vehicular Technology (6 reviews), Antennas and Wireless Propagation Letters (1 review), and Open Journal of the Communications Society (1 review)
+      details: Access (5 reviews), Transactions on Vehicular Technology (7 reviews), Antennas and Wireless Propagation Letters (1 review), and Open Journal of the Communications Society (1 review)
     - label: Journal of Open Source Software
       details: 1 review (see [#9384](https://github.com/openjournals/joss-reviews/issues/9384))
     - label: 'Nature Partner Journals: Wireless Technology'
