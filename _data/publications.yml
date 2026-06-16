@@ -1,3 +1,9 @@
+- title: Ph.D. thesis - Differentiable Ray Tracing for Radio Propagation Modeling
+  id: phdthesis2026
+  date: 2026-07-06
+  tags:
+  - Thesis
+  bibtex: /assets/publications/phdthesis2026.bib
 - title: Preprint - Transform-Invariant Generative Ray Path Sampling for Efficient Radio Propagation Modeling
   id: npjwt2026
   date: 2026-03-02
@@ -108,3 +114,10 @@
   - Abstract
   - Poster
   download: /assets/publications/sitb2022-abstract.pdf
+- title: Master's thesis - Radio activity optimisation for Wireless Personal Communications
+  id: mastersthesis2022
+  date: 2022-06-01
+  tags:
+  - Thesis
+  download: https://thesis.dial.uclouvain.be/bitstreams/6356cae6-e05f-4708-ae95-93a147a5194e/download/assets/publications/mastersthesis2021.pdf
+  bibtex: /assets/publications/mastersthesis2021.bib

@@ -8,6 +8,8 @@ tags:
   - presentation
   - propagation
   - ray-tracing
+github: jeertmans/DiffeRT-thesis
+publication_id: phdthesis2026
 permalink: /posts/public-defense/
 description: Public Ph.D. defense slides, manuscript, and video recording.
 ---
