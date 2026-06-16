@@ -115,9 +115,9 @@
   - Poster
   download: /assets/publications/sitb2022-abstract.pdf
 - title: Master's thesis - Radio activity optimisation for Wireless Personal Communications
-  id: mastersthesis2022
-  date: 2022-06-01
+  id: mastersthesis2021
+  date: 2021-06-23
   tags:
   - Thesis
-  download: https://thesis.dial.uclouvain.be/bitstreams/6356cae6-e05f-4708-ae95-93a147a5194e/download/assets/publications/mastersthesis2021.pdf
+  download: /assets/publications/mastersthesis2021.pdf
   bibtex: /assets/publications/mastersthesis2021.bib
