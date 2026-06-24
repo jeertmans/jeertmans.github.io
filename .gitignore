@@ -35,9 +35,10 @@ _slides/*/*_assets/
 _slides/*/*.pptx
 _slides/*/*.pdf
 _slides/*/*.html
-_slides/2026-04-20-eucap-presentation/images/street-canyon-*.png
-_slides/2026-05-05-private-defense/images/smoothing/*.png
-_slides/2026-05-05-private-defense/images/street-canyon/*.png
+_slides/*/images/sequences/
+_slides/2026-07-06-public-defense/antennas/
+_slides/2026-07-06-public-defense/sounds/
+_slides/2026-07-06-public-defense/images/antennas/
 
 # LaTeX
 *.aux

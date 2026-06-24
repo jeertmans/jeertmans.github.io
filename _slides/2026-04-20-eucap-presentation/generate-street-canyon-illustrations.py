@@ -291,4 +291,4 @@ for i, theta in enumerate(tqdm(np.linspace(0, 2 * np.pi, num=36 * 8, endpoint=Fa
     azim = np.rad2deg(np.pi + theta)
     elev = 55 + 10.0 * np.cos(theta)
 
-    save_fig(fig, f"images/street-canyon-{i:03d}.png", azim=azim, elev=elev, dist=3.03)
+    save_fig(fig, f"images/sequences/street-canyon/{i:03d}.png", azim=azim, elev=elev, dist=3.03)
