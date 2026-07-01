@@ -1,9 +1,9 @@
-from manim import *
+import tempfile
+
 import librosa
 import numpy as np
 import soundfile as sf
-import os
-import tempfile
+from manim import *
 from scipy.signal import butter, filtfilt
 
 
