@@ -1,10 +1,8 @@
-# ruff: noqa: RUF001
 import io
 import textwrap
 from typing import Any
 
 import differt.plotting as dplt
-import equinox as eqx
 import jax.numpy as jnp
 import manim as m
 import numpy as np
@@ -130,12 +128,10 @@ def figure_to_mobject(
 
 
 # --- 🎨 Global Color Theme & Variables ---
-BG_COLOR = m.ManimColor("#0C0F12")  # Deep charcoal/navy background
+BG_COLOR = m.ManimColor("#000000")  # Plain black background
 TEXT_COLOR = m.ManimColor("#F3F4F6")  # Crisp off-white text
 MUTED_TEXT = m.ManimColor("#8996A6")  # Soft slate gray for labels/secondary text
-ACCENT_CYAN = m.ManimColor(
-    "#00E5FF"
-)  # Radiant cyan for waves, rays, and signal propagation
+ACCENT_CYAN = m.ManimColor("#00FFFF")  # Radiant neon cyan matching the logo
 ACCENT_GREEN = m.ManimColor(
     "#00E676"
 )  # Bright emerald for valid paths, success, and optimal points
@@ -273,6 +269,425 @@ def bullets(
     return m.VGroup(*groups).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.35)
 
 
+# --- 🎱 Reusable Billiard Table Class ---
+class BilliardTable(m.VGroup):
+    def __init__(
+        self, width: float = 5.0, height: float = 3.5, obstacle: bool = True, **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.width = width
+        self.height = height
+
+        # Table frame (wood border)
+        self.frame = m.RoundedRectangle(
+            width=width,
+            height=height,
+            corner_radius=0.15,
+            stroke_color=m.ManimColor("#4E3629"),
+            stroke_width=6,
+            fill_color=m.ManimColor("#0D3B2E"),  # green felt
+            fill_opacity=1,
+        )
+        self.add(self.frame)
+
+        # 4 Pockets at corners
+        self.pockets = m.VGroup(
+            *(
+                m.Circle(radius=0.12, color=m.BLACK, fill_opacity=1).move_to(
+                    self.frame.get_corner(corner)
+                )
+                for corner in [m.UL, m.UR, m.DL, m.DR]
+            )
+        )
+        self.add(self.pockets)
+
+        # Cue Ball (TX) position (relative to table frame center)
+        self.tx_pos = m.LEFT * (width * 0.3) + m.DOWN * (height * 0.17)
+        self.cue_ball = m.Circle(radius=0.1, color=m.WHITE, fill_opacity=1).move_to(
+            self.frame.get_center() + self.tx_pos
+        )
+        self.cue_lbl = m.Text("TX", font_size=12, color=m.BLACK).move_to(self.cue_ball)
+        self.add(self.cue_ball, self.cue_lbl)
+
+        # Target pocket (RX) - top right corner pocket
+        self.rx_pocket = self.pockets[1]
+        self.rx_pos = self.rx_pocket.get_center()
+        self.pocket_lbl = m.Text("RX", font_size=12, color=TEXT_COLOR).next_to(
+            self.rx_pocket, m.DOWN, buff=0.1
+        )
+        self.add(self.pocket_lbl)
+
+        # Obstacle inside the table (representing building)
+        if obstacle:
+            self.building = m.Rectangle(
+                width=1.2,
+                height=1.0,
+                fill_color=m.ManimColor("#22252A"),
+                fill_opacity=1,
+                stroke_color=CARD_BORDER,
+                stroke_width=2,
+            ).move_to(self.frame.get_center())
+            self.building_lbl = m.Text(
+                "Building", font_size=12, color=MUTED_TEXT
+            ).move_to(self.building)
+            self.add(self.building, self.building_lbl)
+        else:
+            self.building = None
+            self.building_lbl = None
+
+    def _cushion_params(self, cushion_name):
+        """Return (point_on_surface, unit_normal) for a named cushion.
+
+        The normal always points *inward* (towards the table centre).
+        """
+        C = self.frame.get_center()
+        if cushion_name == "bottom":
+            P = C + np.array([0, -self.height / 2, 0])
+            n = np.array([0, 1, 0])
+        elif cushion_name == "top":
+            P = C + np.array([0, self.height / 2, 0])
+            n = np.array([0, -1, 0])
+        elif cushion_name == "left":
+            P = C + np.array([-self.width / 2, 0, 0])
+            n = np.array([1, 0, 0])
+        elif cushion_name == "right":
+            P = C + np.array([self.width / 2, 0, 0])
+            n = np.array([-1, 0, 0])
+        else:
+            raise ValueError(f"Unknown cushion: {cushion_name}")
+        return P, n
+
+    def reflect_point(self, point, cushion_name):
+        """Reflect *point* across the plane of *cushion_name*.
+
+        Uses: I_k = I_{k-1} - 2 <I_{k-1} - P_k, n_k> n_k
+        """
+        P, n = self._cushion_params(cushion_name)
+        return point - 2 * np.dot(point - P, n) * n
+
+    def get_virtual_rx(self, cushion_name, rx_pos=None):
+        if rx_pos is None:
+            rx_pos = self.rx_pos
+        return self.reflect_point(rx_pos, cushion_name)
+
+    def get_intersection(self, tx, virtual_rx, cushion_name):
+        P, n = self._cushion_params(cushion_name)
+        num = np.dot(P - tx, n)
+        den = np.dot(virtual_rx - tx, n)
+        if abs(den) < 1e-12:
+            return P.copy()
+        return tx + (num / den) * (virtual_rx - tx)
+
+    def image_method(self, cushion_sequence, tx_pos=None, rx_pos=None):
+        """Run the full Image Method for a given cushion sequence.
+
+        Parameters
+        ----------
+        cushion_sequence : list[str]
+            Ordered list of cushion names, e.g. ["bottom", "right"].
+        tx_pos, rx_pos : optional
+            Override transmitter / receiver positions (default: cue ball / pocket).
+
+        Returns
+        -------
+        images : list[np.ndarray]
+            Successive images of TX (I_0=TX, I_1, I_2, …).
+        intersections : list[np.ndarray]
+            Interaction points on each cushion (X_1, X_2, …).
+            len == len(cushion_sequence).
+        """
+        if tx_pos is None:
+            tx_pos = self.cue_ball.get_center().copy()
+        if rx_pos is None:
+            rx_pos = self.rx_pos.copy()
+
+        n = len(cushion_sequence)
+
+        # --- Forward pass: compute successive images of TX ---
+        images = [tx_pos.copy()]
+        for k in range(n):
+            images.append(self.reflect_point(images[-1], cushion_sequence[k]))
+
+        # --- Backward pass: compute intersection points ---
+        intersections = [None] * n
+        X_next = rx_pos.copy()  # X_{n+1} = UE/RX
+        for k in range(n - 1, -1, -1):
+            P_k, n_k = self._cushion_params(cushion_sequence[k])
+            I_k = images[k + 1]
+            num = np.dot(P_k - X_next, n_k)
+            den = np.dot(X_next - I_k, n_k)
+            if abs(den) < 1e-12:
+                # Degenerate case – fall back to midpoint on cushion
+                intersections[k] = P_k.copy()
+            else:
+                intersections[k] = X_next + (num / den) * (X_next - I_k)
+            X_next = intersections[k]
+
+        return images, intersections
+
+    def is_intersection_on_cushion(self, intersection, cushion_name):
+        """Check whether *intersection* lies within the physical cushion bounds."""
+        if intersection is None:
+            return False
+        C = self.frame.get_center()
+        rel = intersection - C
+        if cushion_name in ["bottom", "top"]:
+            return -self.width / 2 - 0.01 <= rel[0] <= self.width / 2 + 0.01
+        else:
+            return -self.height / 2 - 0.01 <= rel[1] <= self.height / 2 + 0.01
+
+    def cushion_line(self, cushion_name):
+        """Return (start, end) for the given cushion edge."""
+        C = self.frame.get_center()
+        hw, hh = self.width / 2, self.height / 2
+        if cushion_name == "bottom":
+            return C + np.array([-hw, -hh, 0]), C + np.array([hw, -hh, 0])
+        elif cushion_name == "top":
+            return C + np.array([-hw, hh, 0]), C + np.array([hw, hh, 0])
+        elif cushion_name == "left":
+            return C + np.array([-hw, -hh, 0]), C + np.array([-hw, hh, 0])
+        elif cushion_name == "right":
+            return C + np.array([hw, -hh, 0]), C + np.array([hw, hh, 0])
+        else:
+            raise ValueError(f"Unknown cushion: {cushion_name}")
+
+    def intersects_building(self, p1, p2):
+        if self.building is None:
+            return False
+        C = self.frame.get_center()
+        min_x = C[0] - 0.6
+        max_x = C[0] + 0.6
+        min_y = C[1] - 0.5
+        max_y = C[1] + 0.5
+
+        # Liang-Barsky line clipping algorithm
+        t_min = 0.0
+        t_max = 1.0
+
+        d = p2 - p1
+        for i in range(2):
+            if abs(d[i]) < 1e-8:
+                val = p1[i]
+                box_min = min_x if i == 0 else min_y
+                box_max = max_x if i == 0 else max_y
+                if val < box_min or val > box_max:
+                    return False
+            else:
+                inv_d = 1.0 / d[i]
+                box_min = min_x if i == 0 else min_y
+                box_max = max_x if i == 0 else max_y
+                t0 = (box_min - p1[i]) * inv_d
+                t1 = (box_max - p1[i]) * inv_d
+                if t0 > t1:
+                    t0, t1 = t1, t0
+                t_min = max(t_min, t0)
+                t_max = min(t_max, t1)
+                if t_min > t_max:
+                    return False
+        return True
+
+
+# ---------------------------------------------------------
+# Motivation Wave Propagation Geometry Helpers
+# ---------------------------------------------------------
+def make_convex_lens(height=3.0, angle=m.PI/3.5, color=ACCENT_CYAN):
+    half_h = height / 2.0
+    left_arc = m.ArcBetweenPoints(start=m.DOWN * half_h, end=m.UP * half_h, angle=angle)
+    right_arc = m.ArcBetweenPoints(start=m.UP * half_h, end=m.DOWN * half_h, angle=angle)
+    lens = m.VMobject()
+    lens.set_points(np.concatenate([left_arc.points, right_arc.points]))
+    lens.set_fill(color, opacity=0.2)
+    lens.set_stroke(color, width=2)
+    return lens
+
+def make_concave_lens(height=3.0, thickness=0.8, angle=m.PI/4, color=ACCENT_CYAN):
+    half_h = height / 2.0
+    half_t = thickness / 2.0
+    top_line = m.Line(m.LEFT * half_t + m.UP * half_h, m.RIGHT * half_t + m.UP * half_h)
+    right_arc = m.ArcBetweenPoints(start=m.RIGHT * half_t + m.UP * half_h, end=m.RIGHT * half_t + m.DOWN * half_h, angle=angle)
+    bottom_line = m.Line(m.RIGHT * half_t + m.DOWN * half_h, m.LEFT * half_t + m.DOWN * half_h)
+    left_arc = m.ArcBetweenPoints(start=m.LEFT * half_t + m.DOWN * half_h, end=m.LEFT * half_t + m.UP * half_h, angle=angle)
+    
+    lens = m.VMobject()
+    lens.set_points(np.concatenate([
+        top_line.points,
+        right_arc.points,
+        bottom_line.points,
+        left_arc.points
+    ]))
+    lens.set_fill(color, opacity=0.2)
+    lens.set_stroke(color, width=2)
+    return lens
+
+def make_concert_hall(color=TEXT_COLOR):
+    vertices = [
+        [-3.5, -1.5, 0.0],
+        [-3.5, 0.5, 0.0],
+        [-2.0, 1.2, 0.0],
+        [-2.0, 2.2, 0.0],
+        [0.5, 2.2, 0.0],
+        [3.5, 1.8, 0.0],
+        [3.5, -0.6, 0.0],
+        [1.5, -1.5, 0.0],
+        [-3.5, -1.5, 0.0],
+    ]
+    hall = m.VMobject()
+    hall.set_points_as_corners(vertices)
+    hall.set_stroke(color=color, width=2.5)
+    hall.set_fill(CARD_BG, opacity=0.4)
+    return hall
+
+def get_lens_rays(lens_type="convex", height=3.0, y_range=1.2, num_rays=7, thickness=0.8):
+    from manim.constants import LineJointType
+    rays = m.VGroup()
+    y_vals = np.linspace(-y_range, y_range, num_rays)
+    
+    if lens_type == "convex" or lens_type == "thick_convex":
+        angle = m.PI/3.5 if lens_type == "convex" else m.PI/2
+        focal_point = 2.5 if lens_type == "convex" else 1.3
+        
+        half_h = height / 2.0
+        R = half_h / np.sin(angle / 2.0)
+        x_c = np.sqrt(R**2 - half_h**2)
+        
+        for y in y_vals:
+            if abs(y) < 1e-5:
+                line = m.Line(m.LEFT * 5, m.RIGHT * 4, color=m.YELLOW, stroke_width=1.5)
+                line.joint_type = LineJointType.BEVEL
+                rays.add(line)
+            else:
+                x_left = x_c - np.sqrt(R**2 - y**2)
+                p1 = m.LEFT * 5 + m.UP * y
+                p2 = np.array([x_left, y, 0.0])
+                
+                final_slope = -y / focal_point
+                s_mid = 0.4 * final_slope
+                
+                c = y - s_mid * x_left
+                A_q = 1 + s_mid**2
+                B_q = 2 * (x_c + s_mid * c)
+                C_q = x_c**2 + c**2 - R**2
+                disc = B_q**2 - 4 * A_q * C_q
+                if disc < 0:
+                    x_right, y_exit = -x_left, y
+                else:
+                    x_right = max((-B_q + np.sqrt(disc)) / (2 * A_q), (-B_q - np.sqrt(disc)) / (2 * A_q))
+                    y_exit = s_mid * x_right + c
+                    
+                p3 = np.array([x_right, y_exit, 0.0])
+                
+                p_focal = np.array([focal_point, 0.0, 0.0])
+                dir_exit = m.normalize(p_focal - p3)
+                p4 = p3 + dir_exit * 2.5
+                
+                path = m.VMobject(joint_type=LineJointType.BEVEL)
+                path.set_points_as_corners([p1, p2, p3, p4])
+                path.set_stroke(color=m.YELLOW, width=1.5)
+                rays.add(path)
+                
+    elif lens_type == "concave":
+        angle = m.PI/4
+        virtual_focal_point = -2.0
+        
+        half_h = height / 2.0
+        half_t = thickness / 2.0
+        R = half_h / np.sin(abs(angle) / 2.0)
+        x_c = np.sqrt(R**2 - half_h**2)
+        x_c_left = -half_t - x_c
+        x_c_right = half_t + x_c
+        
+        for y in y_vals:
+            if abs(y) < 1e-5:
+                line = m.Line(m.LEFT * 5, m.RIGHT * 4, color=m.YELLOW, stroke_width=1.5)
+                line.joint_type = LineJointType.BEVEL
+                rays.add(line)
+            else:
+                x_left = x_c_left + np.sqrt(R**2 - y**2)
+                p1 = m.LEFT * 5 + m.UP * y
+                p2 = np.array([x_left, y, 0.0])
+                
+                final_slope = y / (half_t + abs(virtual_focal_point))
+                s_mid = 0.4 * final_slope
+                
+                c = y - s_mid * x_left
+                A_q = 1 + s_mid**2
+                B_q = 2 * (-x_c_right + s_mid * c)
+                C_q = x_c_right**2 + c**2 - R**2
+                disc = B_q**2 - 4 * A_q * C_q
+                if disc < 0:
+                    x_right, y_exit = -x_left, y
+                else:
+                    x_right = min((-B_q + np.sqrt(disc)) / (2 * A_q), (-B_q - np.sqrt(disc)) / (2 * A_q))
+                    y_exit = s_mid * x_right + c
+                    
+                p3 = np.array([x_right, y_exit, 0.0])
+                
+                p_virtual = np.array([virtual_focal_point, 0.0, 0.0])
+                dir_exit = m.normalize(p3 - p_virtual)
+                p4 = p3 + dir_exit * 4.0
+                
+                path = m.VMobject(joint_type=LineJointType.BEVEL)
+                path.set_points_as_corners([p1, p2, p3, p4])
+                path.set_stroke(color=m.YELLOW, width=1.5)
+                rays.add(path)
+                
+    return rays
+
+def find_first_intersection(P, d, segments):
+    min_u = float('inf')
+    best_Q = None
+    best_seg = None
+    
+    for seg in segments:
+        A, B = seg
+        dx, dy = d[0], d[1]
+        vx, vy = B[0] - A[0], B[1] - A[1]
+        
+        D = -dx * vy + dy * vx
+        if abs(D) < 1e-9:
+            continue
+            
+        u = (-(A[0] - P[0]) * vy + (A[1] - P[1]) * vx) / D
+        t = (dx * (A[1] - P[1]) - dy * (A[0] - P[0])) / D
+        
+        if u > 1e-4 and 0.0 <= t <= 1.0:
+            if u < min_u:
+                min_u = u
+                best_Q = P + u * d
+                best_seg = seg
+                
+    if best_Q is not None:
+        return best_Q, best_seg
+    return None
+
+def trace_ray(S, angle_rad):
+    d = np.array([np.cos(angle_rad), np.sin(angle_rad), 0.0])
+    segments = [
+        (np.array([-3.5, -1.5, 0.0]), np.array([-3.5, 0.5, 0.0])),
+        (np.array([-3.5, 0.5, 0.0]), np.array([-2.0, 1.2, 0.0])),
+        (np.array([-2.0, 1.2, 0.0]), np.array([-2.0, 2.2, 0.0])),
+        (np.array([-2.0, 2.2, 0.0]), np.array([0.5, 2.2, 0.0])),
+        (np.array([0.5, 2.2, 0.0]), np.array([3.5, 1.8, 0.0])),
+        (np.array([3.5, 1.8, 0.0]), np.array([3.5, -0.6, 0.0])),
+        (np.array([3.5, -0.6, 0.0]), np.array([1.5, -1.5, 0.0])),
+        (np.array([1.5, -1.5, 0.0]), np.array([-3.5, -1.5, 0.0]))
+    ]
+    res1 = find_first_intersection(S, d, segments)
+    if res1 is None:
+        return [S, S + d * 5.0]
+    Q1, seg1 = res1
+    A, B = seg1
+    v = B - A
+    n = np.array([-v[1], v[0], 0.0])
+    n = n / np.linalg.norm(n)
+    d_refl = d - 2 * np.dot(d, n) * n
+    res2 = find_first_intersection(Q1, d_refl, segments)
+    if res2 is None:
+        return [S, Q1, Q1 + d_refl * 5.0]
+    Q2, seg2 = res2
+    return [S, Q1, Q2]
+
+
 # --- 🚀 Main Slide Presentation Class ---
 
 
@@ -352,12 +767,6 @@ class Main(Slide, m.MovingCameraScene):
                     anims.append(grp[1].animate.set_color(target_text))
             return anims
 
-        title_logo = (
-            m.SVGMobject("images/uclouvain.svg", height=0.35)
-            .to_corner(m.UL)
-            .shift(0.25 * m.RIGHT + 0.15 * m.DOWN)
-        )
-
         # =========================================================================
         # SLIDE 1: Title Slide
         # =========================================================================
@@ -385,8 +794,15 @@ class Main(Slide, m.MovingCameraScene):
             color=MUTED_TEXT,
         )
 
+        jury = m.Tex(
+            r"\shortstack[c]{\mbox{Jury: Christophe Craeye (Chairperson), Christophe De Vleeschouwer (Secretary),}\\\mbox{Philippe De Doncker (ULB), Enrico Maria Vitucci (UniBo), Jakob Hoydis (NVIDIA)}}",
+            font_size=15 * TEXT_TO_TEX_FACTOR,
+            color=MUTED_TEXT,
+            tex_environment=None,
+        )
+
         date_text = m.Tex(
-            r"ICTEAM, Université catholique de Louvain --- 2026",
+            r"ICTEAM, Université catholique de Louvain --- July 6, 2026",
             font_size=TINY_SIZE * TEXT_TO_TEX_FACTOR,
             color=MUTED_TEXT,
         )
@@ -405,303 +821,786 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         title_group = m.VGroup(
-            title, accent_line, subtitle, author, supervisors, date_text
-        ).arrange(m.DOWN, buff=0.32)
+            title, accent_line, subtitle, author, supervisors, jury, date_text
+        ).arrange(m.DOWN, buff=0.25)
         title_group.move_to(top_band.get_center())
 
         self.next_slide(
             notes="Welcome everyone, and thank you for being here today. "
             "My name is Jérome Eertmans, and I will present my Ph.D. work "
             "on differentiable ray tracing for radio propagation modeling.",
+            auto_next=True,
         )
         self.play(
             m.FadeIn(top_band, shift=0.2 * m.UP),
             m.FadeIn(title, shift=0.2 * m.LEFT),
-            m.FadeIn(title_logo),
         )
         self.play(
             m.GrowFromCenter(accent_line),
             m.FadeIn(subtitle, shift=0.15 * m.UP),
             m.FadeIn(author, shift=0.15 * m.UP),
             m.FadeIn(supervisors, shift=0.15 * m.UP),
+            m.FadeIn(jury, shift=0.15 * m.UP),
             m.FadeIn(date_text, shift=0.15 * m.UP),
         )
 
-        prev_slide_content = [top_band, title_group, title_logo]
+        prev_slide_content = [top_band, title_group]
+
+        # --- TITLE SCREEN IDLE ANIMATION ---
+        self.next_slide(loop=True)
+
+        all_title_objects = [top_band, title, accent_line, subtitle, author, supervisors, jury, date_text]
+        for obj in all_title_objects:
+            obj.save_state()
+
+        def get_random_periodic_func(scale):
+            a1 = (np.random.random() - 0.5) * 2 * scale
+            a2 = (np.random.random() - 0.5) * scale
+            b1 = (np.random.random() - 0.5) * 2 * scale
+            def func(alpha):
+                return a1 * np.sin(2 * np.pi * alpha) + a2 * np.sin(4 * np.pi * alpha) + b1 * (np.cos(2 * np.pi * alpha) - 1.0)
+            return func
+
+        np.random.seed(42)
+        update_funcs = []
+        for obj in all_title_objects:
+            dx_func = get_random_periodic_func(0.015)
+            dy_func = get_random_periodic_func(0.015)
+            op_func = get_random_periodic_func(0.2)
+            
+            def make_updater(dx_f, dy_f, op_f):
+                def updater(mob, alpha):
+                    mob.restore()
+                    mob.shift(dx_f(alpha) * m.RIGHT + dy_f(alpha) * m.UP)
+                    alpha_val = 1.0 + op_f(alpha)
+                    for sm in mob.get_family():
+                        if isinstance(sm, m.VMobject) and sm.has_points():
+                            fo = np.array(sm.get_fill_opacity()).max()
+                            so = np.array(sm.get_stroke_opacity()).max()
+                            sm.set_fill(opacity=max(0.0, min(1.0, float(fo * alpha_val))), family=False)
+                            sm.set_stroke(opacity=max(0.0, min(1.0, float(so * alpha_val))), family=False)
+                return updater
+            update_funcs.append(make_updater(dx_func, dy_func, op_func))
+
+        anims = [m.UpdateFromAlphaFunc(obj, func) for obj, func in zip(all_title_objects, update_funcs)]
+        self.play(*anims, run_time=3.0, rate_func=m.linear)
 
         # =========================================================================
-        # SLIDE 2: Research Teaser Video
+        # SLIDE 2: Research Teaser Video Transition
         # =========================================================================
-        teaser_header = title_box("Research Teaser", underline=True)
-
-        # Display a beautiful cinematic placeholder player frame
-        player_frame = m.RoundedRectangle(
-            width=8.0,
-            height=4.5,
-            corner_radius=0.2,
-            stroke_color=ACCENT_CYAN,
-            stroke_width=3,
-            fill_color=CARD_BG,
-            fill_opacity=0.9,
-        )
-        player_frame.shift(0.2 * m.DOWN)
-
-        play_triangle = (
-            m.Triangle(color=ACCENT_AMBER, fill_opacity=0.95)
-            .scale(0.5)
-            .rotate(-np.pi / 2)
-        )
-        play_circle = m.Circle(radius=0.8, color=ACCENT_AMBER, stroke_width=3).move_to(
-            play_triangle
-        )
-        play_btn = m.VGroup(play_circle, play_triangle).move_to(player_frame)
-
-        teaser_label = m.Text(
-            "Teaser Video Placeholder (4:00)", font_size=SMALL_SIZE, color=MUTED_TEXT
-        ).next_to(player_frame, m.UP, buff=0.2)
-
         self.next_slide(
             notes="To kick things off, let's watch a brief 4-minute teaser summarizing my Ph.D. journey, "
             "showing some of the advanced simulations and ray tracing clips generated throughout this work.",
+            auto_next=True,
+        )
+        self.play(
+            self.wipe(prev_slide_content, [], direction=m.UP, return_animation=True),
+        )
+        self.next_slide(src="videos/teaser.mp4")
+
+        # =========================================================================
+        # SLIDES 2a & 2b: Rotating Antenna 18 Loop & Grid transition
+        # =========================================================================
+        self.next_slide(
+            notes="Here is one of our 3D antenna models, specifically antenna 18, rotating around its vertical axis.",
+            auto_next=True,
+        )
+        antenna_tracker = m.ValueTracker(0)
+        num_frames = 60
+
+        # Adjust loop slide increments to make loops perfectly seamless and avoid duplicate frames
+        fps = m.config.frame_rate
+        run_time = 4.0
+        num_video_frames = run_time * fps
+        adjusted_loop_increment = num_frames * num_video_frames / (num_video_frames + 1)
+
+        antenna_header = title_box("Antenna 3D Models")
+        
+        ant18_x = m.ValueTracker(0.0)
+        ant18_y = m.ValueTracker(-0.5)
+        ant18_h = m.ValueTracker(5.2)
+        
+        opacity_trackers = [m.ValueTracker(0.0) for _ in range(20)]
+        opacity_trackers[18].set_value(1.0)
+        
+        antenna_18_mob = m.always_redraw(
+            lambda: m.ImageMobject(
+                f"images/sequences/antenna_18/frame_{int(antenna_tracker.get_value()) % num_frames:03d}.png"
+            )
+            .set_height(ant18_h.get_value())
+            .move_to([ant18_x.get_value(), ant18_y.get_value(), 0.0])
+            .set_opacity(opacity_trackers[18].get_value())
+        )
+
+        self.play(
+            m.FadeIn(antenna_header, shift=0.2 * m.UP),
+            m.FadeIn(antenna_18_mob),
+        )
+        self.next_slide(loop=True)
+        self.play(
+            antenna_tracker.animate(rate_func=m.linear).increment_value(adjusted_loop_increment),
+            run_time=4.0,
+            rate_func=m.linear,
+        )
+
+        self.next_slide(
+            notes="Now, we scale down antenna 18 to its position in the grid and fade in the other 19 rotating antennas.",
+            auto_next=True,
+        )
+
+        x_coords = [-5.2, -2.6, 0.0, 2.6, 5.2]
+        y_coords = [1.8, 0.5, -0.8, -2.1]
+
+        other_antennas = []
+        for i in range(20):
+            if i == 18:
+                continue
+            
+            def make_redraw(idx=i):
+                return lambda: m.ImageMobject(
+                    f"images/sequences/antenna_{idx:02d}/frame_{int(antenna_tracker.get_value()) % num_frames:03d}.png"
+                ).set_height(1.3).move_to([x_coords[idx % 5], y_coords[idx // 5], 0.0]).set_opacity(opacity_trackers[idx].get_value())
+
+            mob = m.always_redraw(make_redraw(i))
+            other_antennas.append(mob)
+
+        self.add(*other_antennas)
+
+        import random
+        other_indices = [i for i in range(20) if i != 18]
+        random.seed(42)
+        random.shuffle(other_indices)
+
+        fade_anims = [
+            opacity_trackers[idx].animate.set_value(1.0)
+            for idx in other_indices
+        ]
+
+        # Scale down antenna 18
+        self.play(
+            ant18_x.animate.set_value(x_coords[3]),
+            ant18_y.animate.set_value(y_coords[3]),
+            ant18_h.animate.set_value(1.3),
+            antenna_tracker.animate(rate_func=m.linear).increment_value(num_frames // 2),
+            run_time=2.0,
+        )
+        # Fade in other antennas with a lagged start
+        self.play(
+            m.LaggedStart(*fade_anims, lag_ratio=0.15),
+            antenna_tracker.animate(rate_func=m.linear).increment_value(num_frames),
+            run_time=4.0,
+        )
+        self.next_slide(loop=True)
+        # Loop slide
+        self.play(
+            antenna_tracker.animate(rate_func=m.linear).increment_value(adjusted_loop_increment),
+            run_time=4.0,
+            rate_func=m.linear,
+        )
+
+        antenna_18_mob.clear_updaters()
+        for mob in other_antennas:
+            mob.clear_updaters()
+
+        prev_slide_content = [antenna_header, antenna_18_mob] + other_antennas
+
+
+        # =========================================================================
+        # SLIDE 2.5: Wave Propagation Motivation (Convex/Concave Lenses & Concert Hall)
+        # =========================================================================
+        self.next_slide(
+            notes="Let's start with a simple question: how do waves propagate? "
+            "To motivate why we need computational tools, let's step away from radio for a moment. "
+            "Let's look at geometrical optics.",
+            auto_next=True,
         )
         self.play(
             *next_meta(new_section=0),
-            self.wipe(prev_slide_content, [teaser_header], return_animation=True),
+            self.wipe(prev_slide_content, [], direction=m.UP, return_animation=True),
             m.FadeIn(
                 m.Group(section_boxes, section_cursor, slide_tag), shift=0.2 * m.UP
             ),
         )
+
+        # Draw the convex lens outline (no rays, no title yet!)
+        lens = make_convex_lens()
+        lens_label = m.Text("Optical Lens Design", font_size=24, color=ACCENT_CYAN, font=FONT_FAMILY).next_to(lens, m.DOWN, buff=0.4)
+        
+        self.next_slide(
+            notes="Here is a simple convex lens. How does light propagate through it?",
+        )
+        self.play(m.Create(lens), m.Write(lens_label))
+        
+        # After it is first shown, show "Light Propagation"
+        t1 = m.Tex("{{Light}} {{Propagation}}").to_edge(m.UP, buff=0.6)
+        t1.set_color(MUTED_TEXT)
+        
+        self.next_slide(
+            notes="This is a problem of modeling light propagation.",
+        )
+        self.play(m.Write(t1))
+        
+        # After the concert hall is first shown, show "Sound Propagation"
+        hall = make_concert_hall()
+        hall_label = m.Text("Acoustic Room Design", font_size=24, color=ACCENT_CYAN, font=FONT_FAMILY).next_to(hall, m.DOWN, buff=0.4)
+        
+        t2 = m.Tex("{{Sound}} {{Propagation}}").to_edge(m.UP, buff=0.6)
+        t2.set_color(MUTED_TEXT)
+        
+        self.next_slide(
+            notes="Or let's look at acoustics. Why does a concert hall have a very specific shape? "
+            "How does sound propagate from the stage to the audience?",
+        )
         self.play(
-            m.FadeIn(player_frame),
-            m.FadeIn(play_btn, shift=0.1 * m.UP),
-            m.FadeIn(teaser_label),
+            m.ReplacementTransform(lens, hall),
+            m.ReplacementTransform(lens_label, hall_label),
+            m.TransformMatchingTex(t1, t2),
+            run_time=2
+        )
+        
+        # Pause, then add the "Modeling" to the end of the title (and highlight in Cyan)
+        t3 = m.Tex("{{Sound}} {{Propagation}} {{Modeling}}").to_edge(m.UP, buff=0.6)
+        t3.set_color(ACCENT_CYAN)
+        
+        self.next_slide(
+            notes="To answer these questions, we must be able to model sound propagation.",
+        )
+        self.play(m.TransformMatchingTex(t2, t3), run_time=1.5)
+        
+        # For the ray tracing in the concert hall, do not change the title
+        S = np.array([-2.8, -1.1, 0.0])
+        L1 = np.array([1.8, -1.115, 0.0])
+        L2 = np.array([2.6, -0.755, 0.0])
+        L3 = np.array([3.3, -0.44, 0.0])
+        
+        speaker = m.SVGMobject("images/speaker.svg").scale(0.3).move_to(S)
+        speaker.set_fill(ACCENT_CYAN, opacity=1).set_stroke(ACCENT_CYAN, width=1)
+        
+        listener_1 = m.SVGMobject("images/listener.svg").scale(0.25).move_to(L1)
+        listener_2 = m.SVGMobject("images/listener.svg").scale(0.25).move_to(L2)
+        listener_3 = m.SVGMobject("images/listener.svg").scale(0.25).move_to(L3)
+        
+        for listener in [listener_1, listener_2, listener_3]:
+            listener.set_fill(TEXT_COLOR, opacity=1).set_stroke(TEXT_COLOR, width=1)
+            
+        new_hall_label = m.Text("Ray Tracing in a Concert Hall", font_size=24, color=ACCENT_CYAN, font=FONT_FAMILY).next_to(hall, m.DOWN, buff=0.4)
+
+        self.next_slide(
+            notes="By tracking sound rays bouncing off the walls, we can predict exactly how sound travels.",
+        )
+        self.play(
+            m.FadeIn(speaker),
+            m.FadeIn(listener_1),
+            m.FadeIn(listener_2),
+            m.FadeIn(listener_3),
+            m.ReplacementTransform(hall_label, new_hall_label),
+            run_time=1.5
+        )
+        
+        paths_success = [
+            [S, L2],
+            [S, np.array([-2.33023099, 1.0458922, 0.0]), L1],
+            [S, np.array([0.04892086, 2.2, 0.0]), L2],
+            [S, np.array([3.5, -0.46030769, 0.0]), L3]
+        ]
+        fail_angles = [-50, -35, -15, 10, 40, 60, 85, 105, 120]
+        paths_fail = [trace_ray(S, np.deg2rad(a)) for a in fail_angles]
+        
+        success_mobs = m.VGroup()
+        for p in paths_success:
+            mob = m.VMobject(joint_type=m.constants.LineJointType.BEVEL).set_points_as_corners(p).set_stroke(color=m.YELLOW, width=1.5)
+            success_mobs.add(mob)
+            
+        fail_mobs = m.VGroup()
+        for p in paths_fail:
+            mob = m.VMobject(joint_type=m.constants.LineJointType.BEVEL).set_points_as_corners(p).set_stroke(color=MUTED_TEXT, width=1)
+            fail_mobs.add(mob)
+            
+        self.next_slide(
+            notes="We simulate multiple rays and filter for those that connect the transmitter to the listeners.",
+        )
+        self.play(
+            m.AnimationGroup(
+                *(m.Create(mob) for mob in fail_mobs),
+                *(m.Create(mob) for mob in success_mobs),
+                lag_ratio=0.0
+            ),
+            run_time=2.5
+        )
+        
+        self.next_slide(
+            notes="This filters out the blocked/unsuccessful paths, leaving only the exact physical reflection paths.",
+        )
+        self.play(
+            m.FadeOut(fail_mobs),
+            success_mobs.animate.set_stroke(color=ACCENT_GREEN, width=3),
+            run_time=1.5
         )
 
-        prev_slide_content = [teaser_header, player_frame, play_btn, teaser_label]
+        # For the ray tracing on the lenses, change "Sound" to "Light"
+        lens = make_convex_lens()
+        rays = get_lens_rays("convex")
+        lens_label = m.Text("Thin Convex Lens (Focal point: F1)", font_size=22, color=ACCENT_CYAN, font=FONT_FAMILY).next_to(lens, m.DOWN, buff=0.4)
+        
+        t4 = m.Tex("{{Light}} {{Propagation}} {{Modeling}}").to_edge(m.UP, buff=0.6)
+        t4.set_color(ACCENT_CYAN)
+        
+        self.next_slide(
+            notes="Now let's apply this ray tracing technique back to lenses, changing 'Sound' back to 'Light'.",
+        )
+        self.play(
+            m.ReplacementTransform(hall, lens),
+            m.ReplacementTransform(new_hall_label, lens_label),
+            m.FadeOut(speaker),
+            m.FadeOut(listener_1),
+            m.FadeOut(listener_2),
+            m.FadeOut(listener_3),
+            m.FadeOut(success_mobs),
+            m.TransformMatchingTex(t3, t4),
+            run_time=2
+        )
+        self.play(m.Create(rays), run_time=1.5)
+        
+        # Pause, then change "Light" to "Wave"
+        thick_lens = make_convex_lens(angle=m.PI/2)
+        thick_rays = get_lens_rays("thick_convex")
+        thick_label = m.Text("Thick Convex Lens (Focal point: F2 < F1)", font_size=22, color=ACCENT_CYAN, font=FONT_FAMILY).next_to(thick_lens, m.DOWN, buff=0.4)
+        
+        t5 = m.Tex("{{Wave}} {{Propagation}} {{Modeling}}").to_edge(m.UP, buff=0.6)
+        t5.set_color(ACCENT_CYAN)
+        
+        self.next_slide(
+            notes="In both cases, we are modeling wave propagation. Let's change 'Light' to 'Wave'.",
+        )
+        self.play(
+            m.ReplacementTransform(lens, thick_lens),
+            m.ReplacementTransform(rays, thick_rays),
+            m.ReplacementTransform(lens_label, thick_label),
+            m.TransformMatchingTex(t4, t5),
+            run_time=2
+        )
+        
+        # Pause, then add "Ray Tracing for" to the title
+        concave_lens = make_concave_lens()
+        concave_rays = get_lens_rays("concave")
+        concave_label = m.Text("Concave Lens (Diverging rays)", font_size=22, color=ACCENT_CYAN, font=FONT_FAMILY).next_to(concave_lens, m.DOWN, buff=0.4)
+        
+        t6 = m.Tex("{{Ray Tracing}} {{for}} {{Wave}} {{Propagation}} {{Modeling}}").to_edge(m.UP, buff=0.6)
+        t6[0].set_color(ACCENT_CYAN)
+        for idx in [2, 4, 6, 8]:
+            t6[idx].set_color(TEXT_COLOR)
+            
+        self.next_slide(
+            notes="Specifically, we are using 'Ray Tracing for' wave propagation modeling.",
+        )
+        self.play(
+            m.ReplacementTransform(thick_lens, concave_lens),
+            m.ReplacementTransform(thick_rays, concave_rays),
+            m.ReplacementTransform(thick_label, concave_label),
+            m.TransformMatchingTex(t5, t6),
+            run_time=2
+        )
+        
+        # Pause, then change the "Wave" to "Radio"
+        t7 = m.Tex("{{Differentiable}} {{Ray Tracing}} {{for}} {{Radio}} {{Propagation}} {{Modeling}}").to_edge(m.UP, buff=0.6)
+        t7[0].set_color(TEXT_COLOR)
+        t7[2].set_color(ACCENT_CYAN)
+        for idx in [4, 6, 8, 10]:
+            t7[idx].set_color(TEXT_COLOR)
+            
+        self.next_slide(
+            notes="And finally, for the core of this thesis, we focus on Differentiable Ray Tracing for Radio Propagation Modeling.",
+        )
+        self.play(
+            m.TransformMatchingTex(t6, t7),
+            run_time=1.5
+        )
+        self.wait(1)
+
+        prev_slide_content = [t7, concave_lens, concave_rays, concave_label]
+
 
         # =========================================================================
-        # SLIDE 3: Connecting the World
+        # SLIDE 3: Radio Propagation & Ray Modeling
         # =========================================================================
-        conn_header = title_box("Connecting the World")
+        prop_header = title_box("Radio Propagation & Ray Modeling")
 
-        conn_bullets = bullets(
+        prop_bullets = bullets(
             [
-                "We expect flawless 5G & 6G connectivity everywhere.",
-                "Radio signals propagate through complex environments (concrete, buildings).",
-                "To optimize, we need to know exactly how radio waves travel.",
+                "Radio signals propagate as electromagnetic waves.",
+                "To model networks, we must compute how waves interact with the environment.",
+                "Solving Maxwell's equations in complex environments is computationally prohibitive.",
             ],
             width=42,
         )
-        conn_bullets.next_to(conn_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+        prop_bullets.next_to(prop_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # City scene illustration
-        city_bg = m.RoundedRectangle(
-            width=5.0,
+        # Right side visual panel
+        prop_box = m.RoundedRectangle(
+            width=5.2,
             height=4.2,
             corner_radius=0.15,
             fill_color=CARD_BG,
             fill_opacity=1,
             stroke_color=CARD_BORDER,
         )
-        city_bg.next_to(conn_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        prop_box.next_to(prop_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        tx_tower = (
+        # Simple TX/RX icons inside prop_box
+        tx_antenna = (
             m.VGroup(
+                m.Line(m.DOWN * 0.5, m.UP * 0.5, color=MUTED_TEXT, stroke_width=3),
                 m.Line(
-                    m.LEFT * 0.1 + m.DOWN * 0.5,
-                    m.UP * 0.5,
+                    m.UP * 0.5 + m.LEFT * 0.25,
+                    m.UP * 0.5 + m.RIGHT * 0.25,
                     color=MUTED_TEXT,
                     stroke_width=3,
                 ),
                 m.Dot(point=m.UP * 0.5, radius=0.08, color=ACCENT_CYAN),
             )
-            .move_to(city_bg)
-            .shift(m.LEFT * 1.8 + m.DOWN * 0.8)
+            .move_to(prop_box.get_center())
+            .shift(m.LEFT * 1.6 + m.DOWN * 0.5)
         )
 
         rx_phone = (
-            m.RoundedRectangle(
-                width=0.3,
-                height=0.6,
-                corner_radius=0.05,
-                fill_color=MUTED_TEXT,
-                fill_opacity=1,
-                stroke_width=1,
+            m.VGroup(
+                m.RoundedRectangle(
+                    width=0.3,
+                    height=0.6,
+                    corner_radius=0.06,
+                    fill_color=m.BLACK,
+                    fill_opacity=1,
+                    stroke_color=MUTED_TEXT,
+                    stroke_width=2,
+                ),
+                m.Line(
+                    m.LEFT * 0.08 + m.UP * 0.2,
+                    m.RIGHT * 0.08 + m.UP * 0.2,
+                    color=MUTED_TEXT,
+                    stroke_width=2,
+                ),
             )
-            .move_to(city_bg)
-            .shift(m.RIGHT * 1.8 + m.DOWN * 0.8)
+            .move_to(prop_box.get_center())
+            .shift(m.RIGHT * 1.6 + m.DOWN * 0.5)
         )
 
-        building_1 = (
-            m.Rectangle(
-                width=1.0,
-                height=2.2,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(city_bg)
-            .shift(m.LEFT * 0.4 + m.DOWN * 0.3)
+        tx_lbl = m.Text("TX", font_size=12, color=MUTED_TEXT).next_to(
+            tx_antenna, m.DOWN, buff=0.1
         )
-        building_2 = (
-            m.Rectangle(
-                width=0.8,
-                height=1.5,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(city_bg)
-            .shift(m.RIGHT * 0.7 + m.DOWN * 0.6)
+        rx_lbl = m.Text("RX", font_size=12, color=MUTED_TEXT).next_to(
+            rx_phone, m.DOWN, buff=0.1
         )
 
-        blocked_ray = m.Line(
-            tx_tower.get_center(),
-            building_1.get_left(),
-            color=ACCENT_RED,
+        prop_visual = m.Group(prop_box, tx_antenna, rx_phone, tx_lbl, rx_lbl)
+
+        # Concentric waves (concentric circles) centered at TX antenna tip
+        wave_center = tx_antenna[2].get_center()
+        waves = m.VGroup(
+            *(
+                m.Circle(
+                    radius=r,
+                    color=ACCENT_CYAN,
+                    stroke_width=1.5,
+                    stroke_opacity=1.0 - (r / 3.5),
+                ).move_to(wave_center)
+                for r in [0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8, 3.2]
+            )
+        )
+
+        # Huygens' wavefront point sources on a wavefront arc
+        wavefront_arc = m.Arc(
+            radius=1.8,
+            start_angle=-0.3,
+            angle=0.6,
+            arc_center=wave_center,
+            color=ACCENT_CYAN,
             stroke_width=2.5,
         )
-        blocked_cross = m.VGroup(
-            m.Line(
-                m.UP * 0.15 + m.LEFT * 0.15,
-                m.DOWN * 0.15 + m.RIGHT * 0.15,
-                color=ACCENT_RED,
-                stroke_width=3,
-            ),
-            m.Line(
-                m.DOWN * 0.15 + m.LEFT * 0.15,
-                m.UP * 0.15 + m.RIGHT * 0.15,
-                color=ACCENT_RED,
-                stroke_width=3,
-            ),
-        ).move_to(blocked_ray.get_end())
+        # Point sources
+        pts = np.linspace(-0.25, 0.25, 5)
+        point_sources = m.VGroup(
+            *(
+                m.Dot(
+                    point=wave_center
+                    + 1.8 * np.array([np.cos(theta), np.sin(theta), 0]),
+                    radius=0.06,
+                    color=ACCENT_AMBER,
+                )
+                for theta in pts
+            )
+        )
 
-        city_scene = m.Group(city_bg, tx_tower, rx_phone, building_1, building_2)
+        # Wavelets from point sources
+        wavelets = m.VGroup(
+            *(
+                m.VGroup(
+                    *(
+                        m.Arc(
+                            radius=wr,
+                            start_angle=theta - 0.4,
+                            angle=0.8,
+                            arc_center=pt.get_center(),
+                            color=ACCENT_AMBER,
+                            stroke_width=1.0,
+                            stroke_opacity=1.0 - (wr / 1.2),
+                        )
+                        for wr in [0.2, 0.4, 0.6, 0.8]
+                    )
+                )
+                for theta, pt in zip(pts, point_sources)
+            )
+        )
+
+        # Ray approximation: arrows radiating in 360 degrees
+        num_rays = 12
+        ray_arrows = m.VGroup(
+            *(
+                m.Arrow(
+                    wave_center,
+                    wave_center + 2.8 * np.array([np.cos(a), np.sin(a), 0]),
+                    color=ACCENT_CYAN,
+                    buff=0,
+                    stroke_width=2.0,
+                    max_tip_length_to_length_ratio=0.12,
+                )
+                for a in np.linspace(0, 2 * np.pi, num_rays, endpoint=False)
+            )
+        )
+
+        # Line of sight ray (direct path to RX)
+        rx_center = rx_phone.get_center()
+        los_ray = m.Arrow(
+            wave_center,
+            rx_center,
+            color=ACCENT_GREEN,
+            buff=0.1,
+            stroke_width=3.5,
+            max_tip_length_to_length_ratio=0.15,
+        )
+        los_lbl = (
+            m.Text("Line of Sight (LOS)", font_size=12, color=ACCENT_GREEN)
+            .next_to(los_ray, m.UP, buff=0.05)
+            .rotate(los_ray.get_angle())
+        )
 
         self.next_slide(
-            notes="In modern cities, we expect flawless connections. "
-            "However, signals are easily blocked by walls and buildings. "
-            "To model and optimize this, we must simulate exactly how radio waves propagate.",
+            notes="To understand wireless networks, we must model how radio waves travel from a transmitter to a receiver. "
+            "But solving full electromagnetic wave equations in complex environments is extremely expensive.",
         )
         self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [conn_header], return_animation=True),
+            *next_meta(new_section=0),  # Set section 0: Introduction
+            self.wipe(prev_slide_content, [prop_header], return_animation=True),
         )
-        self.play(m.FadeIn(city_scene))
-        self.play(m.Create(blocked_ray))
-        self.play(m.Create(blocked_cross))
+        self.play(m.FadeIn(prop_visual))
 
-        for b in conn_bullets:
-            self.next_slide(notes="Connecting the world bullet point.")
+        self.next_slide(
+            notes="Radio signals propagate as waves. In a simplified model, the transmitter emits waves that radiate outward.",
+            loop=True,
+        )
+        self.play(
+            m.LaggedStart(*(m.Create(w, run_time=1.5) for w in waves), lag_ratio=0.15)
+        )
+
+        self.next_slide(
+            notes="According to Huygens' principle, we can decompose any wavefront into countless secondary point sources propagating outward.",
+        )
+        self.play(m.FadeOut(waves))
+        self.play(m.Create(wavefront_arc))
+        self.play(m.FadeIn(point_sources))
+        self.play(
+            m.LaggedStart(
+                *(m.Create(wlt, run_time=1.5) for wlt in wavelets), lag_ratio=0.1
+            )
+        )
+
+        self.next_slide(
+            notes="By considering these wavefronts individually, we can approximate the wave propagation as individual rays. "
+            "This is Geometrical Optics, which simplifies wave propagation into individual straight ray paths.",
+        )
+        self.play(
+            m.FadeOut(wavefront_arc), m.FadeOut(point_sources), m.FadeOut(wavelets)
+        )
+        self.play(m.LaggedStart(*(m.GrowArrow(r) for r in ray_arrows), lag_ratio=0.05))
+
+        self.next_slide(
+            notes="For example, the direct path connecting the transmitter and receiver is the Line of Sight path.",
+        )
+        self.play(m.FadeOut(ray_arrows))
+        self.play(m.GrowArrow(los_ray), m.FadeIn(los_lbl))
+
+        for b in prop_bullets:
+            self.next_slide(notes="Radio propagation bullet point.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [
-            conn_header,
-            conn_bullets,
-            city_scene,
-            blocked_ray,
-            blocked_cross,
+            prop_header,
+            prop_bullets,
+            prop_visual,
+            los_ray,
+            los_lbl,
         ]
 
         # =========================================================================
-        # SLIDE 4: Radio Waves and Light
+        # SLIDE 4: Reflections and Obstacles
         # =========================================================================
-        waves_header = title_box("Radio Waves and Light")
+        ref_header = title_box("Reflections and Obstacles")
 
-        waves_bullets = bullets(
+        ref_bullets = bullets(
             [
-                "Radio waves bounce off buildings just like light off a mirror.",
-                "Interactions are modeled as rays of light (Geometrical Optics).",
-                "This allows us to track signals through complex cityscapes.",
-            ]
+                "Obstacles like buildings block the direct Line of Sight path.",
+                "Signals bounce off walls, creating reflected multipath channels.",
+                "Ray Tracing tracks all these reflections to predict the received power.",
+            ],
+            width=42,
         )
-        waves_bullets.next_to(waves_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
+        ref_bullets.next_to(ref_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # Split visual: Mirror reflection vs Building reflection
-        visual_box = m.RoundedRectangle(
-            width=5.0,
+        # Right side visual panel
+        ref_box = m.RoundedRectangle(
+            width=5.2,
             height=4.2,
             corner_radius=0.15,
             fill_color=CARD_BG,
             fill_opacity=1,
             stroke_color=CARD_BORDER,
         )
-        visual_box.next_to(waves_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        ref_box.next_to(ref_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        mirror = (
-            m.Line(m.LEFT * 1.8, m.RIGHT * 1.8, color=MUTED_TEXT, stroke_width=4)
-            .move_to(visual_box)
-            .shift(m.DOWN * 0.5)
+        # Copy TX/RX
+        tx_antenna_ref = (
+            tx_antenna.copy()
+            .move_to(ref_box.get_center())
+            .shift(m.LEFT * 1.6 + m.DOWN * 0.8)
         )
-        mirror_label = m.Text(
-            "Mirror / Building Wall", font_size=14, color=MUTED_TEXT
-        ).next_to(mirror, m.DOWN, buff=0.15)
+        rx_phone_ref = (
+            rx_phone.copy()
+            .move_to(ref_box.get_center())
+            .shift(m.RIGHT * 1.6 + m.DOWN * 0.8)
+        )
+        tx_lbl_ref = tx_lbl.copy().next_to(tx_antenna_ref, m.DOWN, buff=0.1)
+        rx_lbl_ref = rx_lbl.copy().next_to(rx_phone_ref, m.DOWN, buff=0.1)
 
-        ray_in = m.Line(
-            visual_box.get_center() + m.LEFT * 1.5 + m.UP * 1.2,
-            mirror.get_center(),
-            color=ACCENT_CYAN,
-            stroke_width=3,
+        # A wall at the top of the box
+        wall = (
+            m.Rectangle(
+                width=4.6,
+                height=0.3,
+                fill_color=m.ManimColor("#22252A"),
+                fill_opacity=1,
+                stroke_color=CARD_BORDER,
+                stroke_width=2,
+            )
+            .move_to(ref_box.get_top())
+            .shift(m.DOWN * 0.6)
         )
-        ray_out = m.Line(
-            mirror.get_center(),
-            visual_box.get_center() + m.RIGHT * 1.5 + m.UP * 1.2,
-            color=ACCENT_CYAN,
-            stroke_width=3,
-        )
-
-        angle_in = (
-            m.Arc(radius=0.4, start_angle=np.pi, angle=np.pi / 4, color=ACCENT_AMBER)
-            .move_to(mirror.get_center())
-            .shift(m.UP * 0.1 + m.LEFT * 0.1)
-        )
-        angle_out = (
-            m.Arc(radius=0.4, start_angle=0, angle=-np.pi / 4, color=ACCENT_AMBER)
-            .move_to(mirror.get_center())
-            .shift(m.UP * 0.1 + m.RIGHT * 0.1)
+        wall_lbl = m.Text("Building Wall", font_size=12, color=MUTED_TEXT).next_to(
+            wall, m.UP, buff=0.08
         )
 
-        theta_i = m.MathTex(r"\theta_i", font_size=24, color=ACCENT_AMBER).next_to(
-            angle_in, m.UP, buff=0.08
+        # A building obstacle in the middle of direct path
+        building_obs = (
+            m.Rectangle(
+                width=1.0,
+                height=1.4,
+                fill_color=m.ManimColor("#22252A"),
+                fill_opacity=1,
+                stroke_color=CARD_BORDER,
+                stroke_width=2,
+            )
+            .move_to(ref_box.get_center())
+            .shift(m.DOWN * 0.3)
         )
-        theta_r = m.MathTex(r"\theta_r", font_size=24, color=ACCENT_AMBER).next_to(
-            angle_out, m.UP, buff=0.08
+        obs_lbl = m.Text("Building", font_size=12, color=MUTED_TEXT).move_to(
+            building_obs
         )
 
-        reflection_scene = m.Group(
-            visual_box,
-            mirror,
-            mirror_label,
-            ray_in,
-            ray_out,
-            angle_in,
-            angle_out,
-            theta_i,
-            theta_r,
+        ref_visual_base = m.Group(
+            ref_box,
+            tx_antenna_ref,
+            rx_phone_ref,
+            tx_lbl_ref,
+            rx_lbl_ref,
+            wall,
+            wall_lbl,
+            building_obs,
+            obs_lbl,
         )
+
+        # Direct path (now blocked)
+        ref_wave_center = tx_antenna_ref[2].get_center()
+        ref_rx_center = rx_phone_ref.get_center()
+        blocked_los = m.Line(
+            ref_wave_center, ref_rx_center, color=ACCENT_RED, stroke_width=3.5
+        )
+
+        # Blocked marker cross
+        cross_center = building_obs.get_center()
+        block_cross = m.VGroup(
+            m.Line(
+                cross_center + m.LEFT * 0.2 + m.UP * 0.2,
+                cross_center + m.RIGHT * 0.2 + m.DOWN * 0.2,
+                color=ACCENT_RED,
+                stroke_width=4,
+            ),
+            m.Line(
+                cross_center + m.LEFT * 0.2 + m.DOWN * 0.2,
+                cross_center + m.RIGHT * 0.2 + m.UP * 0.2,
+                color=ACCENT_RED,
+                stroke_width=4,
+            ),
+        )
+
+        # Reflected path bouncing off top wall
+        # Midpoint of wall for reflection: x = (tx.x + rx.x)/2
+        bounce_x = (ref_wave_center[0] + ref_rx_center[0]) / 2
+        bounce_pt_coords = np.array([bounce_x, wall.get_bottom()[1], 0])
+
+        reflected_path_1 = m.Line(
+            ref_wave_center, bounce_pt_coords, color=ACCENT_CYAN, stroke_width=3.5
+        )
+        reflected_path_2 = m.Line(
+            bounce_pt_coords, ref_rx_center, color=ACCENT_CYAN, stroke_width=3.5
+        )
+        reflected_path = m.VGroup(reflected_path_1, reflected_path_2)
+
+        star = m.Star(
+            n=5,
+            outer_radius=0.12,
+            inner_radius=0.05,
+            color=ACCENT_AMBER,
+            fill_opacity=1,
+        ).move_to(bounce_pt_coords)
 
         self.next_slide(
-            notes="Radio waves behave very similarly to light. "
-            "Just like light bounces off a mirror, radio waves reflect off buildings. "
-            "We model this using Geometrical Optics, representing propagation as individual ray paths.",
+            notes="In urban environments, direct Line of Sight is often blocked by buildings. "
+            "Signals must bounce off other walls and structures to reach the receiver.",
         )
         self.play(
-            *next_meta(new_section=1),
-            self.wipe(prev_slide_content, [waves_header], return_animation=True),
+            *next_meta(new_section=1),  # Section 1: Fundamentals
+            self.wipe(prev_slide_content, [ref_header], return_animation=True),
         )
-        self.play(m.FadeIn(reflection_scene))
-        self.play(
-            m.Indicate(mirror, color=ACCENT_AMBER),
-            m.TransformMatchingTex(theta_i, theta_r),
-        )
+        self.play(m.FadeIn(ref_visual_base))
+        self.play(m.Create(blocked_los))
+        self.play(m.Create(block_cross))
 
-        for b in waves_bullets:
-            self.next_slide(notes="Radio waves behavior explanation.")
+        self.next_slide(
+            notes="These reflections create a multipath channel, where the signal bounces off building walls to reach the receiver.",
+        )
+        self.play(m.Create(reflected_path_1))
+        self.play(m.GrowFromCenter(star), m.Create(reflected_path_2))
+
+        for b in ref_bullets:
+            self.next_slide(notes="Reflections and obstacles bullet point.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [waves_header, waves_bullets, reflection_scene]
+        prev_slide_content = [
+            ref_header,
+            ref_bullets,
+            ref_visual_base,
+            blocked_los,
+            block_cross,
+            reflected_path,
+        ]
 
         # =========================================================================
         # SLIDE 5: The Billiard Analogy
@@ -721,141 +1620,779 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT, buff=0.75
         )
 
-        # Billiard table visual
-        table_frame = m.RoundedRectangle(
-            width=5.0,
-            height=3.5,
-            corner_radius=0.15,
-            stroke_color=m.ManimColor("#4E3629"),
-            stroke_width=6,
-            fill_color=m.ManimColor("#0D3B2E"),
-            fill_opacity=1,
-        )
-        table_frame.next_to(billiard_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
+        # Reusable Billiard Table (no obstacle for simple intro)
+        bt_5 = BilliardTable(obstacle=False)
+        bt_5.next_to(billiard_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        pockets = m.VGroup(
-            m.Circle(radius=0.12, color=m.BLACK, fill_opacity=1).move_to(
-                table_frame.get_corner(m.UL)
+        # Unsuccessful shot
+        wrong_bounce = bt_5.frame.get_bottom() + m.RIGHT * 0.8
+        shot_wrong = m.VGroup(
+            m.Line(
+                bt_5.cue_ball.get_center(),
+                wrong_bounce,
+                color=ACCENT_RED,
+                stroke_width=2.5,
             ),
-            m.Circle(radius=0.12, color=m.BLACK, fill_opacity=1).move_to(
-                table_frame.get_corner(m.UR)
-            ),
-            m.Circle(radius=0.12, color=m.BLACK, fill_opacity=1).move_to(
-                table_frame.get_corner(m.DL)
-            ),
-            m.Circle(radius=0.12, color=m.BLACK, fill_opacity=1).move_to(
-                table_frame.get_corner(m.DR)
+            m.Line(
+                wrong_bounce,
+                bt_5.frame.get_corner(m.UR) + m.LEFT * 1.8,
+                color=ACCENT_RED,
+                stroke_width=2.5,
             ),
         )
 
-        cue_ball = (
-            m.Circle(radius=0.1, color=m.WHITE, fill_opacity=1)
-            .move_to(table_frame)
-            .shift(m.LEFT * 1.5 + m.DOWN * 0.6)
+        # Successful shot
+        correct_bounce = bt_5.frame.get_bottom() + m.LEFT * 0.75
+        shot_correct = m.VGroup(
+            m.Line(
+                bt_5.cue_ball.get_center(),
+                correct_bounce,
+                color=ACCENT_GREEN,
+                stroke_width=3.5,
+            ),
+            m.Line(correct_bounce, bt_5.rx_pos, color=ACCENT_GREEN, stroke_width=3.5),
         )
-        cue_lbl = m.Text("TX", font_size=12, color=m.BLACK).move_to(cue_ball)
-        target_pocket = pockets[1]  # Top right pocket
-        pocket_lbl = m.Text("RX", font_size=12, color=TEXT_COLOR).next_to(
-            target_pocket, m.DOWN, buff=0.1
-        )
-
-        # An obstacle in the middle
-        table_obstacle = m.Rectangle(
-            width=1.2,
-            height=1.0,
-            fill_color=m.ManimColor("#22252A"),
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        ).move_to(table_frame)
-        obs_lbl = m.Text("Building", font_size=12, color=MUTED_TEXT).move_to(
-            table_obstacle
-        )
-
-        # Unsuccessful shot (bounces too late, hits building/misses)
-        bounce_wrong = table_frame.get_bottom() + m.RIGHT * 0.8
-        shot_wrong_in = m.Line(
-            cue_ball.get_center(), bounce_wrong, color=ACCENT_RED, stroke_width=2.5
-        )
-        shot_wrong_out = m.Line(
-            bounce_wrong,
-            table_frame.get_corner(m.UR) + m.LEFT * 1.8,
-            color=ACCENT_RED,
-            stroke_width=2.5,
-        )
-        shot_wrong = m.VGroup(shot_wrong_in, shot_wrong_out)
-
-        # Successful shot (bounces off bottom cushion at exact Fermat point)
-        bounce_right = table_frame.get_bottom() + m.LEFT * 0.85
-        shot_right_in = m.Line(
-            cue_ball.get_center(), bounce_right, color=ACCENT_GREEN, stroke_width=3
-        )
-        shot_right_out = m.Line(
-            bounce_right, target_pocket.get_center(), color=ACCENT_GREEN, stroke_width=3
-        )
-        shot_right = m.VGroup(shot_right_in, shot_right_out)
-
-        star = m.Star(
+        star_5 = m.Star(
             n=5,
             outer_radius=0.15,
             inner_radius=0.07,
             color=ACCENT_AMBER,
             fill_opacity=1,
-        ).move_to(bounce_right)
-
-        billiard_scene = m.Group(
-            table_frame, pockets, cue_ball, cue_lbl, pocket_lbl, table_obstacle, obs_lbl
-        )
+        ).move_to(correct_bounce)
 
         self.next_slide(
-            notes="To understand tracing ray paths, think of playing billiards. "
+            notes="To understand ray tracing, think of playing billiards. "
             "The cue ball is our transmitter, the pocket is our receiver, and the walls are the cushions. "
-            "Finding a valid ray path is like finding a cushion bounce trick shot that avoids obstacles and lands in the pocket.",
+            "Finding a valid ray path is like finding a cushion bounce trick shot.",
         )
         self.play(
-            *next_meta(),
+            *next_meta(new_section=2),  # Set section 2: Path Tracing
             self.wipe(prev_slide_content, [billiard_header], return_animation=True),
         )
-        self.play(m.FadeIn(billiard_scene))
+        self.play(m.FadeIn(bt_5))
 
-        self.next_slide(notes="Show an unsuccessful shot bouncing at the wrong angle.")
+        self.next_slide(notes="Most shots miss. Show an unsuccessful bounce.")
         self.play(m.Create(shot_wrong))
         self.play(shot_wrong.animate.set_opacity(0.2))
 
-        self.next_slide(notes="Show the successful Fermat path shot.")
-        self.play(m.Create(shot_right))
-        self.play(m.FadeIn(star))
+        self.next_slide(
+            notes="Only one specific bounce angle works. Show the successful Fermat path shot."
+        )
+        self.play(m.Create(shot_correct))
+        self.play(m.GrowFromCenter(star_5))
 
         for b in billiard_bullets:
-            self.next_slide(notes="Billiards analogy bullet points.")
+            self.next_slide(notes="Billiard analogy bullet point.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [
             billiard_header,
             billiard_bullets,
-            billiard_scene,
+            bt_5,
             shot_wrong,
-            shot_right,
-            star,
+            shot_correct,
+            star_5,
         ]
 
         # =========================================================================
-        # SLIDE 6: Beyond Billiards - Diffraction
+        # SLIDE 6: The Image Method
         # =========================================================================
-        diff_header = title_box("Beyond Billiards - Diffraction")
+        image_header = title_box("The Image Method")
+
+        image_bullets = bullets(
+            [
+                "Mirror the receiver (RX) across the cushion to find the virtual receiver (RX').",
+                "Draw a straight line from the transmitter (TX) to the virtual receiver (RX').",
+                "The intersection with the cushion defines the exact bounce point.",
+            ],
+            width=42,
+        )
+        image_bullets.next_to(image_header, m.DOWN, buff=0.65).to_edge(
+            m.LEFT, buff=0.75
+        )
+
+        bt_6 = BilliardTable(obstacle=False)
+        bt_6.next_to(image_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        # Virtual receiver
+        vrx_pos = bt_6.get_virtual_rx("bottom")
+        vrx = m.Circle(radius=0.1, color=ACCENT_CYAN, fill_opacity=0.6).move_to(vrx_pos)
+        vrx_lbl = m.Text("RX'", font_size=12, color=ACCENT_CYAN).next_to(
+            vrx, m.DOWN, buff=0.1
+        )
+
+        # Straight line to virtual receiver
+        virtual_line = m.DashedLine(
+            bt_6.cue_ball.get_center(), vrx_pos, color=ACCENT_CYAN, stroke_width=2.5
+        )
+
+        # Intersection point
+        intersection_pt = bt_6.get_intersection(
+            bt_6.cue_ball.get_center(), vrx_pos, "bottom"
+        )
+        star_6 = m.Star(
+            n=5,
+            outer_radius=0.15,
+            inner_radius=0.07,
+            color=ACCENT_AMBER,
+            fill_opacity=1,
+        ).move_to(intersection_pt)
+
+        # Reflected path
+        ref_path_1 = m.Line(
+            bt_6.cue_ball.get_center(),
+            intersection_pt,
+            color=ACCENT_GREEN,
+            stroke_width=3.5,
+        )
+        ref_path_2 = m.Line(
+            intersection_pt, bt_6.rx_pos, color=ACCENT_GREEN, stroke_width=3.5
+        )
+
+        self.next_slide(
+            notes="To find the exact bounce point mathematically, we use the Image Method. "
+            "First, we mirror the receiver across the cushion to create a virtual receiver.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [image_header], return_animation=True),
+        )
+        self.play(m.FadeIn(bt_6))
+        self.play(m.TransformFromCopy(bt_6.rx_pocket, vrx), m.FadeIn(vrx_lbl))
+
+        self.next_slide(
+            notes="Then we draw a straight line from our transmitter to this virtual receiver."
+        )
+        self.play(m.Create(virtual_line))
+
+        self.next_slide(
+            notes="The intersection of this line with the cushion is the exact physical bounce point. "
+            "We can then trace the path back to the real receiver."
+        )
+        self.play(m.GrowFromCenter(star_6))
+        self.play(m.Create(ref_path_1), m.Create(ref_path_2))
+        self.play(virtual_line.animate.set_opacity(0.15))
+
+        for b in image_bullets:
+            self.next_slide(notes="Image method bullet point.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [
+            image_header,
+            image_bullets,
+            bt_6,
+            vrx,
+            vrx_lbl,
+            virtual_line,
+            star_6,
+            ref_path_1,
+            ref_path_2,
+        ]
+
+        # =========================================================================
+        # SLIDE 7: Wall Combinations and Complexity
+        # =========================================================================
+        comb_header = title_box("Wall Combinations & Complexity")
+
+        comb_bullets = bullets(
+            [
+                "For multiple bounces, the receiver is mirrored across multiple cushions in sequence.",
+                "We do not know the correct order of cushions beforehand.",
+                "This requires a combinatorial search across all sequence candidates.",
+            ],
+            width=42,
+        )
+        comb_bullets.next_to(comb_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        bt_7 = BilliardTable(obstacle=False)
+        bt_7.next_to(comb_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        # Cushion 1: Bottom
+        vrx_bottom = bt_7.get_virtual_rx("bottom")
+        vrx_b = m.Circle(radius=0.08, color=ACCENT_CYAN, fill_opacity=0.6).move_to(
+            vrx_bottom
+        )
+        lbl_b = m.Text("RX' (bottom)", font_size=10, color=ACCENT_CYAN).next_to(
+            vrx_b, m.DOWN, buff=0.05
+        )
+        path_b = m.VGroup(
+            m.Line(
+                bt_7.cue_ball.get_center(),
+                bt_7.get_intersection(bt_7.cue_ball.get_center(), vrx_bottom, "bottom"),
+                color=ACCENT_CYAN,
+                stroke_width=2,
+            ),
+            m.Line(
+                bt_7.get_intersection(bt_7.cue_ball.get_center(), vrx_bottom, "bottom"),
+                bt_7.rx_pos,
+                color=ACCENT_CYAN,
+                stroke_width=2,
+            ),
+        )
+
+        # Cushion 2: Top
+        vrx_top = bt_7.get_virtual_rx("top")
+        vrx_t = m.Circle(radius=0.08, color=ACCENT_AMBER, fill_opacity=0.6).move_to(
+            vrx_top
+        )
+        lbl_t = m.Text("RX' (top)", font_size=10, color=ACCENT_AMBER).next_to(
+            vrx_t, m.UP, buff=0.05
+        )
+        path_t = m.VGroup(
+            m.Line(
+                bt_7.cue_ball.get_center(),
+                bt_7.get_intersection(bt_7.cue_ball.get_center(), vrx_top, "top"),
+                color=ACCENT_AMBER,
+                stroke_width=2,
+            ),
+            m.Line(
+                bt_7.get_intersection(bt_7.cue_ball.get_center(), vrx_top, "top"),
+                bt_7.rx_pos,
+                color=ACCENT_AMBER,
+                stroke_width=2,
+            ),
+        )
+
+        # Cushion 3: Bottom -> Right (2 bounces)
+        vrx_br_pos = bt_7.get_virtual_rx("right", rx_pos=vrx_bottom)
+        vrx_br = m.Circle(radius=0.08, color=ACCENT_GREEN, fill_opacity=0.6).move_to(
+            vrx_br_pos
+        )
+        lbl_br = m.Text(
+            "RX'' (bottom->right)", font_size=10, color=ACCENT_GREEN
+        ).next_to(vrx_br, m.RIGHT, buff=0.05)
+
+        # Intersections
+        bounce2 = bt_7.get_intersection(bt_7.cue_ball.get_center(), vrx_br_pos, "right")
+        bounce1 = bt_7.get_intersection(bounce2, vrx_bottom, "bottom")
+
+        path_br = m.VGroup(
+            m.Line(
+                bt_7.cue_ball.get_center(), bounce1, color=ACCENT_GREEN, stroke_width=2
+            ),
+            m.Line(bounce1, bounce2, color=ACCENT_GREEN, stroke_width=2),
+            m.Line(bounce2, bt_7.rx_pos, color=ACCENT_GREEN, stroke_width=2),
+        )
+
+        self.next_slide(
+            notes="In a real game, the path can bounce off different cushions. "
+            "If we reflect across the bottom cushion, we get one virtual receiver and one path.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [comb_header], return_animation=True),
+        )
+        self.play(m.FadeIn(bt_7))
+        self.play(m.FadeIn(vrx_b), m.FadeIn(lbl_b), m.Create(path_b))
+
+        self.next_slide(
+            notes="Reflecting across the top cushion yields a completely different path and virtual receiver."
+        )
+        self.play(m.FadeIn(vrx_t), m.FadeIn(lbl_t), m.Create(path_t))
+        self.play(
+            path_b.animate.set_opacity(0.15),
+            vrx_b.animate.set_opacity(0.15),
+            lbl_b.animate.set_opacity(0.15),
+        )
+
+        self.next_slide(
+            notes="If we want multiple bounces, we mirror the receiver sequentially. "
+            "Here is a two-bounce path bouncing off the bottom, then the right cushion."
+        )
+        self.play(m.FadeIn(vrx_br), m.FadeIn(lbl_br), m.Create(path_br))
+        self.play(
+            path_t.animate.set_opacity(0.15),
+            vrx_t.animate.set_opacity(0.15),
+            lbl_t.animate.set_opacity(0.15),
+        )
+
+        for b in comb_bullets:
+            self.next_slide(notes="Combinatorics explanation bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [
+            comb_header,
+            comb_bullets,
+            bt_7,
+            vrx_b,
+            lbl_b,
+            path_b,
+            vrx_t,
+            lbl_t,
+            path_t,
+            vrx_br,
+            lbl_br,
+            path_br,
+        ]
+
+        # =========================================================================
+        # SLIDE 8: First Contribution - Min-Path-Tracing (MPT)
+        # =========================================================================
+        mpt_header = title_box("First Contribution: Min-Path-Tracing")
+
+        mpt_bullets = bullets(
+            [
+                "The image method fails on non-flat surfaces or for edge diffraction.",
+                "Min-Path-Tracing (MPT) reformulates path finding as an optimization problem.",
+                "Fermat's principle: path finding is equivalent to minimizing path length.",
+            ],
+            width=42,
+        )
+        mpt_bullets.next_to(mpt_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        mpt_box = m.RoundedRectangle(
+            width=5.2,
+            height=4.2,
+            corner_radius=0.15,
+            fill_color=CARD_BG,
+            fill_opacity=1,
+            stroke_color=CARD_BORDER,
+        )
+        mpt_box.next_to(mpt_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        box_center = mpt_box.get_center()
+        curved_wall = m.FunctionGraph(
+            lambda x: 0.4 * np.sin(2 * x) + box_center[1] + 1.0,
+            x_range=[-2.2, 2.2],
+            color=MUTED_TEXT,
+            stroke_width=4,
+        ).shift(box_center[0] * m.RIGHT)
+
+        mpt_tx = m.Dot(
+            point=box_center + m.LEFT * 1.8 + m.DOWN * 0.8,
+            radius=0.08,
+            color=ACCENT_CYAN,
+        )
+        mpt_rx = m.Dot(
+            point=box_center + m.RIGHT * 1.8 + m.DOWN * 0.8,
+            radius=0.08,
+            color=ACCENT_CYAN,
+        )
+        mpt_tx_lbl = m.Text("TX", font_size=12, color=MUTED_TEXT).next_to(
+            mpt_tx, m.DOWN, buff=0.1
+        )
+        mpt_rx_lbl = m.Text("RX", font_size=12, color=MUTED_TEXT).next_to(
+            mpt_rx, m.DOWN, buff=0.1
+        )
+
+        mpt_visual_base = m.Group(
+            mpt_box, curved_wall, mpt_tx, mpt_rx, mpt_tx_lbl, mpt_rx_lbl
+        )
+
+        # Animate path minimization parameter
+        t_tracker = m.ValueTracker(0.8)
+
+        def get_curve_point(t):
+            x = box_center[0] + t * 1.8
+            y = 0.4 * np.sin(2 * (x - box_center[0])) + box_center[1] + 1.0
+            return np.array([x, y, 0])
+
+        mpt_path = m.always_redraw(
+            lambda: m.VGroup(
+                m.Line(
+                    mpt_tx.get_center(),
+                    get_curve_point(t_tracker.get_value()),
+                    color=ACCENT_CYAN,
+                    stroke_width=2.5,
+                ),
+                m.Line(
+                    get_curve_point(t_tracker.get_value()),
+                    mpt_rx.get_center(),
+                    color=ACCENT_CYAN,
+                    stroke_width=2.5,
+                ),
+            )
+        )
+
+        mpt_star = m.always_redraw(
+            lambda: m.Star(
+                n=5,
+                outer_radius=0.12,
+                inner_radius=0.05,
+                color=ACCENT_AMBER,
+                fill_opacity=1,
+            ).move_to(get_curve_point(t_tracker.get_value()))
+        )
+
+        self.next_slide(
+            notes="While the image method is beautiful, it fails in real-world scenarios. "
+            "If building walls are curved or if we want to model diffraction around corners, mirroring is impossible.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [mpt_header], return_animation=True),
+        )
+        self.play(m.FadeIn(mpt_visual_base))
+
+        self.next_slide(
+            notes="Our first contribution is Min-Path-Tracing. We reformulate path finding as an optimization problem."
+        )
+        self.play(m.Create(mpt_path), m.FadeIn(mpt_star))
+
+        self.next_slide(
+            notes="Using Fermat's principle of least time, we slide the bounce point along the surface to find the path of minimum length."
+        )
+        self.play(t_tracker.animate.set_value(-0.1), run_time=2.0)
+        mpt_path.clear_updaters()
+        mpt_star.clear_updaters()
+        self.play(
+            mpt_path.animate.set_color(ACCENT_GREEN),
+            mpt_path.animate.set_stroke(width=3.5),
+        )
+
+        for b in mpt_bullets:
+            self.next_slide(notes="Min path tracing explanation bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [
+            mpt_header,
+            mpt_bullets,
+            mpt_visual_base,
+            mpt_path,
+            mpt_star,
+        ]
+
+        # =========================================================================
+        # SLIDE 9: Second Contribution - GPU Acceleration & Triangle Mesh Representation
+        # =========================================================================
+        gpu_header = title_box("Second Contribution: GPU Acceleration")
+
+        gpu_bullets = bullets(
+            [
+                "MPT uses Object-Oriented Programming (OOP), causing warp divergence on GPUs.",
+                "Paper container analogy: container size is defined by the largest sheet, wasting space.",
+                "We map the scene into a flat array of triangles.",
+                "Optimization (BFGS solver) scales to millions of triangles in parallel on the GPU.",
+            ],
+            width=42,
+        )
+        gpu_bullets.next_to(gpu_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        gpu_box = m.RoundedRectangle(
+            width=5.2,
+            height=4.2,
+            corner_radius=0.15,
+            fill_color=CARD_BG,
+            fill_opacity=1,
+            stroke_color=CARD_BORDER,
+        )
+        gpu_box.next_to(gpu_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        box_width = 3.6
+        box_height = 2.6
+        container = (
+            m.Rectangle(
+                width=box_width,
+                height=box_height,
+                stroke_color=MUTED_TEXT,
+                stroke_width=3,
+                fill_color=m.BLACK,
+                fill_opacity=1,
+            )
+            .move_to(gpu_box.get_center())
+            .shift(m.UP * 0.2)
+        )
+        container_lbl = m.Text(
+            "Oversized OOP Container", font_size=10, color=MUTED_TEXT
+        ).next_to(container, m.UP, buff=0.08)
+
+        sheet_a0 = m.Rectangle(
+            width=box_width - 0.2,
+            height=box_height - 0.2,
+            fill_color=ACCENT_RED,
+            fill_opacity=0.3,
+            stroke_color=ACCENT_RED,
+            stroke_width=2,
+        ).move_to(container.get_center())
+        lbl_a0 = m.Text(
+            "A0 Sheet (Diffraction Object)", font_size=9, color=ACCENT_RED
+        ).move_to(sheet_a0)
+
+        sheet_a4_1 = (
+            m.Rectangle(
+                width=0.8,
+                height=0.6,
+                fill_color=ACCENT_CYAN,
+                fill_opacity=0.4,
+                stroke_color=ACCENT_CYAN,
+                stroke_width=1.5,
+            )
+            .move_to(container.get_center())
+            .shift(m.LEFT * 1.0 + m.DOWN * 0.6)
+        )
+        lbl_a4_1 = m.Text("A4", font_size=8, color=ACCENT_CYAN).move_to(sheet_a4_1)
+
+        sheet_a4_2 = (
+            m.Rectangle(
+                width=0.8,
+                height=0.6,
+                fill_color=ACCENT_CYAN,
+                fill_opacity=0.4,
+                stroke_color=ACCENT_CYAN,
+                stroke_width=1.5,
+            )
+            .move_to(container.get_center())
+            .shift(m.RIGHT * 1.0 + m.DOWN * 0.6)
+        )
+        lbl_a4_2 = m.Text("A4", font_size=8, color=ACCENT_CYAN).move_to(sheet_a4_2)
+
+        wasted_shade = m.Rectangle(
+            width=box_width - 0.2,
+            height=box_height - 0.2,
+            fill_color=ACCENT_AMBER,
+            fill_opacity=0.15,
+            stroke_width=0,
+        ).move_to(container.get_center())
+        lbl_wasted = (
+            m.Text(
+                "Wasted Space (GPU thread divergence)", font_size=10, color=ACCENT_AMBER
+            )
+            .move_to(container.get_center())
+            .shift(m.UP * 0.5)
+        )
+
+        oop_analogy_scene = m.Group(
+            container,
+            container_lbl,
+            sheet_a0,
+            lbl_a0,
+            sheet_a4_1,
+            lbl_a4_1,
+            sheet_a4_2,
+            lbl_a4_2,
+            wasted_shade,
+            lbl_wasted,
+        )
+
+        self.next_slide(
+            notes="Our original Min-Path-Tracing was written using object-oriented programming. "
+            "But different object types make it extremely inefficient to run on GPUs due to thread divergence.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [gpu_header], return_animation=True),
+        )
+        self.play(m.FadeIn(gpu_box))
+        self.play(m.Create(container), m.FadeIn(container_lbl))
+
+        self.next_slide(
+            notes="Think of placing paper sheets of different sizes in a single box. "
+            "The box size is defined by the largest sheet, which wastes space for all small sheets."
+        )
+        self.play(m.FadeIn(sheet_a0), m.FadeIn(lbl_a0))
+        self.play(
+            m.FadeIn(sheet_a4_1),
+            m.FadeIn(lbl_a4_1),
+            m.FadeIn(sheet_a4_2),
+            m.FadeIn(lbl_a4_2),
+        )
+        self.play(m.FadeIn(wasted_shade), m.FadeIn(lbl_wasted))
+
+        for b in gpu_bullets:
+            self.next_slide(notes="GPU acceleration explanation bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [gpu_header, gpu_bullets, gpu_box, oop_analogy_scene]
+
+        # =========================================================================
+        # =========================================================================
+        # SLIDE 10: Ray Path Reuse & Dynamic Ray Tracing
+        # =========================================================================
+        reuse_header = title_box("Ray Path Reuse & Dynamic Ray Tracing")
+
+        reuse_bullets = bullets(
+            [
+                "When antennas move, the sequence of reflections/diffractions often remains unchanged.",
+                "We can reuse the path structure and simply update the bounce point coordinates.",
+                "This allows tracking paths dynamically in real-time as objects move.",
+            ],
+            width=42,
+        )
+        reuse_bullets.next_to(reuse_header, m.DOWN, buff=0.65).to_edge(
+            m.LEFT, buff=0.75
+        )
+
+        bt_10 = BilliardTable(obstacle=False)
+        bt_10.next_to(reuse_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        # Receiver movement value tracker
+        rx_offset = m.ValueTracker(0.0)
+
+        # Virtual receiver and paths based on receiver offset
+        vrx_pos_10 = lambda: bt_10.get_virtual_rx(
+            "bottom", rx_pos=bt_10.rx_pos + rx_offset.get_value() * m.LEFT
+        )
+
+        vrx_dot_10 = m.always_redraw(
+            lambda: m.Circle(radius=0.1, color=ACCENT_CYAN, fill_opacity=0.6).move_to(
+                vrx_pos_10()
+            )
+        )
+
+        intersection_pt_10 = lambda: bt_10.get_intersection(
+            bt_10.cue_ball.get_center(), vrx_pos_10(), "bottom"
+        )
+
+        star_10 = m.always_redraw(
+            lambda: m.Star(
+                n=5,
+                outer_radius=0.15,
+                inner_radius=0.07,
+                color=ACCENT_AMBER,
+                fill_opacity=1,
+            ).move_to(intersection_pt_10())
+        )
+
+        ref_path_10_1 = m.always_redraw(
+            lambda: m.Line(
+                bt_10.cue_ball.get_center(),
+                intersection_pt_10(),
+                color=ACCENT_GREEN,
+                stroke_width=3.5,
+            )
+        )
+        ref_path_10_2 = m.always_redraw(
+            lambda: m.Line(
+                intersection_pt_10(),
+                bt_10.rx_pos + rx_offset.get_value() * m.LEFT,
+                color=ACCENT_GREEN,
+                stroke_width=3.5,
+            )
+        )
+
+        rx_moving = m.always_redraw(
+            lambda: m.Dot(
+                bt_10.rx_pos + rx_offset.get_value() * m.LEFT,
+                color=ACCENT_CYAN,
+                radius=0.12,
+            )
+        )
+
+        self.next_slide(
+            notes="When a transmitter or receiver moves, the ray path structures (sequences of wall bounces) often remain identical in a local region.",
+        )
+        self.play(
+            *next_meta(new_section=3),
+            self.wipe(prev_slide_content, [reuse_header], return_animation=True),
+        )
+        self.play(m.FadeIn(bt_10))
+        self.play(
+            m.FadeIn(vrx_dot_10),
+            m.FadeIn(star_10),
+            m.Create(ref_path_10_1),
+            m.Create(ref_path_10_2),
+            m.FadeIn(rx_moving),
+        )
+
+        self.next_slide(
+            notes="As the receiver moves, the bounce point shifts smoothly. We don't need to recompute which wall to bounce off."
+        )
+        self.play(
+            rx_offset.animate.set_value(1.5), run_time=2.0, rate_func=m.there_and_back
+        )
+
+        for b in reuse_bullets:
+            self.next_slide(notes="Dynamic ray tracing bullet.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        # Clear updaters before proceeding
+        vrx_dot_10.clear_updaters()
+        star_10.clear_updaters()
+        ref_path_10_1.clear_updaters()
+        ref_path_10_2.clear_updaters()
+        rx_moving.clear_updaters()
+
+        prev_slide_content = [
+            reuse_header,
+            reuse_bullets,
+            bt_10,
+            vrx_dot_10,
+            star_10,
+            ref_path_10_1,
+            ref_path_10_2,
+            rx_moving,
+        ]
+
+        # =========================================================================
+        # SLIDE 11: Third Contribution - Multipath Lifetime Maps (MLM)
+        # =========================================================================
+        mlm_header = title_box("Third Contribution: Multipath Lifetime Maps")
+
+        mlm_bullets = bullets(
+            [
+                "Tunnel analogy: in a region, the set of echoes (ray signature) remains invariant.",
+                "Multipath Lifetime Maps (MLM) partition space into cells with identical signatures.",
+                "Quantifies exactly where rays can be reused without recomputation.",
+            ],
+            width=42,
+        )
+        mlm_bullets.next_to(mlm_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+
+        # Value tracker for the pre-rendered image sequence
+        mlm_tracker = m.ValueTracker(0)
+
+        # Redraw the image corresponding to the current tracker index
+        mlm_img = m.always_redraw(
+            lambda: (
+                m.ImageMobject(
+                    f"images/sequences/mlm/mlm_{int(mlm_tracker.get_value()):02d}.png"
+                )
+                .set_height(4.5)
+                .next_to(mlm_header, m.DOWN, buff=0.65)
+                .to_edge(m.RIGHT, buff=0.75)
+            )
+        )
+
+        self.next_slide(
+            notes="If you are in a tunnel, you can walk around and still hear the exact same echoes. "
+            "Similarly, in cities, there are large cells where the set of propagation paths is invariant.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [mlm_header], return_animation=True),
+        )
+        self.play(m.FadeIn(mlm_img))
+
+        self.next_slide(
+            loop=True,
+            notes="As the transmitter moves, our Multipath Lifetime Map cells morph, showing the exact boundaries of path stability.",
+        )
+        self.play(
+            mlm_tracker.animate.set_value(19),
+            run_time=3.0,
+            rate_func=m.linear,
+        )
+        self.play(
+            mlm_tracker.animate.set_value(0),
+            run_time=3.0,
+            rate_func=m.linear,
+        )
+
+        for b in mlm_bullets:
+            self.next_slide(notes="MLM bullet point.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        mlm_img.clear_updaters()
+        prev_slide_content = [mlm_header, mlm_bullets, mlm_img]
+
+        # =========================================================================
+        # SLIDE 12: Differentiability & Automatic Differentiation
+        # =========================================================================
+        diff_header = title_box("Differentiability & Automatic Differentiation")
 
         diff_bullets = bullets(
             [
-                "Waves don't just reflect; they also bend around sharp corners.",
-                "Diffraction allows signals to reach shadow zones.",
-                "Crucial for urban coverage where direct line-of-sight is blocked.",
+                "Differentiable means smooth: slope (gradient) is defined everywhere.",
+                "Computers need gradients to know which direction to optimize.",
+                "Automatic Differentiation (Autodiff) computes exact gradients.",
+                "We use Implicit Differentiation to bypass solver steps, saving memory.",
             ],
             width=42,
         )
         diff_bullets.next_to(diff_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # Diffraction animation canvas
+        # Transitioning landscape canvas
+        # Card Box
         diff_box = m.RoundedRectangle(
             width=5.0,
             height=4.2,
@@ -866,632 +2403,128 @@ class Main(Slide, m.MovingCameraScene):
         )
         diff_box.next_to(diff_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        # A large building corner blocking line-of-sight
-        corner_building = (
-            m.Rectangle(
-                width=2.5,
-                height=2.5,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
+        # Computational graph nodes inside card
+        x_node = (
+            m.Circle(radius=0.35, color=ACCENT_CYAN, fill_opacity=0.1, stroke_width=2)
             .move_to(diff_box)
-            .shift(m.LEFT * 1.2 + m.DOWN * 0.8)
+            .shift(m.LEFT * 1.5 + m.UP * 0.4)
+        )
+        x_label = m.Text("x", font_size=16, color=TEXT_COLOR).move_to(x_node)
+        x_lbl = m.Text("Input", font_size=10, color=MUTED_TEXT).next_to(
+            x_node, m.DOWN, buff=0.1
         )
 
-        tx_diff = m.Dot(
-            point=diff_box.get_center() + m.LEFT * 1.8 + m.UP * 1.2,
-            radius=0.08,
+        op_node = (
+            m.Circle(radius=0.35, color=ACCENT_AMBER, fill_opacity=0.1, stroke_width=2)
+            .move_to(diff_box)
+            .shift(m.UP * 0.4)
+        )
+        op_label = m.Text("()²", font_size=16, color=TEXT_COLOR).move_to(op_node)
+        op_lbl = m.Text("Square", font_size=10, color=MUTED_TEXT).next_to(
+            op_node, m.DOWN, buff=0.1
+        )
+
+        y_node = (
+            m.Circle(radius=0.35, color=ACCENT_GREEN, fill_opacity=0.1, stroke_width=2)
+            .move_to(diff_box)
+            .shift(m.RIGHT * 1.5 + m.UP * 0.4)
+        )
+        y_label = m.Text("y", font_size=16, color=TEXT_COLOR).move_to(y_node)
+        y_lbl = m.Text("Output", font_size=10, color=MUTED_TEXT).next_to(
+            y_node, m.DOWN, buff=0.1
+        )
+
+        fwd_arrow1 = m.Arrow(
+            x_node.get_right(),
+            op_node.get_left(),
             color=ACCENT_CYAN,
+            stroke_width=3,
+            buff=0.1,
         )
-        tx_lbl = m.Text("TX", font_size=12, color=ACCENT_CYAN).next_to(
-            tx_diff, m.UP, buff=0.08
-        )
-
-        rx_diff = m.Dot(
-            point=diff_box.get_center() + m.RIGHT * 1.5 + m.DOWN * 1.2,
-            radius=0.08,
+        fwd_arrow2 = m.Arrow(
+            op_node.get_right(),
+            y_node.get_left(),
             color=ACCENT_CYAN,
+            stroke_width=3,
+            buff=0.1,
         )
-        rx_lbl = m.Text("RX (Shadow)", font_size=12, color=ACCENT_CYAN).next_to(
-            rx_diff, m.UP, buff=0.08
+        fwd_lbl = (
+            m.Text("Forward Pass (Function)", font_size=11, color=ACCENT_CYAN)
+            .move_to(diff_box)
+            .shift(m.UP * 1.3)
         )
 
-        # Show blocked direct path
-        blocked_direct = m.Line(
-            tx_diff.get_center(), rx_diff.get_center(), color=ACCENT_RED, stroke_width=2
+        bwd_arrow1 = m.Arrow(
+            y_node.get_left(),
+            op_node.get_right(),
+            color=ACCENT_RED,
+            stroke_width=3,
+            buff=0.1,
+        ).shift(m.DOWN * 0.8)
+        bwd_arrow2 = m.Arrow(
+            op_node.get_left(),
+            x_node.get_right(),
+            color=ACCENT_RED,
+            stroke_width=3,
+            buff=0.1,
+        ).shift(m.DOWN * 0.8)
+        bwd_lbl = (
+            m.Text("Backward Pass (Gradient)", font_size=11, color=ACCENT_RED)
+            .move_to(diff_box)
+            .shift(m.DOWN * 1.3)
         )
-        corner_point = corner_building.get_corner(m.UR)
 
-        # Diffraction path
-        diff_path_1 = m.Line(
-            tx_diff.get_center(), corner_point, color=ACCENT_GREEN, stroke_width=2.5
+        graph_grp = m.Group(
+            x_node,
+            x_label,
+            x_lbl,
+            op_node,
+            op_label,
+            op_lbl,
+            y_node,
+            y_label,
+            y_lbl,
+            fwd_arrow1,
+            fwd_arrow2,
+            fwd_lbl,
         )
-        diff_path_2 = m.Line(
-            corner_point, rx_diff.get_center(), color=ACCENT_GREEN, stroke_width=2.5
-        )
-        diff_star = m.Star(
-            n=6,
-            outer_radius=0.12,
-            inner_radius=0.05,
-            color=ACCENT_AMBER,
-            fill_opacity=1,
-        ).move_to(corner_point)
-
-        # Animated diffracted waves (expanding arcs)
-        waves_grp = m.VGroup()
-        for r in np.linspace(0.2, 1.8, 6):
-            arc = m.Arc(
-                radius=r,
-                start_angle=-np.pi / 4,
-                angle=-np.pi / 2,
-                color=ACCENT_CYAN,
-                stroke_width=1.5,
-            ).move_to(corner_point)
-            waves_grp.add(arc)
-
-        diffraction_scene = m.Group(
-            diff_box, corner_building, tx_diff, tx_lbl, rx_diff, rx_lbl
-        )
+        bwd_grp = m.Group(bwd_arrow1, bwd_arrow2, bwd_lbl)
 
         self.next_slide(
-            notes="But radio waves can bend around corners. When a wave hits a sharp corner, "
-            "it diffracts, generating new waves that reach the shadow zone where direct signals are blocked.",
+            notes="To run optimizations on the GPU, we need gradients. Differentiability means having a smooth landscape where gradients are defined.",
         )
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [diff_header], return_animation=True),
         )
-        self.play(m.FadeIn(diffraction_scene))
-        self.play(m.Create(blocked_direct))
-        self.play(blocked_direct.animate.set_opacity(0.15))
+        self.play(m.FadeIn(diff_box), m.FadeIn(graph_grp))
 
-        self.next_slide(notes="Show diffraction bending around the corner.")
-        self.play(m.Create(diff_path_1), m.Create(diff_path_2))
-        self.play(m.FadeIn(diff_star))
-        self.play(
-            m.LaggedStart(
-                *[m.Create(w, rate_func=m.there_and_back) for w in waves_grp],
-                lag_ratio=0.2,
-                run_time=1.8,
-            )
+        self.next_slide(
+            notes="Automatic differentiation propagates derivatives backwards to calculate exact slopes cheaply."
         )
+        self.play(m.FadeIn(bwd_grp))
 
         for b in diff_bullets:
-            self.next_slide(notes="Bending around corners explanation.")
+            self.next_slide(notes="Autodiff and Implicit differentiation explanation.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [
-            diff_header,
-            diff_bullets,
-            diffraction_scene,
-            blocked_direct,
-            diff_path_1,
-            diff_path_2,
-            diff_star,
-        ]
+        prev_slide_content = [diff_header, diff_bullets, diff_box, graph_grp, bwd_grp]
 
         # =========================================================================
-        # SLIDE 7: The Challenge of a Whole City
+        # SLIDE 13: Discontinuities in Ray Tracing
         # =========================================================================
-        challenge_header = title_box("The Challenge of a Whole City")
+        discont_header = title_box("Discontinuities in Ray Tracing")
 
-        challenge_bullets = bullets(
+        discont_bullets = bullets(
             [
-                "A typical city contains thousands of building walls.",
-                "Signals reflect and diffract multiple times before reaching the user.",
-                "To simulate, we must find paths through this massive maze.",
-            ]
-        )
-        challenge_bullets.next_to(challenge_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # Simple city block representation
-        city_blocks_box = m.RoundedRectangle(
-            width=5.0,
-            height=4.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        )
-        city_blocks_box.next_to(challenge_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
-
-        blocks = m.VGroup(
-            m.Rectangle(
-                width=1.0,
-                height=1.0,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(city_blocks_box)
-            .shift(m.LEFT * 1.2 + m.UP * 0.8),
-            m.Rectangle(
-                width=1.2,
-                height=0.8,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(city_blocks_box)
-            .shift(m.RIGHT * 1.2 + m.UP * 0.8),
-            m.Rectangle(
-                width=0.8,
-                height=1.2,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(city_blocks_box)
-            .shift(m.LEFT * 1.2 + m.DOWN * 0.8),
-            m.Rectangle(
-                width=1.0,
-                height=1.0,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(city_blocks_box)
-            .shift(m.RIGHT * 1.2 + m.DOWN * 0.8),
-            m.Rectangle(
-                width=0.8,
-                height=0.8,
-                fill_color=m.ManimColor("#22252A"),
-                fill_opacity=1,
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(city_blocks_box)
-            .shift(m.DOWN * 0.3),
-        )
-
-        city_tx = m.Dot(
-            point=city_blocks_box.get_center() + m.LEFT * 2.0,
-            radius=0.07,
-            color=ACCENT_CYAN,
-        )
-        city_rx = m.Dot(
-            point=city_blocks_box.get_center() + m.RIGHT * 2.0,
-            radius=0.07,
-            color=ACCENT_CYAN,
-        )
-
-        city_maze = m.Group(city_blocks_box, blocks, city_tx, city_rx)
-
-        self.next_slide(
-            notes="To model propagation in a real city, the task becomes much harder. "
-            "A city contains thousands of walls, and signals bounce multiple times. "
-            "How do we find all valid paths through this maze?",
-        )
-        self.play(
-            *next_meta(new_section=2),
-            self.wipe(prev_slide_content, [challenge_header], return_animation=True),
-        )
-        self.play(m.FadeIn(city_maze))
-
-        for b in challenge_bullets:
-            self.next_slide(notes="Explaining urban challenges.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [challenge_header, challenge_bullets, city_maze]
-
-        # =========================================================================
-        # SLIDE 8: The Combinatorial Explosion
-        # =========================================================================
-        explosion_header = title_box("The Combinatorial Explosion")
-
-        explosion_bullets = bullets(
-            [
-                r"For $N$ walls and $K$ bounces, we must test $N^K$ path candidates.",
-                r"The search space grows exponentially: $\mathcal{O}(N^K)$.",
-                "Most candidates are invalid; checking them all is too slow.",
-            ],
-            use_tex=True,
-            width=42,
-        )
-        explosion_bullets.next_to(explosion_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # DiffeRT 3D street canyon plot tracker setup
-        N_FACES = self.scene.mesh.num_primitives
-        N_TRI = self.scene.mesh.num_triangles
-
-        alpha = m.ValueTracker(0)
-        face_index = m.ValueTracker(0)
-        elevation = m.ValueTracker(jnp.pi / 2)
-        azimuth = m.ValueTracker(0)
-        distance = m.ValueTracker(4)
-        opacity = m.ValueTracker(0.6)
-        triangles_opacity = m.ValueTracker(0)
-        rx = m.ValueTracker(20.0)
-        draw_tx = m.ValueTracker(0)
-        draw_rx = m.ValueTracker(0)
-        draw_paths = m.ValueTracker(0)
-        max_order = m.ValueTracker(3)
-
-        def redraw_scene() -> go.Figure:
-            self.scene = eqx.tree_at(
-                lambda s: s.transmitters, self.scene, jnp.array([-33.0, 0.0, 32.0])
-            )
-            self.scene = eqx.tree_at(
-                lambda s: s.receivers,
-                self.scene,
-                jnp.array([rx.get_value(), 0.0, 1.5]),
-            )
-            self.fig = self.scene.plot(
-                tx_kwargs=dict(opacity=draw_tx.get_value()),
-                rx_kwargs=dict(opacity=draw_rx.get_value()),
-                showlegend=False,
-            )
-            draw_triangle_edges(self.fig, scene=self.scene)
-            cleanup_figure(self.fig)
-            set_opacity(
-                self.fig,
-                opacity=opacity.get_value(),
-                selector=dict(type="mesh3d"),
-            )
-            set_opacity(
-                self.fig,
-                opacity=triangles_opacity.get_value(),
-                selector=dict(type="scatter3d", name="triangles"),
-            )
-            move_camera(
-                self.fig,
-                elevation=elevation.get_value(),
-                azimuth=azimuth.get_value(),
-                distance=distance.get_value(),
-            )
-            highlight_face(
-                self.fig,
-                alpha=alpha.get_value(),
-                face_index=int(face_index.get_value()),
-            )
-            if draw_paths.get_value() > 0.5:
-                for order in range(int(max_order.get_value()) + 1):
-                    paths = self.scene.compute_paths(order=order)
-                    paths.plot(
-                        figure=self.fig,
-                        showlegend=False,
-                        marker=dict(size=0),
-                        opacity=draw_paths.get_value(),
-                    )
-            return self.fig
-
-        im = m.always_redraw(
-            lambda: (
-                figure_to_mobject(
-                    redraw_scene(),
-                )
-                .set_height(4.5)
-                .next_to(explosion_header, m.DOWN, buff=0.65)
-                .to_edge(m.RIGHT, buff=0.75)
-            )
-        )
-
-        self.next_slide(
-            notes="Let us visualize this combinatorial explosion in a 3D street canyon scene. "
-            "Using DiffeRT, we model the buildings as 3D faces. "
-            "For each bounce, the number of combinations multiplies exponentially.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [explosion_header], return_animation=True),
-        )
-        self.play(m.FadeIn(im))
-
-        self.next_slide(
-            notes="With DiffeRT, we can model the buildings as 3D faces and rotate the camera to inspect details."
-        )
-        self.play(
-            azimuth.animate.set_value(-jnp.pi / 2),
-            elevation.animate.set_value(jnp.pi / 4),
-            distance.animate.set_value(2),
-            draw_tx.animate.set_value(1),
-            draw_rx.animate.set_value(1),
-            run_time=2,
-        )
-
-        self.next_slide(
-            notes="To trace paths, we must test combinations. Let's start with order 1: checking reflections on every single wall."
-        )
-
-        count = m.Integer(0, group_with_commas=False, edge_to_fix=m.UR)
-        count.next_to(im, m.UP, buff=0.2).set_color(ACCENT_AMBER)
-        count_lbl = m.Text(
-            "Tested candidates: ", font_size=16, color=MUTED_TEXT
-        ).next_to(count, m.LEFT, buff=0.1)
-        count_grp = m.VGroup(count_lbl, count)
-
-        self.play(m.FadeIn(count_grp))
-
-        # Highlighting 1st order faces
-        for i in range(N_FACES):
-            if i < 3:
-                self.next_slide(notes=f"Face {i}")
-            elif i == 3:
-                self.next_slide(notes="Other Faces...")
-            face_index.set_value(i)
-            self.play(
-                alpha.animate(rate_func=m.there_and_back).set_value(1),
-                count.animate.increment_value(1),
-                run_time=max(0.5 - (i >= 3) * (i - 3) * 0.10, 0.04),
-            )
-
-        self.next_slide(
-            notes="Now for order 2: we must test every pair of faces. The search space increases to N squared, which is over 1300 candidates."
-        )
-        self.play(
-            count.animate.set_value(N_FACES * (N_FACES - 1)),
-            max_order.animate.set_value(2),
-            draw_paths.animate.set_value(0.5),
-            run_time=1.5,
-        )
-
-        self.next_slide(
-            notes="In practice, 3D models are composed of triangles, doubling the number of primitives."
-        )
-        self.play(
-            triangles_opacity.animate.set_value(1),
-            run_time=1.0,
-        )
-        self.next_slide(
-            notes="This pushes the candidates to N_triangles squared, which is over 5400 candidates for order 2."
-        )
-        self.play(
-            count.animate.set_value(N_TRI * (N_TRI - 1)),
-            run_time=1.0,
-        )
-
-        self.next_slide(
-            notes="If we go to order 3, 4, and beyond, the search space grows exponentially. This is the combinatorial explosion. We cannot check them all."
-        )
-        self.play(
-            count.animate.set_value(N_TRI**4),
-            max_order.animate.set_value(3),
-            draw_paths.animate.set_value(0.8),
-            run_time=2.0,
-        )
-
-        for b in explosion_bullets:
-            self.next_slide(notes="Combinatorial complexity bullet points.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        im.clear_updaters()
-        prev_slide_content = [explosion_header, explosion_bullets, im, count_grp]
-
-        # =========================================================================
-        # SLIDE 9: The Machine Learning Solution
-        # =========================================================================
-        ml_header = title_box("The Machine Learning Solution")
-
-        ml_bullets = bullets(
-            [
-                "We trained an AI to predict which sequences of walls actually work.",
-                "Bypasses the need to search through all combinations.",
-                "Reduces path finding computation from hours to milliseconds.",
-            ]
-        )
-        ml_bullets.next_to(ml_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        # ML model diagram representation
-        ml_diagram = m.RoundedRectangle(
-            width=5.0,
-            height=4.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        )
-        ml_diagram.next_to(ml_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        geom_box = (
-            m.RoundedRectangle(
-                width=1.4,
-                height=0.8,
-                corner_radius=0.1,
-                fill_color=m.ManimColor("#22252A"),
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(ml_diagram)
-            .shift(m.LEFT * 1.4)
-        )
-        geom_lbl = m.Text("City\nGeometry", font_size=11, color=TEXT_COLOR).move_to(
-            geom_box
-        )
-
-        model_box = m.RoundedRectangle(
-            width=1.4,
-            height=1.2,
-            corner_radius=0.1,
-            fill_color=m.ManimColor("#102A30"),
-            stroke_color=ACCENT_CYAN,
-            stroke_width=2,
-        ).move_to(ml_diagram)
-        model_lbl = m.Text(
-            "Generative\nSampler\n(Neural Net)",
-            font_size=11,
-            color=ACCENT_CYAN,
-            weight=m.BOLD,
-        ).move_to(model_box)
-
-        paths_box = (
-            m.RoundedRectangle(
-                width=1.4,
-                height=0.8,
-                corner_radius=0.1,
-                fill_color=m.ManimColor("#0D3B2E"),
-                stroke_color=ACCENT_GREEN,
-            )
-            .move_to(ml_diagram)
-            .shift(m.RIGHT * 1.4)
-        )
-        paths_lbl = m.Text(
-            "Promising\nSequences", font_size=11, color=ACCENT_GREEN
-        ).move_to(paths_box)
-
-        arr1 = m.Arrow(
-            geom_box.get_right(),
-            model_box.get_left(),
-            color=TEXT_COLOR,
-            buff=0.1,
-            stroke_width=3,
-        )
-        arr2 = m.Arrow(
-            model_box.get_right(),
-            paths_box.get_left(),
-            color=ACCENT_GREEN,
-            buff=0.1,
-            stroke_width=3,
-        )
-
-        flow_grp = m.Group(
-            ml_diagram,
-            geom_box,
-            geom_lbl,
-            model_box,
-            model_lbl,
-            paths_box,
-            paths_lbl,
-            arr1,
-            arr2,
-        )
-
-        self.next_slide(
-            notes="Instead of checking all combinations, we train a machine learning model. "
-            "The model takes the city geometry and instantly predicts the few wall sequences that contain valid paths.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [ml_header], return_animation=True),
-        )
-        self.play(m.FadeIn(flow_grp))
-        self.play(
-            m.Indicate(model_box, color=ACCENT_CYAN),
-            paths_box.animate.scale(1.1).set_color(ACCENT_GREEN),
-            run_time=1.5,
-        )
-        self.play(paths_box.animate.scale(1.0 / 1.1))
-
-        for b in ml_bullets:
-            self.next_slide(notes="Machine learning path sampling explanation.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [ml_header, ml_bullets, flow_grp]
-
-        # =========================================================================
-        # SLIDE 10: Optimization - Finding the Best Spot
-        # =========================================================================
-        opti_header = title_box("Optimization - Finding the Best Spot")
-
-        opti_bullets = bullets(
-            [
-                "To maximize coverage, we must optimize transmitter location.",
-                "Analogy: A blindfolded climber searching for the peak.",
-                "They feel the slope (gradient) under their feet to walk upward.",
-            ]
-        )
-        opti_bullets.next_to(opti_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        # Rolling hill visual
-        hill_box = m.RoundedRectangle(
-            width=5.0,
-            height=4.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        )
-        hill_box.next_to(opti_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        # Draw a beautiful rolling hill line
-        hill_axes = (
-            m.Axes(
-                x_range=[-2.2, 2.2],
-                y_range=[0, 3],
-                x_length=4.4,
-                y_length=3.0,
-                tips=False,
-            )
-            .move_to(hill_box)
-            .shift(m.DOWN * 0.3)
-        )
-        hill_graph = hill_axes.plot(
-            lambda x: 2.2 * np.exp(-0.4 * x**2) + 0.2,
-            color=ACCENT_GREEN,
-            stroke_width=4,
-        )
-
-        climber = m.Dot(
-            point=hill_axes.c2p(-1.6, 2.2 * np.exp(-0.4 * (-1.6) ** 2) + 0.2),
-            radius=0.14,
-            color=TEXT_COLOR,
-        )
-        climber_lbl = m.Text("Climber", font_size=10, color=TEXT_COLOR).next_to(
-            climber, m.UP, buff=0.08
-        )
-
-        # Slope arrow (tangent)
-        tangent_arrow = m.Arrow(
-            hill_axes.c2p(-1.6, 0.9),
-            hill_axes.c2p(-0.8, 1.8),
-            color=ACCENT_AMBER,
-            stroke_width=4,
-            buff=0.1,
-        )
-        slope_lbl = m.Text(
-            "Slope / Gradient", font_size=11, color=ACCENT_AMBER
-        ).next_to(tangent_arrow, m.UP, buff=0.05)
-
-        hill_scene = m.Group(hill_box, hill_axes, hill_graph, climber, climber_lbl)
-
-        self.next_slide(
-            notes="How do we optimize antenna positions? We use mathematical optimization. "
-            "Think of a blindfolded climber looking for the highest peak. "
-            "They feel the slope, or gradient, under their feet and walk upwards.",
-        )
-        self.play(
-            *next_meta(new_section=3),
-            self.wipe(prev_slide_content, [opti_header], return_animation=True),
-        )
-        self.play(m.FadeIn(hill_scene))
-        self.play(m.Create(tangent_arrow), m.FadeIn(slope_lbl))
-
-        # Climber moves up the hill
-        self.next_slide(notes="Watch the climber walk up the slope to the peak.")
-        climber_peak = hill_axes.c2p(0.0, 2.4)
-        self.play(
-            climber.animate.move_to(climber_peak),
-            climber_lbl.animate.next_to(climber_peak, m.UP, buff=0.08),
-            m.FadeOut(tangent_arrow),
-            m.FadeOut(slope_lbl),
-            run_time=1.5,
-        )
-
-        for b in opti_bullets:
-            self.next_slide(notes="Optimization and gradients explanation.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [opti_header, opti_bullets, hill_scene]
-
-        # =========================================================================
-        # SLIDE 11: The Problem - Hard Edges
-        # =========================================================================
-        edges_header = title_box("The Problem: Hard Edges")
-
-        edges_bullets = bullets(
-            [
-                "Building walls create sharp boundaries (discontinuities).",
-                "A receiver is either 100% in coverage or 100% blocked.",
-                "In our analogy, this creates flat terraces and vertical cliffs.",
-                "Flat ground has zero gradient: the climber gets no hint.",
+                "Obstacles (walls, buildings) block rays abruptly.",
+                "Creates sudden ON/OFF coverage boundaries (discontinuities).",
+                "Staircase climber analogy: flat steps have zero gradient.",
+                "With zero gradient, optimization algorithms get stuck.",
             ],
             width=42,
         )
-        edges_bullets.next_to(edges_header, m.DOWN, buff=0.65).to_edge(
+        discont_bullets.next_to(discont_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
         )
 
@@ -1504,7 +2537,7 @@ class Main(Slide, m.MovingCameraScene):
             fill_opacity=1,
             stroke_color=CARD_BORDER,
         )
-        cliff_box.next_to(edges_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        cliff_box.next_to(discont_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         cliff_axes = (
             m.Axes(
@@ -1518,7 +2551,7 @@ class Main(Slide, m.MovingCameraScene):
             .shift(m.DOWN * 0.3)
         )
 
-        # Draw a stepped function with sharp cliff
+        # Draw a stepped function with sharp cliff (staircase step)
         cliff_points = [
             cliff_axes.c2p(-2.2, 0.4),
             cliff_axes.c2p(-0.5, 0.4),
@@ -1556,7 +2589,7 @@ class Main(Slide, m.MovingCameraScene):
             ),
         ).move_to(flat_arrow)
         zero_grad_lbl = m.Text(
-            "Flat Ground = Zero Gradient", font_size=11, color=ACCENT_RED
+            "Flat ground: Gradient = 0", font_size=11, color=ACCENT_RED
         ).next_to(flat_arrow, m.UP, buff=0.1)
 
         cliff_scene = m.Group(
@@ -1564,32 +2597,32 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         self.next_slide(
-            notes="However, buildings have sharp edges. "
-            "A signal drops from 100% to 0% instantly when you walk into a shadow. "
-            "In our climber metaphor, this looks like flat terraces and sudden, sheer cliffs.",
+            notes="However, in ray tracing, obstacles create sharp boundaries. "
+            "A receiver goes from full coverage to zero coverage instantly. "
+            "In our climber analogy, this is like climbing a staircase with flat terraces and vertical cliffs.",
         )
         self.play(
             *next_meta(),
-            self.wipe(prev_slide_content, [edges_header], return_animation=True),
+            self.wipe(prev_slide_content, [discont_header], return_animation=True),
         )
         self.play(m.FadeIn(cliff_scene))
         self.play(m.Create(flat_arrow), m.Create(flat_cross), m.FadeIn(zero_grad_lbl))
 
         self.next_slide(
-            notes="Without a slope, the climber cannot find the cliff edge."
+            notes="Because the step is flat, the climber gets no slope hint and gets stuck."
         )
         # climber moves left/right but gets stuck
         self.play(climber_flat.animate.shift(m.LEFT * 0.4), run_time=0.5)
         self.play(climber_flat.animate.shift(m.RIGHT * 0.8), run_time=0.5)
         self.play(climber_flat.animate.shift(m.LEFT * 0.4), run_time=0.5)
 
-        for b in edges_bullets:
-            self.next_slide(notes="Discontinuities and zero-gradient problem.")
+        for b in discont_bullets:
+            self.next_slide(notes="Discontinuity explanation bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [
-            edges_header,
-            edges_bullets,
+            discont_header,
+            discont_bullets,
             cliff_scene,
             flat_arrow,
             flat_cross,
@@ -1597,15 +2630,15 @@ class Main(Slide, m.MovingCameraScene):
         ]
 
         # =========================================================================
-        # SLIDE 12: The Smoothing Concept
+        # SLIDE 14: Fourth Contribution - Discontinuity Smoothing
         # =========================================================================
-        smooth_header = title_box("The Smoothing Concept")
+        smooth_header = title_box("Fourth Contribution: Discontinuity Smoothing")
 
         smooth_bullets = bullets(
             [
                 "We turn the sharp ON/OFF cliff into a smooth transition.",
-                "Analogy: A standard light switch vs a dimmer switch.",
-                "Melt the cliff into a smooth hill (a Sigmoid funnel).",
+                "Dimmer switch analogy: transitioning smoothly from light to dark.",
+                "We melt the cliff into a smooth Sigmoid hill.",
                 "Gradients are now active everywhere, guiding optimization.",
             ],
             width=42,
@@ -1614,8 +2647,8 @@ class Main(Slide, m.MovingCameraScene):
             m.LEFT, buff=0.75
         )
 
-        # Transitioning landscape canvas
-        trans_box = m.RoundedRectangle(
+        # Smooth hill visual
+        smooth_box = m.RoundedRectangle(
             width=5.0,
             height=4.2,
             corner_radius=0.15,
@@ -1623,9 +2656,9 @@ class Main(Slide, m.MovingCameraScene):
             fill_opacity=1,
             stroke_color=CARD_BORDER,
         )
-        trans_box.next_to(smooth_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        smooth_box.next_to(smooth_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        trans_axes = (
+        smooth_axes = (
             m.Axes(
                 x_range=[-2.2, 2.2],
                 y_range=[0, 3],
@@ -1633,1060 +2666,454 @@ class Main(Slide, m.MovingCameraScene):
                 y_length=3.0,
                 tips=False,
             )
-            .move_to(trans_box)
+            .move_to(smooth_box)
             .shift(m.DOWN * 0.3)
         )
 
-        # Red cliff graph (recreated to transform)
-        cliff_graph_re = m.VMobject(color=ACCENT_RED, stroke_width=4)
-        cliff_graph_re.set_points_as_corners(
-            [
-                trans_axes.c2p(-2.2, 0.4),
-                trans_axes.c2p(-0.5, 0.4),
-                trans_axes.c2p(-0.5, 2.2),
-                trans_axes.c2p(2.2, 2.2),
-            ]
+        # Sigmoid curve graph
+        def sigmoid_func(x):
+            return 2.2 / (1.0 + np.exp(-4.0 * x)) + 0.2
+
+        smooth_graph = smooth_axes.plot(
+            sigmoid_func, color=ACCENT_GREEN, stroke_width=4
         )
 
-        # Smooth sigmoid graph
-        sig_points = []
-        for x in np.linspace(-2.2, 2.2, 100):
-            # Sigmoid transition centered at -0.5
-            y = 0.4 + 1.8 / (1.0 + np.exp(-4.0 * (x + 0.5)))
-            sig_points.append(trans_axes.c2p(x, y))
-        smooth_hill_graph = m.VMobject(color=ACCENT_AMBER, stroke_width=4)
-        smooth_hill_graph.set_points_as_corners(sig_points)
-
-        climber_trans = m.Dot(
-            point=trans_axes.c2p(-1.3, 0.4 + 1.8 / (1.0 + np.exp(-4.0 * (-1.3 + 0.5)))),
+        climber_smooth = m.Dot(
+            point=smooth_axes.c2p(-1.3, sigmoid_func(-1.3)),
             radius=0.14,
             color=TEXT_COLOR,
         )
-        climber_trans_lbl = m.Text("Climber", font_size=10, color=TEXT_COLOR).next_to(
-            climber_trans, m.UP, buff=0.08
+        climber_smooth_lbl = m.Text("Climber", font_size=10, color=TEXT_COLOR).next_to(
+            climber_smooth, m.UP, buff=0.08
         )
 
-        # Dimmer switch visual
-        dimmer_bar = (
-            m.Line(m.LEFT * 1.2, m.RIGHT * 1.2, color=MUTED_TEXT, stroke_width=3)
-            .move_to(trans_box)
-            .shift(m.UP * 1.4)
+        slope_arrow = m.Arrow(
+            smooth_axes.c2p(-1.5, sigmoid_func(-1.5)),
+            smooth_axes.c2p(-0.7, sigmoid_func(-0.7)),
+            color=ACCENT_AMBER,
+            stroke_width=4,
+            buff=0.1,
         )
-        dimmer_knob = m.Circle(radius=0.12, color=ACCENT_AMBER, fill_opacity=1).move_to(
-            dimmer_bar.get_left()
-        )
-        dimmer_lbl = m.Text("Dimmer Switch", font_size=12, color=MUTED_TEXT).next_to(
-            dimmer_bar, m.UP, buff=0.08
-        )
+        active_grad_lbl = m.Text(
+            "Active Gradient everywhere", font_size=11, color=ACCENT_AMBER
+        ).next_to(slope_arrow, m.UP, buff=0.1)
 
-        trans_scene = m.Group(
-            trans_box,
-            trans_axes,
-            cliff_graph_re,
-            climber_trans,
-            climber_trans_lbl,
-            dimmer_bar,
-            dimmer_knob,
-            dimmer_lbl,
+        smooth_scene = m.Group(
+            smooth_box, smooth_axes, smooth_graph, climber_smooth, climber_smooth_lbl
         )
 
         self.next_slide(
-            notes="Our solution is smoothing. "
-            "Think of a dimmer switch: instead of turning light instantly ON or OFF, it fades slowly. "
-            "We do the same to our physics. We melt the cliff into a smooth sigmoid hill.",
+            notes="Our solution is to smooth the transition. "
+            "Instead of a hard cliff, we melt it into a smooth Sigmoid hill, like replacing a light switch with a dimmer.",
         )
         self.play(
             *next_meta(),
             self.wipe(prev_slide_content, [smooth_header], return_animation=True),
         )
-        self.play(m.FadeIn(trans_scene))
+        self.play(m.FadeIn(smooth_scene))
+        self.play(m.Create(slope_arrow), m.FadeIn(active_grad_lbl))
 
         self.next_slide(
-            notes="Slide the dimmer knob to melt the sharp cliff into a smooth slope."
+            notes="Now the climber feels a continuous slope and climbs smoothly to the peak."
         )
-        # Slide the dimmer knob and transform graph simultaneously
+        # climber moves to the top of the hill
         self.play(
-            dimmer_knob.animate.move_to(dimmer_bar.get_right()),
-            m.ReplacementTransform(cliff_graph_re, smooth_hill_graph),
-            climber_trans.animate.move_to(
-                trans_axes.c2p(-1.3, 0.4 + 1.8 / (1.0 + np.exp(-4.0 * (-1.3 + 0.5))))
+            climber_smooth.animate.move_to(smooth_axes.c2p(1.3, sigmoid_func(1.3))),
+            climber_smooth_lbl.animate.next_to(
+                smooth_axes.c2p(1.3, sigmoid_func(1.3)), m.UP, buff=0.08
             ),
+            m.FadeOut(slope_arrow),
+            m.FadeOut(active_grad_lbl),
             run_time=2.0,
         )
 
-        self.next_slide(
-            notes="Now the climber can walk smoothly up the gradient slope to the top."
-        )
-        # Climber climbs the smoothed hill
-        climber_target = trans_axes.c2p(
-            1.0, 0.4 + 1.8 / (1.0 + np.exp(-4.0 * (1.0 + 0.5)))
-        )
-        self.play(
-            climber_trans.animate.move_to(climber_target),
-            climber_trans_lbl.animate.next_to(climber_target, m.UP, buff=0.08),
-            run_time=1.5,
-        )
-
         for b in smooth_bullets:
-            self.next_slide(notes="Smoothing concept explanation.")
+            self.next_slide(notes="Discontinuity smoothing explanation bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [
-            smooth_header,
-            smooth_bullets,
-            trans_box,
-            trans_axes,
-            smooth_hill_graph,
-            climber_trans,
-            climber_trans_lbl,
-            dimmer_bar,
-            dimmer_knob,
-            dimmer_lbl,
-        ]
+        prev_slide_content = [smooth_header, smooth_bullets, smooth_scene]
 
         # =========================================================================
-        # SLIDE 12A: What is Differentiability?
+        # SLIDE 15: The Candidate Explosion
         # =========================================================================
-        diff_header = title_box("What is Differentiability?")
+        explosion_header = title_box("The Candidate Explosion")
 
-        diff_bullets = bullets(
+        explosion_bullets = bullets(
             [
-                "In simple terms: Differentiable means 'Smooth'.",
-                "No sudden cliffs, jumps, or sharp spikes.",
-                "Slope (gradient) is defined at every single point.",
-                "Analogy: A smooth hill vs a jagged cliff staircase.",
-                "Key: Computers need a slope to know which way is up.",
+                "To trace all rays, we must check all possible sequences of walls.",
+                "Combinatorial explosion: 10 walls with 5 bounces = 100,000 sequences.",
+                "But most candidate sequences are physically impossible:",
+                "  • Obstructed: the path intersects a building.",
+                "  • Out-of-Bounds: the reflection point lies outside the wall.",
             ],
             width=42,
         )
-        diff_bullets.next_to(diff_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        # Comparison Card Box
-        diff_box = m.RoundedRectangle(
-            width=5.0,
-            height=4.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        )
-        diff_box.next_to(diff_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        box_title = (
-            m.Text("What Differentiability Looks Like", font_size=12, color=TEXT_COLOR)
-            .move_to(diff_box)
-            .shift(m.UP * 1.4)
+        explosion_bullets.next_to(explosion_header, m.DOWN, buff=0.65).to_edge(
+            m.LEFT, buff=0.75
         )
 
-        # Left panel: Non-differentiable (jagged cliff)
-        left_axes = (
-            m.Axes(
-                x_range=[-1.0, 1.0],
-                y_range=[0, 1],
-                x_length=2.0,
-                y_length=1.5,
-                tips=False,
-            )
-            .move_to(diff_box)
-            .shift(m.LEFT * 1.15 + m.DOWN * 0.1)
+        bt_15 = BilliardTable(obstacle=True)
+        bt_15.next_to(explosion_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        tx_pos_15 = bt_15.cue_ball.get_center()
+        rx_pos_15 = bt_15.rx_pos
+
+        # 1. Obstructed Path
+        obstructed_bounce = (
+            bt_15.frame.get_center() + m.UP * (bt_15.height / 2) + m.LEFT * 0.3
         )
-        step_func = m.VMobject(color=ACCENT_RED, stroke_width=3)
-        step_func.set_points_as_corners(
-            [
-                left_axes.c2p(-1.0, 0.2),
-                left_axes.c2p(0.0, 0.2),
-                left_axes.c2p(0.0, 0.8),
-                left_axes.c2p(1.0, 0.8),
-            ]
-        )
-        left_lbl = m.Text(
-            "Jagged / Cliffs\n(No slope here)",
-            font_size=9,
+        path_obs_1 = m.Line(
+            tx_pos_15,
+            obstructed_bounce,
             color=ACCENT_RED,
-            line_spacing=0.9,
-        ).next_to(left_axes, m.DOWN, buff=0.15)
-        cross = m.VGroup(
-            m.Line(
-                m.UP * 0.12 + m.LEFT * 0.12,
-                m.DOWN * 0.12 + m.RIGHT * 0.12,
-                color=ACCENT_RED,
-                stroke_width=2.5,
-            ),
-            m.Line(
-                m.DOWN * 0.12 + m.LEFT * 0.12,
-                m.UP * 0.12 + m.RIGHT * 0.12,
-                color=ACCENT_RED,
-                stroke_width=2.5,
-            ),
-        ).move_to(left_axes.c2p(0.0, 0.5))
-
-        # Right panel: Differentiable (smooth hill)
-        right_axes = (
-            m.Axes(
-                x_range=[-1.0, 1.0],
-                y_range=[0, 1],
-                x_length=2.0,
-                y_length=1.5,
-                tips=False,
-            )
-            .move_to(diff_box)
-            .shift(m.RIGHT * 1.15 + m.DOWN * 0.1)
-        )
-        sig_pts = []
-        for x in np.linspace(-1.0, 1.0, 50):
-            y = 0.2 + 0.6 / (1.0 + np.exp(-6.0 * x))
-            sig_pts.append(right_axes.c2p(x, y))
-        smooth_func = m.VMobject(color=ACCENT_GREEN, stroke_width=3)
-        smooth_func.set_points_as_corners(sig_pts)
-
-        right_lbl = m.Text(
-            "Smooth Hills\n(Slope defined everywhere)",
-            font_size=9,
-            color=ACCENT_GREEN,
-            line_spacing=0.9,
-        ).next_to(right_axes, m.DOWN, buff=0.15)
-
-        slope_arrow = m.Arrow(
-            right_axes.c2p(-0.4, 0.26),
-            right_axes.c2p(0.4, 0.74),
-            color=ACCENT_CYAN,
             stroke_width=3,
-            buff=0.05,
+            stroke_opacity=0.7,
         )
-        checkmark = m.Text("✓", font_size=20, color=ACCENT_GREEN).move_to(
-            right_axes.c2p(-0.6, 0.8)
-        )
-
-        diff_scene = m.Group(
-            diff_box,
-            box_title,
-            left_axes,
-            step_func,
-            left_lbl,
-            cross,
-            right_axes,
-            smooth_func,
-            right_lbl,
-            checkmark,
-        )
-
-        self.next_slide(
-            notes="Before we discuss how we calculate these slopes, what does 'differentiable' actually mean? "
-            "In simple terms, it means a landscape is smooth. There are no sudden cliffs, jumps, or sharp spikes.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [diff_header], return_animation=True),
-        )
-        self.play(m.FadeIn(diff_scene))
-        self.play(m.Create(slope_arrow))
-
-        for b in diff_bullets:
-            self.next_slide(notes="Differentiability simple explanation.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [diff_header, diff_bullets, diff_scene, slope_arrow]
-
-        # =========================================================================
-        # SLIDE 12B: How Autodiff Works
-        # =========================================================================
-        autodiff_header = title_box("How Autodiff Works")
-
-        autodiff_bullets = bullets(
-            [
-                "To optimize, we need derivatives (slopes).",
-                "Traditional methods fail for ray tracers:",
-                "  • Symbolic (By-Hand): humanly impossible.",
-                "  • Numerical (Tiny Steps): incredibly slow.",
-                "Automatic Differentiation is exact and cheap:",
-                "  1. Forward Pass: record basic math steps.",
-                "  2. Backward Pass: propagate slopes in reverse.",
-            ],
-            width=42,
-        )
-        autodiff_bullets.next_to(autodiff_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # Computational graph visual box
-        graph_box = m.RoundedRectangle(
-            width=5.0,
-            height=4.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        )
-        graph_box.next_to(autodiff_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
-
-        # Graph nodes and labels
-        x_box = (
-            m.Circle(radius=0.35, color=ACCENT_CYAN, fill_opacity=0.1, stroke_width=2)
-            .move_to(graph_box)
-            .shift(m.LEFT * 1.5 + m.UP * 0.5)
-        )
-        x_label = m.Text("x", font_size=16, color=TEXT_COLOR).move_to(x_box)
-        x_sub = m.Text("Input", font_size=10, color=MUTED_TEXT).next_to(
-            x_box, m.DOWN, buff=0.1
-        )
-
-        op_box = (
-            m.Circle(radius=0.35, color=ACCENT_AMBER, fill_opacity=0.1, stroke_width=2)
-            .move_to(graph_box)
-            .shift(m.UP * 0.5)
-        )
-        op_label = m.Text("()²", font_size=16, color=TEXT_COLOR).move_to(op_box)
-        op_sub = m.Text("Square", font_size=10, color=MUTED_TEXT).next_to(
-            op_box, m.DOWN, buff=0.1
-        )
-
-        y_box = (
-            m.Circle(radius=0.35, color=ACCENT_GREEN, fill_opacity=0.1, stroke_width=2)
-            .move_to(graph_box)
-            .shift(m.RIGHT * 1.5 + m.UP * 0.5)
-        )
-        y_label = m.Text("y", font_size=16, color=TEXT_COLOR).move_to(y_box)
-        y_sub = m.Text("Output", font_size=10, color=MUTED_TEXT).next_to(
-            y_box, m.DOWN, buff=0.1
-        )
-
-        fwd_arrow1 = m.Arrow(
-            x_box.get_right(),
-            op_box.get_left(),
-            color=ACCENT_CYAN,
+        path_obs_2 = m.Line(
+            obstructed_bounce,
+            rx_pos_15,
+            color=ACCENT_RED,
             stroke_width=3,
-            buff=0.1,
+            stroke_opacity=0.7,
         )
-        fwd_arrow2 = m.Arrow(
-            op_box.get_right(),
-            y_box.get_left(),
-            color=ACCENT_CYAN,
-            stroke_width=3,
-            buff=0.1,
-        )
-        fwd_lbl = (
-            m.Text("Forward Pass (Record)", font_size=11, color=ACCENT_CYAN)
-            .move_to(graph_box)
-            .shift(m.UP * 1.4)
-        )
+        obs_cross = m.VGroup(
+            m.Line(m.UL * 0.2, m.DR * 0.2, color=ACCENT_RED, stroke_width=3.5),
+            m.Line(m.DL * 0.2, m.UR * 0.2, color=ACCENT_RED, stroke_width=3.5),
+        ).move_to(bt_15.building.get_center())
+        obs_lbl = m.Text(
+            "Obstructed by Building", font_size=10, color=ACCENT_RED
+        ).next_to(bt_15.building, m.UP, buff=0.08)
 
-        y_pt = y_box.get_bottom() + m.DOWN * 0.4
-        op_pt = op_box.get_bottom() + m.DOWN * 0.4
-        x_pt = x_box.get_bottom() + m.DOWN * 0.4
-        bwd_arrow1 = m.Arrow(y_pt, op_pt, color=ACCENT_AMBER, stroke_width=3, buff=0.1)
-        bwd_lbl1 = m.Text("dy/dy = 1", font_size=9, color=ACCENT_AMBER).next_to(
-            bwd_arrow1, m.DOWN, buff=0.05
+        # 2. Out of Bounds Path
+        oob_bounce = (
+            bt_15.frame.get_center()
+            + m.RIGHT * (bt_15.width / 2)
+            + m.UP * (bt_15.height * 0.7)
         )
-
-        bwd_arrow2 = m.Arrow(op_pt, x_pt, color=ACCENT_AMBER, stroke_width=3, buff=0.1)
-        bwd_lbl2 = m.Text("dy/dx = 2x", font_size=9, color=ACCENT_AMBER).next_to(
-            bwd_arrow2, m.DOWN, buff=0.05
+        path_oob_1 = m.Line(
+            tx_pos_15, oob_bounce, color=ACCENT_RED, stroke_width=3, stroke_opacity=0.7
         )
-        bwd_lbl = (
-            m.Text("Backward Pass (Chain Rule)", font_size=11, color=ACCENT_AMBER)
-            .move_to(graph_box)
-            .shift(m.DOWN * 1.4)
+        path_oob_2 = m.Line(
+            oob_bounce, rx_pos_15, color=ACCENT_RED, stroke_width=3, stroke_opacity=0.7
         )
-
-        # Grouping for initial display
-        graph_static = m.Group(
-            graph_box,
-            x_box,
-            x_label,
-            x_sub,
-            op_box,
-            op_label,
-            op_sub,
-            y_box,
-            y_label,
-            y_sub,
-        )
+        oob_cross = m.VGroup(
+            m.Line(m.UL * 0.2, m.DR * 0.2, color=ACCENT_RED, stroke_width=3.5),
+            m.Line(m.DL * 0.2, m.UR * 0.2, color=ACCENT_RED, stroke_width=3.5),
+        ).move_to(oob_bounce)
+        oob_lbl = m.Text(
+            "Out of Bounds Cushion Point", font_size=10, color=ACCENT_RED
+        ).next_to(oob_cross, m.LEFT, buff=0.1)
 
         self.next_slide(
-            notes="How do we actually compute these slopes for a complex ray tracer? We use Automatic Differentiation. "
-            "Instead of doing calculus by hand or taking slow numerical steps, the computer tracks the math operations.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [autodiff_header], return_animation=True),
-        )
-        self.play(m.FadeIn(graph_static))
-
-        self.next_slide(
-            notes="First, in the Forward Pass, the values flow from left to right, and the computer records the operations."
-        )
-        self.play(m.Create(fwd_arrow1), m.Create(fwd_arrow2), m.FadeIn(fwd_lbl))
-        pulse_dot = m.Dot(color=ACCENT_GREEN, radius=0.08).move_to(x_box.get_center())
-        self.play(m.FadeIn(pulse_dot))
-        self.play(pulse_dot.animate.move_to(op_box.get_center()), run_time=0.8)
-        self.play(pulse_dot.animate.move_to(y_box.get_center()), run_time=0.8)
-        self.play(m.FadeOut(pulse_dot))
-
-        self.next_slide(
-            notes="Then, in the Backward Pass, the slopes propagate back from right to left using the Chain Rule, giving us the exact derivative."
-        )
-        self.play(
-            m.Create(bwd_arrow1),
-            m.Create(bwd_arrow2),
-            m.FadeIn(bwd_lbl1),
-            m.FadeIn(bwd_lbl2),
-            m.FadeIn(bwd_lbl),
-        )
-        bwd_pulse = m.Dot(color=ACCENT_AMBER, radius=0.08).move_to(y_box.get_center())
-        self.play(m.FadeIn(bwd_pulse))
-        self.play(bwd_pulse.animate.move_to(op_box.get_center()), run_time=0.8)
-        self.play(bwd_pulse.animate.move_to(x_box.get_center()), run_time=0.8)
-        self.play(m.FadeOut(bwd_pulse))
-
-        for b in autodiff_bullets:
-            self.next_slide(notes="Automatic differentiation concept explanation.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [
-            autodiff_header,
-            autodiff_bullets,
-            graph_box,
-            x_box,
-            x_label,
-            x_sub,
-            op_box,
-            op_label,
-            op_sub,
-            y_box,
-            y_label,
-            y_sub,
-            fwd_arrow1,
-            fwd_arrow2,
-            fwd_lbl,
-            bwd_arrow1,
-            bwd_arrow2,
-            bwd_lbl1,
-            bwd_lbl2,
-            bwd_lbl,
-        ]
-
-        # =========================================================================
-        # SLIDE 13: Results & Optimization
-        # =========================================================================
-        results_header = title_box("Results & Optimization")
-
-        results_bullets = bullets(
-            [
-                "Smoothing removes zero-gradient shadow boundaries.",
-                "Enables direct automatic optimization of antenna parameters.",
-                "Increases optimization convergence rate by 1.5× to 2×.",
-            ]
-        )
-        results_bullets.next_to(results_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # Image comparison layout (power maps and optimization setup)
-        img_box = m.RoundedRectangle(
-            width=5.0,
-            height=4.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        )
-        img_box.next_to(results_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-
-        # Power map comparison
-        pm_no = (
-            m.ImageMobject("images/power_map_no_smoothing.png")
-            .set_height(1.6)
-            .move_to(img_box)
-            .shift(m.UP * 0.8 + m.LEFT * 1.1)
-        )
-        pm_no_lbl = m.Text(
-            "No Smoothing\n(Sharp Cliffs)", font_size=10, color=MUTED_TEXT
-        ).next_to(pm_no, m.DOWN, buff=0.08)
-
-        pm_with = (
-            m.ImageMobject("images/power_map_with_smoothing.png")
-            .set_height(1.6)
-            .move_to(img_box)
-            .shift(m.UP * 0.8 + m.RIGHT * 1.1)
-        )
-        pm_with_lbl = m.Text(
-            "With Smoothing\n(Sigmoid Hills)", font_size=10, color=MUTED_TEXT
-        ).next_to(pm_with, m.DOWN, buff=0.08)
-
-        opti_setup = (
-            m.ImageMobject("images/opti_problem_large_smoothing.png")
-            .set_height(1.4)
-            .move_to(img_box)
-            .shift(m.DOWN * 0.9)
-        )
-        opti_setup_lbl = m.Text(
-            "Gradient-based Antenna Optimization", font_size=10, color=MUTED_TEXT
-        ).next_to(opti_setup, m.UP, buff=0.05)
-
-        results_scene = m.Group(
-            img_box, pm_no, pm_no_lbl, pm_with, pm_with_lbl, opti_setup, opti_setup_lbl
-        )
-
-        self.next_slide(
-            notes="Here are the actual simulation results. Without smoothing, the signal map is full of discontinuities. "
-            "With smoothing, it becomes differentiable. We can automatically guide the antenna to optimal positions.",
-        )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [results_header], return_animation=True),
-        )
-        self.play(m.FadeIn(results_scene))
-        self.play(m.Indicate(pm_with, color=ACCENT_GREEN))
-
-        for b in results_bullets:
-            self.next_slide(notes="Optimization results explanation.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [results_header, results_bullets, results_scene]
-
-        # =========================================================================
-        # SLIDE 14: Unifying the Physics (DiffeRT)
-        # =========================================================================
-        diffe_header = title_box("Unifying the Physics (DiffeRT)")
-
-        diffe_bullets = bullets(
-            [
-                "We packaged this research into DiffeRT, a unified framework.",
-                "Fully GPU-accelerated and open-source.",
-                "Integrates reflection, diffraction, and automatic differentiation.",
-                "Designed to connect directly with modern AI frameworks.",
-            ]
-        )
-        diffe_bullets.next_to(diffe_header, m.DOWN, buff=0.65).to_edge(
-            m.LEFT, buff=0.75
-        )
-
-        # DiffeRT structure representation
-        diffe_diagram = m.RoundedRectangle(
-            width=5.0,
-            height=4.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1,
-            stroke_color=CARD_BORDER,
-        )
-        diffe_diagram.next_to(diffe_header, m.DOWN, buff=0.65).to_edge(
-            m.RIGHT, buff=0.75
-        )
-
-        core_box = (
-            m.RoundedRectangle(
-                width=3.2,
-                height=1.0,
-                corner_radius=0.1,
-                fill_color=m.ManimColor("#102A30"),
-                stroke_color=ACCENT_CYAN,
-                stroke_width=2,
-            )
-            .move_to(diffe_diagram)
-            .shift(m.UP * 0.5)
-        )
-        core_lbl = m.Text(
-            "DiffeRT Core Engine\n(GPU-Accelerated)",
-            font_size=13,
-            color=ACCENT_CYAN,
-            weight=m.BOLD,
-        ).move_to(core_box)
-
-        block1 = (
-            m.RoundedRectangle(
-                width=1.4,
-                height=0.7,
-                corner_radius=0.08,
-                fill_color=m.ManimColor("#22252A"),
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(diffe_diagram)
-            .shift(m.DOWN * 0.8 + m.LEFT * 0.9)
-        )
-        block1_lbl = m.Text(
-            "Physics\n(Reflection & Diff)", font_size=10, color=TEXT_COLOR
-        ).move_to(block1)
-
-        block2 = (
-            m.RoundedRectangle(
-                width=1.4,
-                height=0.7,
-                corner_radius=0.08,
-                fill_color=m.ManimColor("#22252A"),
-                stroke_color=CARD_BORDER,
-            )
-            .move_to(diffe_diagram)
-            .shift(m.DOWN * 0.8 + m.RIGHT * 0.9)
-        )
-        block2_lbl = m.Text(
-            "Gradients\n(Autodiff JAX)", font_size=10, color=TEXT_COLOR
-        ).move_to(block2)
-
-        conn1 = m.Line(
-            block1.get_top(),
-            core_box.get_bottom() + m.LEFT * 0.9,
-            color=MUTED_TEXT,
-            stroke_width=2,
-        )
-        conn2 = m.Line(
-            block2.get_top(),
-            core_box.get_bottom() + m.RIGHT * 0.9,
-            color=MUTED_TEXT,
-            stroke_width=2,
-        )
-
-        diffe_scene = m.Group(
-            diffe_diagram,
-            core_box,
-            core_lbl,
-            block1,
-            block1_lbl,
-            block2,
-            block2_lbl,
-            conn1,
-            conn2,
-        )
-
-        self.next_slide(
-            notes="To make these techniques accessible, I developed DiffeRT. "
-            "DiffeRT is an open-source, GPU-accelerated framework that combines reflection and diffraction with gradients.",
+            notes="To trace all rays, we must check every combination of walls. But most sequences lead to impossible paths.",
         )
         self.play(
             *next_meta(new_section=4),
-            self.wipe(prev_slide_content, [diffe_header], return_animation=True),
+            self.wipe(prev_slide_content, [explosion_header], return_animation=True),
         )
-        self.play(m.FadeIn(diffe_scene))
-        self.play(m.Indicate(core_box, color=ACCENT_CYAN), run_time=1.5)
-
-        for b in diffe_bullets:
-            self.next_slide(notes="DiffeRT contributions explanation.")
-            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-
-        prev_slide_content = [diffe_header, diffe_bullets, diffe_scene]
-
-        # =========================================================================
-        # SLIDE 15: Dynamic Scenes (DynRT)
-        # =========================================================================
-        dyn_header = title_box("Dynamic Scenes (DynRT)")
-
-        dyn_bullets = bullets(
-            [
-                "We can track signals in real-time as objects move.",
-                "Gradients allow predicting path shifts without recalculation.",
-                "Enables real-time 5G/6G tracking for cars and drones.",
-            ]
-        )
-        dyn_bullets.next_to(dyn_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        # 2D shadow-zone propagation canvas from EUCAP 2025
-        rect = m.RoundedRectangle(
-            width=3.2,
-            height=3.2,
-            corner_radius=0.15,
-            fill_color=CARD_BG,
-            fill_opacity=1.0,
-            stroke_color=CARD_BORDER,
-        )
-        rect.next_to(dyn_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
-        center = rect.get_center()
-
-        tx_x = m.ValueTracker(-1.0)
-        tx_y = m.ValueTracker(0.0)
-
-        s1 = np.array([-0.5, +0.75, 0.0]) + center
-        e1 = np.array([0.5, +0.75, 0.0]) + center
-        s2 = np.array([-0.75, -0.75, 0.0]) + center
-        e2 = np.array([0.25, -0.75, 0.0]) + center
-
-        tx = m.always_redraw(
-            lambda: m.Dot(
-                np.array([tx_x.get_value(), tx_y.get_value(), 0.0]) + center,
-                color=ACCENT_CYAN,
-                radius=0.08,
-            )
-        )
-        tx_lbl = m.always_redraw(
-            lambda: m.Text("TX", font_size=12, color=ACCENT_CYAN).next_to(
-                tx, m.UP, buff=0.08
-            )
-        )
-
-        wall1 = m.Line(s1, e1, color=MUTED_TEXT, stroke_width=4)
-        wall2 = m.Line(e2, s2, color=MUTED_TEXT, stroke_width=4)
-
-        nw = jnp.array([-1.5, +1.5, 0]) + center
-        ne = jnp.array([+1.5, +1.5, 0]) + center
-        sw = jnp.array([-1.5, -1.5, 0]) + center
-        se = jnp.array([+1.5, -1.5, 0]) + center
-
-        n_line = [nw, ne]
-        s_line = [sw, se]
-        r_line = [ne, se]
-
-        # Define shadow zones using DiffeRT geometric logic from EUCAP 2025
-        z_los = m.always_redraw(
-            lambda: m.Intersection(
-                rect,
-                m.Polygon(
-                    *[
-                        sw,
-                        m.line_intersection([tx.get_center(), s2], s_line),
-                        s2,
-                        e2,
-                        m.line_intersection(s_line, [tx.get_center(), e2]),
-                        se,
-                        ne,
-                        m.line_intersection([tx.get_center(), e1], n_line),
-                        e1,
-                        s1,
-                        m.line_intersection([tx.get_center(), s1], n_line),
-                        nw,
-                    ]
-                ),
-                color=ACCENT_CYAN,
-                fill_opacity=0.4,
-                z_index=-1,
-            )
-        )
-
-        def reflection(
-            a: np.ndarray, b: np.ndarray, c: np.ndarray, d: np.ndarray
-        ) -> np.ndarray:
-            i = a - b
-            n = m.normalize(np.array([c[1] - d[1], d[0] - c[0], 0.0]))
-            return a - 2 * np.dot(i, n) * n
-
-        z_r1 = m.always_redraw(
-            lambda: m.Intersection(
-                rect,
-                m.Polygon(
-                    *[
-                        s1,
-                        m.line_intersection(
-                            [s1, reflection(tx.get_center(), s1, s1, e1)], s_line
-                        ),
-                        se,
-                        m.line_intersection(
-                            [e1, reflection(tx.get_center(), e1, s1, e1)], r_line
-                        ),
-                        e1,
-                    ]
-                ),
-                color=ACCENT_AMBER,
-                fill_opacity=0.4,
-                z_index=-1,
-            )
-        )
-
-        def get_xm() -> np.ndarray:
-            dx = tx_x.get_value() + 1.0
-            dy = tx_y.get_value()
-            x_start = -0.5 + 0.25 * dy / 0.75
-            return np.array([x_start + dx / 1.5, -0.75, 0.0]) + center
-
-        z_r2 = m.always_redraw(
-            lambda: m.Intersection(
-                rect,
-                m.Polygon(
-                    *[
-                        s2,
-                        e2,
-                        m.line_intersection(
-                            [e2, reflection(tx.get_center(), e2, s2, e2)], r_line
-                        ),
-                        ne,
-                        m.line_intersection(
-                            [get_xm(), reflection(tx.get_center(), get_xm(), s2, e2)],
-                            n_line,
-                        ),
-                        e1,
-                        m.line_intersection(
-                            [s2, reflection(tx.get_center(), s2, s2, e2)], [s1, e1]
-                        ),
-                    ]
-                ),
-                color=ACCENT_GREEN,
-                fill_opacity=0.4,
-                z_index=-1,
-            )
-        )
+        self.play(m.FadeIn(bt_15))
 
         self.next_slide(
-            notes="DiffeRT also allows tracking dynamic scenes. "
-            "As objects move, the propagation environment changes dynamically.",
+            notes="First, a candidate path might bounce off the wall but get blocked by an obstacle."
         )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [dyn_header], return_animation=True),
-        )
-        self.play(
-            m.FadeIn(rect),
-            m.GrowFromCenter(tx),
-            m.FadeIn(tx_lbl),
-            m.Create(wall1),
-            m.Create(wall2),
-        )
+        self.play(m.Create(path_obs_1), m.Create(path_obs_2))
+        self.play(m.Create(obs_cross), m.FadeIn(obs_lbl))
 
         self.next_slide(
-            notes="We can compute the different propagation zones: Line-of-Sight (cyan), reflection from Wall 1 (amber), and reflection from Wall 2 (green)."
+            notes="Second, the required bounce point might lie completely outside the physical wall boundary."
         )
-        self.play(
-            m.FadeIn(z_los),
-            m.FadeIn(z_r1),
-            m.FadeIn(z_r2),
-        )
+        self.play(m.Create(path_oob_1), m.Create(path_oob_2))
+        self.play(m.Create(oob_cross), m.FadeIn(oob_lbl))
 
-        self.next_slide(
-            loop=True,
-            notes="As the transmitter moves, all shadow zones and propagation boundaries morph dynamically in real-time.",
-        )
-        self.play(
-            tx_x.animate.increment_value(+0.10),
-            tx_y.animate.increment_value(+0.10),
-            run_time=1.0,
-        )
-        self.play(tx_x.animate.increment_value(-0.20), run_time=1.0)
-        self.play(tx_y.animate.increment_value(-0.20), run_time=1.0)
-        self.play(
-            tx_x.animate.increment_value(+0.10),
-            tx_y.animate.increment_value(+0.10),
-            run_time=1.0,
-        )
-
-        for b in dyn_bullets:
-            self.next_slide(notes="Dynamic ray tracing advantages.")
+        for b in explosion_bullets:
+            self.next_slide(notes="Candidate explosion bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         prev_slide_content = [
-            dyn_header,
-            dyn_bullets,
-            rect,
-            tx,
-            tx_lbl,
-            wall1,
-            wall2,
-            z_los,
-            z_r1,
-            z_r2,
+            explosion_header,
+            explosion_bullets,
+            bt_15,
+            path_obs_1,
+            path_obs_2,
+            obs_cross,
+            obs_lbl,
+            path_oob_1,
+            path_oob_2,
+            oob_cross,
+            oob_lbl,
         ]
 
+        # ======================================================        # =========================================================================
+        # SLIDE 16: Fifth Contribution - Generative Path Sampling
         # =========================================================================
-        # SLIDE 15B: Multipath Lifetime Maps (MLM)
-        # =========================================================================
-        mlm_header = title_box("Multipath Lifetime Maps")
+        ml_header = title_box("Fifth Contribution: Generative Path Sampling")
 
-        mlm_bullets = bullets(
+        ml_bullets = bullets(
             [
-                "We partition the environment into discrete cells.",
-                "Inside each cell, the ray signature is invariant.",
-                "Enables efficient channel modeling for moving devices.",
-            ]
+                "We train a neural network to predict valid wall sequences directly.",
+                "Bypasses checking millions of impossible candidate paths.",
+                "Reduces path finding time from hours to milliseconds.",
+                "Enables real-time tracking in complex city environments.",
+            ],
+            width=42,
         )
-        mlm_bullets.next_to(mlm_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+        ml_bullets.next_to(ml_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # Value tracker for the pre-rendered image sequence
-        mlm_tracker = m.ValueTracker(0)
+        # ML model diagram representation
+        ml_box = m.RoundedRectangle(
+            width=5.0,
+            height=4.2,
+            corner_radius=0.15,
+            fill_color=CARD_BG,
+            fill_opacity=1,
+            stroke_color=CARD_BORDER,
+        )
+        ml_box.next_to(ml_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        # Redraw the image corresponding to the current tracker index
-        mlm_img = m.always_redraw(
-            lambda: (
-                m.ImageMobject(
-                    f"images/sequences/mlm/mlm_{int(mlm_tracker.get_value()):02d}.png"
-                )
-                .set_height(4.5)
-                .next_to(mlm_header, m.DOWN, buff=0.65)
-                .to_edge(m.RIGHT, buff=0.75)
+        model_box = (
+            m.RoundedRectangle(
+                width=1.5,
+                height=1.2,
+                corner_radius=0.1,
+                fill_color=m.ManimColor("#102A30"),
+                stroke_color=ACCENT_CYAN,
+                stroke_width=2.5,
             )
+            .move_to(ml_box)
+            .shift(m.UP * 0.2)
+        )
+        model_lbl = m.Text(
+            "Generative\nSampler\n(Neural Net)", font_size=10, color=ACCENT_CYAN
+        ).move_to(model_box)
+
+        input_box = m.RoundedRectangle(
+            width=1.3,
+            height=0.8,
+            corner_radius=0.1,
+            fill_color=m.BLACK,
+            fill_opacity=1,
+            stroke_color=MUTED_TEXT,
+            stroke_width=1.5,
+        ).next_to(model_box, m.LEFT, buff=0.4)
+        input_lbl = m.Text("Scene\n+ Antennas", font_size=9, color=MUTED_TEXT).move_to(
+            input_box
+        )
+
+        paths_box = m.RoundedRectangle(
+            width=1.3,
+            height=0.8,
+            corner_radius=0.1,
+            fill_color=m.BLACK,
+            fill_opacity=1,
+            stroke_color=ACCENT_GREEN,
+            stroke_width=1.5,
+        ).next_to(model_box, m.RIGHT, buff=0.4)
+        paths_lbl = m.Text("Valid\nSequences", font_size=9, color=ACCENT_GREEN).move_to(
+            paths_box
+        )
+
+        arrow_1 = m.Arrow(
+            input_box.get_right(),
+            model_box.get_left(),
+            color=MUTED_TEXT,
+            stroke_width=2,
+        )
+        arrow_2 = m.Arrow(
+            model_box.get_right(),
+            paths_box.get_left(),
+            color=ACCENT_GREEN,
+            stroke_width=2,
+        )
+
+        flow_grp = m.Group(
+            ml_box,
+            model_box,
+            model_lbl,
+            input_box,
+            input_lbl,
+            paths_box,
+            paths_lbl,
+            arrow_1,
+            arrow_2,
         )
 
         self.next_slide(
-            notes="By combining all propagation zones, we form a Multipath Lifetime Map (MLM). "
-            "Let's visualize the MLM for a moving transmitter in our street canyon.",
+            notes="Our fifth contribution solves the candidate explosion using machine learning. We train a generative model.",
         )
         self.play(
             *next_meta(),
-            self.wipe(prev_slide_content, [mlm_header], return_animation=True),
+            self.wipe(prev_slide_content, [ml_header], return_animation=True),
         )
-        self.play(m.FadeIn(mlm_img))
-
-        self.next_slide(
-            loop=True,
-            notes="As the transmitter moves, the MLM cells morph dynamically.",
-        )
+        self.play(m.FadeIn(flow_grp))
         self.play(
-            mlm_tracker.animate.set_value(19),
-            run_time=3.0,
-            rate_func=m.linear,
+            m.Indicate(model_box, color=ACCENT_CYAN),
+            paths_box.animate.scale(1.1).set_color(ACCENT_GREEN),
+            run_time=1.5,
         )
-        self.play(
-            mlm_tracker.animate.set_value(0),
-            run_time=3.0,
-            rate_func=m.linear,
-        )
+        self.play(paths_box.animate.scale(1.0 / 1.1))
 
-        for b in mlm_bullets:
-            self.next_slide(notes="MLM benefits.")
+        for b in ml_bullets:
+            self.next_slide(notes="Machine learning path sampling explanation.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [mlm_header, mlm_bullets, mlm_img]
+        prev_slide_content = [ml_header, ml_bullets, flow_grp]
 
         # =========================================================================
-        # SLIDE 16: Ph.D. Timeline
+        # SLIDE 17: Software Contributions & Open-Source
         # =========================================================================
-        timeline_header = title_box("Ph.D. Journey: Key Milestones")
+        sw_header = title_box("Software Contributions & Open-Source")
 
-        # Simplified timeline data for public defense
-        milestones = [
-            ("2021/09", "Ph.D. start", "Start of the Ph.D. at UCLouvain."),
-            ("2023/03", "EuCAP Florence", "Presented Min-Path-Tracing method."),
-            ("2024/03", "EuCAP Glasgow", "Presented the smoothing technique."),
-            ("2024/09", "Bologna stay", "Research stay on ML path sampling."),
-            ("2025/05", "ICMLCN Barcelona", "Presented ML-based path sampler."),
-            ("2026/04", "EuCAP Dublin", "Presented Fermat Path Tracing work."),
-        ]
-
-        tl_line = m.Line(
-            m.LEFT * 6.0, m.RIGHT * 6.0, color=CARD_BORDER, stroke_width=3
-        ).shift(m.UP * 0.2)
-
-        tl_elements = m.VGroup()
-        connectors = m.VGroup()
-
-        x_start, x_end = -5.4, 5.4
-        for idx, (date, label, _details) in enumerate(milestones):
-            alpha = idx / (len(milestones) - 1)
-            x_pos = x_start + alpha * (x_end - x_start)
-            dot_point = [x_pos, 0.2, 0]
-
-            dot = m.Dot(point=dot_point, radius=0.08, color=ACCENT_CYAN)
-
-            # Alternating text boxes
-            box = m.RoundedRectangle(
-                width=1.6,
-                height=1.0,
-                corner_radius=0.1,
-                fill_color=CARD_BG,
-                fill_opacity=0.95,
-                stroke_color=CARD_BORDER,
-                stroke_width=1.5,
-            )
-
-            date_txt = m.Text(date, font_size=10, color=ACCENT_AMBER, weight=m.BOLD)
-            label_txt = m.Text(
-                textwrap.fill(label, width=12), font_size=9, color=TEXT_COLOR
-            )
-            box_content = (
-                m.VGroup(date_txt, label_txt).arrange(m.DOWN, buff=0.05).move_to(box)
-            )
-            box_group = m.VGroup(box, box_content)
-
-            is_above = idx % 2 == 0
-            if is_above:
-                box_group.next_to(dot, m.UP, buff=0.8)
-            else:
-                box_group.next_to(dot, m.DOWN, buff=0.8)
-
-            connector = m.Line(
-                dot.get_center(),
-                box.get_edge_center(m.DOWN if is_above else m.UP),
-                color=CARD_BORDER,
-                stroke_width=1.5,
-            )
-
-            tl_elements.add(m.VGroup(dot, box_group))
-            connectors.add(connector)
-
-        self.next_slide(
-            notes="Before concluding, let me summarize my Ph.D. journey. "
-            "This timeline highlights the key publications, from my start in 2021 to EuCAP 2026 a few weeks ago.",
+        sw_bullets = bullets(
+            [
+                "DiffeRT: the first GPU-accelerated, differentiable ray tracer.",
+                "Implemented in Python/JAX, fully open-source on GitHub.",
+                "Manim Slides: our tool for interactive math presentations.",
+                "Used by hundreds of researchers and students worldwide.",
+            ],
+            width=42,
         )
-        self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [timeline_header], return_animation=True),
-        )
-        self.play(m.Create(tl_line))
+        sw_bullets.next_to(sw_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
-        # Fade in timeline items one by one
-        for grp, conn in zip(tl_elements, connectors, strict=False):
-            self.next_slide(notes="Next timeline milestone.")
-            self.play(
-                m.GrowFromCenter(grp[0]),
-                m.Create(conn),
-                m.FadeIn(grp[1], shift=0.1 * m.UP),
-                run_time=0.8,
-            )
-
-        prev_slide_content = [timeline_header, tl_line, tl_elements, connectors]
-
-        # =========================================================================
-        # SLIDE 17: Q&A / Thank You
-        # =========================================================================
-        outro_header = title_box("Conclusion")
-
-        thank_you = m.Text(
-            "Thank You!", font_size=TITLE_SIZE, color=ACCENT_CYAN, weight=m.BOLD
-        ).shift(m.UP * 0.5)
-        qa_lbl = m.Text(
-            "Questions & Answers", font_size=BODY_SIZE, color=TEXT_COLOR
-        ).next_to(thank_you, m.DOWN, buff=0.3)
-
-        # A decorative looping ray background
-        loop_border = m.RoundedRectangle(
-            width=10.0,
-            height=3.5,
-            corner_radius=0.2,
-            stroke_color=CARD_BORDER,
-            stroke_width=2,
+        # Software showcase cards
+        box_width, box_height = 2.4, 3.8
+        card1 = m.RoundedRectangle(
+            width=box_width,
+            height=box_height,
+            corner_radius=0.15,
             fill_color=CARD_BG,
-            fill_opacity=0.4,
-        ).shift(m.DOWN * 1.2)
+            fill_opacity=1,
+            stroke_color=ACCENT_CYAN,
+            stroke_width=2,
+        )
+        card1.next_to(sw_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=3.2)
 
-        ray_loop1 = m.Line(
-            loop_border.get_corner(m.DL) + m.RIGHT * 0.5,
-            loop_border.get_corner(m.UL) + m.RIGHT * 2.5,
-            color=ACCENT_CYAN,
-            stroke_width=1.5,
-        ).set_opacity(0.4)
-        ray_loop2 = m.Line(
-            loop_border.get_corner(m.UL) + m.RIGHT * 2.5,
-            loop_border.get_corner(m.DR) + m.LEFT * 2.5,
-            color=ACCENT_AMBER,
-            stroke_width=1.5,
-        ).set_opacity(0.4)
-        ray_loop3 = m.Line(
-            loop_border.get_corner(m.DR) + m.LEFT * 2.5,
-            loop_border.get_corner(m.UR) + m.LEFT * 0.5,
-            color=ACCENT_CYAN,
-            stroke_width=1.5,
-        ).set_opacity(0.4)
+        logo1 = (
+            m.Text("DiffeRT", font_size=18, color=ACCENT_CYAN, weight=m.BOLD)
+            .move_to(card1)
+            .shift(m.UP * 1.1)
+        )
+        sub1 = m.Text(
+            "Differentiable\nRay Tracer",
+            font_size=9,
+            color=TEXT_COLOR,
+            line_spacing=0.9,
+        ).next_to(logo1, m.DOWN, buff=0.2)
+        desc1 = m.Text(
+            "• GPU-Accelerated\n• Auto-differentiable\n• Built on JAX",
+            font_size=8,
+            color=MUTED_TEXT,
+            line_spacing=1.2,
+        ).next_to(sub1, m.DOWN, buff=0.3)
 
-        loop_rays = m.VGroup(ray_loop1, ray_loop2, ray_loop3)
+        card2 = m.RoundedRectangle(
+            width=box_width,
+            height=box_height,
+            corner_radius=0.15,
+            fill_color=CARD_BG,
+            fill_opacity=1,
+            stroke_color=ACCENT_GREEN,
+            stroke_width=2,
+        )
+        card2.next_to(sw_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.5)
+
+        logo2 = (
+            m.Text("Manim Slides", font_size=16, color=ACCENT_GREEN, weight=m.BOLD)
+            .move_to(card2)
+            .shift(m.UP * 1.1)
+        )
+        sub2 = m.Text(
+            "Interactive Slides", font_size=9, color=TEXT_COLOR, line_spacing=0.9
+        ).next_to(logo2, m.DOWN, buff=0.2)
+        desc2 = m.Text(
+            "• HTML/PDF output\n• In-browser playback\n• Open-source tool",
+            font_size=8,
+            color=MUTED_TEXT,
+            line_spacing=1.2,
+        ).next_to(sub2, m.DOWN, buff=0.3)
+
+        sw_scene = m.Group(card1, logo1, sub1, desc1, card2, logo2, sub2, desc2)
 
         self.next_slide(
-            notes="Thank you very much for your attention. I am now open to any questions you may have.",
+            notes="Our contributions are shared with the scientific community. DiffeRT is the core library, and we developed Manim Slides.",
         )
         self.play(
             *next_meta(),
-            self.wipe(prev_slide_content, [outro_header], return_animation=True),
+            self.wipe(prev_slide_content, [sw_header], return_animation=True),
         )
-        self.play(
-            m.FadeIn(thank_you, shift=0.2 * m.UP),
-            m.FadeIn(qa_lbl, shift=0.15 * m.UP),
-            m.FadeIn(loop_border),
-            m.FadeIn(loop_rays),
-        )
+        self.play(m.FadeIn(sw_scene))
 
-        # Loop animation to leave running during QA
-        self.next_slide(notes="Looping Q&A background.", loop=True)
-        self.play(
-            m.Rotate(
-                loop_rays,
-                angle=2 * np.pi,
-                about_point=loop_border.get_center(),
-                run_time=15.0,
-                rate_func=m.linear,
-            )
+        for b in sw_bullets:
+            self.next_slide(notes="Software tool benefits.")
+            self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
+
+        prev_slide_content = [sw_header, sw_bullets, sw_scene]
+
+        # =========================================================================
+        # SLIDE 18: Summary & Outlook (Q&A / Thank You)
+        # =========================================================================
+        thank_header = title_box("Conclusion & Thank You")
+
+        jury_title = m.Text(
+            "Jury Members", font_size=12, color=MUTED_TEXT, weight=m.BOLD
         )
+        jury_list = m.VGroup(
+            m.Text(
+                "• Prof. Christophe Craeye (Chairperson)", font_size=9, color=TEXT_COLOR
+            ),
+            m.Text(
+                "• Prof. Christophe De Vleeschouwer (Secretary)",
+                font_size=9,
+                color=TEXT_COLOR,
+            ),
+            m.Text("• Prof. Philippe De Doncker (ULB)", font_size=9, color=TEXT_COLOR),
+            m.Text(
+                "• Prof. Enrico Maria Vitucci (UniBo)", font_size=9, color=TEXT_COLOR
+            ),
+            m.Text("• Dr. Jakob Hoydis (NVIDIA)", font_size=9, color=TEXT_COLOR),
+        ).arrange(m.DOWN, aligned_edge=m.LEFT, buff=0.12)
+
+        jury_grp = m.VGroup(jury_title, jury_list).arrange(
+            m.DOWN, aligned_edge=m.LEFT, buff=0.2
+        )
+        jury_grp.next_to(thank_header, m.DOWN, buff=0.8).to_edge(m.LEFT, buff=0.75)
+
+        # Thank you card
+        thank_card = m.RoundedRectangle(
+            width=5.2,
+            height=3.8,
+            corner_radius=0.15,
+            fill_color=CARD_BG,
+            fill_opacity=1,
+            stroke_color=CARD_BORDER,
+            stroke_width=1.5,
+        )
+        thank_card.next_to(thank_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+
+        thank_txt = (
+            m.Text(
+                "Thank you for\nyour attention!",
+                font_size=20,
+                color=ACCENT_CYAN,
+                weight=m.BOLD,
+                line_spacing=1.1,
+            )
+            .move_to(thank_card)
+            .shift(m.UP * 0.4)
+        )
+        qa_txt = m.Text(
+            "Questions & Answers Session", font_size=12, color=TEXT_COLOR
+        ).next_to(thank_txt, m.DOWN, buff=0.4)
+
+        thank_scene = m.Group(thank_card, thank_txt, qa_txt)
+
+        self.next_slide(
+            notes="To conclude, I would like to thank my advisor, the committee members, and the audience for their attention. "
+            "I am now open to any questions.",
+        )
+        self.play(
+            *next_meta(),
+            self.wipe(prev_slide_content, [thank_header], return_animation=True),
+        )
+        self.play(m.FadeIn(jury_grp))
+        self.play(m.FadeIn(thank_scene))
+        self.play(m.Indicate(thank_txt, color=ACCENT_CYAN, run_time=2.0))
