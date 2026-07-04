@@ -3,6 +3,9 @@
 # dependencies = [
 #     "manim>=0.20.1",
 #     "numpy",
+#     "differt2d",
+#     "jax",
+#     "jaxlib",
 # ]
 # ///
 
@@ -174,7 +177,7 @@ class BilliardTable(m.VGroup):
         )
         self.add(self.pocket_lbl)
 
-        # Obstacle inside the table (representing building)
+        # Obstacle inside the table (representing obstacle)
         if obstacle:
             self.building = m.Rectangle(
                 width=1.2,
@@ -185,7 +188,7 @@ class BilliardTable(m.VGroup):
                 stroke_width=2,
             ).move_to(self.frame.get_center())
             self.building_lbl = m.Text(
-                "Building", font_size=12, color=MUTED_TEXT
+                "Obstacle", font_size=12, color=MUTED_TEXT
             ).move_to(self.building)
             self.add(self.building, self.building_lbl)
         else:
@@ -495,6 +498,25 @@ def compute_1st_order_polygon(tx: np.ndarray, cush_start: np.ndarray, cush_end: 
     v = reflect_point_across_line(tx, cush_pt, cush_normal)
     return compute_wedge_polygon(v, cush_start, cush_end, room_corners)
 
+def clip_segment_by_line(A, B, p1, p2):
+    def side(p):
+        return (p2[0] - p1[0]) * (p[1] - p1[1]) - (p2[1] - p1[1]) * (p[0] - p1[0])
+    
+    sA = side(A)
+    sB = side(B)
+    
+    if sA >= -1e-8 and sB >= -1e-8:
+        return A, B
+    if sA < -1e-8 and sB < -1e-8:
+        return None
+    
+    t = sA / (sA - sB)
+    intersect = A + t * (B - A)
+    if sA >= -1e-8:
+        return A, intersect
+    else:
+        return intersect, B
+
 def compute_2nd_order_polygon(
     tx: np.ndarray,
     c1_start: np.ndarray, c1_end: np.ndarray, c1_pt: np.ndarray, c1_normal: np.ndarray,
@@ -503,9 +525,29 @@ def compute_2nd_order_polygon(
 ) -> list:
     v1 = reflect_point_across_line(tx, c1_pt, c1_normal)   # TX'
     v2 = reflect_point_across_line(v1, c2_pt, c2_normal)   # TX''
-    return compute_wedge_polygon(v2, c2_start, c2_end, room_corners)
+    
+    cross1 = (c1_start[0] - v1[0]) * (c1_end[1] - v1[1]) - (c1_start[1] - v1[1]) * (c1_end[0] - v1[0])
+    if cross1 > 0:
+        line1 = (v1, c1_start)
+    else:
+        line1 = (c1_start, v1)
+        
+    cross2 = (c1_end[0] - v1[0]) * (c1_start[1] - v1[1]) - (c1_end[1] - v1[1]) * (c1_start[0] - v1[0])
+    if cross2 > 0:
+        line2 = (v1, c1_end)
+    else:
+        line2 = (c1_end, v1)
+        
+    seg = clip_segment_by_line(c2_start, c2_end, line1[0], line1[1])
+    if seg is None:
+        return []
+    seg = clip_segment_by_line(seg[0], seg[1], line2[0], line2[1])
+    if seg is None:
+        return []
+        
+    return compute_wedge_polygon(v2, seg[0], seg[1], room_corners)
 
-def make_mlm_polygon(pts: list, color, fill_opacity: float = 0.15, stroke_opacity: float = 1.0) -> m.VMobject:
+def make_mlm_polygon(pts: list, color, fill_opacity: float = 0.22, stroke_opacity: float = 1.0) -> m.VMobject:
     if len(pts) < 3:
         return m.VMobject().set_z_index(-0.8)
     poly = m.Polygon(
@@ -801,24 +843,36 @@ class BilliardAnalogy(m.MovingCameraScene):
             ).add_tip(tip_width=0.1, tip_length=0.1)
         )
 
+        def get_clean_normal_line():
+            return m.Line(
+                x1_dot.get_center(),
+                x1_dot.get_center() + 1.2 * get_normal_vector()
+            )
+
         def get_ain_ref_line():
             if state["is_diffraction"]:
                 return m.Line(x1_dot.get_center(), x1_dot.get_center() + 1.2 * m.LEFT)
             else:
-                return nv
+                return get_clean_normal_line()
+
+        def get_aout_ref_line():
+            if state["is_diffraction"]:
+                return m.Line(x1_dot.get_center(), x1_dot.get_center() + 1.2 * m.RIGHT)
+            else:
+                return get_clean_normal_line()
 
         ain = m.always_redraw(
             lambda: m.Angle(
-                get_ain_ref_line(),
-                m.Line(x1_dot.get_center(), BS_group.get_center()),
+                m.Line(x1_dot.get_center(), BS_group.get_center()) if state["is_diffraction"] else get_ain_ref_line(),
+                get_ain_ref_line() if state["is_diffraction"] else m.Line(x1_dot.get_center(), BS_group.get_center()),
                 radius=0.6,
                 color=ACCENT_CYAN,
             )
         )
         aout = m.always_redraw(
             lambda: m.Angle(
-                m.Line(x1_dot.get_center(), UE_group.get_center()),
-                nv,
+                get_aout_ref_line() if state["is_diffraction"] else m.Line(x1_dot.get_center(), UE_group.get_center()),
+                m.Line(x1_dot.get_center(), UE_group.get_center()) if state["is_diffraction"] else get_aout_ref_line(),
                 radius=0.6,
                 color=ACCENT_GREEN,
             )
@@ -933,6 +987,24 @@ class BilliardAnalogy(m.MovingCameraScene):
         y_cush = bt.frame.get_center()[1] - bt.table_height / 2  # y = -1.75
         x_center = bt.frame.get_center()[0]
 
+        def find_root_bisection(f, a, b, tol=1e-12):
+            fa = f(a)
+            fb = f(b)
+            if fa * fb > 0:
+                return (a + b) / 2
+            for _ in range(100):
+                c = (a + b) / 2
+                fc = f(c)
+                if abs(fc) < tol or (b - a) / 2 < tol:
+                    return c
+                if fa * fc < 0:
+                    b = c
+                    fb = fc
+                else:
+                    a = c
+                    fa = fc
+            return (a + b) / 2
+
         def d_cost(x_rel):
             x_glob = x_center + x_rel
             v0 = np.array([x_glob, y_cush, 0]) - tx_pos
@@ -946,9 +1018,13 @@ class BilliardAnalogy(m.MovingCameraScene):
         x_rel_val = -1.0  # start guess relative to table center (inside cushions)
         lr = 0.5
         steps = []
-        for _ in range(20):  # 20 steps for perfect convergence to zero cost
+        for _ in range(15):  # 15 steps of gradient descent
             steps.append(x_rel_val)
             x_rel_val = x_rel_val - lr * d_cost(x_rel_val)
+
+        # Exact straight root to ensure final position/residual is exactly zero
+        exact_straight_root = find_root_bisection(d_cost, -2.4, 2.4)
+        steps.append(exact_straight_root)
 
         # ValueTracker for the bounce point's relative x-coordinate during descent solver
         bounce_x = m.ValueTracker(-1.0)
@@ -969,9 +1045,10 @@ class BilliardAnalogy(m.MovingCameraScene):
         )
 
         # Real-time constraint residual text display under the billiard rim during solver phase
+        static_cost_text = m.Text("Constraint residual: ", font_size=12, color=m.WHITE)
         cost_group = m.always_redraw(
             lambda: m.VGroup(
-                m.Text("Constraint residual: |I(X)| = ", font_size=12, color=m.WHITE),
+                static_cost_text,
                 m.DecimalNumber(
                     np.abs(d_cost(bounce_x.get_value())),
                     num_decimal_places=4,
@@ -1145,7 +1222,7 @@ class BilliardAnalogy(m.MovingCameraScene):
         self.play(
             m.Transform(
                 interaction_eq,
-                formula_1.move_to(interaction_eq).align_to(non_planar_bullets, m.LEFT),
+                formula_1,
             ),
         )
         self.wait(2.0)
@@ -1154,7 +1231,7 @@ class BilliardAnalogy(m.MovingCameraScene):
         self.play(
             m.Transform(
                 interaction_eq,
-                formula_2.move_to(interaction_eq).align_to(non_planar_bullets, m.LEFT),
+                formula_2,
             ),
         )
         self.wait(2.0)
@@ -1211,7 +1288,7 @@ class BilliardAnalogy(m.MovingCameraScene):
         y_center_circle = y_cush - d_val
         x_center = bt.frame.get_center()[0]
 
-        curved_x = m.ValueTracker(x_center - 1.0)  # initial guess: x = 2.15
+        curved_x = m.ValueTracker(x_center + 0.65)  # initial guess: x = 3.8 (further right)
 
         def pos_arc(x):
             y = y_center_circle + np.sqrt(R**2 - (x - x_center)**2)
@@ -1243,10 +1320,22 @@ class BilliardAnalogy(m.MovingCameraScene):
             tangent = tangent / np.linalg.norm(tangent)
             return np.dot(tangent, v0) / norm0 - np.dot(tangent, v1) / norm1
 
+        # Precompute curved GD steps dynamically and converge exactly to bisection root
+        x_curved_val = x_center + 0.65
+        lr_curved = 0.5
+        curved_steps = []
+        for _ in range(8):
+            curved_steps.append(x_curved_val)
+            x_curved_val = x_curved_val - lr_curved * d_length_arc(x_curved_val)
+        
+        exact_curved_root = find_root_bisection(d_length_arc, x_center - 2.4, x_center + 2.4)
+        curved_steps.append(exact_curved_root)
+
         # Real-time constraint residual display
+        static_cost_text_curved = m.Text("Constraint residual: ", font_size=12, color=m.WHITE)
         cost_group_curved = m.always_redraw(
             lambda: m.VGroup(
-                m.Text("Constraint residual: |I(X)| = ", font_size=12, color=m.WHITE),
+                static_cost_text_curved,
                 m.DecimalNumber(
                     np.abs(d_length_arc(curved_x.get_value())),
                     num_decimal_places=4,
@@ -1266,20 +1355,19 @@ class BilliardAnalogy(m.MovingCameraScene):
         self.wait(1.0)
 
         # 4. Run gradient descent steps
-        curved_steps = [2.15, 2.6250, 2.5815, 2.5704, 2.5680, 2.5674, 2.5673]
         for step in curved_steps[1:]:
             self.play(
                 curved_x.animate.set_value(step),
-                run_time=0.5,
+                run_time=0.4,
                 rate_func=m.smooth,
             )
         self.wait(0.5)
 
         # 5. Show optimal converged curved path in green
         final_curved_path = m.VMobject(joint_type=LineJointType.BEVEL).set_points_as_corners(
-            [tx_pos, pos_arc(2.5673), rx_pos]
+            [tx_pos, pos_arc(exact_curved_root), rx_pos]
         ).set_stroke(color=ACCENT_GREEN, width=2.5).set_fill(opacity=0)
-        final_curved_dot = m.Dot(pos_arc(2.5673), color=ACCENT_GREEN, radius=0.08)
+        final_curved_dot = m.Dot(pos_arc(exact_curved_root), color=ACCENT_GREEN, radius=0.08)
 
         self.play(
             m.FadeOut(curved_path),
@@ -1292,11 +1380,9 @@ class BilliardAnalogy(m.MovingCameraScene):
         # 6. Morph table frame back into the flat shape and restore original flat path
         self.play(
             bt.angle_tracker.animate.set_value(0.001),
-            m.FadeOut(final_curved_path),
-            m.FadeOut(final_curved_dot),
+            m.Transform(final_curved_path, final_path),
+            m.Transform(final_curved_dot, final_dot),
             m.FadeOut(cost_group_curved),
-            m.FadeIn(final_path),
-            m.FadeIn(final_dot),
             m.FadeIn(cost_group),
             run_time=1.5
         )
@@ -1307,8 +1393,8 @@ class BilliardAnalogy(m.MovingCameraScene):
             m.FadeOut(non_planar_header),
             m.FadeOut(non_planar_bullets),
             m.FadeOut(interaction_eq),
-            m.FadeOut(final_path),
-            m.FadeOut(final_dot),
+            m.FadeOut(final_curved_path),
+            m.FadeOut(final_curved_dot),
             m.FadeOut(cost_group),
         )
         # -----------------------------------------------------------------
@@ -1603,24 +1689,24 @@ class BilliardAnalogy(m.MovingCameraScene):
         # All 4×3 = 12 double-reflection sequences (i != j)
         sequences = [(i, j) for i in range(4) for j in range(4) if i != j]  # 12 pairs
 
-        # 12 distinct colors, grouped by first bounce wall (4 hue families × 3 shades)
+        # 12 distinct colors, reordered so each wall group has 3 high-contrast hues
         PALETTE = [
             # Left → {Right, Bottom, Top}
             m.ManimColor("#EF5350"),  # red
-            m.ManimColor("#FF8A65"),  # deep orange
-            m.ManimColor("#F48FB1"),  # pink
-            # Right → {Left, Bottom, Top}
             m.ManimColor("#42A5F5"),  # blue
-            m.ManimColor("#29B6F6"),  # light blue
+            m.ManimColor("#66BB6A"),  # green
+            # Right → {Left, Bottom, Top}
+            m.ManimColor("#AB47BC"),  # purple
+            m.ManimColor("#FF8A65"),  # deep orange
             m.ManimColor("#26C6DA"),  # cyan
             # Bottom → {Left, Right, Top}
-            m.ManimColor("#66BB6A"),  # green
-            m.ManimColor("#9CCC65"),  # light green
             m.ManimColor("#D4E157"),  # lime
-            # Top → {Left, Right, Bottom}
-            m.ManimColor("#AB47BC"),  # purple
             m.ManimColor("#7E57C2"),  # deep purple
             m.ManimColor("#FFB300"),  # amber
+            # Top → {Left, Right, Bottom}
+            m.ManimColor("#F48FB1"),  # pink
+            m.ManimColor("#29B6F6"),  # light blue
+            m.ManimColor("#9CCC65"),  # light green
         ]
 
         # Compute all 12 polygons for a given TX position
@@ -1712,12 +1798,15 @@ class BilliardAnalogy(m.MovingCameraScene):
 
         n_frames = 10
         traj_center = bt.cue_ball.get_center().copy()
-        traj_rx = rw * 0.20
-        traj_ry = rh * 0.18
-        traj_angles = np.linspace(0, 2 * np.pi, n_frames, endpoint=False)
+        
+        # We start at theta = pi so that traj_pos(pi) matches traj_center exactly (no jump at start/end)
+        traj_angles = np.linspace(np.pi, 3 * np.pi, n_frames, endpoint=False)
 
         def traj_pos(theta):
-            return traj_center + np.array([traj_rx * np.cos(theta), traj_ry * np.sin(theta), 0])
+            center_offset = np.array([rw * 0.12, 0.0, 0.0])
+            rx = rw * 0.12
+            ry = rh * 0.15
+            return traj_center + center_offset + np.array([rx * np.cos(theta), ry * np.sin(theta), 0])
 
         for theta in traj_angles:
             new_tx = traj_pos(theta)
@@ -1756,16 +1845,13 @@ class BilliardAnalogy(m.MovingCameraScene):
 
         mlm_how_bullets = bullets(
             [
-                r"For each double-reflection sequence $(W_i \to W_j)$ with $i \neq j$, compute its "
-                r"\textbf{visibility polygon} via the double-mirror image method.",
-                r"Overlay all 12 polygons: each colored region is a \textbf{multipath cell} $C_k$ "
-                r"where a RX receives the same set of paths.",
-                r"A RX anywhere in the same cell $C_k$ requires \textbf{no re-tracing} -- only "
-                r"path amplitude updates.",
+                "Compute where double bounces can reach by mirroring cushions.",
+                "Overlay these regions to find cells where a receiver gets the same set of paths.",
+                "A receiver inside a cell requires no path re-calculation, saving computing time.",
             ],
             font_size=18,
             width=48,
-            use_tex=True,
+            use_tex=False,
         )
         mlm_how_bullets.next_to(mlm_metrics_title, m.DOWN, buff=0.35).to_edge(m.LEFT, buff=0.75)
 
@@ -1776,33 +1862,27 @@ class BilliardAnalogy(m.MovingCameraScene):
         self.wait(1.0)
 
         # Metrics formulas
-        metrics_intro = m.Tex(
-            r"For each cell $C_k$, we compute:",
-            color=TEXT_COLOR, font_size=22,
+        metrics_intro = m.Text(
+            "For each cell, we compute:",
+            font_size=18, color=TEXT_COLOR, font=FONT_FAMILY
         ).next_to(mlm_how_bullets, m.DOWN, buff=0.4).to_edge(m.LEFT, buff=0.75)
 
-        metric1 = m.Tex(
-            r"$\bullet$ the \textbf{area} $S_k = \mathrm{area}(C_k)$;",
-            color=TEXT_COLOR, font_size=20,
+        metric1 = m.Text(
+            "• The total area of the cell (representing how large the stable region is).",
+            font_size=16, color=TEXT_COLOR, font=FONT_FAMILY
         ).next_to(metrics_intro, m.DOWN, buff=0.25).to_edge(m.LEFT, buff=1.1)
 
-        metric2 = m.Tex(
-            r"$\bullet$ and the \textbf{average minimal inter-cell distance} $\bar{d}_k$,",
-            color=TEXT_COLOR, font_size=20,
+        metric2 = m.Text(
+            "• How far a receiver can move from the center before the path structure changes.",
+            font_size=16, color=TEXT_COLOR, font=FONT_FAMILY
         ).next_to(metric1, m.DOWN, buff=0.2).to_edge(m.LEFT, buff=1.1)
-
-        metric_formula = m.MathTex(
-            r"d_k(x) = \min_{y \notin C_k} \mathrm{dist}(x, y).",
-            color=ACCENT_CYAN, font_size=22,
-        ).next_to(metric2, m.DOWN, buff=0.2).to_edge(m.LEFT, buff=1.8)
 
         self.play(m.FadeIn(metrics_intro))
         self.play(m.FadeIn(metric1))
         self.play(m.FadeIn(metric2))
-        self.play(m.FadeIn(metric_formula))
         self.wait(3.0)
 
-        # Clean up all MLM assets and Section 4 header + bt
+        # Clean up all MLM assets and Section 4 header (REUSE billiard table `bt`!)
         self.play(
             m.FadeOut(reuse_header),
             m.FadeOut(mlm_metrics_title),
@@ -1810,25 +1890,20 @@ class BilliardAnalogy(m.MovingCameraScene):
             m.FadeOut(metrics_intro),
             m.FadeOut(metric1),
             m.FadeOut(metric2),
-            m.FadeOut(metric_formula),
             *[m.FadeOut(p) for p in poly_group],
-            m.FadeOut(bt),
         )
         self.wait(0.5)
 
         # -----------------------------------------------------------------
         # SECTION 5: The Candidate Explosion
         # -----------------------------------------------------------------
-        # This section uses the Billiard Table WITH an obstacle
-        bt_obs = BilliardTable(obstacle=True)
-
         explosion_header = title_box("The Candidate Explosion")
         explosion_bullets = bullets(
             [
                 "To trace all rays, we must check all possible sequences of walls.",
                 "Combinatorial explosion: 10 walls with 5 bounces = 100,000 sequences.",
                 "But most candidate sequences are physically impossible:",
-                "  • Obstructed: the path intersects a building.",
+                "  • Obstructed: the path intersects an obstacle.",
                 "  • Out-of-Bounds: the reflection point lies outside the wall.",
             ],
             width=42,
@@ -1836,66 +1911,421 @@ class BilliardAnalogy(m.MovingCameraScene):
         explosion_bullets.next_to(explosion_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
         )
-        bt_obs.next_to(explosion_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
-        tx_pos_15 = bt_obs.cue_ball.get_center()
-        rx_pos_15 = bt_obs.rx_pos
+        # Show the new section title and fade in the pocket RX label back
+        self.play(
+            m.FadeIn(explosion_header),
+            m.FadeIn(bt.pocket_lbl),
+        )
+        self.wait(0.5)
 
-        # 1. Obstructed Path (align bounce to top inner felt edge)
-        top_cushion_obs, _ = bt_obs._cushion_params("top")
-        obstructed_bounce = top_cushion_obs + m.LEFT * 0.3
-        path_obs = m.VMobject(joint_type=LineJointType.BEVEL).set_points_as_corners(
-            [tx_pos_15, obstructed_bounce, rx_pos_15]
-        ).set_stroke(color=ACCENT_RED, width=3, opacity=0.7).set_fill(opacity=0)
-        
-        obs_cross = m.VGroup(
-            m.Line(m.UL * 0.2, m.DR * 0.2, color=ACCENT_RED, stroke_width=3.5),
-            m.Line(m.DL * 0.2, m.UR * 0.2, color=ACCENT_RED, stroke_width=3.5),
-        ).move_to(bt_obs.building.get_center())
-        
-        obs_lbl = m.Text("Obstructed by Building", font_size=10, color=ACCENT_RED).next_to(bt_obs.building, m.UP, buff=0.08)
+        # Now, fade in the obstacle in the center of the billiard table
+        obstacle = m.Rectangle(
+            width=1.2,
+            height=1.0,
+            fill_color=m.ManimColor("#22252A"),
+            fill_opacity=1,
+            stroke_color=CARD_BORDER,
+            stroke_width=2,
+        ).move_to(bt.frame.get_center())
+        obstacle_lbl = m.Text(
+            "Obstacle", font_size=12, color=MUTED_TEXT
+        ).move_to(obstacle)
 
-        # 2. Out of Bounds Path (align bounce to right inner felt edge)
-        right_cushion_obs, _ = bt_obs._cushion_params("right")
-        oob_bounce = right_cushion_obs + m.UP * (bt_obs.table_height * 0.25)
-        path_oob = m.VMobject(joint_type=LineJointType.BEVEL).set_points_as_corners(
-            [tx_pos_15, oob_bounce, rx_pos_15]
-        ).set_stroke(color=ACCENT_RED, width=3, opacity=0.7).set_fill(opacity=0)
-        
-        oob_cross = m.VGroup(
-            m.Line(m.UL * 0.2, m.DR * 0.2, color=ACCENT_RED, stroke_width=3.5),
-            m.Line(m.DL * 0.2, m.UR * 0.2, color=ACCENT_RED, stroke_width=3.5),
-        ).move_to(oob_bounce)
-        
-        oob_lbl = m.Text("Out of Bounds Cushion Point", font_size=10, color=ACCENT_RED).next_to(oob_cross, m.LEFT, buff=0.1)
+        # Map obstacle attributes to bt so existing helper functions work
+        bt.building = obstacle
+        bt.building_lbl = obstacle_lbl
 
-        self.play(m.FadeIn(explosion_header))
-        self.play(m.FadeIn(bt_obs))
+        self.play(
+            m.FadeIn(obstacle),
+            m.FadeIn(obstacle_lbl),
+        )
         self.wait(1.0)
 
-        self.play(m.Create(path_obs))
-        self.play(m.Create(obs_cross), m.FadeIn(obs_lbl))
-        self.wait(1.0)
+        # Generate paths using exact analytic Image Method
+        tx_pos_15 = bt.cue_ball.get_center().copy()
+        rx_pos_15 = bt.rx_pos.copy()
+        wall_names = ["left", "right", "bottom", "top"]
 
-        self.play(m.Create(path_oob))
-        self.play(m.Create(oob_cross), m.FadeIn(oob_lbl))
-        self.wait(1.0)
+        # --- 1st Order Reflection Paths ---
+        order1_paths = m.VGroup()
+        for w1 in wall_names:
+            seq = [w1]
+            _, intersections = bt.image_method(seq, tx_pos_15, rx_pos_15)
+            pts = [tx_pos_15] + list(intersections) + [rx_pos_15]
+            
+            is_valid = True
+            for pt, cushion in zip(intersections, seq):
+                if not bt.is_intersection_on_cushion(pt, cushion):
+                    is_valid = False
+                    break
+            if is_valid:
+                for k in range(len(pts) - 1):
+                    if bt.intersects_building(pts[k], pts[k+1]):
+                        is_valid = False
+                        break
+            
+            color = ACCENT_GREEN if is_valid else ACCENT_RED
+            width = 3.0 if is_valid else 1.5
+            opacity = 0.95 if is_valid else 0.4
+            
+            path_mobj = m.VMobject(joint_type=LineJointType.BEVEL).set_points_as_corners(pts).set_stroke(
+                color=color, width=width, opacity=opacity
+            ).set_fill(opacity=0)
+            order1_paths.add(path_mobj)
 
+        self.play(
+            m.LaggedStart(
+                *[m.Create(p) for p in order1_paths],
+                lag_ratio=0.8,
+                run_time=3.0
+            )
+        )
+        self.wait(1.5)
+
+        # Fade out 1st order paths
+        self.play(m.FadeOut(order1_paths))
+        self.wait(0.5)
+
+        # --- 2nd Order Reflection Paths ---
+        order2_paths = m.VGroup()
+        for w1 in wall_names:
+            for w2 in wall_names:
+                if w1 != w2:
+                    seq = [w1, w2]
+                    _, intersections = bt.image_method(seq, tx_pos_15, rx_pos_15)
+                    pts = [tx_pos_15] + list(intersections) + [rx_pos_15]
+                    
+                    is_valid = True
+                    for pt, cushion in zip(intersections, seq):
+                        if not bt.is_intersection_on_cushion(pt, cushion):
+                            is_valid = False
+                            break
+                    if is_valid:
+                        for k in range(len(pts) - 1):
+                            if bt.intersects_building(pts[k], pts[k+1]):
+                                is_valid = False
+                                break
+                    
+                    color = ACCENT_GREEN if is_valid else ACCENT_RED
+                    width = 3.0 if is_valid else 1.2
+                    opacity = 0.95 if is_valid else 0.3
+                    
+                    clipped_pts = []
+                    for pt in pts:
+                        cl_pt = pt.copy()
+                        limit = 8.0
+                        for dim in range(3):
+                            if cl_pt[dim] > limit:
+                                cl_pt[dim] = limit
+                            elif cl_pt[dim] < -limit:
+                                cl_pt[dim] = -limit
+                        clipped_pts.append(cl_pt)
+                        
+                    path_mobj = m.VMobject(joint_type=LineJointType.BEVEL).set_points_as_corners(clipped_pts).set_stroke(
+                        color=color, width=width, opacity=opacity
+                    ).set_fill(opacity=0)
+                    order2_paths.add(path_mobj)
+
+        self.play(
+            m.LaggedStart(
+                *[m.Create(p) for p in order2_paths],
+                lag_ratio=0.5,
+                run_time=4.0
+            )
+        )
+        self.wait(1.5)
+
+        # List bullet points one by one
         for b in explosion_bullets:
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
             self.wait(0.5)
+            
+        self.wait(1.0)
+        
+        # Add motivation text under the bullets
+        motivation_lbl = m.Text(
+            "Can we find valid paths without testing every combination?",
+            font_size=15, color=ACCENT_AMBER, font=FONT_FAMILY, weight=m.BOLD
+        ).next_to(explosion_bullets, m.DOWN, buff=0.45).to_edge(m.LEFT, buff=0.75)
+        
+        self.play(m.FadeIn(motivation_lbl, shift=0.2 * m.UP))
+        self.wait(3.0)
+
+        # -----------------------------------------------------------------
+        # SUB-SECTION: The Generative Path Sampler
+        # -----------------------------------------------------------------
+        # Shift camera down by 8 units to a clean canvas area
+        canvas_center = np.array([0.0, -8.0, 0.0])
+
+        self.play(
+            self.camera.frame.animate.move_to(canvas_center),
+            run_time=1.5
+        )
+        self.wait(0.5)
+
+        # Fade in Title for the sampler
+        contribution_title = m.Text(
+            "Contribution: Generative Path Sampler",
+            font_size=20, color=ACCENT_CYAN, font=FONT_FAMILY, weight=m.BOLD
+        ).move_to(canvas_center + np.array([0, 3.2, 0]))
+
+        # Define pipeline box builder helper
+        def make_pipeline_box(label_text, width=2.4, height=1.0, color=CARD_BORDER, fill_color=BG_COLOR):
+            box = m.RoundedRectangle(
+                width=width, height=height, corner_radius=0.15,
+                stroke_color=color, stroke_width=2,
+                fill_color=fill_color, fill_opacity=0.9
+            )
+            lbl = m.Text(label_text, font_size=10, font=FONT_FAMILY, color=TEXT_COLOR)
+            lbl.move_to(box.get_center())
+            return m.VGroup(box, lbl)
+
+        # Define pipeline boxes
+        box_1 = make_pipeline_box("Scene Layout\n(TX, RX, Obstacles)", width=2.6, height=1.0)
+        box_1.move_to(canvas_center + np.array([-4.5, 1.2, 0]))
+        
+        box_2 = make_pipeline_box("Combinatorial\nSequence Search", width=2.6, height=1.0)
+        box_2.move_to(canvas_center + np.array([0.0, 1.2, 0]))
+        
+        box_3 = make_pipeline_box("Exact Ray Solver\n& Validation", width=2.6, height=1.0)
+        box_3.move_to(canvas_center + np.array([4.5, 1.2, 0]))
+
+        arrow_style = {"color": ACCENT_CYAN, "stroke_width": 2.5, "max_tip_length_to_length_ratio": 0.2}
+        arrow_1 = m.Arrow(box_1.get_right(), box_2.get_left(), **arrow_style)
+        arrow_2 = m.Arrow(box_2.get_right(), box_3.get_left(), **arrow_style)
+
+        # Labels
+        lbl_combinatorial = m.Text(
+            "Checks 100k+ combinations\n(Combinatorial Explosion!)",
+            font_size=8, color=ACCENT_RED, font=FONT_FAMILY, line_spacing=1.3
+        ).next_to(box_2, m.UP, buff=0.2)
+
+        # Animate traditional pipeline
+        self.play(m.FadeIn(contribution_title))
+        self.wait(0.3)
+        self.play(m.FadeIn(box_1))
+        self.play(m.Create(arrow_1))
+        self.play(m.FadeIn(box_2), m.FadeIn(lbl_combinatorial))
+        self.play(m.Create(arrow_2))
+        self.play(m.FadeIn(box_3))
+        self.wait(1.5)
+
+        # Introduce ML model
+        box_5 = make_pipeline_box("Generative Path\nSampler (ML Model)", width=2.6, height=1.0, color=ACCENT_AMBER)
+        box_5.move_to(canvas_center + np.array([0.0, -1.2, 0]))
+
+        arrow_to_ml = m.Arrow(box_1.get_bottom(), box_5.get_left(), **arrow_style)
+        arrow_from_ml = m.Arrow(box_5.get_right(), box_3.get_bottom(), **arrow_style)
+
+        self.play(
+            m.FadeIn(box_5),
+            m.Create(arrow_to_ml),
+            m.Create(arrow_from_ml),
+        )
+        self.wait(0.5)
+
+        # Show path predictions bubble
+        pred_bubble = m.RoundedRectangle(
+            width=2.5, height=1.0, corner_radius=0.1,
+            stroke_color=ACCENT_GREEN, stroke_width=1.5,
+            fill_color=m.ManimColor("#1A3020"), fill_opacity=0.95
+        ).next_to(box_5, m.RIGHT, buff=0.4)
+        
+        pred_text = m.Text(
+            "Top candidates:\n1. [Left]\n2. [Left, Top]\n3. [Bottom, Right]",
+            font_size=8, font=FONT_FAMILY, color=TEXT_COLOR, line_spacing=1.3
+        ).move_to(pred_bubble)
+        
+        predictions_group = m.VGroup(pred_bubble, pred_text)
+
+        self.play(m.FadeIn(predictions_group, shift=0.2 * m.RIGHT))
+        self.wait(1.0)
+
+        # Cross out Box 2 (combinatorial search)
+        red_x = m.Cross(box_2, stroke_color=ACCENT_RED, stroke_width=6)
+        self.play(
+            m.Create(red_x),
+            lbl_combinatorial.animate.set_color(MUTED_TEXT),
+        )
+        self.wait(1.0)
+
+        # Show motivation text
+        mot_title = m.Text(
+            "Unique ML Approach: Aids RT, doesn't replace it",
+            font_size=14, color=ACCENT_CYAN, font=FONT_FAMILY, weight=m.BOLD
+        ).move_to(canvas_center + np.array([-2.5, -2.8, 0]))
+        
+        mot_bullets = bullets(
+            [
+                "Aids Ray Tracing: predicts only the active bounce sequences.",
+                "Keeps the physical geometric solver for 100% exact fields.",
+                "Avoids typical ML issues (unphysical predictions, black box errors).",
+            ],
+            width=42,
+            font_size=12
+        ).next_to(mot_title, m.DOWN, buff=0.25).to_edge(m.LEFT, buff=0.75)
+
+        self.play(
+            m.FadeIn(mot_title, shift=0.15 * m.UP),
+            m.FadeIn(mot_bullets),
+        )
+        self.wait(4.0)
+
+        # --- Return to Billiard Table & Fixed Paths Visualization ---
+        room_center = np.array([0.0, 0.0, 0.0])
+
+        self.play(
+            m.FadeOut(contribution_title),
+            m.FadeOut(box_1),
+            m.FadeOut(box_2),
+            m.FadeOut(box_3),
+            m.FadeOut(box_5),
+            m.FadeOut(arrow_1),
+            m.FadeOut(arrow_2),
+            m.FadeOut(arrow_to_ml),
+            m.FadeOut(arrow_from_ml),
+            m.FadeOut(lbl_combinatorial),
+            m.FadeOut(red_x),
+            m.FadeOut(predictions_group),
+            m.FadeOut(mot_title),
+            m.FadeOut(mot_bullets),
+            m.FadeOut(order2_paths),
+            self.camera.frame.animate.move_to(room_center),
+            run_time=1.5
+        )
+        self.wait(0.5)
+
+        # Find 5 second-order paths (3 valid, 2 invalid)
+        valid_order2 = []
+        invalid_order2 = []
+
+        for w1 in wall_names:
+            for w2 in wall_names:
+                if w1 != w2:
+                    seq = [w1, w2]
+                    _, intersections = bt.image_method(seq, tx_pos_15, rx_pos_15)
+                    pts = [tx_pos_15] + list(intersections) + [rx_pos_15]
+                    
+                    is_valid = True
+                    for pt, cushion in zip(intersections, seq):
+                        if not bt.is_intersection_on_cushion(pt, cushion):
+                            is_valid = False
+                            break
+                    if is_valid:
+                        for k in range(len(pts) - 1):
+                            if bt.intersects_building(pts[k], pts[k+1]):
+                                is_valid = False
+                                break
+                    
+                    clipped_pts = []
+                    for pt in pts:
+                        cl_pt = pt.copy()
+                        limit = 8.0
+                        for dim in range(3):
+                            if cl_pt[dim] > limit:
+                                cl_pt[dim] = limit
+                            elif cl_pt[dim] < -limit:
+                                cl_pt[dim] = -limit
+                        clipped_pts.append(cl_pt)
+                        
+                    color = ACCENT_GREEN if is_valid else ACCENT_RED
+                    width = 3.0 if is_valid else 1.2
+                    opacity = 0.95 if is_valid else 0.3
+                    
+                    path_mobj = m.VMobject(joint_type=LineJointType.BEVEL).set_points_as_corners(clipped_pts).set_stroke(
+                        color=color, width=width, opacity=opacity
+                    ).set_fill(opacity=0)
+                    
+                    if is_valid:
+                        valid_order2.append(path_mobj)
+                    else:
+                        invalid_order2.append(path_mobj)
+
+        sel_valid_o2 = valid_order2[:min(3, len(valid_order2))]
+        sel_invalid_o2 = []
+        if len(invalid_order2) >= 2:
+            sel_invalid_o2 = [invalid_order2[2], invalid_order2[5]]
+        else:
+            sel_invalid_o2 = invalid_order2
+            
+        group_o2 = m.VGroup(*sel_valid_o2, *sel_invalid_o2)
+
+        self.play(m.Create(group_o2), run_time=2.0)
+        self.wait(2.0)
+        self.play(m.FadeOut(group_o2))
+        self.wait(0.5)
+
+        # Find 10 third-order paths
+        valid_order3 = []
+        invalid_order3 = []
+
+        for w1 in wall_names:
+            for w2 in wall_names:
+                if w1 != w2:
+                    for w3 in wall_names:
+                        if w2 != w3:
+                            seq = [w1, w2, w3]
+                            _, intersections = bt.image_method(seq, tx_pos_15, rx_pos_15)
+                            pts = [tx_pos_15] + list(intersections) + [rx_pos_15]
+                            
+                            is_valid = True
+                            for pt, cushion in zip(intersections, seq):
+                                if not bt.is_intersection_on_cushion(pt, cushion):
+                                    is_valid = False
+                                    break
+                            if is_valid:
+                                for k in range(len(pts) - 1):
+                                    if bt.intersects_building(pts[k], pts[k+1]):
+                                        is_valid = False
+                                        break
+                            
+                            clipped_pts = []
+                            for pt in pts:
+                                cl_pt = pt.copy()
+                                limit = 8.0
+                                for dim in range(3):
+                                    if cl_pt[dim] > limit:
+                                        cl_pt[dim] = limit
+                                    elif cl_pt[dim] < -limit:
+                                        cl_pt[dim] = -limit
+                                clipped_pts.append(cl_pt)
+                                
+                            color = ACCENT_GREEN if is_valid else ACCENT_RED
+                            width = 3.0 if is_valid else 1.2
+                            opacity = 0.95 if is_valid else 0.3
+                            
+                            path_mobj = m.VMobject(joint_type=LineJointType.BEVEL).set_points_as_corners(clipped_pts).set_stroke(
+                                color=color, width=width, opacity=opacity
+                            ).set_fill(opacity=0)
+                            
+                            if is_valid:
+                                valid_order3.append(path_mobj)
+                            else:
+                                invalid_order3.append(path_mobj)
+
+        sel_valid_o3 = valid_order3[:min(4, len(valid_order3))]
+        n_invalid_needed = 10 - len(sel_valid_o3)
+        sel_invalid_o3 = []
+        if len(invalid_order3) > 0:
+            step = max(1, len(invalid_order3) // n_invalid_needed)
+            for idx in range(0, len(invalid_order3), step):
+                if len(sel_invalid_o3) < n_invalid_needed:
+                    sel_invalid_o3.append(invalid_order3[idx])
+                    
+        group_o3 = m.VGroup(*sel_valid_o3, *sel_invalid_o3)
+
+        self.play(m.Create(group_o3), run_time=2.0)
         self.wait(3.0)
 
         # Clean up Section 5 (Fade out everything at the end)
         self.play(
             m.FadeOut(explosion_header),
             m.FadeOut(explosion_bullets),
-            m.FadeOut(bt_obs),
-            m.FadeOut(path_obs),
-            m.FadeOut(obs_cross),
-            m.FadeOut(obs_lbl),
-            m.FadeOut(path_oob),
-            m.FadeOut(oob_cross),
-            m.FadeOut(oob_lbl),
+            m.FadeOut(motivation_lbl),
+            m.FadeOut(bt),
+            m.FadeOut(obstacle),
+            m.FadeOut(obstacle_lbl),
+            m.FadeOut(group_o3),
         )
         self.wait(1.0)

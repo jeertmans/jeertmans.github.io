@@ -1,9 +1,9 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "differt>=0.8.2",
+#     "differt>=0.9.1",
 #     "equinox>=0.13.8",
-#     "jax>=0.10.2",
+#     "jax[cuda]>=0.10.2",
 #     "kaleido>=1",
 #     "plotly[kaleido]>=6.8.0",
 #     "sionna-rt",
@@ -16,19 +16,17 @@
 # sionna-rt = { git = "https://github.com/jeertmans/sionna-rt", branch = "fix-diffraction" }
 # ///
 
-import os
-import io
-import sys
 import argparse
-import hashlib
-import random
+import os
 from pathlib import Path
+
 import numpy as np
 
 # Configure GPU memory allocation before importing JAX or TensorFlow
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
 import tensorflow as tf
-gpus = tf.config.list_physical_devices('GPU')
+
+gpus = tf.config.list_physical_devices("GPU")
 if gpus:
     try:
         for gpu in gpus:
@@ -36,19 +34,17 @@ if gpus:
     except RuntimeError as e:
         print(f"GPU config error: {e}")
 
+import equinox as eqx
 import jax
 import jax.numpy as jnp
-import equinox as eqx
+import jax.random as jr
 import plotly.graph_objects as go
-import plotly.io as pio
-from PIL import Image
-from tqdm import tqdm
-
 import sionna.rt
 from differt.geometry import TriangleMesh, normalize, spherical_to_cartesian
 from differt.geometry._utils import rotation_matrix_along_axis
-from differt.plotting import set_defaults, reuse, draw_image
+from differt.plotting import draw_image, reuse, set_defaults
 from differt.scene import TriangleScene, download_sionna_scenes, get_sionna_scene
+from tqdm import tqdm
 
 
 def load_obj_custom(file_path):
@@ -62,7 +58,7 @@ def load_obj_custom(file_path):
 
     if mtl_file_path.exists():
         current_material = None
-        with open(mtl_file_path, "r") as f:
+        with open(mtl_file_path) as f:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith("#"):
@@ -82,7 +78,7 @@ def load_obj_custom(file_path):
     default_color = [0.75, 0.75, 0.75]  # Silver default color
     current_color = default_color
 
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -132,23 +128,34 @@ def load_tx_antenna_mesh(tx_pos, scale_height=8.0):
     vertices = np.array(mesh.vertices)
     center = np.mean(vertices, axis=0)
     vertices_centered = vertices - center
-    z_min = np.min(vertices_centered[:, 2])
-    vertices_centered[:, 2] = vertices_centered[:, 2] - z_min + tx_pos[2]
 
     swapped_vertices = vertices_centered.copy()
     swapped_vertices[:, 1] = vertices_centered[:, 2]  # new_y = old_z
     swapped_vertices[:, 2] = vertices_centered[:, 1]  # new_z = old_y
 
-    z_min = np.min(swapped_vertices[:, 2])
-    swapped_vertices[:, 2] = swapped_vertices[:, 2] - z_min + tx_pos[2]
-
-    z_span = np.max(swapped_vertices[:, 2]) - np.min(swapped_vertices[:, 2])
-    if z_span > 0:
-        scale = scale_height / z_span
-        swapped_vertices = swapped_vertices * scale
-
     tx_pos_arr = np.array(tx_pos).squeeze()
-    final_vertices = swapped_vertices + tx_pos_arr
+
+    if np.all(tx_pos_arr == 0.0):
+        # S1: keep centered at origin
+        z_span = np.max(swapped_vertices[:, 2]) - np.min(swapped_vertices[:, 2])
+        if z_span > 0:
+            scale = scale_height / z_span
+            swapped_vertices = swapped_vertices * scale
+        translation = np.array([0.0, 0.0, 0.0])
+    else:
+        # S2-S5bis: align base to roof
+        z_min = np.min(swapped_vertices[:, 2])
+        swapped_vertices[:, 2] = swapped_vertices[:, 2] - z_min
+        z_span = np.max(swapped_vertices[:, 2])
+        if z_span > 0:
+            scale = scale_height / z_span
+            swapped_vertices = swapped_vertices * scale
+        # Bottom of antenna should touch the roof (tx_pos[2] is the beam at 0.8 * height)
+        translation = np.array(
+            [tx_pos_arr[0], tx_pos_arr[1], tx_pos_arr[2] - 0.8 * scale_height]
+        )
+
+    final_vertices = swapped_vertices + translation
 
     return eqx.tree_at(lambda m: m.vertices, mesh, jnp.array(final_vertices))
 
@@ -200,31 +207,14 @@ def explode_mesh(
     )
 
 
-def random_rgba(cell_hash: bytes, alpha: float = 1.0) -> str:
-    """Generates a deterministic soft, vibrant HSL color from a byte hash."""
-    if not cell_hash:
-        return "rgba(0,0,0,0)"
-    rng = random.Random(cell_hash)
-    h = rng.randint(0, 360)
-    s = rng.randint(65, 80)
-    l = rng.randint(50, 70)
-    return f"hsl({h},{s}%,{l}%)"
-
-
-def create_colorscale_from_colormap(colormap, min_id, max_id):
-    """Converts a colormap dict to a discrete Plotly colorscale."""
-    scale_factor = max_id - min_id + 1
-    colorscale = []
-    for id_ in range(min_id, max_id + 1):
-        color = colormap[id_]
-        val_min = (id_ - min_id) / scale_factor
-        val_max = (id_ - min_id + 1) / scale_factor
-        colorscale.append([val_min, color])
-        colorscale.append([val_max, color])
-    return colorscale
-
-
-def draw_active_paths(fig, paths, los_color="#00E5FF", refl_color="#FFB300", diff_color="#FF1744", width=3.5):
+def draw_active_paths(
+    fig,
+    paths,
+    los_color="#00E5FF",
+    refl_color="#FFB300",
+    diff_color="#FF1744",
+    width=3.5,
+):
     """Draws active ray paths on a 3D Plotly figure, categorized by propagation type."""
     vertices = paths.vertices.numpy()  # shape (max_depth, num_rx, num_tx, num_paths, 3)
     valid = paths.valid.numpy()  # shape (num_rx, num_tx, num_paths)
@@ -279,88 +269,94 @@ def draw_active_paths(fig, paths, los_color="#00E5FF", refl_color="#FFB300", dif
             )
 
 
-
-def get_camera_dict(camera_setup, frame_idx, num_frames, C_0, R_x_0, R_y_0, R_z_fixed, xmin_fixed, xmax_fixed, ymin_fixed, ymax_fixed, diag_hybrid, diag_orig):
+def get_camera_dict(
+    camera_setup,
+    frame_idx,
+    num_frames,
+    C_0,
+    R_x_0,
+    R_y_0,
+    R_z_fixed,
+    xmin_fixed,
+    xmax_fixed,
+    ymin_fixed,
+    ymax_fixed,
+    diag_hybrid,
+    diag_orig,
+):
     """Computes Plotly scene_camera dictionary and scaling factor s dynamically."""
-    cam_type = camera_setup.get("type", "spherical")
-    
-    if cam_type == "spherical":
-        cam_dist = camera_setup["distance"](frame_idx)
-        cam_elev = camera_setup["elevation"](frame_idx)
-        cam_azim = camera_setup["azimuth"](frame_idx)
+    cam_dist = camera_setup["distance"](frame_idx)
+    cam_elev = camera_setup["elevation"](frame_idx)
+    cam_azim = camera_setup["azimuth"](frame_idx)
+    cam_center = camera_setup["center"](
+        frame_idx, xmin_fixed, xmax_fixed, ymin_fixed, ymax_fixed
+    )
 
-        cam_x, cam_y, cam_z = spherical_to_cartesian(
-            np.asarray([cam_dist, cam_elev, cam_azim])
-        ).tolist()
+    cam_x, cam_y, cam_z = (
+        spherical_to_cartesian(np.asarray([cam_dist, cam_elev, cam_azim]))
+    ).tolist()
 
-        if R_x_0 is not None and R_z_fixed is not None:
-            # Matches standard vertical scale adjustment
-            new_eye_z = cam_z * (R_z_fixed / R_x_0)
-            s = cam_dist * (diag_hybrid / diag_orig)
-        else:
-            new_eye_z = cam_z
-            s = 1.0
-
-        camera = dict(
-            up=dict(x=0, y=0, z=1),
-            center=dict(x=0.0, y=0.0, z=0.0),
-            eye=dict(x=cam_x, y=cam_y, z=new_eye_z),
-        )
-            
-    elif cam_type == "drone_x":
-        progress = frame_idx / (num_frames - 1)
-        x_abs = xmin_fixed + (xmax_fixed - xmin_fixed) * progress
-        if R_x_0 is not None:
-            cx_norm = 2.0 * (x_abs - C_0[0]) / R_x_0
-            cy_norm = 0.0
-            cz_norm = 0.0
-        else:
-            cx_norm = 2.0 * x_abs / 20.0
-            cy_norm = 0.0
-            cz_norm = 0.0
-            
-        camera = dict(
-            up=dict(x=0, y=1, z=0),
-            center=dict(x=cx_norm, y=cy_norm, z=cz_norm),
-            eye=dict(x=0.0, y=0.0, z=1.5),
-        )
+    if R_x_0 is not None and R_z_fixed is not None:
+        # Matches standard vertical scale adjustment
+        new_eye_z = cam_z * (R_z_fixed / R_x_0)
+        s = cam_dist * (diag_hybrid / diag_orig)
+    else:
+        new_eye_z = cam_z
         s = 1.0
-        
-    elif cam_type == "drone_y":
-        progress = frame_idx / (num_frames - 1)
-        y_abs = ymin_fixed + (ymax_fixed - ymin_fixed) * progress
-        if R_y_0 is not None:
-            cx_norm = 0.0
-            cy_norm = 2.0 * (y_abs - C_0[1]) / R_y_0
-            cz_norm = 0.0
-        else:
-            cx_norm = 0.0
-            cy_norm = 2.0 * y_abs / 20.0
-            cz_norm = 0.0
-            
-        camera = dict(
-            up=dict(x=1, y=0, z=0),
-            center=dict(x=cx_norm, y=cy_norm, z=cz_norm),
-            eye=dict(x=0.0, y=0.0, z=1.5),
-        )
-        s = 1.0
-        
+
+    if C_0 is not None and R_x_0 is not None:
+        C_val = C_0
+        R_val = R_x_0
+    else:
+        x_mid = (xmin_fixed + xmax_fixed) / 2.0
+        y_mid = (ymin_fixed + ymax_fixed) / 2.0
+        R_val = xmax_fixed - xmin_fixed
+        C_val = np.array([x_mid, y_mid, 0.0])
+
+    cam_center_norm = (
+        (cam_center - C_val) * (s / R_val) if R_val != 0.0 else np.zeros(3)
+    )
+
+    camera = dict(
+        up=dict(x=0, y=0, z=1),
+        center=dict(x=cam_center_norm[0], y=cam_center_norm[1], z=cam_center_norm[2]),
+        eye=dict(
+            x=cam_x + cam_center_norm[0],
+            y=cam_y + cam_center_norm[1],
+            z=new_eye_z + cam_center_norm[2],
+        ),
+    )
+
     return camera, s
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Create beautiful ray tracing presentations.")
-    parser.add_argument("--test", action="store_true", help="Only render 3 frames per sequence for testing.")
-    parser.add_argument("--num-frames", type=int, default=300, help="Total frames per sequence.")
-    parser.add_argument("--min-order", type=int, default=0, help="Min reflection order.")
-    parser.add_argument("--max-order", type=int, default=5, help="Max reflection order.")
+    parser = argparse.ArgumentParser(
+        description="Create beautiful ray tracing presentations."
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Only render 3 frames per sequence for testing.",
+    )
+    parser.add_argument(
+        "--num-frames", type=int, default=200, help="Total frames per sequence."
+    )
+    parser.add_argument(
+        "--max-order", type=int, default=5, help="Max reflection order."
+    )
     parser.add_argument(
         "--sequences",
         type=str,
         default="S1,S2,S3,S4,S5,S5bis",
         help="Comma-separated list of sequences to run (S1, S2, S3, S4, S5, S5bis).",
     )
-    parser.add_argument("--output-dir", type=str, default="images/sequences", help="Output root directory.")
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="images/sequences",
+        help="Output root directory.",
+    )
     args = parser.parse_args()
 
     num_frames = args.num_frames
@@ -368,7 +364,9 @@ def main():
     run_sequences = [s.strip() for s in args.sequences.split(",")]
     output_root = Path(args.output_dir)
 
-    print(f"Configured options: num-frames={num_frames}, test-mode={test_mode}, min-order={args.min_order}, max-order={args.max_order}")
+    print(
+        f"Configured options: num-frames={num_frames}, test-mode={test_mode}, max-order={args.max_order}"
+    )
     print(f"Running sequences: {run_sequences}")
 
     # Set up frame indices to render
@@ -387,28 +385,42 @@ def main():
     # Three spherical cameras plus two drone line top-down cameras
     camera_setups = [
         {
-            "type": "spherical",
+            "center": lambda _idx, *_args: np.zeros(3),
             "distance": lambda _idx: 2.2,
             "elevation": lambda _idx: np.deg2rad(35.0),
             "azimuth": lambda idx: np.linspace(0.0, 2 * np.pi, num_frames)[idx],
         },
         {
-            "type": "spherical",
+            "center": lambda _idx, *_args: np.zeros(3),
             "distance": lambda _idx: 1.8,
             "elevation": lambda _idx: np.deg2rad(55.0),
-            "azimuth": lambda idx: np.linspace(np.pi / 3, 2 * np.pi + np.pi / 3, num_frames)[idx],
+            "azimuth": lambda idx: np.linspace(
+                np.pi / 3, 2 * np.pi + np.pi / 3, num_frames
+            )[idx],
         },
         {
-            "type": "spherical",
-            "distance": lambda _idx: 1.4,
+            "center": lambda _idx, *_args: np.zeros(3),
+            "distance": lambda _idx: 1.0,
             "elevation": lambda _idx: np.deg2rad(75.0),
-            "azimuth": lambda idx: np.linspace(2 * np.pi / 3, 2 * np.pi + 2 * np.pi / 3, num_frames)[idx],
+            "azimuth": lambda idx: np.linspace(
+                2 * np.pi / 3, 2 * np.pi + 2 * np.pi / 3, num_frames
+            )[idx],
         },
         {
-            "type": "drone_x",
+            "center": lambda idx, x_min, x_max, *_args: np.array(
+                [np.linspace(x_min, x_max, num_frames)[idx], 0.0, 0.0]
+            ),
+            "distance": lambda _idx: 0.4,
+            "elevation": lambda _idx: np.deg2rad(35.0),
+            "azimuth": lambda _idx: np.deg2rad(-180),
         },
         {
-            "type": "drone_y",
+            "center": lambda idx, _x_min, _x_max, y_min, y_max: np.array(
+                [0.0, np.linspace(y_min, y_max, num_frames)[idx], 0.0]
+            ),
+            "distance": lambda _idx: 0.6,
+            "elevation": lambda _idx: np.deg2rad(65.0),
+            "azimuth": lambda _idx: np.deg2rad(-90),
         },
     ]
 
@@ -422,14 +434,20 @@ def main():
         seed = jax.random.PRNGKey(0)
 
         # Explosion parameters
-        max_t = 6.0
+        max_t = 2.0
         num_rotations = 5
         rotation_ratio = (num_rotations * 2 * np.pi) / max_t
 
         # JITted explode function
         @jax.jit
         def jit_explode(t_val):
-            return explode_mesh(antenna_base_mesh, jnp.array([0.0, 0.0, 0.0]), seed, t_val, rotation_ratio)
+            return explode_mesh(
+                antenna_base_mesh,
+                jnp.array([0.0, 0.0, 0.0]),
+                seed,
+                t_val,
+                rotation_ratio,
+            )
 
         # Aspect ratios & bounds for close up
         xmin_fixed, xmax_fixed = -10.0, 10.0
@@ -438,7 +456,7 @@ def main():
         aspectratio_dict = dict(x=1.0, y=1.0, z=1.0)
 
         for frame_idx in tqdm(frame_indices, desc="S1 Frames"):
-            progress = frame_idx / (num_frames - 1)
+            progress = min(1.0, frame_idx / ((num_frames - 1) // 2))
             # Reverse explosion: fully exploded (max_t) at 0, built (0) at end
             t_val = max_t * ((1.0 - progress) ** 1.5)
 
@@ -450,11 +468,19 @@ def main():
                 # Render views
                 for view_idx, camera_setup in enumerate(camera_setups):
                     camera, s = get_camera_dict(
-                        camera_setup, frame_idx, num_frames,
-                        C_0=None, R_x_0=None, R_y_0=None, R_z_fixed=None,
-                        xmin_fixed=xmin_fixed, xmax_fixed=xmax_fixed,
-                        ymin_fixed=ymin_fixed, ymax_fixed=ymax_fixed,
-                        diag_hybrid=None, diag_orig=None
+                        camera_setup,
+                        frame_idx,
+                        num_frames,
+                        C_0=None,
+                        R_x_0=None,
+                        R_y_0=None,
+                        R_z_fixed=None,
+                        xmin_fixed=xmin_fixed,
+                        xmax_fixed=xmax_fixed,
+                        ymin_fixed=ymin_fixed,
+                        ymax_fixed=ymax_fixed,
+                        diag_hybrid=None,
+                        diag_orig=None,
                     )
 
                     fig.update_layout(
@@ -471,7 +497,11 @@ def main():
                             bgcolor="rgba(0,0,0,0)",
                         ),
                     )
-                    fig.write_image(seq_dir / f"S1_v{view_idx}_{frame_idx:03d}.png", width=1920, height=1080)
+                    fig.write_image(
+                        seq_dir / f"S1_v{view_idx}_{frame_idx:03d}.png",
+                        width=1920,
+                        height=1080,
+                    )
 
     # Load Munich scene context for sequences S2, S3, S4, S5, S5bis
     munich_scene_loaded = False
@@ -504,7 +534,9 @@ def main():
 
     # --- SEQUENCE 2: Munich Scene Building & Antenna Descending ---
     if "S2" in run_sequences and munich_scene_loaded:
-        print("\n--- Running Sequence 2: Munich Scene Building & Antenna Descending ---")
+        print(
+            "\n--- Running Sequence 2: Munich Scene Building & Antenna Descending ---"
+        )
         seq_dir = output_root / "S2"
         seq_dir.mkdir(parents=True, exist_ok=True)
 
@@ -513,15 +545,17 @@ def main():
         rotation_ratio_scene = (10 * 2 * np.pi) / max_t_scene
         reference_point = jnp.array([0.0, 0.0, 10.0])
 
-        tx_pos_final = np.array([8.5, 21.0, 27.0])
-        tx_pos_start = np.array([8.5, 21.0, 127.0])
+        tx_pos_final = np.array([18.7, 13.0, 32.4])
+        tx_pos_start = np.array([18.7, 13.0, 132.4])
 
         @jax.jit
         def jit_explode_munich(t_val):
-            return explode_mesh(mesh, reference_point, seed, t_val, rotation_ratio_scene)
+            return explode_mesh(
+                mesh, reference_point, seed, t_val, rotation_ratio_scene
+            )
 
         for frame_idx in tqdm(frame_indices, desc="S2 Frames"):
-            progress = frame_idx / (num_frames - 1)
+            progress = min(1.0, frame_idx / ((num_frames - 1) // 2))
             t_val = max_t_scene * ((1.0 - progress) ** 1.5)
             tx_pos = tx_pos_start * (1.0 - progress) + tx_pos_final * progress
 
@@ -534,11 +568,19 @@ def main():
 
                 for view_idx, camera_setup in enumerate(camera_setups):
                     camera, s = get_camera_dict(
-                        camera_setup, frame_idx, num_frames,
-                        C_0=C_0, R_x_0=R_x_0, R_y_0=R_y_0, R_z_fixed=R_z_fixed,
-                        xmin_fixed=xmin_fixed, xmax_fixed=xmax_fixed,
-                        ymin_fixed=ymin_fixed, ymax_fixed=ymax_fixed,
-                        diag_hybrid=diag_hybrid, diag_orig=diag_orig
+                        camera_setup,
+                        frame_idx,
+                        num_frames,
+                        C_0=C_0,
+                        R_x_0=R_x_0,
+                        R_y_0=R_y_0,
+                        R_z_fixed=R_z_fixed,
+                        xmin_fixed=xmin_fixed,
+                        xmax_fixed=xmax_fixed,
+                        ymin_fixed=ymin_fixed,
+                        ymax_fixed=ymax_fixed,
+                        diag_hybrid=diag_hybrid,
+                        diag_orig=diag_orig,
                     )
 
                     fig.update_layout(
@@ -549,7 +591,9 @@ def main():
                         scene=dict(
                             aspectmode="manual",
                             aspectratio=dict(
-                                x=s * 1.0, y=s * (R_y_0 / R_x_0), z=s * (R_z_fixed / R_x_0)
+                                x=s * 1.0,
+                                y=s * (R_y_0 / R_x_0),
+                                z=s * (R_z_fixed / R_x_0),
                             ),
                             xaxis=dict(visible=False, range=[xmin_fixed, xmax_fixed]),
                             yaxis=dict(visible=False, range=[ymin_fixed, ymax_fixed]),
@@ -557,7 +601,11 @@ def main():
                             bgcolor="rgba(0,0,0,0)",
                         ),
                     )
-                    fig.write_image(seq_dir / f"S2_v{view_idx}_{frame_idx:03d}.png", width=1920, height=1080)
+                    fig.write_image(
+                        seq_dir / f"S2_v{view_idx}_{frame_idx:03d}.png",
+                        width=1920,
+                        height=1080,
+                    )
 
     # --- SEQUENCE 3: Receiver Nodes & Active Ray Paths (Sionna RT) ---
     if "S3" in run_sequences and munich_scene_loaded:
@@ -565,7 +613,7 @@ def main():
         seq_dir = output_root / "S3"
         seq_dir.mkdir(parents=True, exist_ok=True)
 
-        tx_pos = [8.5, 21.0, 27.0]
+        tx_pos = [18.7, 13.0, 32.4]
         tx_antenna_mesh = load_tx_antenna_mesh(tx_pos, scale_height=8.0)
 
         # 15 fixed coordinates matching streets in Munich
@@ -591,7 +639,12 @@ def main():
         rt_scene = sionna.rt.load_scene(str(file))
         rt_scene.frequency = 28e9
         rt_scene.tx_array = sionna.rt.PlanarArray(
-            num_rows=1, num_cols=1, vertical_spacing=0.5, horizontal_spacing=0.5, pattern="iso", polarization="V"
+            num_rows=1,
+            num_cols=1,
+            vertical_spacing=0.5,
+            horizontal_spacing=0.5,
+            pattern="iso",
+            polarization="V",
         )
         rt_scene.rx_array = rt_scene.tx_array
         p_solver = sionna.rt.PathSolver()
@@ -652,11 +705,19 @@ def main():
 
                 for view_idx, camera_setup in enumerate(camera_setups):
                     camera, s = get_camera_dict(
-                        camera_setup, frame_idx, num_frames,
-                        C_0=C_0, R_x_0=R_x_0, R_y_0=R_y_0, R_z_fixed=R_z_fixed,
-                        xmin_fixed=xmin_fixed, xmax_fixed=xmax_fixed,
-                        ymin_fixed=ymin_fixed, ymax_fixed=ymax_fixed,
-                        diag_hybrid=diag_hybrid, diag_orig=diag_orig
+                        camera_setup,
+                        frame_idx,
+                        num_frames,
+                        C_0=C_0,
+                        R_x_0=R_x_0,
+                        R_y_0=R_y_0,
+                        R_z_fixed=R_z_fixed,
+                        xmin_fixed=xmin_fixed,
+                        xmax_fixed=xmax_fixed,
+                        ymin_fixed=ymin_fixed,
+                        ymax_fixed=ymax_fixed,
+                        diag_hybrid=diag_hybrid,
+                        diag_orig=diag_orig,
                     )
 
                     fig.update_layout(
@@ -667,7 +728,9 @@ def main():
                         scene=dict(
                             aspectmode="manual",
                             aspectratio=dict(
-                                x=s * 1.0, y=s * (R_y_0 / R_x_0), z=s * (R_z_fixed / R_x_0)
+                                x=s * 1.0,
+                                y=s * (R_y_0 / R_x_0),
+                                z=s * (R_z_fixed / R_x_0),
                             ),
                             xaxis=dict(visible=False, range=[xmin_fixed, xmax_fixed]),
                             yaxis=dict(visible=False, range=[ymin_fixed, ymax_fixed]),
@@ -675,7 +738,11 @@ def main():
                             bgcolor="rgba(0,0,0,0)",
                         ),
                     )
-                    fig.write_image(seq_dir / f"S3_v{view_idx}_{frame_idx:03d}.png", width=1920, height=1080)
+                    fig.write_image(
+                        seq_dir / f"S3_v{view_idx}_{frame_idx:03d}.png",
+                        width=1920,
+                        height=1080,
+                    )
 
     # --- SEQUENCE 4: Static Radio Map (Sionna RT) ---
     if "S4" in run_sequences and munich_scene_loaded:
@@ -683,7 +750,7 @@ def main():
         seq_dir = output_root / "S4"
         seq_dir.mkdir(parents=True, exist_ok=True)
 
-        tx_pos = [8.5, 21.0, 27.0]
+        tx_pos = [18.7, 13.0, 32.4]
         tx_antenna_mesh = load_tx_antenna_mesh(tx_pos, scale_height=8.0)
         z0 = 1.5
 
@@ -691,11 +758,18 @@ def main():
         min_x, max_x = float(bbox[0, 0]), float(bbox[1, 0])
         min_y, max_y = float(bbox[0, 1]), float(bbox[1, 1])
 
-        print("Solving radio map using RadioMapSolver (LOS + diffraction + 5 reflections)...")
+        print(
+            "Solving radio map using RadioMapSolver (LOS + diffraction + 5 reflections)..."
+        )
         scene = sionna.rt.load_scene(str(file))
         scene.frequency = 28e9
         scene.tx_array = sionna.rt.PlanarArray(
-            num_rows=1, num_cols=1, vertical_spacing=0.5, horizontal_spacing=0.5, pattern="iso", polarization="V"
+            num_rows=1,
+            num_cols=1,
+            vertical_spacing=0.5,
+            horizontal_spacing=0.5,
+            pattern="iso",
+            polarization="V",
         )
         scene.rx_array = scene.tx_array
         scene.add(sionna.rt.Transmitter(name="tx", position=tx_pos))
@@ -704,12 +778,12 @@ def main():
         rm = rm_solver(
             scene=scene,
             cell_size=[1, 1],
-            samples_per_tx=10_000_000 if test_mode else 10_000_000,
+            samples_per_tx=10_000_000,
             max_depth=5,
             los=True,
             specular_reflection=True,
             refraction=False,
-            diffraction=True,
+            diffraction=False,
         )
 
         power_db = 10 * np.log10(rm.transmitter_radio_map("path_gain", 0).numpy())
@@ -736,15 +810,24 @@ def main():
                     cmax=vmax,
                     figure=fig,
                     backend="plotly",
+                    showscale=False,
                 )
 
                 for view_idx, camera_setup in enumerate(camera_setups):
                     camera, s = get_camera_dict(
-                        camera_setup, frame_idx, num_frames,
-                        C_0=C_0, R_x_0=R_x_0, R_y_0=R_y_0, R_z_fixed=R_z_fixed,
-                        xmin_fixed=xmin_fixed, xmax_fixed=xmax_fixed,
-                        ymin_fixed=ymin_fixed, ymax_fixed=ymax_fixed,
-                        diag_hybrid=diag_hybrid, diag_orig=diag_orig
+                        camera_setup,
+                        frame_idx,
+                        num_frames,
+                        C_0=C_0,
+                        R_x_0=R_x_0,
+                        R_y_0=R_y_0,
+                        R_z_fixed=R_z_fixed,
+                        xmin_fixed=xmin_fixed,
+                        xmax_fixed=xmax_fixed,
+                        ymin_fixed=ymin_fixed,
+                        ymax_fixed=ymax_fixed,
+                        diag_hybrid=diag_hybrid,
+                        diag_orig=diag_orig,
                     )
 
                     fig.update_layout(
@@ -755,7 +838,9 @@ def main():
                         scene=dict(
                             aspectmode="manual",
                             aspectratio=dict(
-                                x=s * 1.0, y=s * (R_y_0 / R_x_0), z=s * (R_z_fixed / R_x_0)
+                                x=s * 1.0,
+                                y=s * (R_y_0 / R_x_0),
+                                z=s * (R_z_fixed / R_x_0),
                             ),
                             xaxis=dict(visible=False, range=[xmin_fixed, xmax_fixed]),
                             yaxis=dict(visible=False, range=[ymin_fixed, ymax_fixed]),
@@ -763,38 +848,46 @@ def main():
                             bgcolor="rgba(0,0,0,0)",
                         ),
                     )
-                    fig.write_html(f"S4_v{view_idx}_{frame_idx:03d}.html")
-                    fig.write_image(seq_dir / f"S4_v{view_idx}_{frame_idx:03d}.png", width=1920, height=1080)
+                    fig.write_image(
+                        seq_dir / f"S4_v{view_idx}_{frame_idx:03d}.png",
+                        width=1920,
+                        height=1080,
+                    )
 
     # --- SEQUENCE 5: Moving Transmitter dynamic Radio Map (Diffraction Disabled) ---
-    if "S5" in run_sequences and munich_scene_loaded:
+    if ("S5" in run_sequences or "S5bis" in run_sequences) and munich_scene_loaded:
         print("\n--- Running Sequence 5: Moving Transmitter Dynamic Radio Map ---")
         seq_dir = output_root / "S5"
         seq_dir.mkdir(parents=True, exist_ok=True)
 
         # Linear trajectory along the x-axis
         tx_xs = np.linspace(-50.0, 100.0, num_frames)
-        tx_ys = np.full(num_frames, 21.0)
-        tx_zs = np.full(num_frames, 27.0)
-
-        # Set up grid of 40x40 receivers
-        dim_x, dim_y = 40, 40
-        x_min_grid, x_max_grid = -70.0, 130.0
-        y_min_grid, y_max_grid = -40.0, 160.0
+        tx_ys = np.full(num_frames, 13.0)
+        tx_zs = np.full(num_frames, 32.4)
         z0 = 1.5
 
-        x_vals = np.linspace(x_min_grid, x_max_grid, dim_x)
-        y_vals = np.linspace(y_min_grid, y_max_grid, dim_y)
+        bbox = base_scene.mesh.bounding_box
+        min_x, max_x = float(bbox[0, 0]), float(bbox[1, 0])
+        min_y, max_y = float(bbox[0, 1]), float(bbox[1, 1])
 
-        for frame_idx in tqdm(frame_indices, desc="S5 Frames"):
-            tx_pos = [float(tx_xs[frame_idx]), float(tx_ys[frame_idx]), float(tx_zs[frame_idx])]
+        for frame_idx in tqdm(frame_indices, desc="S5/S5bis Frames"):
+            tx_pos = [
+                float(tx_xs[frame_idx]),
+                float(tx_ys[frame_idx]),
+                float(tx_zs[frame_idx]),
+            ]
             tx_antenna_mesh = load_tx_antenna_mesh(tx_pos, scale_height=8.0)
 
             # Solve paths in Sionna for the current transmitter position
             frame_scene = sionna.rt.load_scene(str(file))
             frame_scene.frequency = 28e9
             frame_scene.tx_array = sionna.rt.PlanarArray(
-                num_rows=1, num_cols=1, vertical_spacing=0.5, horizontal_spacing=0.5, pattern="iso", polarization="V"
+                num_rows=1,
+                num_cols=1,
+                vertical_spacing=0.5,
+                horizontal_spacing=0.5,
+                pattern="iso",
+                polarization="V",
             )
             frame_scene.rx_array = frame_scene.tx_array
             frame_scene.add(sionna.rt.Transmitter(name="tx", position=tx_pos))
@@ -802,111 +895,41 @@ def main():
             rm_solver = sionna.rt.RadioMapSolver()
             rm = rm_solver(
                 scene=frame_scene,
-                center=[30.0, 60.0, 1.5],
-                orientation=[0.0, 0.0, 0.0],
-                size=[200.0, 200.0],
-                cell_size=[5.0, 5.0],
-                samples_per_tx=100_000 if test_mode else 10_000_000,
-                max_depth=5,
+                cell_size=[1.0, 1.0],
+                samples_per_tx=10_000_000,
+                max_depth=args.max_order,
                 los=True,
                 specular_reflection=True,
                 refraction=False,
                 diffraction=False,
             )
 
-            power_db = 10.0 * np.log10(np.maximum(rm.transmitter_radio_map("path_gain", 0).numpy(), 1e-15))
-            power_db_grid = power_db
-
-            with reuse() as fig:
-                # Plot buildings and tx antenna
-                mesh.plot(figure=fig, showlegend=False)
-                tx_antenna_mesh.plot(figure=fig, opacity=1.0, showlegend=False)
-
-                # Draw dynamic radio map
-                draw_image(
-                    power_db_grid,
-                    x=x_vals,
-                    y=y_vals,
-                    z0=z0,
-                    colorscale="Plasma",
-                    cmin=-140,
-                    cmax=-50,
-                    opacity=0.7,
-                    figure=fig,
-                    backend="plotly",
-                )
-
-                for view_idx, camera_setup in enumerate(camera_setups):
-                    camera, s = get_camera_dict(
-                        camera_setup, frame_idx, num_frames,
-                        C_0=C_0, R_x_0=R_x_0, R_y_0=R_y_0, R_z_fixed=R_z_fixed,
-                        xmin_fixed=xmin_fixed, xmax_fixed=xmax_fixed,
-                        ymin_fixed=ymin_fixed, ymax_fixed=ymax_fixed,
-                        diag_hybrid=diag_hybrid, diag_orig=diag_orig
-                    )
-
-                    fig.update_layout(
-                        scene_camera=camera,
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        margin=dict(l=0, r=0, t=0, b=0),
-                        scene=dict(
-                            aspectmode="manual",
-                            aspectratio=dict(
-                                x=s * 1.0, y=s * (R_y_0 / R_x_0), z=s * (R_z_fixed / R_x_0)
-                            ),
-                            xaxis=dict(visible=False, range=[xmin_fixed, xmax_fixed]),
-                            yaxis=dict(visible=False, range=[ymin_fixed, ymax_fixed]),
-                            zaxis=dict(visible=False, range=[zmin_fixed, zmax_fixed]),
-                            bgcolor="rgba(0,0,0,0)",
-                        ),
-                    )
-                    fig.write_image(seq_dir / f"S5_v{view_idx}_{frame_idx:03d}.png", width=1920, height=1080)
-
-    # --- SEQUENCE 5bis: Moving Transmitter Multipath Lifetime Map (MLM) (DiffeRT) ---
-    if "S5bis" in run_sequences and munich_scene_loaded:
-        print("\n--- Running Sequence 5bis: Moving Transmitter Multipath Lifetime Map (MLM) ---")
-        seq_dir = output_root / "S5bis"
-        seq_dir.mkdir(parents=True, exist_ok=True)
-
-        # Linear trajectory along the x-axis (identical to S5)
-        tx_xs = np.linspace(-50.0, 100.0, num_frames)
-        tx_ys = np.full(num_frames, 21.0)
-        tx_zs = np.full(num_frames, 27.0)
-
-        # Set up grid of 40x40 receivers
-        dim_x, dim_y = 40, 40
-        x_min_grid, x_max_grid = -70.0, 130.0
-        y_min_grid, y_max_grid = -40.0, 160.0
-        z0 = 1.5
-
-        x_vals = np.linspace(x_min_grid, x_max_grid, dim_x)
-        y_vals = np.linspace(y_min_grid, y_max_grid, dim_y)
-
-        for frame_idx in tqdm(frame_indices, desc="S5bis Frames"):
-            tx_pos = [float(tx_xs[frame_idx]), float(tx_ys[frame_idx]), float(tx_zs[frame_idx])]
-            tx_antenna_mesh = load_tx_antenna_mesh(tx_pos, scale_height=8.0)
+            power_db = 10 * np.log10(rm.transmitter_radio_map("path_gain", 0).numpy())
+            vmin = np.min(power_db, where=np.isfinite(power_db), initial=np.inf)
+            vmax = np.max(power_db, where=np.isfinite(power_db), initial=-np.inf)
+            dim_y, dim_x = power_db.shape
+            x_vals = np.linspace(min_x, max_x, dim_x)
+            y_vals = np.linspace(min_y, max_y, dim_y)
 
             # Compute Multipath Lifetime Map (DiffeRT)
             current_scene = eqx.tree_at(
                 lambda s: s.transmitters, base_scene, jnp.array([tx_pos])
             )
             mlm_map = current_scene.compute_tx_mlm(
-                min_order=args.min_order,
+                min_order=0,
                 max_order=args.max_order,
-                dim_x=dim_x,
-                dim_y=dim_y,
+                dim_x=dim_x // 3,
+                dim_y=dim_y // 3,
                 num_rays=10_000_000,
                 height=z0,
             )
-            
-            import jax.random as jr
+
             mlm_map = jnp.squeeze(mlm_map).T
 
             # Discrete color mapping
             colors = jnp.vectorize(
                 lambda h: jr.uniform(jr.key(h), shape=(4,)).at[3].set(1.0),
-                signature="()->(4)"
+                signature="()->(4)",
             )(mlm_map)
             colors = jnp.where(mlm_map[..., None] == 0, 0, colors)
 
@@ -918,20 +941,31 @@ def main():
                 # Draw MLM image
                 draw_image(
                     colors,
-                    x=x_vals,
-                    y=y_vals,
+                    x=x_vals[::3],
+                    y=y_vals[::3],
                     z0=z0,
                     figure=fig,
                     backend="plotly",
+                    showscale=False,
                 )
 
-                for view_idx, camera_setup in enumerate(camera_setups):
+                for view_idx, camera_setup in enumerate(
+                    tqdm(camera_setups, desc="Camera views for MLM", leave=False)
+                ):
                     camera, s = get_camera_dict(
-                        camera_setup, frame_idx, num_frames,
-                        C_0=C_0, R_x_0=R_x_0, R_y_0=R_y_0, R_z_fixed=R_z_fixed,
-                        xmin_fixed=xmin_fixed, xmax_fixed=xmax_fixed,
-                        ymin_fixed=ymin_fixed, ymax_fixed=ymax_fixed,
-                        diag_hybrid=diag_hybrid, diag_orig=diag_orig
+                        camera_setup,
+                        frame_idx,
+                        num_frames,
+                        C_0=C_0,
+                        R_x_0=R_x_0,
+                        R_y_0=R_y_0,
+                        R_z_fixed=R_z_fixed,
+                        xmin_fixed=xmin_fixed,
+                        xmax_fixed=xmax_fixed,
+                        ymin_fixed=ymin_fixed,
+                        ymax_fixed=ymax_fixed,
+                        diag_hybrid=diag_hybrid,
+                        diag_orig=diag_orig,
                     )
 
                     fig.update_layout(
@@ -942,7 +976,9 @@ def main():
                         scene=dict(
                             aspectmode="manual",
                             aspectratio=dict(
-                                x=s * 1.0, y=s * (R_y_0 / R_x_0), z=s * (R_z_fixed / R_x_0)
+                                x=s * 1.0,
+                                y=s * (R_y_0 / R_x_0),
+                                z=s * (R_z_fixed / R_x_0),
                             ),
                             xaxis=dict(visible=False, range=[xmin_fixed, xmax_fixed]),
                             yaxis=dict(visible=False, range=[ymin_fixed, ymax_fixed]),
@@ -950,7 +986,71 @@ def main():
                             bgcolor="rgba(0,0,0,0)",
                         ),
                     )
-                    fig.write_image(seq_dir / f"S5bis_v{view_idx}_{frame_idx:03d}.png", width=1920, height=1080)
+                    fig.write_image(
+                        seq_dir / f"S5bis_v{view_idx}_{frame_idx:03d}.png",
+                        width=1920,
+                        height=1080,
+                    )
+
+            with reuse() as fig:
+                # Plot buildings and tx antenna
+                mesh.plot(figure=fig, showlegend=False)
+                tx_antenna_mesh.plot(figure=fig, opacity=1.0, showlegend=False)
+
+                # Draw dynamic radio map
+                draw_image(
+                    power_db,
+                    x=x_vals,
+                    y=y_vals,
+                    z0=z0,
+                    colorscale="Plasma",
+                    cmin=vmin,
+                    cmax=vmax,
+                    figure=fig,
+                    backend="plotly",
+                    showscale=False,
+                )
+
+                for view_idx, camera_setup in enumerate(camera_setups):
+                    camera, s = get_camera_dict(
+                        camera_setup,
+                        frame_idx,
+                        num_frames,
+                        C_0=C_0,
+                        R_x_0=R_x_0,
+                        R_y_0=R_y_0,
+                        R_z_fixed=R_z_fixed,
+                        xmin_fixed=xmin_fixed,
+                        xmax_fixed=xmax_fixed,
+                        ymin_fixed=ymin_fixed,
+                        ymax_fixed=ymax_fixed,
+                        diag_hybrid=diag_hybrid,
+                        diag_orig=diag_orig,
+                    )
+
+                    fig.update_layout(
+                        scene_camera=camera,
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        plot_bgcolor="rgba(0,0,0,0)",
+                        margin=dict(l=0, r=0, t=0, b=0),
+                        scene=dict(
+                            aspectmode="manual",
+                            aspectratio=dict(
+                                x=s * 1.0,
+                                y=s * (R_y_0 / R_x_0),
+                                z=s * (R_z_fixed / R_x_0),
+                            ),
+                            xaxis=dict(visible=False, range=[xmin_fixed, xmax_fixed]),
+                            yaxis=dict(visible=False, range=[ymin_fixed, ymax_fixed]),
+                            zaxis=dict(visible=False, range=[zmin_fixed, zmax_fixed]),
+                            bgcolor="rgba(0,0,0,0)",
+                        ),
+                    )
+                    fig.write_image(
+                        seq_dir / f"S5_v{view_idx}_{frame_idx:03d}.png",
+                        width=1920,
+                        height=1080,
+                    )
 
     print("\nPresentation animations generation completed successfully!")
 
