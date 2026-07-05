@@ -1,8 +1,9 @@
 [project]
 dependencies = [
-  "differt>=0.8.2",
+  "differt>=0.9.1",
+  "differt2d>=0.4.1",
   "equinox>=0.13.8",
-  "jax[cuda12]>=0.10.2",
+  "jax>=0.10.2",
   "kaleido==0.2.1",
   "manim>=0.20.1",
   "manim-slides[manim,pyside6]==5.6.0",
@@ -15,3 +16,8 @@ description = "Add your description here"
 name = "2026-07-06-public-defense"
 requires-python = ">=3.11"
 version = "0.1.0"
+
+[tool.uv]
+override-dependencies = [
+  "differt-core==0.9.1",
+]
