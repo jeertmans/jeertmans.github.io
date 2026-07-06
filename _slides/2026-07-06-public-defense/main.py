@@ -1,4 +1,5 @@
 import io
+import random
 import textwrap
 from typing import Any
 
@@ -6,24 +7,18 @@ import differt.plotting as dplt
 import jax
 import jax.numpy as jnp
 import manim as m
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
 import numpy as np
 import plotly.graph_objects as go
 from differt.geometry import spherical_to_cartesian
 from differt.scene import TriangleScene, download_sionna_scenes, get_sionna_scene
-from manim.constants import LineJointType
-from manim_slides import Slide
-from PIL import Image
-import random
-
-import jax
-import jax.numpy as jnp
-import manim as m
-import matplotlib.colors as mcolors
-import matplotlib.pyplot as plt
-import numpy as np
 from differt2d.geometry import Point, Wall
 from differt2d.scene import Scene as D2DScene
 from differt2d.utils import P0, received_power
+from manim.constants import LineJointType
+from manim_slides import Slide
+from PIL import Image
 
 dplt.set_defaults("plotly")
 download_sionna_scenes()
@@ -247,17 +242,21 @@ def title_box(text: str, *, use_tex: bool = False, underline: bool = False) -> m
     line = m.Line(m.LEFT * 6.2, m.RIGHT * 6.2, color=ACCENT_CYAN, stroke_width=4)
     if use_tex:
         title = m.Tex(
-            text, font_size=HEADER_SIZE, color=TEXT_COLOR,
-            tex_environment="boldenv" 
+            text, font_size=HEADER_SIZE, color=TEXT_COLOR, tex_environment="boldenv"
         )
     else:
         title = m.Text(
-            text, font_size=HEADER_SIZE, color=TEXT_COLOR, weight=m.BOLD, font=FONT_FAMILY
+            text,
+            font_size=HEADER_SIZE,
+            color=TEXT_COLOR,
+            weight=m.BOLD,
+            font=FONT_FAMILY,
         )
     title.next_to(line, m.UP, buff=0.2)
     if not underline:
         return title.to_edge(m.UP, buff=0.45)
     return m.VGroup(title, line).to_edge(m.UP, buff=0.45)
+
 
 def info_card(
     title: str,
@@ -415,10 +414,6 @@ class BilliardTable(m.VGroup):
             ).move_to(self.building)
             self.add(self.building, self.building_lbl)
 
-    
-
-    
-
         # Optimization RX setup (Hidden initially, added in Part 2)
         # Asymmetric placement: RX1 is closer to TX (left side), RX2 is on the right
         self.rx1_pos = np.array([width * 0.1, height * 0.3, 0.0])
@@ -446,8 +441,6 @@ class BilliardTable(m.VGroup):
         self.pockets.set_z_index(6)
 
         self.rxs = m.VGroup(self.rx1, self.rx2, self.rx1_lbl, self.rx2_lbl)
-
-
 
     @property
     def rx_pos(self):
@@ -676,7 +669,6 @@ def get_bounce_path(tx, angle, width, height, table_center, border_thickness=0.0
     ]
 
 
-
 # --- 📐 differt2d Math Logic ---
 def create_differt2d_scene(tx_pos, width=5.0, height=3.5, obs_w=1.2, obs_h=1.0):
     w, h = width, height
@@ -728,6 +720,7 @@ def create_differt2d_scene_opt(
     rx1 = Point(xy=jnp.array([rx1_pos[0], rx1_pos[1]]))
     rx2 = Point(xy=jnp.array([rx2_pos[0], rx2_pos[1]]))
     return D2DScene(receivers={"rx1": rx1, "rx2": rx2}, objects=walls)
+
 
 # =========================================================================
 # MLM (Multipath Lifetime Map) Helper Functions
@@ -1143,9 +1136,7 @@ class Main(Slide, m.MovingCameraScene):
 
         tex_template = m.TexFontTemplates.droid_sans.add_to_preamble(
             r"\DeclareMathOperator*{\argmin}{arg\,min}"
-        ).add_to_preamble(
-            r"\newenvironment{boldenv}{\bfseries}{}"
-        )
+        ).add_to_preamble(r"\newenvironment{boldenv}{\bfseries}{}")
 
         m.Text.set_default(color=TEXT_COLOR, font=FONT_FAMILY)
         m.MathTex.set_default(color=TEXT_COLOR, tex_template=tex_template)
@@ -1170,7 +1161,7 @@ class Main(Slide, m.MovingCameraScene):
 
         # Bottom navigation bar
         section_boxes = m.VGroup()
-        for idx, name in enumerate(SECTIONS):
+        for _idx, name in enumerate(SECTIONS):
             box = m.RoundedRectangle(
                 width=1.8,
                 height=0.42,
@@ -1331,7 +1322,7 @@ class Main(Slide, m.MovingCameraScene):
 
         np.random.seed(42)
         update_funcs = []
-        for obj in all_title_objects:
+        for _obj in all_title_objects:
             dx_func = get_random_periodic_func(0.015)
             dy_func = get_random_periodic_func(0.015)
             op_func = get_random_periodic_func(0.2)
@@ -1360,7 +1351,7 @@ class Main(Slide, m.MovingCameraScene):
 
         anims = [
             m.UpdateFromAlphaFunc(obj, func)
-            for obj, func in zip(all_title_objects, update_funcs)
+            for obj, func in zip(all_title_objects, update_funcs, strict=True)
         ]
         self.play(*anims, run_time=3.0, rate_func=m.linear)
 
@@ -1453,8 +1444,6 @@ class Main(Slide, m.MovingCameraScene):
             other_antennas.append(mob)
 
         self.add(*other_antennas)
-
-        import random
 
         other_indices = [i for i in range(20) if i != 18]
         random.seed(42)
@@ -1725,7 +1714,9 @@ class Main(Slide, m.MovingCameraScene):
 
         # Pause, then add "Ray Tracing for" to the title
         t6 = title_box(
-            "{{Ray Tracing}} {{for}} {{Wave}} {{Propagation}} {{Modeling}}", use_tex=True)
+            "{{Ray Tracing}} {{for}} {{Wave}} {{Propagation}} {{Modeling}}",
+            use_tex=True,
+        )
         t6[0].set_color(ACCENT_CYAN)
         for idx in [2, 4, 6, 8]:
             t6[idx].set_color(TEXT_COLOR)
@@ -1737,7 +1728,8 @@ class Main(Slide, m.MovingCameraScene):
 
         # Changing "Wave" to "Radio"
         t7 = title_box(
-            "{{Ray Tracing}} {{for}} {{Radio}} {{Propagation}} {{Modeling}}", use_tex=True
+            "{{Ray Tracing}} {{for}} {{Radio}} {{Propagation}} {{Modeling}}",
+            use_tex=True,
         )
         t7[4].set_color(ACCENT_CYAN)
         for idx in [0, 2, 6, 8]:
@@ -1750,7 +1742,9 @@ class Main(Slide, m.MovingCameraScene):
 
         # Add "Differentiable"
         t8, t8_underline = title_box(
-            "{{Differentiable}} {{Ray Tracing}} {{for}} {{Radio}} {{Propagation}} {{Modeling}}", use_tex=True, underline=True
+            "{{Differentiable}} {{Ray Tracing}} {{for}} {{Radio}} {{Propagation}} {{Modeling}}",
+            use_tex=True,
+            underline=True,
         )
         t8.set_color(ACCENT_CYAN)
 
@@ -2160,7 +2154,7 @@ class Main(Slide, m.MovingCameraScene):
                 "The Cushions are the Building Walls.",
                 "Finding a valid ray is finding a successful bounce shot.",
             ],
-            width=42,
+            width=38,
         )
         billiard_bullets.next_to(billiard_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
@@ -2239,7 +2233,7 @@ class Main(Slide, m.MovingCameraScene):
 
         self.next_slide(notes="Introduce the analogy bullet points one by one.")
         for i, b in enumerate(billiard_bullets):
-            self.next_slide(notes=f"Billiard analogy bullet point {i+1}.")
+            self.next_slide(notes=f"Billiard analogy bullet point {i + 1}.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
         self.next_slide(
@@ -2283,7 +2277,7 @@ class Main(Slide, m.MovingCameraScene):
                 "Draw a straight line from the receiver (RX) to the virtual transmitter (TX').",
                 "The intersection with the cushion defines the exact bounce point.",
             ],
-            width=42,
+            width=38,
         )
         image_bullets.next_to(image_header, m.DOWN, buff=0.65).to_edge(
             m.LEFT, buff=0.75
@@ -3054,7 +3048,7 @@ class Main(Slide, m.MovingCameraScene):
         self.play(
             m.FadeOut(DIFF_W1_A),
             m.FadeOut(DIFF_W1_B),
-            UE_group.animate.move_to(np.array([2.0, -10.0, 0])),
+            UE_group.animate.move_to(np.array([2.0, -11.5, 0])),
             m.Transform(
                 interaction_title,
                 m.Text("Refraction", font_size=16, color=ACCENT_CYAN).move_to(
@@ -3335,7 +3329,12 @@ class Main(Slide, m.MovingCameraScene):
             )
         )
         rx_moving = m.always_redraw(
-            lambda: m.Dot(rx_current(), color=ACCENT_CYAN, radius=0.12, z_index=bt.pockets.z_index + 1)
+            lambda: m.Dot(
+                rx_current(),
+                color=ACCENT_CYAN,
+                radius=0.12,
+                z_index=bt.pockets.z_index + 1,
+            )
         )
 
         self.next_slide(
@@ -3386,9 +3385,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide(notes="Introducting the MLM.")
         self.play(
             *next_meta(),
-            self.wipe(
-                prev_slide_content, [mlm_header], return_animation=True
-            ),
+            self.wipe(prev_slide_content, [mlm_header], return_animation=True),
             m.FadeOut(bt.pocket_lbl),
             m.FadeIn(watermark),
         )
@@ -3722,7 +3719,9 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         for order in [0, 1, 2, 3]:
-            for _, _, valid, path, _ in d2d_scene.all_paths(min_order=order, max_order=order):
+            for _, _, valid, path, _ in d2d_scene.all_paths(
+                min_order=order, max_order=order
+            ):
                 points = [
                     table_center + np.array([float(pt[0]), float(pt[1]), 0.0])
                     for pt in path.xys
@@ -3731,7 +3730,9 @@ class Main(Slide, m.MovingCameraScene):
                 path_mob = (
                     m.VMobject(joint_type=m.constants.LineJointType.BEVEL)
                     .set_points_as_corners(points)
-                    .set_stroke(color=color, width=1.5 if not valid else 2.5, opacity=0.85)
+                    .set_stroke(
+                        color=color, width=1.5 if not valid else 2.5, opacity=0.85
+                    )
                     .set_fill(opacity=0)
                 )
                 all_candidate_mobs.append((path_mob, bool(valid)))
@@ -3745,8 +3746,7 @@ class Main(Slide, m.MovingCameraScene):
             *next_meta(new_section=3),
             self.wipe(prev_slide_content, [explosion_header], return_animation=True),
         )
-        self.play(m.FadeIn(bt_exp))
-        self.remove(bt)
+        self.play(m.FadeOut(bt), m.FadeIn(bt_exp))
 
         # Step 1: Show all candidates
         self.next_slide(
@@ -3758,50 +3758,16 @@ class Main(Slide, m.MovingCameraScene):
             run_time=2.0,
         )
 
-        # Step 2: Mark invalid paths
+        # Step 2: Fade invalid paths
         self.next_slide(
-            notes="First filter: mark all physically impossible or obstructed paths in red and fade them out."
-        )
-        invalid_label = (
-            m.Text(
-                "Invalid paths filtered ✗",
-                font_size=16,
-                color=ACCENT_RED,
-                font=FONT_FAMILY,
-            )
-            .to_edge(m.DOWN, buff=0.95)
-            .to_edge(m.LEFT, buff=0.75)
+            notes="First filter: fade out all physically impossible or obstructed paths."
         )
         invalid_anims = []
         for path_mob, valid in all_candidate_mobs:
             if not valid:
                 invalid_anims.append(path_mob.animate.set_stroke(opacity=0.15))
-        self.play(*invalid_anims, m.FadeIn(invalid_label))
+        self.play(*invalid_anims)
         self.next_slide()
-        self.play(m.FadeOut(invalid_label))
-
-        # Step 3: Celebrate valid paths
-        self.next_slide(
-            notes="What remains are the valid ray paths — the ones that successfully connect "
-            "transmitter to receiver via the correct wall bounces."
-        )
-        valid_label = (
-            m.Text(
-                "Valid paths retained ✓",
-                font_size=16,
-                color=ACCENT_GREEN,
-                font=FONT_FAMILY,
-            )
-            .to_edge(m.DOWN, buff=0.95)
-            .to_edge(m.LEFT, buff=0.75)
-        )
-        valid_anims = []
-        for path_mob, valid in all_candidate_mobs:
-            if valid:
-                valid_anims.append(path_mob.animate.set_stroke(width=3.0, opacity=1.0))
-        self.play(*valid_anims, m.FadeIn(valid_label))
-        self.next_slide()
-        self.play(m.FadeOut(valid_label))
 
         # Bullet points
         self.next_slide(notes="Candidate explosion bullet points.")
@@ -3824,15 +3790,12 @@ class Main(Slide, m.MovingCameraScene):
                 "Train a neural network to predict valid wall sequences directly.",
                 "Uses reinforcement-learning.",
                 "From exponential to linear time complexity.",
-
                 "Bypasses checking millions of impossible candidate paths.",
                 "Still use deterministic Ray Tracing to verify paths.",
             ],
             width=38,
         )
         ml_bullets.next_to(ml_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
-
-        
 
         self.next_slide(
             notes="Our next contribution solves the candidate explosion using machine learning. "
@@ -3849,7 +3812,28 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide(notes="Machine learning path sampling explanation.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [ml_header, ml_bullets, watermark]
+        self.next_slide(notes="Example of a trained generative path sampler output.")
+
+        all_valid_path_mobs = [mob for mob, valid in all_candidate_mobs if valid]
+        some_invalid_path_mobs = [
+            mob for mob, valid in all_candidate_mobs if not valid
+        ][:3]
+        for mob in some_invalid_path_mobs:
+            mob.set_stroke(opacity=1.0)
+
+        self.play(
+            *[m.Create(mob) for mob in all_valid_path_mobs],
+            *[m.Create(mob) for mob in some_invalid_path_mobs],
+            run_time=2.0,
+        )
+
+        prev_slide_content = [
+            ml_header,
+            ml_bullets,
+            watermark,
+            *all_valid_path_mobs,
+            *some_invalid_path_mobs,
+        ]
         # SLIDE 13: Coverage Maps & Power Gradient Vector Field
         # =========================================================================
         cov_header = title_box("Coverage Maps & Gradients")
@@ -3970,22 +3954,24 @@ class Main(Slide, m.MovingCameraScene):
             return coverage_map, vec_field
 
         # --- Base Animations ---
-        title = m.Text(
-            "Order = 3", font_size=16, color=m.WHITE
-        ).next_to(bt, m.DOWN)
+        title = m.Text("Order = 3", font_size=16, color=m.WHITE).next_to(bt, m.DOWN)
         cov, vec = get_fields_for_state(order=3, approx=False)
 
-        self.next_slide(notes="Something we are often interesting in for outdoor positioning is knowing what areas are reachable. What we can do is calculate the coverage map.")
+        self.next_slide(
+            notes="Something we are often interesting in for outdoor positioning is knowing what areas are reachable. What we can do is calculate the coverage map."
+        )
         self.play(
             *next_meta(new_section=4),
             self.wipe(prev_slide_content, [cov_header], return_animation=True),
-            m.FadeOut(bt.pocket_lbl),
+            m.FadeOut(bt_exp.pocket_lbl),
         )
         self.next_slide(notes="Coverage map")
-        self.play(m.FadeIn(title, shift=m.DOWN*0.15))
+        self.play(m.FadeIn(title, shift=m.DOWN * 0.15))
         self.play(m.FadeIn(cov), run_time=1.5)
 
-        self.next_slide(notes="And the gradient of the coverage map gives us a vector field, indicating the direction of the strongest increase in coverage.")
+        self.next_slide(
+            notes="And the gradient of the coverage map gives us a vector field, indicating the direction of the strongest increase in coverage."
+        )
         submobs = vec.submobjects.copy()
         random.shuffle(submobs)
         self.play(
@@ -3996,9 +3982,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide()
 
         # State 2
-        title_2 = m.Text(
-            "Order = 2", font_size=16, color=m.WHITE
-        ).next_to(bt, m.DOWN)
+        title_2 = m.Text("Order = 2", font_size=16, color=m.WHITE).next_to(bt, m.DOWN)
         cov_2, vec_2 = get_fields_for_state(order=2, approx=False)
         self.play(
             m.Transform(title, title_2),
@@ -4008,9 +3992,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide()
 
         # State 3
-        title_1 = m.Text(
-            "Order = 1", font_size=16, color=m.WHITE
-        ).next_to(bt, m.DOWN)
+        title_1 = m.Text("Order = 1", font_size=16, color=m.WHITE).next_to(bt, m.DOWN)
         cov_1, vec_1 = get_fields_for_state(order=1, approx=False)
         self.play(
             m.Transform(title, title_1),
@@ -4073,26 +4055,27 @@ class Main(Slide, m.MovingCameraScene):
         def relu6(x):
             return np.minimum(np.maximum(x, 0), 6)
 
-        def hard_sigmoid(x):
-            return relu6(alpha.get_value() * x + 3) / 6
-
-        grid = m.Axes(
-            x_range=[-6, 6, 0.05],  # step size determines num_decimal_places.
-            y_range=[0, +1, 0.05],
-            x_length=9,
-            y_length=5.5,
-            axis_config={
-                "include_numbers": True,
-                "include_ticks": False,
-            },
-            x_axis_config={
-                "numbers_to_include": [-6, 0, 6],
-            },
-            y_axis_config={
-                "numbers_to_include": [0, 0.5, 1],
-            },
-            tips=False,
-        ).scale(0.6).move_to(self.camera.frame.get_center())
+        grid = (
+            m.Axes(
+                x_range=[-6, 6, 0.05],  # step size determines num_decimal_places.
+                y_range=[0, +1, 0.05],
+                x_length=9,
+                y_length=5.5,
+                axis_config={
+                    "include_numbers": True,
+                    "include_ticks": False,
+                },
+                x_axis_config={
+                    "numbers_to_include": [-6, 0, 6],
+                },
+                y_axis_config={
+                    "numbers_to_include": [0, 0.5, 1],
+                },
+                tips=False,
+            )
+            .scale(0.6)
+            .move_to(self.camera.frame.get_center())
+        )
 
         alpha_d = m.always_redraw(
             lambda: (
@@ -4139,15 +4122,9 @@ class Main(Slide, m.MovingCameraScene):
         sigmoid_graph = m.always_redraw(
             lambda: grid.plot(sigmoid, color=m.BLUE, use_vectorized=True)
         )
-        hard_sigmoid_graph = m.always_redraw(
-            lambda: grid.plot(hard_sigmoid, color=m.ORANGE, use_vectorized=True)
-        )
 
         self.next_slide()
         self.play(m.Create(sigmoid_graph))
-
-        self.next_slide()
-        self.play(m.Create(hard_sigmoid_graph))
 
         self.next_slide(notes="Let's animate alpha.")
         self.play(alpha.animate.set_value(10), run_time=4)
@@ -4177,7 +4154,6 @@ class Main(Slide, m.MovingCameraScene):
             alpha_d,
             step_graph,
             sigmoid_graph,
-            hard_sigmoid_graph,
             alpha,
         )
 
@@ -4188,19 +4164,26 @@ class Main(Slide, m.MovingCameraScene):
             m.FadeIn(watermark),
         )
 
-        for b_smooth, b_discont in zip(smooth_bullets, discont_bullets):
+        for b_smooth, b_discont in zip(smooth_bullets, discont_bullets, strict=True):
             self.next_slide(notes="Discontinuity - smoothness explanation bullet.")
             self.wipe([b_discont], [b_smooth], run_time=0.5)
 
         prev_slide_content = [smooth_header, smooth_bullets]
 
+        self.next_slide()
+
         # State 5
-        title_smooth = m.Text(
-            "Order = 1, Smoothed (alpha =  100.0)", font_size=16, color=m.WHITE
-        ).next_to(bt, m.DOWN)
+        alpha_t = m.ValueTracker(100.0)
+        title_smooth = m.always_redraw(
+            lambda: m.Text(
+                f"Order = 1, Smoothed (alpha = {alpha_t.get_value():6.1f})",
+                font_size=16,
+                color=m.WHITE,
+            ).next_to(bt, m.DOWN)
+        )
         cov_smooth, vec_smooth = get_fields_for_state(order=1, approx=True, alpha=100.0)
         self.play(
-            m.Transform(title, title_smooth),
+            m.ReplacementTransform(title, title_smooth),
             m.Transform(cov, cov_smooth),
             m.Transform(vec, vec_smooth),
         )
@@ -4209,15 +4192,12 @@ class Main(Slide, m.MovingCameraScene):
         # --- ALPHA ANIMATION PHASE 1: 100 down to 1 ---
         alphas_down = np.logspace(2, 0, 15)
         for a in alphas_down[1:]:
-            new_title = m.Text(
-                f"Order = 1, Smoothed (alpha = {a:6.1f})", font_size=16, color=m.WHITE
-            ).next_to(bt, m.DOWN)
             new_cov, new_vec = get_fields_for_state(
                 order=1, approx=True, alpha=float(a)
             )
 
             self.play(
-                title.animate.become(new_title),
+                alpha_t.animate.set_value(a),
                 m.Transform(cov, new_cov),
                 m.Transform(vec, new_vec),
                 run_time=0.2,
@@ -4229,16 +4209,12 @@ class Main(Slide, m.MovingCameraScene):
         # --- ALPHA ANIMATION PHASE 2: 1 up to 10000 ---
         alphas_up = np.logspace(0, 4, 30)
         for a in alphas_up[1:]:
-            val_str = f"{a:6.1f}"
-            new_title = m.Text(
-                f"Order = 1, Smoothed (alpha = {val_str})", font_size=16, color=m.WHITE
-            ).next_to(bt, m.DOWN)
             new_cov, new_vec = get_fields_for_state(
                 order=1, approx=True, alpha=float(a)
             )
 
             self.play(
-                title.animate.become(new_title),
+                alpha_t.animate.set_value(a),
                 m.Transform(cov, new_cov),
                 m.Transform(vec, new_vec),
                 run_time=0.2,
@@ -4248,9 +4224,7 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide()
 
         # Transition: Fade out Part 1 assets, keep the Billiard Table!
-        self.play(m.FadeOut(title), m.FadeOut(cov), m.FadeOut(vec))
-
-        self.next_slide()
+        self.play(m.FadeOut(title_smooth), m.FadeOut(cov), m.FadeOut(vec))
 
         # ==========================================================
         # PART 2: Optimization Sequence
@@ -4258,16 +4232,20 @@ class Main(Slide, m.MovingCameraScene):
 
         # Prepare new layout: Fade in RXs, move TX into the blind shadow spot
         tx_initial_coords = np.array([-1.5, 0.0, 0.0])
-        self.remove(bt_exp)
-        self.add(bt)
+        # self.remove(bt_exp)
+        # self.add(bt)
         self.play(
-            m.FadeIn(bt.rxs.shift(bt.frame.get_center())),
-            bt.cue_ball.animate.move_to(tx_initial_coords + bt.frame.get_center()),
-            bt.cue_lbl.animate.move_to(tx_initial_coords + bt.frame.get_center()),
+            m.FadeIn(bt_exp.rxs.shift(bt_exp.frame.get_center())),
+            bt_exp.cue_ball.animate.move_to(
+                tx_initial_coords + bt_exp.frame.get_center()
+            ),
+            bt_exp.cue_lbl.animate.move_to(
+                tx_initial_coords + bt_exp.frame.get_center()
+            ),
         )
 
         d2d_scene_opt = create_differt2d_scene_opt(
-            bt.rx1_pos, bt.rx2_pos, bt.table_width, bt.table_height
+            bt_exp.rx1_pos, bt_exp.rx2_pos, bt_exp.table_width, bt_exp.table_height
         )
 
         # Define Optimization objective: Maximize Minimum Power of both receivers
@@ -4324,11 +4302,11 @@ class Main(Slide, m.MovingCameraScene):
 
             coverage_map = m.ImageMobject(img_data)
             coverage_map.set_resampling_algorithm(m.RESAMPLING_ALGORITHMS["nearest"])
-            coverage_map.move_to(bt.frame.get_center())
-            coverage_map.stretch_to_fit_width(bt.table_width)
-            coverage_map.stretch_to_fit_height(bt.table_height)
+            coverage_map.move_to(bt_exp.frame.get_center())
+            coverage_map.stretch_to_fit_width(bt_exp.table_width)
+            coverage_map.stretch_to_fit_height(bt_exp.table_height)
             coverage_map.set_opacity(0.85)
-            coverage_map.set_z_index(bt.rim.z_index + 1)
+            coverage_map.set_z_index(bt_exp.rim.z_index + 1)
 
             # --- 2. Compute Vector Field ---
             if not approx:
@@ -4383,7 +4361,7 @@ class Main(Slide, m.MovingCameraScene):
                     vec_field.add(arrow)
 
             vec_field.set_z_index(2)
-            vec_field.move_to(bt.frame.get_center())
+            vec_field.move_to(bt_exp.frame.get_center())
             return coverage_map, vec_field
 
         # Mathematical Objective Equation
@@ -4392,7 +4370,10 @@ class Main(Slide, m.MovingCameraScene):
             color=ACCENT_CYAN,
             font_size=36,
         ).move_to(smooth_bullets)
-        self.wipe([smooth_bullets, math_title])
+        self.next_slide(
+            notes="Let us consider the optimization problem we want to solve."
+        )
+        self.wipe([smooth_bullets], [math_title])
 
         # State 1: Exact Physics (Blind spot)
         lbl_opt = m.Text(
@@ -4402,7 +4383,9 @@ class Main(Slide, m.MovingCameraScene):
         ).to_edge(m.DOWN, buff=0.95)
         cov_opt, vec_opt = get_opt_fields_for_state(approx=False)
 
-        self.next_slide()
+        self.next_slide(
+            notes="The exact paths show that the transmitter is stuck in a blind spot."
+        )
 
         self.play(m.FadeIn(lbl_opt))
         self.play(m.FadeIn(cov_opt))
@@ -4445,7 +4428,7 @@ class Main(Slide, m.MovingCameraScene):
 
         # Add visual TracedPath to highlight the route taken by TX
         tx_trace = m.TracedPath(
-            bt.cue_ball.get_center, stroke_color=ACCENT_GREEN, stroke_width=4
+            bt_exp.cue_ball.get_center, stroke_color=ACCENT_GREEN, stroke_width=4
         )
         tx_trace.set_z_index(4)
         self.add(tx_trace)
@@ -4481,9 +4464,9 @@ class Main(Slide, m.MovingCameraScene):
             self.play(
                 m.Transform(cov_opt, new_cov_opt),
                 m.Transform(vec_opt, new_vec_opt),
-                bt.cue_ball.animate.move_to(new_tx_pos + bt.frame.get_center()),
-                bt.cue_lbl.animate.move_to(new_tx_pos + bt.frame.get_center()),
-                run_time=0.2,
+                bt_exp.cue_ball.animate.move_to(new_tx_pos + bt_exp.frame.get_center()),
+                bt_exp.cue_lbl.animate.move_to(new_tx_pos + bt_exp.frame.get_center()),
+                run_time=0.1,
                 rate_func=m.linear,
             )
 
@@ -4493,23 +4476,25 @@ class Main(Slide, m.MovingCameraScene):
             tx_trace,
             cov_opt,
             vec_opt,
-            bt,
+            bt_exp,
+            bt_exp.rxs,
             watermark,
+            smooth_header,
         ]
-        # SLIDE 17: GPU-Efficient Differentiable Path Tracing (The Sheet 
-        gpu_header = title_box("Theory vs Reality")
+        cmp_header = title_box("Theory vs Reality")
 
-        gpu_bullets = bullets(
+        cmp_bullets = bullets(
             [
-                "Hardware Accelerators (e.g., GPUs) are guiding next generation tools."
+                "Hardware Accelerators (e.g., GPUs) are guiding next generation tools. ",
                 "Min-Path-Tracing uses OOP (dynamic shapes): poorly suited for parallel GPU execution.",
                 "Real environments are represented as uniform triangles (coarse shapes).",
                 "Sometimes, a specific, highly optimized solution is way more useful than a general, optimal one...",
                 "... Many areas of improvement exist!",
             ],
-            width=36,
+            width=48,
+            font_size=18,
         )
-        gpu_bullets.next_to(gpu_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
+        cmp_bullets.next_to(cmp_header, m.DOWN, buff=0.65).to_edge(m.LEFT, buff=0.75)
 
         card_w, card_h = 2.8, 3.8
 
@@ -4521,7 +4506,7 @@ class Main(Slide, m.MovingCameraScene):
             fill_opacity=1,
             stroke_color=CARD_BORDER,
         )
-        box_left.next_to(gpu_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=4.0)
+        box_left.next_to(cmp_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=4.0)
 
         container_left = m.DashedVMobject(
             m.Rectangle(width=2.2, height=3.0, stroke_color=MUTED_TEXT, stroke_width=2)
@@ -4556,7 +4541,7 @@ class Main(Slide, m.MovingCameraScene):
         )
 
         left_lbl = m.Text(
-            "Dynamic (A0 & A4)\nWasted Memory",
+            "Dynamic Shapes (A0 & A4)\nWasted Memory",
             font_size=12,
             color=ACCENT_RED,
             weight=m.BOLD,
@@ -4579,7 +4564,7 @@ class Main(Slide, m.MovingCameraScene):
             fill_opacity=1,
             stroke_color=CARD_BORDER,
         )
-        box_right.next_to(gpu_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
+        box_right.next_to(cmp_header, m.DOWN, buff=0.65).to_edge(m.RIGHT, buff=0.75)
 
         container_right = m.DashedVMobject(
             m.Rectangle(width=2.2, height=3.0, stroke_color=MUTED_TEXT, stroke_width=2)
@@ -4613,7 +4598,7 @@ class Main(Slide, m.MovingCameraScene):
         ).next_to(box_right, m.DOWN, buff=0.2)
         right_card_grp = m.Group(box_right, container_right, sheets_a4, right_lbl)
 
-        gpu_scene = m.Group(left_card_grp, right_card_grp)
+        cmp_scene = m.Group(left_card_grp, right_card_grp)
 
         self.next_slide(
             notes="While MPT is mathematically clean, its object-oriented design is inefficient for parallel GPU hardware. "
@@ -4621,26 +4606,25 @@ class Main(Slide, m.MovingCameraScene):
             "wasting massive memory for smaller A4 sheets.",
         )
         self.play(
-            *next_meta(),
-            self.wipe(prev_slide_content, [gpu_header], return_animation=True),
+            *next_meta(new_section=5),
+            self.wipe(prev_slide_content, [cmp_header], return_animation=True),
         )
+        self.next_slide()
         self.play(m.FadeIn(left_card_grp))
-        self.wait(0.8)
 
         self.next_slide(
             notes="By representing the scene strictly as uniform triangles, we can pack them perfectly without dynamic branching, "
             "matching the GPU architecture for peak execution efficiency.",
         )
         self.play(m.FadeIn(right_card_grp))
-        self.wait(0.8)
 
-        for b in gpu_bullets:
-            self.next_slide(notes="GPU optimization bullet explanation.")
+        for b in cmp_bullets:
+            self.next_slide(
+                notes="Comparison between object-oriented and triangle-based implementations."
+            )
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
-            self.wait(0.4)
-        self.wait(1.5)
 
-        prev_slide_content = [gpu_header, gpu_bullets, gpu_scene]
+        prev_slide_content = [cmp_header, cmp_bullets, cmp_scene]
 
         # Slide: Open Source Software
         oss_header = title_box("Open Source Software")
@@ -4675,7 +4659,7 @@ class Main(Slide, m.MovingCameraScene):
             "for prototyping and teaching.",
         )
         self.play(
-            *next_meta(new_section=5),
+            *next_meta(),
             self.wipe(prev_slide_content, [oss_header], return_animation=True),
         )
 
@@ -4720,7 +4704,6 @@ class Main(Slide, m.MovingCameraScene):
 
         prev_slide_content = [proud_header, proud_bullets]
 
-
         # Thank You / Closing
         end = m.VGroup(
             m.Text("Thank you!", font_size=68, color=TEXT_COLOR, weight=m.BOLD),
@@ -4735,31 +4718,34 @@ class Main(Slide, m.MovingCameraScene):
         prev_slide_content = [end]
 
         # Slide: RT pipeline
-        rt_pipeline_header = title_box("Ray Tracing Pipeline")
+        rt_pipeline_header, rt_underline = title_box(
+            "Ray Tracing Pipeline", underline=True
+        )
 
-        pipeline_svg = m.SVGMobject("images/pipeline.svg", height=5.0).to_edge(
-            m.DOWN, buff=2.0
+        pipeline_img = (
+            m.ImageMobject("images/pipeline.png").scale(0.5).to_edge(m.DOWN, buff=1.0)
         )
 
         self.next_slide(notes="Let us briefly look at the training procedure.")
         self.play(
             self.wipe(
-                prev_slide_content, [rt_pipeline_header, pipeline_svg], return_animation=True
+                prev_slide_content,
+                [rt_pipeline_header, rt_underline, pipeline_img],
+                return_animation=True,
             ),
         )
 
-        prev_slide_content = [rt_pipeline_header, pipeline_svg]
+        prev_slide_content = [rt_pipeline_header, pipeline_img]
 
         # Slide: Smoothing applied to 3D objects (discussion)
-        smooth3d_header = title_box(
-            "Smoothing: 3D Application & Discussion", underline=True
-        )
-        mt_svg = m.SVGMobject("images/moller-trumbore-smoothed.svg", height=2.0)
+        smooth3d_header = title_box("Smoothing: 3D Application & Discussion")
+        mt_img = m.ImageMobject("images/moller-trumbore-smoothed.png")
+        mt_img.height = 2.0
         mt_caption = m.Text(
             "Möller-Trumbore: smoothed intersection test",
             font_size=16,
-        ).next_to(mt_svg, m.DOWN, buff=0.12)
-        mt_group = m.Group(mt_svg, mt_caption)
+        ).next_to(mt_img, m.DOWN, buff=0.12)
+        mt_group = m.Group(mt_img, mt_caption)
         mt_group.next_to(smooth3d_header, m.DOWN, buff=0.65)
         smooth3d_bullets = bullets(
             [
@@ -4786,7 +4772,7 @@ class Main(Slide, m.MovingCameraScene):
             self.next_slide(notes="Smoothing 3D discussion bullet.")
             self.play(m.FadeIn(b, shift=0.15 * m.LEFT))
 
-        prev_slide_content = [smooth3d_header[0], smooth3d_bullets, mt_group]
+        prev_slide_content = [smooth3d_header, smooth3d_bullets, mt_group]
 
         # Slide: ML tModel Architecture
         ml_model_header = title_box("ML Sampling: Model Architecture")
