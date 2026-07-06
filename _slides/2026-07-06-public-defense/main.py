@@ -4091,12 +4091,6 @@ class Main(Slide, m.MovingCameraScene):
             )
         )
 
-        y_label = grid.get_y_axis_label("y", edge=m.LEFT, direction=m.LEFT, buff=0.4)
-        x_label = grid.get_x_axis_label(
-            "x",
-        )
-        grid_labels = m.VGroup(x_label, y_label)
-
         step_graph = m.DashedVMobject(
             grid.plot(
                 lambda x: (x > 0).astype(float),
@@ -4110,7 +4104,6 @@ class Main(Slide, m.MovingCameraScene):
         self.next_slide("Let's see how we can approximate this transition.")
         self.play(
             m.FadeIn(grid),
-            m.FadeIn(grid_labels),
             m.FadeIn(alpha_d),
         )
 
@@ -4150,7 +4143,6 @@ class Main(Slide, m.MovingCameraScene):
 
         self.remove(
             grid,
-            grid_labels,
             alpha_d,
             step_graph,
             sigmoid_graph,
