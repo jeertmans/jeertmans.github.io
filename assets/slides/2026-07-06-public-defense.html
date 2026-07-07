@@ -1,0 +1,1587 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Manim Slides</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/theme/black.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight/zenburn.css">
+    <!-- <link rel="stylesheet" href="index.css"> -->
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6f11ff0c079c3868b11548bb07e0cb3f07e0150a0b39c16b2576da5c2cb85851.mp4"
+          data-background-video-muted
+          data-autoslide="2000.0"
+          >
+            <aside class="notes" data-markdown>Welcome everyone, and thank you for being here today. My name is Jérome Eertmans, and I will present my Ph.D. work on differentiable ray tracing for radio propagation modeling.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/5e43dbd4b76a30c8de89540279b2fb10cb505383e172f7e6246fba57ec09fb53.mp4"
+          data-background-video-loop
+          >
+            <aside class="notes" data-markdown>Title screen idle animation showing text elements shifting slightly.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/820a7230e4ad33cf47dae11f0f6fe6401a8aaedbb6ed7bb0c81b9b612fef00ea.mp4"
+          data-autoslide="1000.0"
+          >
+            <aside class="notes" data-markdown>To kick things off, let's watch a brief 4-minute teaser summarizing my Ph.D. journey, showing some of the advanced simulations and ray tracing clips generated throughout this work.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/375c9bd749c0fa5af3914cb5c456a281b2c425048a010c6867e47f4c30110905.mp4"
+          >
+            <aside class="notes" data-markdown>Let's watch a brief teaser video summarizing the Ph.D. journey.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b58e01bd93cfcbcfa54c80597e516acd94c3c691c6bb68aabdf417390b38c162.mp4"
+          data-autoslide="1000.0"
+          >
+            <aside class="notes" data-markdown>Here is one of our 3D antenna models, specifically antenna 18, rotating around its vertical axis.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/afcf9a7d06b6486035a1efa06a4934f399a87988953f2fa42be089564ee4e52f.mp4"
+          data-background-video-loop
+          >
+            <aside class="notes" data-markdown>Have you ever wondered how we choose to position antennas?</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b369e18ed32a34688c5fb7038300a205d9961a5bcafc8ac05d6f56ad55fbbbad.mp4"
+          data-autoslide="6000.0"
+          >
+            <aside class="notes" data-markdown>Moreover, we do not have one unique type of antenna, but a multitude of antennas, with different pros and cons.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/a3976573f2317eb412211c4713039087b140d2af9fd3a41769592b9c4c3a999b.mp4"
+          data-background-video-loop
+          >
+            <aside class="notes" data-markdown>Okay, but maybe you don't actually care much about antennas.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/82c70f20e7b1bc8bd11ee2ec3f4b2a60d92a532d8a847c21ec6f9a767b31ecbc.mp4"
+          data-autoslide="1200.0"
+          >
+            <aside class="notes" data-markdown>Instead, let's consider a more familiar case: the design of optical lenses.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/03a48a8fed3afc3c19334eb44ef9768cde5a44e14e139d4f6a10810d3eb636d5.mp4"
+          >
+            <aside class="notes" data-markdown>Here is a simple convex lens. How does light propagate through it?</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/7ca2a03b25c67aa597c84dd679605b38aa1222746b7746b8c3fb6d81ff7ba208.mp4"
+          >
+            <aside class="notes" data-markdown>This is a problem of modeling light propagation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/360305bcef63ece7d129166e21034e2f5c3476c0f1d0ccf0a892385069bd0c60.mp4"
+          >
+            <aside class="notes" data-markdown>Or let's look at acoustics. Why does a concert hall have a very specific shape? How does sound propagate from the stage to the audience?</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d2fa4e7099a721826be45e0efa6ef0ed9d03a0a2b0fded49983ca9457b46e95b.mp4"
+          >
+            <aside class="notes" data-markdown>To answer these questions, we must be able to model sound propagation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/de46ecf16d39cb0a35b5315a55c988d523970c20c6170bbc4fa9ea8f5328e923.mp4"
+          >
+            <aside class="notes" data-markdown>By tracking sound rays bouncing off the walls, we can predict exactly how sound travels.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1a24743e97da1351da6765a8cb0eeac9f997de1053619c7a7bb54e2f261812b0.mp4"
+          >
+            <aside class="notes" data-markdown>We simulate multiple rays and filter for those that connect the transmitter to the listeners.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/23c35f873136b865239c331d0b6f299294e9c37ce44689e8eb46c7d2f526b66c.mp4"
+          >
+            <aside class="notes" data-markdown>The results gives us an idea about how sound propagates to the different listeners: do they experience echoes? How clear is the sound? ...</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/78ed1ea7fc46243cd2751247bc27cc7e51e2f0a8e79dcd9355e44a4f3923ebd6.mp4"
+          >
+            <aside class="notes" data-markdown>Now let's apply this ray tracing technique back to lenses, changing 'Sound' back to 'Light'.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/0a9e1472d2d441e7fcbf7430d9679f54255f0b21d6b9bce6d981d32052ff9052.mp4"
+          >
+            <aside class="notes" data-markdown>Thanks for ray tracing, we can now study the effect of the thickness on the light rays...</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b6b3eb0bf5edc2c7b4866740df445b16d814f5015602b8b237c7cb6da1d1b9fb.mp4"
+          >
+            <aside class="notes" data-markdown>... but also the effect of the curvature on the light rays.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/ea01fee3e54c6fa577e034fc46f84585213a0377521ef88ce06a54f7f7456936.mp4"
+          >
+            <aside class="notes" data-markdown>In both cases, we are modeling wave propagation. Let's change 'Light' to 'Wave'.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/0d5dbcad00dc13418e6dec6ea1bdd6b1cd4d5613d7dca39323c12079fca89414.mp4"
+          >
+            <aside class="notes" data-markdown>Specifically, we are using 'Ray Tracing for' wave propagation modeling.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/a75ad9cc70debf4f7aaa42eea7af4a19adfdcd45da04339bd4b01804debd3c5e.mp4"
+          >
+            <aside class="notes" data-markdown>In the context of wireless communications, we often refer to as waves as radio waves.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/c4b35e9466d8f4b6a089fbc486dbe0ba6d8bd66c4ae9dd65d155854a152d7a5c.mp4"
+          >
+            <aside class="notes" data-markdown>And finally, to conclude this thesis title, we have Differentiable Ray Tracing for Radio Propagation Modeling. However, the 'Differentiable' keyword will be explained later.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/50297b5a5c2b52d40e36e54923c9761e7744343d26be474658a41b48ad9b49c1.mp4"
+          >
+            <aside class="notes" data-markdown>To understand wireless networks, we must model how radio waves travel from a transmitter to a receiver. </aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/414afeb7582a08fc24d99ecafd4c555101e9df12255270372aad836b623387cb.mp4"
+          data-background-video-loop
+          >
+            <aside class="notes" data-markdown>Radio signals propagate as waves. In a simplified model, the transmitter emits waves that radiate outward.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/a12c9c4169d09e30c51df0852afce27c3a3faa90ab1f9896a13b6d17c20a7c1f.mp4"
+          >
+            <aside class="notes" data-markdown>According to Huygens' principle, we can decompose any wavefront into countless secondary point sources propagating outward.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1f7f6f579a07ac9048c9e6e9d3e3a55b9b4b2cc4734fed15f292df2dcf7a9d0a.mp4"
+          >
+            <aside class="notes" data-markdown>By considering these wavefronts individually, we can approximate the wave propagation as individual rays. This is Geometrical Optics, which simplifies wave propagation into individual straight ray paths.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1be22a804fbe9579f359824a4a992ef8e678e3b2ef620e1ce54e93aa30c798a2.mp4"
+          >
+            <aside class="notes" data-markdown>For example, the direct path connecting the transmitter and receiver is the line-of-sight path.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/5cf4cb923398ca3be12d10082c158deb02b618fb0d2867d3fc110520f2ffd9fb.mp4"
+          >
+            <aside class="notes" data-markdown>Radio propagation bullet point.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/9b3ef4e1239e01f7886c6b6c8a1726a8c1aac4162a2038715e65baef9c55b537.mp4"
+          >
+            <aside class="notes" data-markdown>Radio propagation bullet point.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2add69f6b59a02d8aa6117e9d2065fe6571a410003b6ba24016d5a30f821aa0a.mp4"
+          >
+            <aside class="notes" data-markdown>In urban environments, direct line-of-sight is often blocked by buildings. Signals must bounce off other walls and structures to reach the receiver.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/f7b7643177e324d19c01a4801bc182af906f75bf7a9a5f3c92dfb212414d4f8c.mp4"
+          >
+            <aside class="notes" data-markdown>These reflections create a multipath channel, where the signal bounces off building walls to reach the receiver.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/bdb82420823d8965016fc6698d2bf21ead207ba73d5c5c7c9a269b79a3f41133.mp4"
+          >
+            <aside class="notes" data-markdown>Reflections and obstacles bullet point.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/575b1a97e31048adb456f1c015aea6199cb023697c6af1c30547ced873a53514.mp4"
+          >
+            <aside class="notes" data-markdown>Reflections and obstacles bullet point.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8e96bf315095bff5c7e4ed09262724565198291a3631892b28131a5d4d4295cc.mp4"
+          >
+            <aside class="notes" data-markdown>Reflections and obstacles bullet point.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2b6b9a0309cee5c4dffdcf6cbcf958442677b368f9392486208e5ee960e20add.mp4"
+          >
+            <aside class="notes" data-markdown>To understand ray tracing, think of playing billiards. </aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/479cb99377d16355ac87ed6b7e329c6cde230eaa513bd2359e7d54366180f61c.mp4"
+          >
+            <aside class="notes" data-markdown>Let's draw the billard: the cue ball is our transmitter (TX), the pocket is our receiver (RX), and the cushions are the building walls. Finding a valid ray path is just like finding the right angle for a cushion trick shot.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/9a68816784cc5d44efc51c1f18e5c5b0906d24ca5a7c8a613cfa562c523f351f.mp4"
+          >
+            <aside class="notes" data-markdown>Billiard analogy bullet point 1.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/72889a30112317f279fa61c65467418d7e147534edd9902b338ba586e7f60245.mp4"
+          >
+            <aside class="notes" data-markdown>Billiard analogy bullet point 2.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d896a4a839dea34d1e2270cd66db2b2a49d9983024d56991d7cddc388b690b85.mp4"
+          >
+            <aside class="notes" data-markdown>Billiard analogy bullet point 3.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/4343641f15a2156711d885575227cc801285237b47b905491ce9d620617c1edf.mp4"
+          >
+            <aside class="notes" data-markdown>Billiard analogy bullet point 4.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/96a4683fd53ef87f65520cfb912a856619b06066021376ecfca2398b6ff9954b.mp4"
+          >
+            <aside class="notes" data-markdown>So the core challenge is: how do we find the right bounce angle?</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1bb22acd55ac49619393840395dd93cdfcf08af24fe98711e3b0d31311139a18.mp4"
+          >
+            <aside class="notes" data-markdown>We could try a random shot, but we have good changes to miss the pocket entirely.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/e323e6c33642deabc3f0174e4daba9b12562b1d0ee6f95cbd38c6acabc512f7e.mp4"
+          >
+            <aside class="notes" data-markdown>Even launching many rays simultaneously — the ray-launching approach — only a tiny fraction will land in the pocket.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d007a53e4a47ccca0aa5b68c6cccced4e4349b83ddb8c9cf335630e021e1dfb6.mp4"
+          >
+            <aside class="notes" data-markdown>If we aim for accuracy, or simply cannot afford to fail, we need something else!</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6cb445aa9ce796c9c276ec0d18abadd75d1411f2e78881e59b27daae2d08705a.mp4"
+          >
+            <aside class="notes" data-markdown>Instead of guessing randomly, the Image Method gives us the answer analytically.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/33d7794cf92068225c8723171085601cee0ca71fe36f598b71b50ac2af258fde.mp4"
+          >
+            <aside class="notes" data-markdown>To do so, we first mirror the transmitter across the target cushion to get a 'virtual' TX'.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/543c1f73a19d4b3a3d9f2cf79d5ac5ebf4be7fb9de397445a887b4e39d5417cd.mp4"
+          >
+            <aside class="notes" data-markdown>Then draw a straight line from the receiver (RX) to this virtual TX'. Where that line intersects the cushion is exactly the right bounce point.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/45f4d660dbac656bf37a1c60bb3d8c9f382ee43e282a087fa88397531238b0cf.mp4"
+          >
+            <aside class="notes" data-markdown>After the intersection point is found, we have found the reflection path! If we were to hit the ball toward the specular point, and there was no friction losses, we would hit the cue!</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/f6850d9c7c7126e721a709e6a48409b187925824e4aaa1f7d73fe9593a8698db.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal the key bullet points of the Image Method.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/9cfd915a24b543797e9d2f73313cecc41f6bf028ba5c1aba318d10a44cba3e73.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal the key bullet points of the Image Method.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/bcfbf42c5f4b9f4c5c074932245cb346106bbdcf05a115634df9d5bfc9908f4a.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal the key bullet points of the Image Method.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/72afb00196d59c4e7c6f45a8e00389e55ee201c8b095e837bf28112ccb8d2cdc.mp4"
+          >
+            <aside class="notes" data-markdown>Reflecting across the left cushion gives one path. A different bounce ordering (left then bottom) gives a completely different path. Each ordering of cushions is a different 'candidate' we must test.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/709d461cca29386d28c783caf79aeca06901313a3ada9898c8bebb5bc30e0f07.mp4"
+          >
+            <aside class="notes" data-markdown>E.g., we can find the 1st order reflection path on the left wall.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/276140f76ab80c0a52723081c97bdf91c9eddb4d0e7a7d237893db0e8841c80f.mp4"
+          >
+            <aside class="notes" data-markdown>Now apply two reflections in sequence: left cushion first, then bottom. This changes the path entirely.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6615bff1fe1df393dad379f313f25b071985b733be67569b7c0bf6122d626928.mp4"
+          >
+            <aside class="notes" data-markdown>Show what happens with the reverse order (bottom → left): an invalid path where the bounce point falls outside the cushion boundary.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8e12157455002f13ed80c9d9ae05fcf277acbdd3929ef8b679856c605791d404.mp4"
+          >
+            <aside class="notes" data-markdown>If we move TX to another position, then the combination now gives a valid path.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2af8b598e835504150e69f9b1d353551e379639e7c0e6631ab568c262c409a82.mp4"
+          >
+            <aside class="notes" data-markdown>Briefly present the bullet points.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/bddeb54701ca93f91adfa9034cf1105eb5c50d5a712dd33611746b115083ce62.mp4"
+          >
+            <aside class="notes" data-markdown>Briefly present the bullet points.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6133f389e1cc213e8cd8e9d522038bd0b561ace915e94e3cc950883bebf51162.mp4"
+          >
+            <aside class="notes" data-markdown>Briefly present the bullet points.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/416c45035c7264c8d9ec5cba49db713e7aea8e8a6066c266ba0dd2cf3a40c778.mp4"
+          >
+            <aside class="notes" data-markdown>Let's go back to our original setup.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/68c1de92a6cb1d3686916b75c57763137dfcd5f26c3d786bfeafa1ac8ab481b1.mp4"
+          >
+            <aside class="notes" data-markdown>The Image Method is elegant but breaks down for non-planar surfaces (curved walls) and diffractions. We need a more general approach.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/3336de28907f03714b9d2a0406b7c606d1bd838fb1dc8f8c7f1d00f8dea7a269.mp4"
+          >
+            <aside class="notes" data-markdown>First problem with image method.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1611de5250954dea448717c3c3a481d1ae2f37d6df429e487ce8d4e8801177d7.mp4"
+          >
+            <aside class="notes" data-markdown>Second problem with image method.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/96540066161c2e71aa1d5bd1350de9d0cb8ceaa637fb0c608e47dd0bca135295.mp4"
+          >
+            <aside class="notes" data-markdown>Let's zoom into an abstract representation of TX, RX, and an interaction point X₁ on a wall. The angle of incidence must equal the angle of reflection (specular constraint).</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8a1cbaf6c150b5f1a8236cdec0ff5ffeba72cc9b8c56ed55dfdb42c730efa83c.mp4"
+          >
+            <aside class="notes" data-markdown>Fade in the transmitter, receiver, and interaction point on the wall.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6d14e6d6349b1408a637a82d0872b029bf00b1b834900b89e89277b5bc5b6286.mp4"
+          >
+            <aside class="notes" data-markdown>Slide the interaction point along the wall to show angle variations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/ec224a73bc00daefc7eec466d653268f67ec836494b730f9c8ab4f6628ef3584.mp4"
+          >
+            <aside class="notes" data-markdown>We express the specular constraint as a cost function C = I + F, where I measures the angle mismatch and F measures whether X₁ is on the wall.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/3fe2f4167599a134e60b8a1c228e2efc0078e308f86cd22e9ce9884c11134f10.mp4"
+          >
+            <aside class="notes" data-markdown>Show how the cost function values change with placement.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/0ef2e67951bc2a199223d67564af19b8e0c57197636228824e7e099f9012d049.mp4"
+          >
+            <aside class="notes" data-markdown>Move the interaction point off the wall to show the wall boundary penalty.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/ff2e39c8a870681b9e3142ae3f82ce2898355a38c17944626451adb90958a900.mp4"
+          >
+            <aside class="notes" data-markdown>Bring the interaction point back to the wall, returning the penalty to zero.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/4748b3037ccd3a7d062748908af301890b5c77ac68705aee949f1db1678487f1.mp4"
+          >
+            <aside class="notes" data-markdown>Transition to the mathematical formulas for different interaction types.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/381f0b67d4e7cbeb1ea6b874c37e9a0c5c5c87eb2c47c29bfc3a195d9ea383bc.mp4"
+          >
+            <aside class="notes" data-markdown>The same framework applies to reflection on curved walls; the constraint now depends on the local surface normal at X₁.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6653738c165fa5b07ef91c7773fbbff4c822da6c03d61b1a1518f6dd035eaf83.mp4"
+          >
+            <aside class="notes" data-markdown>Transform the flat wall into a curved arc to show MPT on non-planar surfaces.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6a0d4273bdf468ab6fa7af381ac92b903fd02d4b16fb2b2dd6fe392e6d483bc2.mp4"
+          >
+            <aside class="notes" data-markdown>And even edge diffraction, which is completely impossible with the Image Method.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/acd773589615342f73a9e4232c703d25d5cf2f885a8fdfec475b7182616c6769.mp4"
+          >
+            <aside class="notes" data-markdown>Finally, refraction, modeled by Snell's law, completing the range of interaction types.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/5a5ab6ffa362b01acd637431315fdc49a94990da7e307654a5121334c468e9dd.mp4"
+          >
+            <aside class="notes" data-markdown>Going back to main canvas.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/c74773669999c1ee749723b37aa0d117d9d232d5e9528c91c0bd2fa43d2cd7a7.mp4"
+          >
+            <aside class="notes" data-markdown>So we reformulate: each interaction becomes a constraint, and finding the ray path becomes a continuous minimization problem; this is the Min-Path-Tracing (MPT) method.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8aa0e380663192b5fb18dc9f3c58f7d75fbb2fb7313d4c480b776fb0444bd986.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal the final bullet point about zero gradient convergence issues.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/80978b3407f6dfb314e664f9e6739fb0930f686f489ceaa72884c7aa27a6f9ac.mp4"
+          >
+            <aside class="notes" data-markdown>Mathematical formulation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/acbadc7872ceca4bb57e0b84952ed019ea79b0bbcc3c7ff1994d35fbcbc3f36d.mp4"
+          >
+            <aside class="notes" data-markdown>By parameterizing the path with a reduced set of variables T, we can leverage implicit differentiation to skip through the solver steps when computing gradients.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/9bd579c5f542014073e33ce8302cd8575c08e5ec086dd0f7c17b2b9632b08410.mp4"
+          >
+            <aside class="notes" data-markdown>Let's watch the minimizer converge on the billiard table. Starting from an arbitrary bounce point, gradient steps drive the residual to zero.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1fa5a5988abc687af27a10d7201078b584e76a42c7a9b7a688384a4826cfa699.mp4"
+          >
+            <aside class="notes" data-markdown>Showing iterations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/e9a4819ae6e36e241fd8a7ddb2d5294d3fdefefe889e7232d539ec94ad1085a9.mp4"
+          >
+            <aside class="notes" data-markdown>Highlighting final path.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b7bfba46daf8b37caddad0df131d239f8ba5d979ac90a9a9f5f6a53856e6320f.mp4"
+          >
+            <aside class="notes" data-markdown>Pausing to emphasize that we may want to apply to MPT method to complex scenes...</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/df6dd39d50ac5eb8008a8434fd9f68dfdccb55f2f3ecff6ed7758ce1622cd58d.mp4"
+          >
+            <aside class="notes" data-markdown>MPT also handles curved walls: here the bottom cushion morphs into a circle arc and the solver converges just as cleanly.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/70646bcd05fc74ed10ca61c030232f6ff8b5d0918ac573f974b621e4665f9dfc.mp4"
+          >
+            <aside class="notes" data-markdown>Let's solve for this new configuration.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/872d852e5e40969505d08100f9844b0a34101de74d9b17689244e59c82600652.mp4"
+          >
+            <aside class="notes" data-markdown>Showing iterations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/007d07d17092f4de55c18f31652b43fdf495878f8f420f025970aae78192129d.mp4"
+          >
+            <aside class="notes" data-markdown>Highlight final path.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b4334d84c392c1807c2fbfc1b74d063697ad46b9fd708250ccfae6dad81887f4.mp4"
+          >
+            <aside class="notes" data-markdown>Back to flat shape.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/728888d1556af99e245e9bd7215ddfc61ea55647426fb590f3c356169d4f6e6f.mp4"
+          >
+            <aside class="notes" data-markdown>When a receiver moves slightly, the bounce sequence often stays the same. We can reuse the virtual TX' and just update the bounce point — this is dynamic ray tracing.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/03cc4fa00df5cb343bf430717cd6e0f07e016f6d70518097e9a9741d587e56d0.mp4"
+          >
+            <aside class="notes" data-markdown>Show the initial ray path between transmitter and receiver.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/a286ca326d093c98e88c168b1cbd915546cb986eaca2cf6a306b7a424593492c.mp4"
+          >
+            <aside class="notes" data-markdown>Watch the bounce point shift smoothly as the receiver moves: no need to recompute which cushion to bounce off.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/05d45189f87693ca3b0cabf3cd3b539d3264d60f10b9c1c70b547275b2e0f80b.mp4"
+          >
+            <aside class="notes" data-markdown>Bullet points on ray path reuse.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d71880d5b98714cb8e5d2bdecbd3410c05161426d28fe3e4dca934d4c1562262.mp4"
+          >
+            <aside class="notes" data-markdown>Bullet points on ray path reuse.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2d7da24a1cc5434e04b600825bb945ded9df4abd70e80fd4ccdbd691f9fc91a3.mp4"
+          >
+            <aside class="notes" data-markdown>Bullet points on ray path reuse.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b01158af14d53f87b50130c669079deac88c24fbaf0b3c59d718e4c01a439664.mp4"
+          >
+            <aside class="notes" data-markdown>Introducting the MLM.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/969cfaa10c48905a19004d7c4bc505e10749709a1059d21470e94aebf023f857.mp4"
+          >
+            <aside class="notes" data-markdown>Showing MLM group 1.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8a17a1ef51bd4942418f42488c731c4bf21daa2e38e7454697cf579af7d297b2.mp4"
+          >
+            <aside class="notes" data-markdown>Fading out MLM group 1.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/12515ff5ea7806baee96e3bb298b0eeb54054b4a2c7d19737efb5c4ed0a72795.mp4"
+          >
+            <aside class="notes" data-markdown>Showing MLM group 2.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/5e17b7771a359b468c24a05cb75368749c23ce642ed3f4b6220159405487eaaa.mp4"
+          >
+            <aside class="notes" data-markdown>Fading out MLM group 2.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/0a42f41f15a730312fa845ca3152dac8ec27f920bd9be7056896e5ef4221b0c8.mp4"
+          >
+            <aside class="notes" data-markdown>Showing MLM group 3.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/321908c5c1f2472494a0a68f8d022ed00943a15e69668c1aff7732086b1e35d3.mp4"
+          >
+            <aside class="notes" data-markdown>Fading out MLM group 3.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/0420785e50cb26aa2eaf4953f206c01ac5d721ae234b38bcf396cbe9938ddc5c.mp4"
+          >
+            <aside class="notes" data-markdown>Showing MLM group 4.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b3aa791fbb9d3df1dacc441bed5698b494f67f607497c8bdefcd18e016370a16.mp4"
+          >
+            <aside class="notes" data-markdown>Fading our last MLM group.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/78f6896d0cc61c0a0858e9679f0331bfe7bbc232fae1376d6db06f7ebb481faf.mp4"
+          >
+            <aside class="notes" data-markdown>Here are all double-reflection visibility regions at once. The union of their boundaries defines the Multipath Lifetime Map.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1f8e322766e142204af079fc4d4b32e7403201c9b738b3fe2989c5733e27723b.mp4"
+          >
+            <aside class="notes" data-markdown>As the TX moves, all regions shift simultaneously. This shows how the MLM can be computed for any TX position.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/584b5c718a97f2586cda918e864d45276b706a0548be99285c646f5ae709f467.mp4"
+          >
+            <aside class="notes" data-markdown>Showing how all regions update simultaneously.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1957ae8923b269c8f1a5bae3fa72a65e9d3d1cec4ee865cbebe869a75273a6f7.mp4"
+          >
+            <aside class="notes" data-markdown>Fade out transmitter moving labels.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/63c4c05b51c31737c653627c13431c9273ad63d42cae55a894dbc6be37f21d57.mp4"
+          >
+            <aside class="notes" data-markdown>To compute the MLM, we mirror the cushions and overlay the visibility wedges. Key metrics include cell area (how large the stable region is) and the safe travel radius.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2aa96aae2d3e608468c2a544eaa870be06550ccd06090362ec3bf8375d325254.mp4"
+          >
+            <aside class="notes" data-markdown>MLM bullets</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/5a83c8dfd31669840f12f31cb43f9ea6c48cef2fd65ff7556e7301a64a1bcadf.mp4"
+          >
+            <aside class="notes" data-markdown>MLM bullets</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8391ca3bd484a4aacec1df56938b8fcafd9c56499d8c03cb10fadf1131fc4901.mp4"
+          >
+            <aside class="notes" data-markdown>MLM bullets</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8ea6d20589400042f977f84e0341e98907a6bef74687e2d2eff44be400ded01f.mp4"
+          >
+            <aside class="notes" data-markdown>MLM metrics intro</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1e4bc395f9850c0e2fd8d9b95776fff2954b705bc8a170a13d3e68fd088e5153.mp4"
+          >
+            <aside class="notes" data-markdown>MLM metric 1</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1caa54bfb87b500f61c0ae0161c2d5a5f9a8d6bc3e0d8398b0aeb5dc6b7e3334.mp4"
+          >
+            <aside class="notes" data-markdown>MLM metric 2</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/43a35e13736930afe509a5224f90546a9181be9ca425e76992b2bcf96b34fb85.mp4"
+          >
+            <aside class="notes" data-markdown>To trace all rays, we must check every combination of walls. Most candidate sequences lead to impossible paths: either the bounce point is outside the wall, or the path is blocked by an obstacle.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/89c52729511b0c6a4f1e8adc38924f9fe947c5cb8d8ee2ffbc1afe0e092f9884.mp4"
+          >
+            <aside class="notes" data-markdown>Let's test all candidates from order 0 to 3. We show them all first.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/736a67a4af12e109aa14688c546fb90ceedfd47e18f9bb1ef906ed9906f5a582.mp4"
+          >
+            <aside class="notes" data-markdown>First filter: fade out all physically impossible or obstructed paths.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/fe5dfba7a78d9cc5c8f5ab69eeac740776ce1fef615544f2e9171759b87d6c5c.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal bullet point 1 of candidate explosion.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/9b0a898e5c5bfbb3bf2b04cf38ebfbc45417f766457249a4299dae529f150491.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal bullet point 2 of candidate explosion.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/188480f4dc338bb5160708fe8c2dd61073af43ade27973fce82029e2cf6e05ad.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal bullet point 3 of candidate explosion.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/500f61d00daef74c36408a4adcb0af588496a5eeefdf2958cf7b2f4aeb073c69.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal bullet point 4 of candidate explosion.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/52d8aea1878659cb67833b54c238d2f067235ad0dba805be41942f7f363ce54f.mp4"
+          >
+            <aside class="notes" data-markdown>Reveal bullet point 5 of candidate explosion.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/4c2e850657903ef8b5ffea930263a61a7ae7090c67763d33a616093493db9a02.mp4"
+          >
+            <aside class="notes" data-markdown>Our next contribution solves the candidate explosion using machine learning. We train a generative neural network to predict valid wall sequences directly, skipping the combinatorial search entirely.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8d9e84b8817abe06721c91c631b9423df1328d4ae6c938cf13a1d064a0c9f1e3.mp4"
+          >
+            <aside class="notes" data-markdown>Machine learning path sampling explanation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/58320a676ba611350f2e70d56306752c0403731f5b22740f74385c26e67a9448.mp4"
+          >
+            <aside class="notes" data-markdown>Machine learning path sampling explanation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/10557032c8a6d57eb87cdeb2c39a24f41478ccdefb8c6f49d1a52f756daaa8a2.mp4"
+          >
+            <aside class="notes" data-markdown>Machine learning path sampling explanation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1b9eb4f129dc0737a086e0dbf01c93edc2aad7f6cf57179731e88ffc5d6f9f02.mp4"
+          >
+            <aside class="notes" data-markdown>Machine learning path sampling explanation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/677e1c6402a710b4188168a9eacf32f9151b13ead5e242e321590ee7857204c3.mp4"
+          >
+            <aside class="notes" data-markdown>Machine learning path sampling explanation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/95732f10bff9f866bcfc52f9d6000dc96d4513df3af2acedb7ea8dc4fd21aa0d.mp4"
+          >
+            <aside class="notes" data-markdown>Example of a trained generative path sampler output.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b948432869bbf83630d0ca0937820669c2208391c116ed10004a5aa0eae47788.mp4"
+          >
+            <aside class="notes" data-markdown>Something we are often interesting in for outdoor positioning is knowing what areas are reachable. What we can do is calculate the coverage map.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/3c10217babbd0e4d6bb0fea20d517d1b27a2ef9476581673078423264713f87b.mp4"
+          >
+            <aside class="notes" data-markdown>Coverage map</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/487a8043517ebcd89663c2b9033bb3e488600d6d53c229bd5d8598016ef7d790.mp4"
+          >
+            <aside class="notes" data-markdown>And the gradient of the coverage map gives us a vector field, indicating the direction of the strongest increase in coverage.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/fead9571fe743800baf0196360c1be1236040f8d1a99aee6b8411915bf13f0a8.mp4"
+          >
+            <aside class="notes" data-markdown>Display coverage map and gradient vector field for order 2.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/a73a428a6144de96c9dd91b3edbeaf8fac7a8d191da88d5d84d90e723c35a19b.mp4"
+          >
+            <aside class="notes" data-markdown>Display coverage map and gradient vector field for order 1.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/c552bec70d367172e49d3c15d4963bda55344222e8dd20e00d628c18b55001c5.mp4"
+          >
+            <aside class="notes" data-markdown>Display coverage map and gradient vector field for order 0.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d81ed613072e940af38fd474400798e0e5dc1a2a1fdffeda01008eb94cc31801.mp4"
+          >
+            <aside class="notes" data-markdown>However, in ray tracing, obstacles create sharp boundaries. A receiver goes from full coverage to zero coverage instantly. In our climber analogy, this is like climbing a staircase with flat terraces and vertical cliffs.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/6957e7b727af44101dddfac76881a243779918405d6c217d3430cdf89b4a4086.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/c9bcc620b8b8e440c904817d571bf239bea77fc03c58e421fd33879f8c0b6c70.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8ce1816c8cea3b3c0b7a043e0e6af4be156d91f2f5e18fa3132d7845b838e2db.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/e342e7b82c336f1220003ff0e0adc9b8676a9f1bad1d51e1eea20d1345e2a95e.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/31b79c53325fb8b4a1fde0ff3dd45654ea915142ff1f69ab62f4dbca41c8ed4a.mp4"
+          >
+            <aside class="notes" data-markdown>Shift the camera down to the sigmoid visualization.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8d26526499209bf53af289a4525a3cc025cbc0cb8ffc909b4e22a3d48380b576.mp4"
+          >
+            <aside class="notes" data-markdown>Plot the step graph and set up transition approximation.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d5acd8e2609daa249556425bf6f16dd1b2541fe3b9fe0ad4afdab7d8ac0deb78.mp4"
+          >
+            <aside class="notes" data-markdown>Show the step graph representing the sharp obstacle boundary.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/47d39f8ad4de951c0202e5c3246cb4509232b33795de9e33c6d7e3d5def8f171.mp4"
+          >
+            <aside class="notes" data-markdown>Overlay the smooth sigmoid function.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/34d347ac9a4d877d863477831972e6455fcbdab385ca5b78e8abd28c22c147f4.mp4"
+          >
+            <aside class="notes" data-markdown>Let's animate alpha.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/5c3ec8499e1b05fefe51e3a600fb43a860c96254e8c5d36972899bb21ce66534.mp4"
+          >
+            <aside class="notes" data-markdown>Shift the camera frame back up to the billiard table.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d4c98cc6a72d530cf989e4f916651a950d0c1923f0b03baceb945efebbe03469.mp4"
+          >
+            <aside class="notes" data-markdown>Transition to the discontinuity smoothing bullet points.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/c5b0ac8f9ec74f7742c507b719750e0f46e95d631b9163a2469fa41eb392f8e7.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity - smoothness explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/11d30e35c3e13b50c9385489772c2cc5fa73dce65df0e7a9b05fb3cd0c99aa6d.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity - smoothness explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/0d371ad738ec02d4a7b4f3368c443272757cc9dd794b619fca0fa74ef20e2cbc.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity - smoothness explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8ba137d8ccaedd0261c732d81139e01ed7eb4f2f8a0c448d331796a64decc17c.mp4"
+          >
+            <aside class="notes" data-markdown>Discontinuity - smoothness explanation bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/aba0b9858b61d0144bd02de759d31c3e6f2b98d17499b25cf945f3a22c757f01.mp4"
+          >
+            <aside class="notes" data-markdown>Set up the dynamic alpha visualization for smoothed coverage.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/e6feec54320d2a678b3f2b689922c3541cec4ffd5fa14759049d2be9b785db14.mp4"
+          data-background-video-loop
+          >
+            <aside class="notes" data-markdown>Show the coverage map smoothing dynamically as alpha decreases.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2a8e3823f4a7281c2bd2198c5d801e376685f8859105c3196cc0de62fe1f7ba4.mp4"
+          >
+            <aside class="notes" data-markdown>Clear the coverage map and vector field objects from the screen.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/8e1bcb1a2a94ef36c047968a105aec3267b88ce6b65c55cc39debe03e83d237a.mp4"
+          >
+            <aside class="notes" data-markdown>Let us consider the optimization problem we want to solve.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/cad86776e7e96c91f069b7d76ca07d92406b095fc44d32306c3ae9e02c22b871.mp4"
+          >
+            <aside class="notes" data-markdown>The exact paths show that the transmitter is stuck in a blind spot.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/09711d4fe7b7befb7dbe9f868b6677fe90c1887191a8488ec33193ec22cbff54.mp4"
+          >
+            <aside class="notes" data-markdown>Enable smoothing to reveal a continuous gradient field.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b9286d7b0f0f74431d331c09d9a0558a4c73dc9a3b88be1f837701d55c854e87.mp4"
+          >
+            <aside class="notes" data-markdown>Transition to the gradient descent optimization phase.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/43e274b676ec1361d838b0e478d9562c72f157e372ad67f2b42cedadbe825372.mp4"
+          data-background-video-loop
+          >
+            <aside class="notes" data-markdown>Loop the optimization steps showing the transmitter converging.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2f2d31a4f3f17b5e652aff6ed54080ce95ace47c9e6db2df0f3cbc7a764b33e4.mp4"
+          >
+            <aside class="notes" data-markdown>While MPT is mathematically clean, its object-oriented design is inefficient for parallel GPU hardware. Think of storing sheets of paper: if you have sheets of various sizes, the container must fit the largest sheet (A0), wasting massive memory for smaller A4 sheets.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/3694b585242e84d408784e1ff8be076613a204a25f7ea0c213a2569709c01397.mp4"
+          >
+            <aside class="notes" data-markdown>Show the object-oriented memory layout card, illustrating the problem that, if we want to handle arbitrary shapes, then we have to store the largest possible shape, using an analogy with a box containing sheets of paper.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/b295659a234649bf0bdf486948534549804059ae7788c40baf8612d1edc94828.mp4"
+          >
+            <aside class="notes" data-markdown>By representing the scene strictly as uniform triangles, we can pack them perfectly without dynamic branching, matching the GPU architecture for peak execution efficiency.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d1af9a0c00631f9c73a54fe8e06ea60364dd9606ce2b8f709b732bce431fd652.mp4"
+          >
+            <aside class="notes" data-markdown>Comparison between object-oriented and triangle-based implementations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d8fb2a5139b45f2ab15d5873b00d0e2ca6c11e9bb393dca26c241c6cd203cb23.mp4"
+          >
+            <aside class="notes" data-markdown>Comparison between object-oriented and triangle-based implementations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/31e80537e621ce9ff90166f0b9914946fccaf68b9c0990c05f3702914a400cb6.mp4"
+          >
+            <aside class="notes" data-markdown>Comparison between object-oriented and triangle-based implementations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/29abb620c8bac303fd391291076deb7e7dfdea55617763d79234666964d45fdb.mp4"
+          >
+            <aside class="notes" data-markdown>Comparison between object-oriented and triangle-based implementations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/5a7630da0bbddeb11c7b3328939176d3420bed811a9405c39805d1f6b1ac8dd8.mp4"
+          >
+            <aside class="notes" data-markdown>Comparison between object-oriented and triangle-based implementations.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/801738f7e28826354a134f6b72c45bde32f65691d891e62f2a361964f5fce484.mp4"
+          >
+            <aside class="notes" data-markdown>All of these contributions are implemented in open-source software. DiffeRT is the full 3D library, while DiffeRT2d is a lightweight 2D version I created for prototyping and teaching.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/1544d5912f39c4098ca4be8a7009da15bba0bfd0fe6ee4f70a90cd890a72db05.mp4"
+          >
+            <aside class="notes" data-markdown>Software cards.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/17d40acdf29e1531e7150ce2338bfe45f6efef5206da382f17dbba40c4d5e942.mp4"
+          >
+            <aside class="notes" data-markdown>Open source bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/4af131e628ccb4f048585f40f82e7b8ca429d7487f11dcfc72b50783c9e9e663.mp4"
+          >
+            <aside class="notes" data-markdown>Open source bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/739f1197c6a0709033fe652240c4e1432cbacce52e616edf5fc53c84e4a66f5c.mp4"
+          >
+            <aside class="notes" data-markdown>Open source bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/56834ac9d8301d9acc8b30bda6e34ec572ba2995f82384753075911ab387ade2.mp4"
+          >
+            <aside class="notes" data-markdown>Open source bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/cb7665d51313d06b9f1ef714e7b83b2f6768ccd79ee51ecc4b017664a1c71567.mp4"
+          >
+            <aside class="notes" data-markdown>Open source bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/4cc6970b540a03560b712d24a1e2291e6ec06ed1a7d85dcc01e4d116732dbf84.mp4"
+          >
+            <aside class="notes" data-markdown>Beyond the scientific contributions, I am particularly proud of several achievements: ...</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/50fdd49e8ee938a0398ad936140881614ede6cfb8f6c99b7ece2fd64b3fa725d.mp4"
+          >
+            <aside class="notes" data-markdown>Proud achievement bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2342c84a3dc478f6ad7386e43e545574254e39afd7841bb7a65d9928f19b9ce2.mp4"
+          >
+            <aside class="notes" data-markdown>Proud achievement bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/da1db9441aa53ad35921fce85a110b1fe2421691f8e3e320d437ebbb918d0b28.mp4"
+          >
+            <aside class="notes" data-markdown>Thank you all for your attention. I am happy to take your questions.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/2323e3cebd773e8b15901882eb66ddebde6843d9d9669371d71f9c67c799e9fd.mp4"
+          >
+            <aside class="notes" data-markdown>Let us briefly look at the training procedure.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/0fe8b096b477324bbf2c259f4136e2a7baa54c9d2b4e49efa3c8b2a7af3d82e3.mp4"
+          >
+            <aside class="notes" data-markdown>Discuss applying smoothing to 3D intersections and trade-offs.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/10bd51906dfaab2efa0f4865d414cc2c121cbe48e91ab0c86d52742a69c22d2b.mp4"
+          >
+            <aside class="notes" data-markdown>Show Möller-Trumbore smoothed visualization and discuss pros/cons.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/43ba95dbc93dd345da393ab5a779dd6112f23b0452addd5aafe132b054502c75.mp4"
+          >
+            <aside class="notes" data-markdown>Smoothing 3D discussion bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/d898bc9ad55d327a7714e2cb4edcec154515cd31d7c8beaf7ef176973f17bbbb.mp4"
+          >
+            <aside class="notes" data-markdown>Smoothing 3D discussion bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/238d228f7cac8988d9a3e78d046f36b783b71d569953915b7187c302bc0358db.mp4"
+          >
+            <aside class="notes" data-markdown>Smoothing 3D discussion bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/a4d337c57f83c9437ac6f08373c33731dd7c04c730ffed05a1df6fd910fa468c.mp4"
+          >
+            <aside class="notes" data-markdown>Smoothing 3D discussion bullet.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/baa7e0ec2c3977c1e2b7ae2bb46cf5b35893f9ae52d787a67a3e59e317e6a86d.mp4"
+          >
+            <aside class="notes" data-markdown>Let us briefly look at the model.</aside>
+        </section>
+        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="2026-07-06-public-defense_assets/3c109b4e430a838826bfe9c64527c9f053182b797fc88b661a0088a381aa0bf5.mp4"
+          >
+            <aside class="notes" data-markdown>Let us briefly look at the training procedure.</aside>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/notes.js"></script>
+
+    <!-- To include plugins, see: https://revealjs.com/plugins/ -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/markdown.js"></script>
+
+    <!-- <script src="index.js"></script> -->
+    <script>
+      Reveal.initialize({
+        /// The list of RevealJS plugins.
+        plugins: [ RevealMarkdown, RevealNotes ],
+        // The "normal" size of the presentation, aspect ratio will
+        // be preserved when the presentation is scaled to fit different
+        // resolutions. Can be specified using percentage units.
+        width: '100%',
+        height: '100%',
+        // Factor of the display size that should remain empty around
+        // the content
+        margin: 0.04,
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 2.0,
+        // Display presentation control arrows
+        controls: false,
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+        // Display a presentation progress bar
+        progress: false,
+        // Display the page number of the current slide
+        // - true:    Show slide number
+        // - false:   Hide slide number
+        //
+        // Can optionally be set as a string that specifies the number formatting:
+        // - "h.v":   Horizontal . vertical slide number (default)
+        // - "h/v":   Horizontal / vertical slide number
+        // - "c":   Flattened slide number
+        // - "c/t":   Flattened slide number / total slides
+        //
+        // Alternatively, you can provide a function that returns the slide
+        // number for the current slide. The function should take in a slide
+        // object and return an array with one string [slideNumber] or
+        // three strings [n1,delimiter,n2]. See #formatSlideNumber().
+        slideNumber: false,
+        // Can be used to limit the contexts in which the slide number appears
+        // - "all":      Always show the slide number
+        // - "print":    Only when printing to PDF
+        // - "speaker":  Only in the speaker view
+        showSlideNumber: 'all',
+        // Use 1 based indexing for # links to match slide number (default is zero
+        // based)
+        hashOneBasedIndex: false,
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: false,
+        // Enable support for jump-to-slide navigation shortcuts
+        jumpToSlide: true,
+        // Push each slide change to the browser history.  Implies `hash: true`
+        history: false,
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+        // Optional function that blocks keyboard events when retuning false
+        //
+        // If you set this to 'focused', we will only capture keyboard events
+        // for embedded decks when they are in focus
+        keyboardCondition: null,
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+        // Enable the slide overview mode
+        overview: true,
+        // Vertical centering of slides
+        center: true,
+        // Enables touch navigation on devices with touch input
+        touch: true,
+        // Loop the presentation
+        loop: false,
+        // Change the presentation direction to be RTL
+        rtl: false,
+        // Changes the behavior of our navigation directions.
+        //
+        // "default"
+        // Left/right arrow keys step between horizontal slides, up/down
+        // arrow keys step between vertical slides. Space key steps through
+        // all slides (both horizontal and vertical).
+        //
+        // "linear"
+        // Removes the up/down arrows. Left/right arrows step through all
+        // slides (both horizontal and vertical).
+        //
+        // "grid"
+        // When this is enabled, stepping left/right from a vertical stack
+        // to an adjacent vertical stack will land you at the same vertical
+        // index.
+        //
+        // Consider a deck with six slides ordered in two vertical stacks:
+        // 1.1    2.1
+        // 1.2    2.2
+        // 1.3    2.3
+        //
+        // If you're on slide 1.3 and navigate right, you will normally move
+        // from 1.3 -> 2.1. If "grid" is used, the same navigation takes you
+        // from 1.3 -> 2.3.
+        navigationMode: 'default',
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+        // Turns fragments on and off globally
+        fragments: true,
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+        // Flags if we should show a help overlay when the question-mark
+        // key is pressed
+        help: true,
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+        // Global override for autolaying embedded media (video/audio/iframe)
+        // - null:   Media will only autoplay if data-autoplay is present
+        // - true:   All media will autoplay, regardless of individual setting
+        // - false:  No media will autoplay, regardless of individual setting
+        autoPlayMedia: null,
+        // Global override for preloading lazy-loaded iframes
+        // - null:   Iframes with data-src AND data-preload will be loaded when within
+        //           the viewDistance, iframes with only data-src will be loaded when visible
+        // - true:   All iframes with data-src will be loaded when within the viewDistance
+        // - false:  All iframes with data-src will be loaded only when visible
+        preloadIframes: null,
+        // Can be used to globally disable auto-animation
+        autoAnimate: true,
+        // Optionally provide a custom element matcher that will be
+        // used to dictate which elements we can animate between.
+        autoAnimateMatcher: null,
+        // Default settings for our auto-animate transitions, can be
+        // overridden per-slide or per-element via data arguments
+        autoAnimateEasing: 'ease',
+        autoAnimateDuration: 1.0,
+        autoAnimateUnmatched: true,
+        // CSS properties that can be auto-animated. Position & scale
+        // is matched separately so there's no need to include styles
+        // like top/right/bottom/left, width/height or margin.
+        autoAnimateStyles: ['opacity', 'color', 'background-color', 'padding', 'font-size', 'line-height', 'letter-spacing', 'border-width', 'border-color', 'border-radius', 'outline', 'outline-offset'],
+        // Controls automatic progression to the next slide
+        // - 0:      Auto-sliding only happens if the data-autoslide HTML attribute
+        //           is present on the current slide or fragment
+        // - 1+:     All slides will progress automatically at the given interval
+        // - false:  No auto-sliding, even if data-autoslide is present
+        autoSlide: 0,
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+        // Use this method for navigation when auto-sliding (defaults to navigateNext)
+        autoSlideMethod: null,
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+        // Opens links in an iframe preview overlay
+        // Add `data-preview-link` and `data-preview-link="false"` to customize each link
+        // individually
+        previewLinks: false,
+        // Exposes the reveal.js API through window.postMessage
+        postMessage: true,
+        // Dispatches all reveal.js events to the parent window through postMessage
+        postMessageEvents: false,
+        // Focuses body when page changes visibility to ensure keyboard shortcuts work
+        focusBodyOnPageVisibilityChange: true,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'none', // none/fade/slide/convex/concave/zoom
+        // The maximum number of pages a single slide can expand onto when printing
+        // to PDF, unlimited by default
+        pdfMaxPagesPerSlide: Number.POSITIVE_INFINITY,
+        // Prints each fragment on a separate slide
+        pdfSeparateFragments: true,
+        // Offset used to reduce the height of content within exported PDF pages.
+        // This exists to account for environment differences based on how you
+        // print to PDF. CLI printing options, like phantomjs and wkpdf, can end
+        // on precisely the total height of the document whereas in-browser
+        // printing has to end one pixel before.
+        pdfPageHeightOffset: -1,
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+        // The display mode that will be used to show slides
+        display: 'block',
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000
+      });
+      // Override SPACE to play / pause the video
+      Reveal.addKeyBinding(
+        {
+          keyCode: 32,
+          key: 'SPACE',
+          description: 'Play / pause video'
+        },
+        () => {
+          var currentVideos = Reveal.getCurrentSlide().slideBackgroundContentElement.getElementsByTagName("video");
+          if (currentVideos.length > 0) {
+            if (currentVideos[0].paused == true) currentVideos[0].play();
+            else currentVideos[0].pause();
+          } else {
+            Reveal.next();
+          }
+        }
+      );
+    </script>
+  </body>
+</html>
