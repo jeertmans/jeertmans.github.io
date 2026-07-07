@@ -14,19 +14,33 @@ permalink: /posts/public-defense/
 description: Public Ph.D. defense slides, manuscript, and video recording.
 ---
 
-On July 6th, 2026, I will publicly present my Ph.D. thesis
+On July 6th, 2026, I publicly defended my Ph.D. thesis
 *Differentiable Ray Tracing for Radio Propagation*
 at UCLouvain.
 
-This is an open event, and everyone is welcome to attend. The presentation will be held in the SUD 11 auditorium, croix du Sud, Louvain-la-Neuve, starting at 4:30 PM. It will be followed by a drink and a dinner in the Maxwell building. For those not on site, it is also possible to attend the presentation [on Teams](https://teams.microsoft.com/l/meetup-join/19%3ameeting_YTNjNzY1ZGMtYzI3My00NzE3LThlYjctYTliYTVjMGQ2YzA3%40thread.v2/0?context=%7b%22Tid%22%3a%227ab090d4-fa2e-4ecf-bc7c-4127b4d582ec%22%2c%22Oid%22%3a%223ae5a043-dd2e-4b71-a2c8-e19aabed8100%22%7d).
+The presentation was given in French, but the slides are in English.
 
-Please scan the QR code below to subscribe to the event and receive updates on the location and other details.
+## Slides
 
-The presentation, which will be in French, will begin at 4:30 p.m. and is expected to end by 6:30 p.m. at the latest. If you are unable to attend the presentation but would still like to join us for drinks or dinner, please feel free to come!
+{% include slides.html url="/assets/slides/2026-07-06-public-defense.html" %}
 
-For organizational purposes, could you please fill out [this form](https://forms.gle/rrtL3CEds8ARPf67A)?
+## Recording
 
-![svg](/assets/img/posts/public-defense-qr-code.svg)
-_Scan the QR code to subscribe to the event and receive updates on the location and other details._
+<!-- TODO -->
 
-*Slides, video recording, and manuscript will be made available in due time.*
+## Teaser
+
+<!-- TODO -->
+
+## Manuscript
+
+<!-- TODO -->
+
+## References
+
+{% bibliography --cited %}
+
+## Source code
+
+Available on GitHub:
+[`_slides/2026-07-06-public-defense/main.py`{: .filepath}](https://github.com/jeertmans/jeertmans.github.io/blob/main/_slides/2026-07-06-public-defense/main.py).
