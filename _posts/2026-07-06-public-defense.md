@@ -18,7 +18,7 @@ description: Public Ph.D. defense slides, manuscript, and video recording.
 ---
 
 On July 6th, 2026, I publicly defended my Ph.D. thesis
-*Differentiable Ray Tracing for Radio Propagation*
+*Differentiable Ray Tracing for Radio Propagation* {% cite Eertmans2026Thesis %}
 at UCLouvain.
 
 The presentation was given in French, but the slides are in English.

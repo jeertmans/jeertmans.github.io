@@ -16,7 +16,7 @@ description: Private Ph.D. defense slides.
 ---
 
 On May 5th, 2026, I defended my Ph.D. thesis
-*Differentiable Ray Tracing for Radio Propagation*
+*Differentiable Ray Tracing for Radio Propagation* {% cite Eertmans2026Thesis %}
 at UCLouvain, in front of my jury members:
 - Prof. Laurent Jacques (supervisor, UCLouvain);
 - Prof. Claude Oestges (supervisor, UCLouvain);
