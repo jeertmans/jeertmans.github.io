@@ -1,6 +1,6 @@
 [project]
 dependencies = [
-  "manim-slides[manim]==5.5.2",
+  "manim-slides[manim]==5.5.3",
   "numpy>=1.26.2",
   "opencv-python>=4.8.1.78",
   "setuptools>=69.0.2,<81",
