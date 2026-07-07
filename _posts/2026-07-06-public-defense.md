@@ -50,7 +50,7 @@ If you are intersted in watching the teaser video only, you can find it below. A
 
 ## Manuscript
 
-> The official link to access the manuscript is not yet available, but you can find it on the GitHub repository linked at the very top of this page. For those intersted, it will be possible to order printed versions as well: feel free to contact me for more information.
+> The official link to access the manuscript is not yet available, but you can find it on the GitHub repository linked at the very top of this page. For those interested, it will be possible to order printed versions as well: feel free to contact me for more information.
 {: .prompt-info }
 
 ## References
