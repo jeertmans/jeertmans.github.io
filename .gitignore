@@ -38,8 +38,6 @@ _slides/*/*.html
 _slides/*/images/sequences/
 _slides/2026-07-06-public-defense/antennas/
 _slides/2026-07-06-public-defense/sounds/
-_slides/2026-07-06-public-defense/videos/
-_slides/2026-07-06-public-defense/images/antennas/
 
 # LaTeX
 *.aux

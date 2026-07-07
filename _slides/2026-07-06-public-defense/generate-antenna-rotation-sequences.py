@@ -12,17 +12,16 @@
 # ///
 import argparse
 import io
-import os
 from pathlib import Path
-import numpy as np
-import jax
-import jax.numpy as jnp
+
 import equinox as eqx
-import plotly.graph_objects as go
+import jax.numpy as jnp
+import numpy as np
 from differt.geometry import TriangleMesh, spherical_to_cartesian
-from differt.plotting import set_defaults, reuse
+from differt.plotting import reuse, set_defaults
 from PIL import Image
 from tqdm import tqdm
+
 
 def load_obj_custom(file_path):
     """Custom OBJ loader to parse vertices, faces, and materials from an OBJ file and its MTL file."""
@@ -96,11 +95,21 @@ def load_obj_custom(file_path):
     )
 
 
-
 def main():
-    parser = argparse.ArgumentParser(description="Generate 3D rotating antenna image sequences.")
-    parser.add_argument("--num-frames", type=int, default=60, help="Number of frames per rotation sequence.")
-    parser.add_argument("--test", action="store_true", help="Test mode: only generate 3 frames per antenna.")
+    parser = argparse.ArgumentParser(
+        description="Generate 3D rotating antenna image sequences."
+    )
+    parser.add_argument(
+        "--num-frames",
+        type=int,
+        default=60,
+        help="Number of frames per rotation sequence.",
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: only generate 3 frames per antenna.",
+    )
     args = parser.parse_args()
 
     num_frames = args.num_frames
@@ -128,7 +137,7 @@ def main():
 
         # Center and normalize coordinates
         vertices = np.array(mesh.vertices)
-        
+
         # Swap Y and Z axes (rotate 90 degrees around X) so Z becomes vertical
         vertices = np.stack([vertices[:, 0], -vertices[:, 2], vertices[:, 1]], axis=-1)
 
@@ -141,7 +150,9 @@ def main():
             vertices_normalized = vertices_centered
 
         # Calculate normalized height
-        normalized_height = np.max(vertices_normalized[:, 2]) - np.min(vertices_normalized[:, 2])
+        normalized_height = np.max(vertices_normalized[:, 2]) - np.min(
+            vertices_normalized[:, 2]
+        )
 
         # Create output folder for the antenna
         antenna_seq_dir = output_root / f"antenna_{i:02d}"
@@ -150,14 +161,16 @@ def main():
         # Update mesh with normalized and oriented vertices
         mesh = eqx.tree_at(lambda m: m.vertices, mesh, jnp.array(vertices_normalized))
 
-        for frame_idx in tqdm(frame_indices, desc=f"Antenna {i:02d} Frames", leave=False):
+        for frame_idx in tqdm(
+            frame_indices, desc=f"Antenna {i:02d} Frames", leave=False
+        ):
             with reuse() as fig:
                 mesh.plot(figure=fig, showlegend=False)
 
                 # Camera setup: adapt viewing distance with respect to the antenna height
                 base_distance = 2.0
                 camera_distance = base_distance * (normalized_height / 2.0)
-                
+
                 camera_elevation = np.deg2rad(25.0)
                 angle = np.linspace(0, 2 * np.pi, num_frames, endpoint=False)[frame_idx]
                 camera_azimuth = np.deg2rad(45.0) + angle
@@ -183,7 +196,7 @@ def main():
                         xaxis=dict(visible=False, range=[-1.0, 1.0]),
                         yaxis=dict(visible=False, range=[-1.0, 1.0]),
                         zaxis=dict(visible=False, range=[-1.0, 1.0]),
-                        aspectmode='cube',
+                        aspectmode="cube",
                         bgcolor="rgba(0,0,0,0)",
                     ),
                 )
@@ -194,6 +207,7 @@ def main():
                 img.save(antenna_seq_dir / f"frame_{frame_idx:03d}.png")
 
     print("All antenna rotation sequences completed successfully!")
+
 
 if __name__ == "__main__":
     main()

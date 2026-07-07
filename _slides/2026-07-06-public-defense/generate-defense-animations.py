@@ -17,27 +17,13 @@
 # ///
 
 import argparse
-import os
 from pathlib import Path
-
-import numpy as np
-
-# Configure GPU memory allocation before importing JAX or TensorFlow
-os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
-import tensorflow as tf
-
-gpus = tf.config.list_physical_devices("GPU")
-if gpus:
-    try:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-    except RuntimeError as e:
-        print(f"GPU config error: {e}")
 
 import equinox as eqx
 import jax
 import jax.numpy as jnp
 import jax.random as jr
+import numpy as np
 import plotly.graph_objects as go
 import sionna.rt
 from differt.geometry import TriangleMesh, normalize, spherical_to_cartesian

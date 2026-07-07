@@ -8,7 +8,7 @@ _Staring at lines of code - Generated with Fooocus, improved by ChatGPT_
 
 Hello, I am Jérome, or @jeertmans, and welcome to my personal blog!
 
-I am a Ph.D. student working at UCLouvain as a Teaching Assistant,
+I am a postdoctoral researcher and Teaching Assistant at UCLouvain,
 under the supervision of
 [Pr. Claude Oestges](https://uclouvain.be/en/directories/Claude.Oestges) and
 [Pr. Laurent Jacques](https://uclouvain.be/en/directories/laurent.jacques).

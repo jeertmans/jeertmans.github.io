@@ -249,7 +249,7 @@ class AudioReactiveNeon(m.Scene):
                 ghost.current_prog = 0.0
 
                 def ghost_anim(mob: m.Mobject, dt: float) -> None:
-                    dt_ghost = dt  # Manim requires a 'dt' argument for updaters
+                    del dt  # Manim requires a 'dt' argument for updaters to be called on every frame.
                     age = self.time - mob.spawn_time
 
                     # If too old, remove the ghost and clear its updaters

@@ -624,10 +624,10 @@ class Basics(m.MovingCameraScene):
         # Ray colors per reflection order
         ORDER_COLORS = [
             SIGNAL_HEX,  # 0: LOS
-            "#FFB300",  # 1: 1st reflection – amber
-            "#FF6B35",  # 2: 2nd reflection – orange
-            "#E040FB",  # 3: 3rd reflection – purple
-            "#00E676",  # 4: 4th reflection – green
+            "#FFB300",  # 1: 1st reflection
+            "#FF6B35",  # 2: 2nd reflection
+            "#E040FB",  # 3: 3rd reflection
+            "#00E676",  # 4: 4th reflection
         ]
 
         # ── Pre-compute MLM (using compute_tx_mlm, matching generate-defense-animations.py) ──
@@ -839,9 +839,6 @@ class Basics(m.MovingCameraScene):
         dist_t = m.ValueTracker(3.0)
         rx_x_t = m.ValueTracker(rx_fixed[0])
         rx_y_t = m.ValueTracker(rx_fixed[1])
-
-        # Snapshot rays from previous step for the camera pan phase
-        final_rays = list(accumulated_rays)
 
         def _redraw_camera():
             rx_pos = np.array([rx_x_t.get_value(), rx_y_t.get_value(), z0])

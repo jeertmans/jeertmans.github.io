@@ -352,7 +352,9 @@ class Main(Slide, m.MovingCameraScene):
         )
         chal_bullets.next_to(mot_header, m.DOWN, buff=0.72).to_edge(m.LEFT, buff=0.75)
 
-        mot_vid = VideoMobject(sorted(Path("images/sequences/street-canyon/").glob("*.png")))
+        mot_vid = VideoMobject(
+            sorted(Path("images/sequences/street-canyon/").glob("*.png"))
+        )
         mot_vid.set(width=4.55)
         mot_vid_title = m.Text("Urban street-canyon example", font_size=22, color=MUTED)
         mot_vid_title.next_to(mot_vid, m.DOWN, buff=0.24)
