@@ -18,10 +18,10 @@ description: Private Ph.D. defense slides.
 On May 5th, 2026, I defended my Ph.D. thesis
 *Differentiable Ray Tracing for Radio Propagation*
 at UCLouvain, in front of my jury members:
-- Prof. Laurent Jacques (supervisor, Université catholique de Louvain);
-- Prof. Claude Oestges (supervisor, Université catholique de Louvain);
-- Prof. Christophe Craeye (chairman, Université catholique de Louvain);
-- Prof. Christophe De Vleeschouwer (secretary, Université catholique de Louvain);
+- Prof. Laurent Jacques (supervisor, UCLouvain);
+- Prof. Claude Oestges (supervisor, UCLouvain);
+- Prof. Christophe Craeye (chairman, UCLouvain);
+- Prof. Christophe De Vleeschouwer (secretary, UCLouvain);
 - Prof. Philippe De Doncker (Université Libre de Bruxelles);
 - Prof. Enrico Maria Vitucci (Università di Bologna);
 - and Dr. Jakob Hoydis (NVIDIA).

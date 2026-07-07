@@ -17,13 +17,13 @@ cv:
     username: bVbwyxAAAAAJ
   sections:
     Education:
-    - institution: Université catholique de Louvain
+    - institution: UCLouvain
       area: Electrical engineering
       degree: Ph.D.
       start_date: 2021-09
       end_date: 2026-07
       summary: 'Thesis title: Differentiable Ray Tracing for Radio Propagation Modeling'
-    - institution: Université catholique de Louvain
+    - institution: UCLouvain
       area: Electro-mechanical engineering
       degree: M.Sc.
       start_date: 2019-09
@@ -34,7 +34,7 @@ cv:
       - Graduated Magna Cum Laude.
 
     Experience:
-    - company: Université catholique de Louvain
+    - company: UCLouvain
       position: Teaching Assistant
       start_date: 2021-09
       end_date: present
@@ -201,9 +201,9 @@ cv:
       details: 1 review
 
     Referees:
-    - label: Prof. Claude Oestges, Université catholique de Louvain
+    - label: Prof. Claude Oestges, UCLouvain
       details: claude.oestges@uclouvain.be
-    - label: Prof. Laurent Jacques, Université catholique de Louvain
+    - label: Prof. Laurent Jacques, UCLouvain
       details: laurent.jacques@uclouvain.be
     - label: Prof. Vittorio Degli-Esposti, University of Bologna
       details: v.degliesposti@unibo.it
