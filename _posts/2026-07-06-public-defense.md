@@ -53,7 +53,7 @@ If you are intersted in watching the teaser video only, you can find it below. A
 When writing my manuscript, I tried to make it as accessible as possible, hence the textbook format. I hope it provides a good, comprehensive introduction to anyone interested in ray tracing applied to radio propagation. If you have any questions or feedback about my work, please feel free to reach out to me!
 
 The permanent link to access my Ph.D. manuscript is <https://hdl.handle.net/2078.5/278727>.
-If you are interested, you can also order a physical copy of it here:< https://pul.uclouvain.be/book/?gcoi=29303100203200>.
+If you are interested, you can also order a physical copy of it here: <https://pul.uclouvain.be/book/?gcoi=29303100203200>.
 *(I do not receive any royalties.)*
 
 ## References
