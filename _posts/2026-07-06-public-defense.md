@@ -50,8 +50,11 @@ If you are intersted in watching the teaser video only, you can find it below. A
 
 ## Manuscript
 
-> The official link to access the manuscript is not yet available, but you can find it on the GitHub repository linked at the very top of this page. For those interested, it will be possible to order printed versions as well: feel free to contact me for more information.
-{: .prompt-info }
+When writing my manuscript, I tried to make it as accessible as possible, hence the textbook format. I hope it provides a good, comprehensive introduction to anyone interested in ray tracing applied to radio propagation. If you have any questions or feedback about my work, please feel free to reach out to me!
+
+The permanent link to access my Ph.D. manuscript is https://hdl.handle.net/2078.5/278727
+If you are interested, you can also order a physical copy of it here: https://pul.uclouvain.be/book/?gcoi=29303100203200.
+*(I do not receive any royalties.)*
 
 ## References
 
