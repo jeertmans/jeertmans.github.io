@@ -21,6 +21,7 @@ assets/notebooks/html_*/
 assets/notebooks/2022-04-28-utd-transition-function_files/2022-04-28-utd-transition-function_3_0.svg
 assets/img/2022-04-28-utd-transition-function_files/2022-04-28-utd-transition-function_3_0.svg
 assets/img/2022-08-29-mcq-opinion_files/2022-08-29-mcq-opinion_4_0.svg
+assets/lib/
 
 _posts/2022-04-28-utd-transition-function.md
 _posts/2022-11-04-plotly-test.md
@@ -38,6 +39,10 @@ _slides/*/*.html
 _slides/*/images/sequences/
 _slides/2026-07-06-public-defense/antennas/
 _slides/2026-07-06-public-defense/sounds/
+_slides/2026-07-28-kddi-presentation/*.toc
+_slides/2026-07-28-kddi-presentation/*.snm
+_slides/2026-07-28-kddi-presentation/*.out
+_slides/2026-07-28-kddi-presentation/*.nav
 
 # LaTeX
 *.aux
