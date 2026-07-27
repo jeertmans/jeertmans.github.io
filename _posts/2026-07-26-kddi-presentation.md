@@ -21,13 +21,7 @@ The presentation covers my background in Electrical Engineering at UCLouvain, an
 
 ## Slides Preview
 
-<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:1.5rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-    <iframe
-        src="/assets/slides/2026-07-28-kddi-presentation.pdf"
-        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
-        allowfullscreen>
-    </iframe>
-</div>
+{% include pdf-preview.html url="/assets/slides/2026-07-28-kddi-presentation.pdf" %}
 
 If the embedded PDF viewer does not load on your browser, you can access the <a href="/assets/slides/2026-07-28-kddi-presentation.pdf" target="_blank" rel="noopener">PDF directly <i class="far fa-file-pdf fa-fw"></i></a>.
 

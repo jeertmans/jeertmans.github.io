@@ -43,6 +43,7 @@ _slides/2026-07-28-kddi-presentation/*.toc
 _slides/2026-07-28-kddi-presentation/*.snm
 _slides/2026-07-28-kddi-presentation/*.out
 _slides/2026-07-28-kddi-presentation/*.nav
+_slides/2026-07-28-kddi-presentation/*.dvi
 
 # LaTeX
 *.aux

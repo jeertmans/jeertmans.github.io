@@ -26,4 +26,4 @@ Below, you can find slides presenting our preliminary results at the COST INTERA
 
 ## Slides
 
-<iframe src="/assets/slides/2024-06-16-helsinki-mlxrt-presentation.pdf" width="100%" height="415px" allowfullscreen></iframe>
+{% include pdf-preview.html url="/assets/slides/2024-06-16-helsinki-mlxrt-presentation.pdf" %}
