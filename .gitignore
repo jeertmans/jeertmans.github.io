@@ -50,6 +50,7 @@ _slides/2026-07-28-kddi-presentation/*.dvi
 *.fdb_latexmk
 *.fls
 *.log
+*.xdv
 
 # RenderCV
 _data/rendercv_output/*

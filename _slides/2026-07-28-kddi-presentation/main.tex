@@ -13,6 +13,7 @@
 
 \usepackage{xeCJK}
 \setCJKmainfont{Noto Sans JP}
+\setlength{\parindent}{0pt}
 
 % ==========================================================================
 % CUSTOM MINIMALIST THEME
@@ -76,11 +77,11 @@
   \vskip6pt
 }
 
-% --- Minimal footline: slide number on the right ---
+% --- Minimal footline: slide number on the right with right margin padding ---
 \setbeamertemplate{footline}{%
   \hfill
   {\usebeamerfont{footnote}\color{textmuted}%
-   \insertframenumber\,/\,\inserttotalframenumber}\hspace{6mm}\vskip6pt
+   \insertframenumber\,/\,\inserttotalframenumber}\hspace*{10mm}\vskip8pt
 }
 
 % --- Title page ---
@@ -109,7 +110,7 @@
 
 % ---------- Meta ----------
 \title[Self-Introduction]{Self-Introduction}
-\subtitle{Jérome Eertmans~---~Research Intern at KDDI Research, Inc.}
+\subtitle{Jérome Eertmans~---~Research Intern at KDDI Research, Inc.\\\footnotesize From July 17 to September 14, 2026}
 \author{Jérome Eertmans}
 \institute{UCLouvain, Belgium}
 \date{July 28, 2026}
@@ -125,10 +126,18 @@
     \end{center}
     \vfill
   \end{frame}
-}
+}% Japanese inline translation command (muted text, mbox prevents mid-word line breaks)
+\newcommand{\ja}[1]{{\color{textmuted}\footnotesize~\mbox{(#1)}}}
 
-% Japanese inline translation command (muted text)
-\newcommand{\ja}[1]{{\color{textmuted}\footnotesize~(#1)~}}
+% Custom upside-down smiley macro
+\newcommand{\upsidedownsmiley}{%
+  \begin{tikzpicture}[baseline=-0.6ex, scale=0.18]
+    \draw[fill=yellow!90!black, draw=black!80, line width=0.4pt] (0,0) circle (1);
+    \fill[black!80] (-0.35, -0.2) circle (0.15);
+    \fill[black!80] (0.35, -0.2) circle (0.15);
+    \draw[line width=0.5pt, black!80] (-0.45, 0.25) arc (180:0:0.45);
+  \end{tikzpicture}%
+}
 
 % ==========================================================================
 \begin{document}
@@ -139,7 +148,7 @@
 \end{frame}
 
 % ------------------------------------------------------------------
-\begin{frame}{Outline \ja{アジェンダ}}
+\begin{frame}{Outline \ja{概要}}
   \tableofcontents
 \end{frame}
 
@@ -167,64 +176,119 @@
 \end{frame}
 
 % ------------------------------------------------------------------
-\begin{frame}{Belgium \& UCLouvain \ja{ベルギーと大学紹介}}
+\begin{frame}{About Belgium? \ja{ベルギーの場所・言語地域}}
   \begin{columns}[c]
-    \column{0.5\textwidth}
-    \textbf{Belgium \ja{ベルギー}}
-    \begin{itemize}
-      \item Small country in Western Europe \ja{西ヨーロッパ}
-      \item Capital: Brussels \ja{ブリュッセル} (EU de facto capital)
-      \item 3 official languages: French, Dutch, German
-      \item Famous for chocolate, waffles, and fries!
-    \end{itemize}
+    \column{0.58\textwidth}
+    \only<1>{%
+      \textbf{Belgium in the World \ja{世界におけるベルギー}}
+      \begin{itemize}
+        \item Located in Western Europe \ja{西ヨーロッパ}
+        \item Capital: Brussels \ja{ブリュッセル}
+        \item Population: $\sim$11.5 million\\(Louvain-la-Neuve: $\sim$30 000)
+      \end{itemize}%
+    }%
+    \only<2>{%
+      \textbf{Belgium in Europe \ja{欧州におけるベルギー}}
+      \begin{itemize}
+        \item Bordered by France, Germany, Luxembourg, and the Netherlands
+        \item De facto capital of the European Union \ja{EU本部所在地}
+        \item Crossroads of Western Europe
+      \end{itemize}%
+    }%
+    \only<3->{%
+      \textbf{Three Official Languages \ja{3つの公用語}}
+      \begin{itemize}
+        \item \textbf{Dutch} \ja{オランダ語}: Flanders \ja{フランダース}
+        \item \textbf{French} \ja{フランス語}: Wallonia \ja{ワロン}
+        \item \textbf{German} \ja{ドイツ語}: East \ja{東部}
+      \end{itemize}
+      \vspace{4pt}
+      \textbf{Fun Facts}:
+      \begin{itemize}
+        \item Famous for chocolate, waffles \& fries!
+        \item 1,600+ different beers\dots \only<4->{\textbf{but I don't drink alcohol!} \upsidedownsmiley{} \ja{でもお酒は飲みません}}
+      \end{itemize}%
+    }%
 
-    \vspace{4pt}
-    \textbf{UCLouvain}
-    \begin{itemize}
-      \item Founded in 1425 (600+ years of history)
-      \item Located in Louvain-la-Neuve: a unique car-free university city \ja{歩行者専用大学都市}
-    \end{itemize}
 
-    \column{0.5\textwidth}
+
+
+    \column{0.42\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{images/europe_map.pdf}
+    \only<1>{
+      \includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{images/world_map.pdf}\\[4pt]
+      {\footnotesize Belgium on the world map}
+    }
+    \only<2>{
+      \includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{images/europe_map.pdf}\\[4pt]
+      {\footnotesize Belgium in Western Europe}
+    }
+    \only<3->{
+      \begin{tikzpicture}
+        \node[anchor=south west, inner sep=0] (map) at (0,0)
+          {\includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{images/communities.pdf}};
+        \begin{scope}[x={(map.south east)}, y={(map.north west)}]
+          % --- City markers ---
+          % Brussels (hatched capital enclave center)
+        \fill[black] (0.470, 0.654) circle (2pt);
+          \node[above left, font=\scriptsize\bfseries, inner sep=2pt] at (0.450, 0.657) {Brussels};
+          % Louvain-la-Neuve (LLN - in Wallonia just south of language border)
+          \fill[accent] (0.500, 0.570) circle (2pt);
+          \node[below right, font=\scriptsize\bfseries, color=accent, inner sep=2pt] at (0.515, 0.570) {Louvain-la-Neuve};
+          % --- Legend ---
+          \definecolor{lgdutch}{HTML}{FAB274}
+          \definecolor{lgfrench}{HTML}{F2536B}
+          \definecolor{lggerman}{HTML}{009900}
+          \fill[lgdutch] (0.02, 0.12) rectangle ++(0.06, 0.04);
+          \node[right, font=\tiny, inner sep=1pt] at (0.09, 0.14) {Dutch};
+          \fill[lgfrench] (0.02, 0.06) rectangle ++(0.06, 0.04);
+          \node[right, font=\tiny, inner sep=1pt] at (0.09, 0.08) {French};
+          \fill[lggerman] (0.02, 0.00) rectangle ++(0.06, 0.04);
+          \node[right, font=\tiny, inner sep=1pt] at (0.09, 0.02) {German};
+        \end{scope}
+      \end{tikzpicture}\\[2pt]
+      {\footnotesize Language communities of Belgium}
+    }
   \end{columns}
 \end{frame}
+
+
 
 % ------------------------------------------------------------------
 \begin{frame}{Hobbies \& Interests \ja{趣味・関心}}
   \begin{columns}[T]
-    \column{0.5\textwidth}
+    \column{0.52\textwidth}
     \textbf{Sports \& Outdoors \ja{スポーツ・アウトドア}}
     \begin{itemize}
-      \item Running, hiking, and exploring nature
-      \item 6 years as a Scout Leader \ja{スカウトリーダー}
+      \item Ultimate Frisbee, road biking, sports in general
+      \item Walking in nature
     \end{itemize}
 
     \vspace{6pt}
     \textbf{Culture \ja{文化・趣味}}
     \begin{itemize}
       \item Anime \& Manga enthusiast \ja{アニメ・マンガファン}
-      \item Reading \& history
+      \item Visiting new places
     \end{itemize}
 
-    \column{0.5\textwidth}
-    \textbf{Tech \& Coding \ja{技術・プログラミング}}
+    \column{0.48\textwidth}
+    \textbf{Tech \& Coding \ja{技術・オープンソース}}
     \begin{itemize}
       \item Open-source software developer \ja{OSS開発}
-      \item Contributor on GitHub \ja{GitHubでの活動}
+      \item Contributor on GitHub \ja{GitHub活動}
       \item Passionate about Rust, Python, and JAX
     \end{itemize}
 
     \vspace{6pt}
-    \textbf{Destination \ja{旅行}}
+    \textbf{Destination \ja{来日の想い}}
     \begin{itemize}
-      \item Long-time dream: Visiting and working in Japan! \ja{日本での生活と研究}
+      \item Eastern Asia
+      \item Road-biking across Japan and Europe
     \end{itemize}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Academic Supervisors\ja{指導教員}}
+\begin{frame}{Academic Supervisors \ja{指導教員}}
   \begin{columns}[c]
     \column{0.5\textwidth}
     \centering
@@ -252,49 +316,108 @@
   \vspace{10pt}
 
   \begin{columns}[c]
-    \column{0.55\textwidth}
-    \textbf{Key Concepts \ja{主要な概念}:}
-    \begin{itemize}
+    \column{0.58\textwidth}
+    \textbf{Key Concepts \ja{主要概念}:}
+    \begin{itemize}[<+->]
       \item \textbf{Radio Propagation}: Model wireless signals in complex urban and indoor environments \ja{都市・室内での電波伝搬}
       \item \textbf{Ray Tracing}: Simulate physical wave interactions (reflections, diffractions) \ja{反射・回折の物理シミュレーション}
-      \item \textbf{Differentiability}: Compute gradients through physics for fast gradient-based optimization \ja{勾配ベースの高速最適化}
+      \item \textbf{Differentiability}: Compute gradients through physics for fast gradient-based optimization \ja{勾配による高速最適化}
     \end{itemize}
 
-    \column{0.45\textwidth}
+    \column{0.42\textwidth}
     \centering
     \includegraphics[width=\linewidth,keepaspectratio]{images/differentiable_ray_tracing.png}
   \end{columns}
 \end{frame}
 
 % ------------------------------------------------------------------
+% ------------------------------------------------------------------
 \begin{frame}{Key Highlight: Generative Path Sampling \ja{研究成果：生成型経路サンプリング}}
   \begin{columns}[c]
-    \column{0.52\textwidth}
+    \column{0.54\textwidth}
     \textbf{The Challenge \ja{課題}:}
-    \begin{itemize}
-      \item Point-to-point ray tracing requires searching $\mathcal{O}(N^K)$ candidate paths
-      \item Exponential complexity \ja{計算量の指数関数的増大} limits real-time 5G/6G digital twin simulations \ja{デジタルツイン}
+    \begin{itemize}\itemsep1pt
+      \item<1-> $\mathcal{O}(N^K)$ candidate paths in point-to-point ray tracing
+      \item<2-> Exponential growth \ja{計算量の指数的増大} hinders real-time 5G/6G digital twins
     \end{itemize}
 
-    \vspace{4pt}
-    \textbf{Our Solution \ja{解決策}:}
-    \begin{itemize}
-      \item Replace exhaustive search with an ML model (\textbf{GFlowNet}) \ja{強化学習・生成モデル}
-      \item Samples physically valid paths directly
-      \item \textbf{100$\times$ speedup on CPU}, \textbf{10$\times$ on GPU} \ja{大幅な高速化} while maintaining high accuracy ($>90\%$)
+    \vspace{2pt}
+    \uncover<3->{
+      \textbf{Our Solution \ja{解決策}:}
+    }
+    \begin{itemize}\itemsep1pt
+      \item<3-> Replace search with a \textbf{GFlowNet} model \ja{生成AIモデル}
+      \item<4-> Direct sampling of valid physical paths
+      \item<5-> \textbf{100$\times$ CPU / 10$\times$ GPU speedup} \ja{高速化} ($>90\%$ accuracy)
     \end{itemize}
 
-    \column{0.48\textwidth}
+    \column{0.46\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{images/fig_pipeline.png}\\[2pt]
-    {\footnotesize Traditional ray tracing (top) vs.\ ML-assisted path sampling (bottom)}
+    \includegraphics[width=\linewidth,height=0.60\textheight,keepaspectratio]{images/fig_pipeline.pdf}\\[2pt]
+    {\footnotesize Traditional ray tracing (top) vs.\ ML path sampling (bottom)}
   \end{columns}
 \end{frame}
 
 % ------------------------------------------------------------------
-\begin{frame}{Software \& Open-Source Projects \ja{開発ツール・成果物}}
+\begin{frame}{Generative Path Sampling Architecture \ja{モデル構成}}
+  \centering
+  \includegraphics[width=0.88\textwidth,height=0.45\textheight,keepaspectratio]{images/fig_model.pdf}\\[3pt]
+
   \begin{columns}[T]
     \column{0.5\textwidth}
+    {\small
+    \begin{itemize}\itemsep2pt
+      \item \textbf{GFlowNet} trained to sample promising ray paths
+      \item Canonical transformation for spatial invariance
+    \end{itemize}}
+
+    \column{0.5\textwidth}
+    {\small
+    \begin{itemize}\itemsep2pt
+      \item Physics-based action masking to eliminate invalid reflections
+      \item Robust training via experience replay buffer
+    \end{itemize}}
+  \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------
+\begin{frame}{Manhattan Benchmark: 3D Geometry \ja{Manhattan都市モデル3D形状}}
+  \begin{columns}[c]
+    \column{0.56\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.75\textheight,keepaspectratio]{images/fig_coverage_manhattan.pdf}
+
+    \column{0.44\textwidth}
+    \textbf{Out-of-Distribution Test \ja{未知環境への汎化性能}}
+    \begin{itemize}\itemsep4pt
+      \item OpenStreetMap Manhattan scenes ($N=400$ and $N=805$)
+      \item Complex facade details and building aspect ratios
+      \item Evaluates model generalization outside procedural training
+    \end{itemize}
+  \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------
+\begin{frame}{Manhattan Benchmark: Coverage Maps \ja{Manhattan電波マップ評価}}
+  \begin{columns}[c]
+    \column{0.58\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.75\textheight,keepaspectratio]{images/fig_coverage_map_manhattan.pdf}
+
+    \column{0.42\textwidth}
+    \textbf{Coverage Map Fidelity \ja{電波マップ再現性}}
+    \begin{itemize}\itemsep4pt
+      \item Ground truth (exhaustive) vs.\ GFlowNet prediction ($M=100$)
+      \item Accurately reproduces signal coverage across complex urban canyons
+      \item High fidelity on dominant multipath channels
+    \end{itemize}
+  \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------
+\begin{frame}{Software \& Open-Source Projects \ja{オープンソース開発・成果物}}
+  \begin{columns}[T]
+    \column{0.55\textwidth}
     \textbf{DiffeRT \ja{微分可能レイトレーシング・ライブラリ}}
     \begin{itemize}
       \item Open-source Python library for differentiable radio ray tracing
@@ -302,17 +425,11 @@
       \item {\small\url{https://github.com/jeertmans/DiffeRT}}
     \end{itemize}
 
-    \column{0.5\textwidth}
+    \column{0.45\textwidth}
     \textbf{Manim Slides \ja{プレゼンテーションツール}}
     \begin{itemize}
       \item Presentation tool for math \& scientific animations
-      \item Used by researchers worldwide; published in JOSE journal
-    \end{itemize}
-
-    \vspace{6pt}
-    \textbf{ADE Scheduler \ja{大学公式時間割システム}}
-    \begin{itemize}
-      \item University-wide course scheduling tool for UCLouvain (30k+ active student users)
+      \item Used by researchers worldwide
     \end{itemize}
   \end{columns}
 \end{frame}
@@ -321,21 +438,21 @@
 \section{\texorpdfstring{Why Am I Here? \ja{KDDI総合研究所での目標}}{Why Am I Here?}}
 
 % ------------------------------------------------------------------
-\begin{frame}{Why KDDI Research, Inc. \& Internship Goals \ja{KDDI総合研究所での研究目標}}
+\begin{frame}{Why KDDI Research, Inc. \& Internship Goals \ja{KDDI総合研究所での目標}}
   \begin{columns}[T]
     \column{0.5\textwidth}
     \textbf{Why KDDI Research? \ja{志望理由}}
     \begin{itemize}
-      \item Leading global telecommunications operator \ja{通信分野の世界的リーダー}
-      \item Strong alignment with 5G/6G channel modeling, digital twins, and AI-driven network planning
-      \item Opportunity to bring academic differentiable ray tracing to industrial applications \ja{産業応用への展開}
+      \item Leading global telecommunications operator \ja{グローバル通信リーダー}
+      \item Strong alignment with my research interests \ja{研究分野の深い合致}
+      \item Opportunity to learn from industrial R\&D \ja{産業応用の知見}
     \end{itemize}
 
     \column{0.5\textwidth}
     \textbf{Internship Goals \ja{インターンシップの目標}}
     \begin{itemize}
-      \item \textbf{Professional}: Collaborate with KDDI researchers and produce high-impact R\&D results
-      \item \textbf{Personal}: Improve Japanese language skills, experience Japanese work culture, and build lasting connections
+      \item \textbf{Professional}: Collaborate with KDDI researchers, gain hands-on skills (e.g., channel measurements), and enjoy R\&D! \ja{研究者との協働・実践的技術の習得}
+      \item \textbf{Personal}: Improve Japanese language skills, experience Japanese work culture, and build lasting connections \ja{日本語向上と企業文化の体験}
     \end{itemize}
   \end{columns}
 \end{frame}
@@ -358,50 +475,7 @@
   \vfill
 \end{frame}
 
-% ==================================================================
-%  APPENDIX / BACKUP SLIDES (FOR Q&A SESSION)
-% ==================================================================
-\appendix
-\sectionslide{Appendix / Backup Slides \ja{補足資料}}
-
-% ------------------------------------------------------------------
-\begin{frame}{Backup: Generative Path Sampling Architecture \ja{補足：モデル構成}}
-  \centering
-  \includegraphics[width=0.88\textwidth,height=0.45\textheight,keepaspectratio]{images/fig_model.png}\\[3pt]
-
-  \begin{columns}[T]
-    \column{0.5\textwidth}
-    {\small
-    \begin{itemize}\itemsep2pt
-      \item \textbf{GFlowNet} trained to sample promising ray paths
-      \item Canonical transformation for spatial invariance
-    \end{itemize}}
-
-    \column{0.5\textwidth}
-    {\small
-    \begin{itemize}\itemsep2pt
-      \item Physics-based action masking to eliminate invalid reflections
-      \item Robust training via experience replay buffer
-    \end{itemize}}
-  \end{columns}
-\end{frame}
-
-% ------------------------------------------------------------------
-\begin{frame}{Backup: Manhattan Benchmark Results \ja{補足：Manhattan都市モデル評価}}
-  \begin{columns}[c]
-    \column{0.55\textwidth}
-    \centering
-    \includegraphics[width=\linewidth,height=0.75\textheight,keepaspectratio]{images/fig_coverage_manhattan.png}
-
-    \column{0.45\textwidth}
-    \textbf{Out-of-Distribution Generalization \ja{汎化性能}}
-    \begin{itemize}\itemsep4pt
-      \item Trained on street canyons, tested on real OpenStreetMap Manhattan geometry ($N$ up to 805 objects)
-      \item Captures dominant propagation channels efficiently
-    \end{itemize}
-  \end{columns}
-\end{frame}
-
-% ------------------------------------------------------------------
-
 \end{document}
+
+
+
