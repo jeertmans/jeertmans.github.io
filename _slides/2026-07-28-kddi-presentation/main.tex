@@ -7,9 +7,12 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{hyperref}
-\usepackage{CJKutf8}
+%\usepackage{CJKutf8}
 \usepackage{tikz}
 \usepackage{calc}
+
+\usepackage{xeCJK}
+\setCJKmainfont{Noto Sans JP}
 
 % ==========================================================================
 % CUSTOM MINIMALIST THEME
@@ -77,8 +80,7 @@
 \setbeamertemplate{footline}{%
   \hfill
   {\usebeamerfont{footnote}\color{textmuted}%
-   \insertframenumber\,/\,\inserttotalframenumber}%
-  \hspace{14pt}\vskip6pt
+   \insertframenumber\,/\,\inserttotalframenumber}\hspace{6mm}\vskip6pt
 }
 
 % --- Title page ---
@@ -107,7 +109,7 @@
 
 % ---------- Meta ----------
 \title[Self-Introduction]{Self-Introduction}
-\subtitle{Jérome Eertmans~---~Research Intern at KDDI Research}
+\subtitle{Jérome Eertmans~---~Research Intern at KDDI Research, Inc.}
 \author{Jérome Eertmans}
 \institute{UCLouvain, Belgium}
 \date{July 28, 2026}
@@ -126,7 +128,7 @@
 }
 
 % Japanese inline translation command (muted text)
-\newcommand{\ja}[1]{{\color{textmuted}\footnotesize\begin{CJK}{UTF8}{min}（#1）\end{CJK}}}
+\newcommand{\ja}[1]{{\color{textmuted}\footnotesize~(#1)~}}
 
 % ==========================================================================
 \begin{document}
@@ -149,19 +151,18 @@
   \begin{columns}[c]
     \column{0.65\textwidth}
     \begin{itemize}
-      \item \textbf{Name:} Jérome Eertmans
-      \item \textbf{Age:} 27 years old
+      \item \textbf{Name:} Jérome Eertmans \ja{ジェローム・エールトマンス}
+      \item \textbf{Age:} 28 years old
       \item \textbf{From:} Belgium \ja{ベルギー}
       \item \textbf{University:} UCLouvain (Louvain-la-Neuve) \ja{ルーヴァンカトリック大学}
       \item \textbf{Degree:} Ph.D.\ in Electrical Engineering \ja{電気工学博士}
             \\ {\small (Defended July 6, 2026)}
-      \item \textbf{Languages:} French \ja{フランス語} (native), English \ja{英語}, Dutch \ja{オランダ語}, Italian \ja{イタリア語} (basics), Japanese \ja{日本語} (beginner \ja{初級})
+      \item \textbf{Languages:} French \ja{フランス語} (native), English \ja{英語}, Dutch \ja{オランダ語} (intermediate), Italian \ja{イタリア語} (basics), Japanese \ja{日本語} (beginner)
     \end{itemize}
 
     \column{0.35\textwidth}
     \centering
-    \includegraphics[height=0.65\textheight]{images/profile.jpg}\\[4pt]
-    {\small Jérome Eertmans}
+    \includegraphics[height=0.65\textheight]{images/profile.jpg}
   \end{columns}
 \end{frame}
 
@@ -223,6 +224,22 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{Academic Supervisors\ja{指導教員}}
+  \begin{columns}[c]
+    \column{0.5\textwidth}
+    \centering
+    \includegraphics[height=2.5cm]{images/claude.jpeg}\\[2pt]
+    \textbf{Prof.\ Claude Oestges} (UCLouvain)\\
+    {\small Channel modeling, propagation, MIMO}
+
+    \column{0.5\textwidth}
+    \centering
+    \includegraphics[height=2.5cm]{images/laurent.jpeg}\\[2pt]
+    \textbf{Prof.\ Laurent Jacques} (UCLouvain)\\
+    {\small Signal processing, computational sensing}
+  \end{columns}
+\end{frame}
+
 % ==================== PART 2: WHAT DO I DO? ===========================
 \section{\texorpdfstring{What I Do (Ph.D.\ Research) \ja{研究内容}}{What I Do}}
 
@@ -245,8 +262,7 @@
 
     \column{0.45\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{images/street_canyon.png}\\[4pt]
-    {\footnotesize Radio wave propagation in a street canyon}
+    \includegraphics[width=\linewidth,keepaspectratio]{images/differentiable_ray_tracing.png}
   \end{columns}
 \end{frame}
 
@@ -305,7 +321,7 @@
 \section{\texorpdfstring{Why Am I Here? \ja{KDDI総合研究所での目標}}{Why Am I Here?}}
 
 % ------------------------------------------------------------------
-\begin{frame}{Why KDDI Research \& Internship Goals \ja{KDDI総合研究所での研究目標}}
+\begin{frame}{Why KDDI Research, Inc. \& Internship Goals \ja{KDDI総合研究所での研究目標}}
   \begin{columns}[T]
     \column{0.5\textwidth}
     \textbf{Why KDDI Research? \ja{志望理由}}
@@ -329,7 +345,7 @@
   \vfill
   \begin{center}
     {\Huge\bfseries Thank you!}\\[12pt]
-    {\Large \begin{CJK}{UTF8}{min}ご清聴ありがとうございました\end{CJK}}\\[18pt]
+    {\Large ご清聴ありがとうございました}\\[18pt]
     {\large Jérome Eertmans}\\[6pt]
     {\small
       \href{https://eertmans.be}{eertmans.be}
@@ -387,26 +403,5 @@
 \end{frame}
 
 % ------------------------------------------------------------------
-\begin{frame}{Backup: Academic Supervisors \& Publications \ja{補足：指導教員・論文}}
-  \begin{columns}[c]
-    \column{0.5\textwidth}
-    \centering
-    \includegraphics[height=2.5cm]{images/claude.jpeg}\\[2pt]
-    \textbf{Prof.\ Claude Oestges} (UCLouvain)\\
-    {\small Channel modeling, propagation, MIMO}
-
-    \column{0.5\textwidth}
-    \centering
-    \includegraphics[height=2.5cm]{images/laurent.jpeg}\\[2pt]
-    \textbf{Prof.\ Laurent Jacques} (UCLouvain)\\
-    {\small Signal processing, computational sensing}
-  \end{columns}
-
-  \vspace{6pt}
-  \begin{itemize}
-    \item \textbf{EuCAP 2026 Best Propagation Paper Award} (\emph{Fast, Differentiable, GPU-Accelerated Ray Tracing})
-    \item Submitted to \emph{npj Wireless Technology} (2026)
-  \end{itemize}
-\end{frame}
 
 \end{document}
