@@ -1,6 +1,6 @@
 {% assign url = include.url %}
 {% assign ratio = include.ratio | default: 56.25 %}
-{% assign max_height = include.max_height | default: "75vh" %}
+{% assign max_height = include.max_height | default: "415px" %}
 <div style="position:relative;padding-bottom:{{ ratio }}%;height:0;max-height:{{ max_height }};overflow:hidden;margin-bottom:1.5rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
     <iframe
         src="{{ url }}"
