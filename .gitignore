@@ -39,11 +39,12 @@ _slides/*/*.html
 _slides/*/images/sequences/
 _slides/2026-07-06-public-defense/antennas/
 _slides/2026-07-06-public-defense/sounds/
-_slides/2026-07-28-kddi-presentation/*.toc
-_slides/2026-07-28-kddi-presentation/*.snm
-_slides/2026-07-28-kddi-presentation/*.out
-_slides/2026-07-28-kddi-presentation/*.nav
 _slides/2026-07-28-kddi-presentation/*.dvi
+_slides/2026-07-28-kddi-presentation/*.nav
+_slides/2026-07-28-kddi-presentation/*.out
+_slides/2026-07-28-kddi-presentation/*.snm
+_slides/2026-07-28-kddi-presentation/*.synctex.gz
+_slides/2026-07-28-kddi-presentation/*.toc
 
 # LaTeX
 *.aux
