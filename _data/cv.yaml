@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
 cv:
   name: Jérome Eertmans
-  headline: Postdoctoral researcher and Teaching Assistant at UCLouvain.
+  headline: Research intern at KDDI Research, Inc. | Postdoctoral researcher and Teaching Assistant at UCLouvain.
   location: Belgium
   email: jeertmans@icloud.com
   website: https://www.eertmans.com/
@@ -22,7 +22,7 @@ cv:
       degree: Ph.D.
       start_date: 2021-09
       end_date: 2026-07
-      summary: 'Thesis title: Differentiable Ray Tracing for Radio Propagation Modeling'
+      summary: 'Thesis title: Differentiable Ray Tracing for Radio Propagation Modeling. Available [here](https://hdl.handle.net/2078.5/278727).'
     - institution: UCLouvain
       area: Electro-mechanical engineering
       degree: M.Sc.
@@ -34,20 +34,26 @@ cv:
       - Graduated Magna Cum Laude.
 
     Experience:
+    - company: KDDI Research, Inc.
+      position: Research Intern
+      start_date: 2026-07
+      end_date: present
+      location: Fujimino, Saitama, Japan
+      summary: Working on machine learning for indoor radio propagation modeling, within the radio propagation and devices group.
     - company: UCLouvain
       position: Teaching Assistant
       start_date: 2021-09
       end_date: present
       location: Louvain-la-Neuve, Belgium
       highlights:
-      - 'Teaching duties (practical sessions, evaluation, ...): see list [here](https://eertmans.be/teaching/)'
-      - Research on my Ph.D. subject, under the supervision of Profs. Claude Oestges and Laurent Jacques.
+      - 'Teaching duties (practical sessions, evaluation, ...): see list [here](https://eertmans.be/teaching/).'
+      - Research on my Ph.D. subject under the supervision of Profs. Claude Oestges and Laurent Jacques.
     - company: University of Bologna
       position: Visiting Researcher
       start_date: 2024-09
       end_date: 2024-12
       location: Bologna, Italy
-      summary: Visiting Prof. Vittorio Degli-Esposti's lab and pursuing research on Machine Learning applied to Ray Tracing for Radio Propagation.
+      summary: Worked with Profs. Vittorio Degli-Esposti and Enrico Maria Vitucci on Machine Learning applied to Ray Tracing for Radio Propagation, as part of our 'Generative Path Sampling' research project. Led to two conference papers and one journal paper.
     - company: see my [LinkedIn profile](https://linkedin.com/in/jérome-eertmans).
       position: For additional experiences
 
@@ -80,6 +86,7 @@ cv:
 
     Publications:
     - title: Transform-Invariant Generative Ray Path Sampling for Efficient Radio Propagation Modeling
+      id: npjwt2026
       authors:
       - '**Jérome Eertmans**'
       - Enrico Maria Vitucci
@@ -91,6 +98,7 @@ cv:
       url: https://arxiv.org/abs/2603.01655
       date: '2026-03-02'
     - title: Fast, Differentiable, GPU-Accelerated Ray Tracing for Multiple Diffraction and Reflection Paths
+      id: eucap2026
       authors:
       - '**Jérome Eertmans**'
       - Sophie Lequeu
@@ -101,6 +109,7 @@ cv:
       url: https://arxiv.org/abs/2410.14535
       date: '2025-10-17'
     - title: Towards Generative Ray Path Sampling for Faster Point-to-Point Ray Tracing
+      id: icmlcn2025
       authors:
       - '**Jérome Eertmans**'
       - Nicola Di Cicco
@@ -112,6 +121,7 @@ cv:
       doi: 10.1109/ICMLCN64995.2025.11140249
       date: '2024-10-31'
     - title: Comparing Differentiable and Dynamic Ray Tracing - Introducing the Multipath Lifetime Map
+      id: eucap2025
       authors:
       - '**Jérome Eertmans**'
       - Enrico Maria Vitucci
@@ -122,6 +132,7 @@ cv:
       doi: 10.23919/EuCAP63536.2025.10999736
       date: '2024-10-18'
     - title: Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization
+      id: eucap2024
       authors:
       - '**Jérome Eertmans**'
       - Laurent Jacques
@@ -130,6 +141,7 @@ cv:
       doi: 10.23919/EuCAP60739.2024.10501570
       date: '2024-03-18'
     - title: DiffeRT2d - A Differentiable Ray Tracing Python Framework for Radio Propagation
+      id: joss2024
       authors:
       - '**Jérome Eertmans**'
       - Claude Oestges
@@ -139,6 +151,7 @@ cv:
       url: https://doi.org/10.21105/joss.06915
       date: '2024-06-30'
     - title: Min-Path-Tracing - A Diffraction Aware Alternative to Image Method in Ray Tracing
+      id: eucap2023
       authors:
       - '**Jérome Eertmans**'
       - Claude Oestges
@@ -147,6 +160,7 @@ cv:
       doi: 10.23919/EuCAP57121.2023.10132934
       date: '2023-03-27'
     - title: Manim Slides - A Python package for presenting Manim content anywhere
+      id: manim-slides
       authors:
       - '**Jérome Eertmans**'
       journal: Journal of Open Source Education
@@ -155,30 +169,35 @@ cv:
       date: '2023-08-08'
 
     Grants and Awards:
+    - name: Research internship at KDDI Research, Inc.
+      location: Fujimino, Saitama, Japan
+      start_date: 2024-09
+      end_date: 2024-12
+      summary: FRS FNRS *Accomplishment of a stay abroad*.
     - name: Best Propagation Paper Award
-      location: Dublin, IE
+      location: Dublin, Ireland
       date: 2026-04-24
       summary: EurAAP - EuCAP 2026.
     - name: TICRA-EurAAP Travel Grant
-      location: Dublin, IE
+      location: Dublin, Ireland
       date: 2026-04
       summary: EuCAP 2026 travel grant.
     - name: Long-term Scientific Stay in Pr. Vittorio Degli-Esposti's team (FNRS)
-      location: Brussels, BE
+      location: Bologna, Italy
       start_date: 2024-09
       end_date: 2024-12
       summary: FRS FNRS *Accomplishment of a stay abroad*.
     - name: Long-term Scientific Stay in Pr. Vittorio Degli-Esposti's team (WBI)
-      location: Brussels, BE
+      location: Bologna, Italy
       start_date: 2024-09
       end_date: 2024-12
       summary: WBI *Bourses d'Excellence WORLD*.
     - name: STSM CA20120 - Visit to Pr. Vittorio Degli-Esposti
-      location: Brussels, BE
+      location: Cesena, Italy
       date: 2024-04
       summary: Cost Action Short-term Scientific Missions.
-    - name: Participation in EuCAP 2024
-      location: Brussels, BE
+    - name: Participation in EuCAP 2023
+      location: Florence, Italy
       date: 2023-03
       summary: FRS FNRS *Participation in a scientific meeting*.
 
