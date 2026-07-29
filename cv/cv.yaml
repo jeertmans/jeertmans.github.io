@@ -53,7 +53,7 @@ cv:
       start_date: 2024-09
       end_date: 2024-12
       location: Bologna, Italy
-      summary: Worked with Profs. Vittorio Degli-Esposti and Enrico Maria Vitucci on Machine Learning applied to Ray Tracing for Radio Propagation, as part of our 'Generative Path Sampling' research project. Led to two conference papers and one journal paper.
+      summary: Worked with Profs. Vittorio Degli-Esposti and Enrico Maria Vitucci on Machine Learning applied to Ray Tracing for Radio Propagation, as part of our 'Generative Path Sampling' research project. Led to two conference papers[[icmlcn2025, eucap2025]] and one journal paper[[npjwt2026]].
     - company: see my [LinkedIn profile](https://linkedin.com/in/jérome-eertmans).
       position: For additional experiences
 
