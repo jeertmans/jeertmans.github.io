@@ -8,9 +8,6 @@ tags:
   - presentation
   - kddi
   - ray-tracing
-visible: false
-hidden: true
-sitemap: false
 permalink: /posts/kddi-presentation/
 description: Self-introduction presentation slides for my visiting research internship at KDDI Research, Inc.
 ---
@@ -19,7 +16,7 @@ Presentation slides for my 10-minute self-introduction talk as a Research Intern
 
 The presentation covers my background in Electrical Engineering at UCLouvain, an overview of my Ph.D. research on **Differentiable Ray Tracing** and **Generative Path Sampling**, some open-source projects (*DiffeRT* and *Manim Slides*), and my internship goals at KDDI Research.
 
-## Slides Preview
+## Slides
 
 {% include pdf-preview.html url="/assets/slides/2026-07-28-kddi-presentation.pdf" %}
 
