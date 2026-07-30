@@ -9,7 +9,7 @@
 
 - type: linkedin
   icon: 'fab fa-linkedin'
-  url:  'https://linkedin.com/in/jérome-eertmans'
+  url:  'https://linkedin.com/in/j%C3%A9rome-eertmans' # requires ASCII url
 
 - type: rss
   icon: fas fa-rss
@@ -17,4 +17,4 @@
 
 - type: email
   icon: fas fa-envelope
-  noblank: true # open link in current tab
+  noblank: true
