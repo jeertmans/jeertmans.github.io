@@ -8,8 +8,8 @@
   url: https://orcid.org/0000-0002-5579-5360
 
 - type: linkedin
-  icon: 'fab fa-linkedin'
-  url:  'https://linkedin.com/in/j%C3%A9rome-eertmans' # requires ASCII url
+  icon: fab fa-linkedin
+  url: https://linkedin.com/in/j%C3%A9rome-eertmans    # requires ASCII url
 
 - type: rss
   icon: fas fa-rss
