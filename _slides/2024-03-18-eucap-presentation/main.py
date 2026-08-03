@@ -168,7 +168,7 @@ class Main(Slide):
         )
         self.wipe([], image)
 
-        for i in range(0, 5):
+        for i in range(5):
             self.next_slide(notes=f"Order = {i}")
             self.play(Transform(image, ImageMobject(f"rt_images/scene_tx_rx_{i}.png")))
 
@@ -286,7 +286,7 @@ class Main(Slide):
             ),
         )
 
-        for i in range(0, 5):
+        for i in range(5):
             self.next_slide(notes=f"Order = {i}")
             self.play(Transform(image, ImageMobject(f"scene_{i}.png")))
 
@@ -506,7 +506,7 @@ class Main(Slide):
                 VGroup(
                     Tex(r"$\alpha$~=~"),
                     DecimalNumber(
-                        alpha.get_value() if alpha.get_value() > 1.0 else 1.0,
+                        max(1.0, alpha.get_value()),
                         num_decimal_places=1,
                     ),
                 )

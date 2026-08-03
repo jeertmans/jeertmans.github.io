@@ -83,9 +83,9 @@ def cleanup_figure(
 def move_camera(
     fig: go.Figure,
     *,
-    elevation: int | float = 0,
-    azimuth: int | float = 0,
-    distance: int | float = 10,
+    elevation: float = 0,
+    azimuth: float = 0,
+    distance: float = 10,
 ) -> go.Figure:
     x, y, z = spherical_to_cartesian(
         np.asarray([distance, elevation, azimuth])
@@ -101,7 +101,7 @@ def move_camera(
 
 
 def set_opacity(
-    fig: go.Figure, *, opacity: int | float = 1, selector: dict[str, Any]
+    fig: go.Figure, *, opacity: float = 1, selector: dict[str, Any]
 ) -> go.Figure:
     fig.update_traces(opacity=opacity, selector=selector)
     return fig
@@ -125,7 +125,7 @@ current_face_index: int | None = None
 
 
 def highlight_face(
-    fig: go.Figure, *, alpha: int | float = 0, face_index: int = 0
+    fig: go.Figure, *, alpha: float = 0, face_index: int = 0
 ) -> go.Figure:
     global original_color
     global current_face_index
@@ -151,7 +151,7 @@ def figure_to_mobject(
     fig: go.Figure,
     width: int | None = None,
     height: int | None = None,
-    scale: int | float | None = 2,
+    scale: float | None = 2,
 ) -> m.ImageMobject | m.opengl.OpenGLImageMobject:
     img_bytes = fig.to_image(format="png", width=width, height=height, scale=scale)
     img_pil = Image.open(io.BytesIO(img_bytes))
