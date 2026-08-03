@@ -227,9 +227,9 @@ def cleanup_figure(
 def move_camera(
     fig: go.Figure,
     *,
-    elevation: int | float = 0,
-    azimuth: int | float = 0,
-    distance: int | float = 10,
+    elevation: float = 0,
+    azimuth: float = 0,
+    distance: float = 10,
 ) -> go.Figure:
     x, y, z = spherical_to_cartesian(
         np.asarray([distance, elevation, azimuth])
@@ -251,7 +251,7 @@ def fig_to_mobject(
     func: Callable[P, go.Figure],
     width: int | None = None,
     height: int | None = None,
-    scale: int | float | None = 2,
+    scale: float | None = 2,
 ) -> m.ImageMobject | m.opengl.OpenGLImageMobject:
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> m.ImageMobject:

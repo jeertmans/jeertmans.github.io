@@ -3858,7 +3858,7 @@ class Main(Slide, m.MovingCameraScene):
                 m.VGroup(
                     m.Tex(r"$\alpha$~=~"),
                     m.DecimalNumber(
-                        alpha.get_value() if alpha.get_value() > 1.0 else 1.0,
+                        max(1.0, alpha.get_value()),
                         num_decimal_places=1,
                     ),
                 )

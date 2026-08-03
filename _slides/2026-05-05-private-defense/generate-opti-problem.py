@@ -77,10 +77,8 @@ scene = Scene.square_scene_with_obstacle()
 tx_coords = jnp.array([0.5, 0.7])
 scene = scene.with_transmitters(TX=Point(xy=tx_coords))
 scene = scene.with_receivers(
-    **{
-        r"RX1": Point(xy=jnp.array([0.3, 0.1])),
-        r"RX2": Point(xy=jnp.array([0.5, 0.1])),
-    },
+    RX1=Point(xy=jnp.array([0.3, 0.1])),
+    RX2=Point(xy=jnp.array([0.5, 0.1])),
 )
 
 X, Y = scene.grid(1000)

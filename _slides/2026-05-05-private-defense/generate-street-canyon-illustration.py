@@ -85,11 +85,9 @@ def draw_sionna_paths_on_plotly_fig(
         num_rx = paths.num_rx
         rx_array_size = paths.rx_array.array_size
         num_rx_patterns = len(paths.rx_array.antenna_pattern.patterns)
-        #
         num_tx = paths.num_tx
         tx_array_size = paths.tx_array.array_size
         num_tx_patterns = len(paths.tx_array.antenna_pattern.patterns)
-        #
         vertices = np.reshape(
             vertices,
             [

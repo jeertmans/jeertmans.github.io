@@ -4,11 +4,10 @@ import os
 from uuid import uuid4
 
 import matplotlib
-import matplotlib.pyplot as pyplot
-import plotly.express as express
-import plotly.graph_objects as graph_objects
 import plotly.io as pio
+from matplotlib import pyplot
 from matplotlib_inline.backend_inline import set_matplotlib_formats
+from plotly import express, graph_objects
 from plotly.graph_objs import Figure
 from plotly.io._base_renderers import IFrameRenderer
 
