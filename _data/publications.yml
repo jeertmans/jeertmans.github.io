@@ -15,9 +15,9 @@
   download: /assets/publications/npjwt2026-paper.pdf
   arxiv: https://arxiv.org/abs/2603.01655
   bibtex: /assets/publications/npjwt2026-paper.bib
-- title: Preprint - Fast, Differentiable, GPU-Accelerated Ray Tracing for Multiple Diffraction and Reflection Paths
+- title: EuCAP 2026 - Fast, Differentiable, GPU-Accelerated Ray Tracing for Multiple Diffraction and Reflection Paths
   id: eucap2026
-  date: 2025-10-17
+  date: 2026-08-11
   tags:
   - Conference
   - Paper
@@ -25,9 +25,10 @@
   download: /assets/publications/eucap2026-paper.pdf
   arxiv: https://arxiv.org/abs/2410.14535
   bibtex: /assets/publications/eucap2026-paper.bib
+  doi: 10.23919/EuCAP68105.2026.11612249
 - title: ICMLCN 2025 - Towards Generative Ray Path Sampling for Faster Point-to-Point Ray Tracing
   id: icmlcn2025
-  date: 2024-10-31
+  date: 2025-09-03
   tags:
   - Conference
   - Paper
@@ -39,7 +40,7 @@
   doi: 10.1109/ICMLCN64995.2025.11140249
 - title: 'EuCAP 2025 - Comparing Differentiable and Dynamic Ray Tracing: Introducing the Multipath Lifetime Map'
   id: eucap2025
-  date: 2024-10-18
+  date: 2025-05-21
   tags:
   - Conference
   - Paper
@@ -69,7 +70,7 @@
   - Paper
 - title: EuCAP 2024 - Fully Differentiable Ray Tracing via Discontinuity Smoothing for Radio Network Optimization
   id: eucap2024
-  date: 2024-03-18
+  date: 2024-04-26
   tags:
   - Conference
   - Paper
@@ -91,7 +92,7 @@
   bibtex: /assets/publications/manim-slides-paper.bib
 - title: 'EuCAP 2023 - Min-Path-Tracing: A Diffraction Aware Alternative to Image Method in Ray Tracing'
   id: eucap2023
-  date: 2023-03-27
+  date: 2023-05-31
   tags:
   - Conference
   - Paper
