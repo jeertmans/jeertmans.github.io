@@ -94,7 +94,7 @@ cv:
       - Nicola Di Cicco
       - Laurent Jacques
       - Claude Oestges
-      journal: arXiv preprint, submitted to npj Wireless Technology
+      journal: arXiv preprint, accepted for publication in npj Wireless Technology
       url: https://arxiv.org/abs/2603.01655
       date: '2026-03-02'
     - title: Fast, Differentiable, GPU-Accelerated Ray Tracing for Multiple Diffraction and Reflection Paths
@@ -171,8 +171,8 @@ cv:
     Grants and Awards:
     - name: Research internship at KDDI Research, Inc.
       location: Fujimino, Saitama, Japan
-      start_date: 2024-09
-      end_date: 2024-12
+      start_date: 2026-07
+      end_date: 2026-09
       summary: FRS FNRS *Accomplishment of a stay abroad*.
     - name: Best Propagation Paper Award[[eucap2026]]
       location: Dublin, Ireland
@@ -216,8 +216,8 @@ cv:
       details: Access (5 reviews), Transactions on Vehicular Technology (7 reviews), Antennas and Wireless Propagation Letters (1 review), and Open Journal of the Communications Society (1 review)
     - label: Journal of Open Source Software
       details: 1 review (see [#9384](https://github.com/openjournals/joss-reviews/issues/9384))
-    - label: 'Nature Partner Journals: Wireless Technology'
-      details: 1 review
+    - label: Nature Partner Journals
+      details: Wireless Technology (1 review)
 
     Referees:
     - label: Prof. Claude Oestges, UCLouvain
