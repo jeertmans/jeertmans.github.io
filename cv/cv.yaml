@@ -39,7 +39,7 @@ cv:
       start_date: 2026-07
       end_date: present
       location: Fujimino, Saitama, Japan
-      summary: Working on machine learning for indoor radio propagation modeling, within the radio propagation and devices group.
+      summary: 'Conducted a 40.25 GHz indoor measurement campaign to evaluate LiDAR-based digital twins and calibrate mmWave propagation models using differentiable ray tracing. *(Work submitted to EuCAP 2027.)*'
     - company: UCLouvain
       position: Teaching Assistant
       start_date: 2021-09
@@ -217,7 +217,7 @@ cv:
     - label: Journal of Open Source Software
       details: 1 review (see [#9384](https://github.com/openjournals/joss-reviews/issues/9384))
     - label: Nature Partner Journals
-      details: Wireless Technology (1 review)
+      details: Wireless Technology (2 reviews)
 
     Referees:
     - label: Prof. Claude Oestges, UCLouvain
