@@ -39,7 +39,7 @@ cv:
       start_date: 2026-07
       end_date: present
       location: Fujimino, Saitama, Japan
-      summary: 'Conducted a 40.25 GHz indoor measurement campaign to evaluate LiDAR-based digital twins and calibrate mmWave propagation models using differentiable ray tracing. *(Work submitted to EuCAP 2027.)*'
+      summary: Conducted a 40.25 GHz indoor measurement campaign to evaluate LiDAR-based digital twins and calibrate mmWave propagation models using differentiable ray tracing. *(Work submitted to EuCAP 2027.)*
     - company: UCLouvain
       position: Teaching Assistant
       start_date: 2021-09
