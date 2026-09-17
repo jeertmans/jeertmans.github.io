@@ -10,6 +10,7 @@ tags:
   - ray-tracing
 permalink: /posts/kddi-presentation/
 description: Self-introduction presentation slides for my visiting research internship at KDDI Research, Inc.
+hidden: true
 ---
 
 Presentation slides for my 10-minute self-introduction talk as a Research Intern at KDDI Research, Inc. on July 28, 2026.

@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
 cv:
   name: Jérome Eertmans
-  headline: Research intern at KDDI Research, Inc. | Postdoctoral researcher and Teaching Assistant at UCLouvain.
+  headline: Postdoctoral researcher and Teaching Assistant at UCLouvain.
   location: Belgium
   email: jeertmans@icloud.com
   website: https://www.eertmans.com/
@@ -34,12 +34,6 @@ cv:
       - Graduated Magna Cum Laude.
 
     Experience:
-    - company: KDDI Research, Inc.
-      position: Research Intern
-      start_date: 2026-07
-      end_date: present
-      location: Fujimino, Saitama, Japan
-      summary: 'Conducted a 40.25 GHz indoor measurement campaign to evaluate LiDAR-based digital twins and calibrate mmWave propagation models using differentiable ray tracing. *(Work submitted to EuCAP 2027.)*'
     - company: UCLouvain
       position: Teaching Assistant
       start_date: 2021-09
@@ -48,6 +42,12 @@ cv:
       highlights:
       - 'Teaching duties (practical sessions, evaluation, ...): see list [here](https://eertmans.be/teaching/).'
       - Research on my Ph.D. subject under the supervision of Profs. Claude Oestges and Laurent Jacques.
+    - company: KDDI Research, Inc.
+      position: Research Intern
+      start_date: 2026-07
+      end_date: 2026-09
+      location: Fujimino, Saitama, Japan
+      summary: 'Conducted a 40.25 GHz indoor measurement campaign to evaluate LiDAR-based digital twins and calibrate mmWave propagation models using differentiable ray tracing. *(Work submitted to EuCAP 2027.)*'
     - company: University of Bologna
       position: Visiting Researcher
       start_date: 2024-09
