@@ -5,16 +5,16 @@
   - Thesis
   download: https://hdl.handle.net/2078.5/278727
   bibtex: /assets/publications/phdthesis2026.bib
-- title: Preprint - Transform-Invariant Generative Ray Path Sampling for Efficient Radio Propagation Modeling
+- title: Transform-Invariant Generative Ray Path Sampling for Efficient Radio Propagation Modeling
   id: npjwt2026
-  date: 2026-03-02
+  date: 2026-11-02
   tags:
   - Journal
   - Paper
-  - Preprint
   download: /assets/publications/npjwt2026-paper.pdf
   arxiv: https://arxiv.org/abs/2603.01655
   bibtex: /assets/publications/npjwt2026-paper.bib
+  doi: 10.1038/s44459-026-00094-3
 - title: EuCAP 2026 - Fast, Differentiable, GPU-Accelerated Ray Tracing for Multiple Diffraction and Reflection Paths
   id: eucap2026
   date: 2026-08-11
